@@ -3,11 +3,25 @@ package computesvc;
 import "google/protobuf/empty.proto";
 
 service ComputeProvider {
-  rpc GetStatus(google.protobuf.Empty) returns (GetStatusReply) {}
-  rpc GetTaskDetails(GetTaskDetailsReq) returns (GetTaskDetailsReply) {}
+   rpc GetStatus(google.protobuf.Empty) returns (GetStatusReply) {
+         option(google.api.http) = {
+            get: "/compute/getStatus"
+        };
+  }
+  rpc GetTaskDetails(GetTaskDetailsReq) returns (GetTaskDetailsReply) {
+        option(google.api.http) = {
+            post: "/compute/getTaskDetails"
+            body: "*"
+        };
+  }
 
   rpc UploadShard(stream UploadShardReq) returns (UploadShardReply) {}
-  rpc HandleTaskReadyGo(TaskReadyGoReq) returns (UploadShardReply) {}
+  rpc HandleTaskReadyGo(TaskReadyGoReq) returns (UploadShardReply) {
+         option(google.api.http) = {
+            post: "/compute/handleTaskReadyGo"
+            body: "*"
+        };
+  }
 
 }
 

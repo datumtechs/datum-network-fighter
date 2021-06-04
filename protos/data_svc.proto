@@ -3,11 +3,34 @@ package datasvc;
 import "google/protobuf/empty.proto";
 
 service DataProvider {
-  rpc GetStatus(google.protobuf.Empty) returns (GetStatusReply) {}
-  rpc ListData(google.protobuf.Empty) returns (ListDataReply) {}
-  rpc UploadData(stream UploadRequest) returns (UploadReply) {}
-  rpc BatchUpload(stream UploadRequest) returns (stream UploadReply) {}
-  rpc DownloadData(DownloadRequest) returns (stream DownloadReply) {}
+  rpc GetStatus(google.protobuf.Empty) returns (GetStatusReply) {
+        option(google.api.http) = {
+            get: "/data/getStatus"
+        };
+  }
+  rpc ListData(google.protobuf.Empty) returns (ListDataReply) {
+        option(google.api.http) = {
+            get: "/data/listData"
+        };
+  }
+  rpc UploadData(stream UploadRequest) returns (UploadReply) {
+        option(google.api.http) = {
+            post: "/data/uploadData"
+            body: "*"
+        };
+  }
+  rpc BatchUpload(stream UploadRequest) returns (stream UploadReply) {
+  	option(google.api.http) = {
+	    post: "/data/batchUpload"
+	    body: "*"
+	};
+  }
+  rpc DownloadData(DownloadRequest) returns (stream DownloadReply) {
+        option(google.api.http) = {
+	    post: "/data/downLoadData"
+	    body: "*"
+	};
+  }
   rpc DeleteData(DownloadRequest) returns (UploadReply) {}
 
   rpc SendSharesData(SendSharesDataRequest) returns (SendSharesDataReply) {}
