@@ -1,0 +1,5 @@
+port: 50021
+code_root_dir: .
+pool_size: 4
+pass_via: no
+via_svc: 192.168.16.153:50041

@@ -1,0 +1,7 @@
+data_root: ../data
+file_system: local
+bind_ip: 192.168.16.151
+port: 50011
+chunk_size: 1024
+pass_via: no
+via_svc: 192.168.16.153:50041

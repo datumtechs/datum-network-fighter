@@ -1,0 +1,11 @@
+numpy
+pandas
+grpc
+grpcio-tools
+pyyaml
+cryptography
+aiohttp[speedups]
+prompt_toolkit
+psutil
+grpc-interceptor
+grpcio-reflection

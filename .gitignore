@@ -1,0 +1,31 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# compiled output
+*.pyc
+__pycache__/
+
+# pycharm
+.idea/*
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# MacOS
+.DS_store
+
+# Do not include .py files compiled from protobuf specs.
+protos/*.py
+!protos/__init__.py
+!protos/*_helper.py
+
+# ipython notebook
+*.ipynb
+.ipynb_checkpoints/
+
+data/
+private_data/
+*.so

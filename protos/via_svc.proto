@@ -1,0 +1,29 @@
+syntax = "proto3";
+package viasvc;
+
+
+service ViaProvider {
+  rpc Expose(ExposeReq) returns (ExposeAns) {}
+  rpc Off(ExposeReq) returns (ExposeAns) {}
+}
+
+enum ServiceType {
+  DATA_SVC = 0;
+  COMPUTE_SVC = 1;
+  SCHEDULE_SVC = 2;
+  NET_COMM_SVC = 3;
+}
+
+message ExposeReq {
+  string task_id = 1;
+  ServiceType svc_type = 2;
+  string party_id = 3;
+  string ip = 4;
+  int32 port = 5;
+}
+
+message ExposeAns {
+  bool ok = 1;
+  string ip = 2;
+  int32 port = 3;
+}
