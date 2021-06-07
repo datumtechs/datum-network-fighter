@@ -23,6 +23,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         print(type(request_it))
         folder = cfg['data_root']
         now = time.strftime("%Y%m%d-%H%M%S")
+        if not os.path.exists(folder):
+            os.makedirs(folder)
         path = os.path.join(folder, now)
         print(f'save to {path}')
         m = hashlib.sha256()
