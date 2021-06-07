@@ -1,7 +1,9 @@
 syntax = "proto3";
 package datasvc;
-import "google/protobuf/empty.proto";
+option go_package = "../gateway/data_svc";
 
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
 service DataProvider {
   rpc GetStatus(google.protobuf.Empty) returns (GetStatusReply) {
         option(google.api.http) = {

@@ -1,6 +1,9 @@
 syntax = "proto3";
 package computesvc;
+option go_package = "../gateway/compute_svc";
+
 import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
 
 service ComputeProvider {
    rpc GetStatus(google.protobuf.Empty) returns (GetStatusReply) {
