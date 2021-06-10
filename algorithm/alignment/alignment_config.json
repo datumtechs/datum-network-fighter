@@ -1,5 +1,6 @@
 {
   "system_cfg": {
+    "work_mode": 0,
     "task_id": "202106071215001",
     "role_p0": {
       "name": "companyA",

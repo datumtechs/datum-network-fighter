@@ -211,14 +211,14 @@ if __name__ == '__main__':
         import sys
 
         party_id = int(sys.argv[1])
-        with open('lr_config-3.json', 'r') as load_f:
+        with open('lr_config.json', 'r') as load_f:
             cfg_dict = json.load(load_f)
 
         role_cfg = cfg_dict["user_cfg"]["role_cfg"]
         role_cfg["party_id"] = party_id
         role_cfg["input_file"] = ""
         if party_id != 2:
-            role_cfg["input_file"] = f"../output/alignment_result_{party_id}.csv"
+            role_cfg["input_file"] = f"../output/p{party_id}/alignment_result.csv"
         role_cfg["output_file"] = f"../output/p{party_id}/my_result"
         if party_id != 0:
             role_cfg["with_label"] = False

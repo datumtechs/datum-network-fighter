@@ -18,6 +18,7 @@ class PrivacyAlignment():
 
     def __init__(self, cfg_dict):
         system_cfg = cfg_dict["system_cfg"]
+        self.work_mode = system_cfg["work_mode"]
         self.task_id = system_cfg["task_id"]
         self.port = system_cfg["port"]
         self.role_p0_name = system_cfg["role_p0"]["name"]
@@ -76,14 +77,14 @@ class PrivacyAlignment():
 
     def get_temp_dir(self):
         '''获取用于临时保存文件的目录路径'''
-        temp_dir = os.path.join(os.path.dirname(self.output_file), f'temp/p{self.party_id}')
+        temp_dir = os.path.join(os.path.dirname(self.output_file), 'temp')
         if not os.path.exists(temp_dir):
             os.makedirs(temp_dir, exist_ok=True)
         return temp_dir
 
     def remove_temp_dir(self):
         '''删除临时目录里的所有文件，这些文件都是一些临时保存的数据'''
-        temp_dir = os.path.dirname(self.get_temp_dir())
+        temp_dir = self.get_temp_dir()
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
 
@@ -139,7 +140,7 @@ if __name__=='__main__':
             role_cfg["input_file"] = "../data/1-test_bank.csv"
         elif party_id == 1:
             role_cfg["input_file"] = "../data/1-test_insurance.csv"
-        role_cfg["output_file"] = f"../output/alignment_result_{party_id}.csv"
+        role_cfg["output_file"] = f"../output/p{party_id}/alignment_result.csv"
 
         return cfg_dict
 
