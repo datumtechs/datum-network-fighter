@@ -1,36 +1,44 @@
 {
-  "env_cfg": {
-    "role_p0": {
-      "name": "companyC",
-      "host": "127.0.0.1",
-      "port": 33001
-    },
-    "role_p1": {
-      "name": "companyD",
-      "host": "127.0.0.1",
-      "port": 33002
-    },
-    "role_p2": {
-      "name": "companyE",
-      "host": "127.0.0.1",
-      "port": 33003
-    }
-  },
-  "cal_cfg": {
-    "party_id": 0,
+  "system_cfg": {
+    "work_mode": 0,
     "task_id": "202106071215001",
-    "input_file": "../data/p0_after_alignment.csv",
-    "output_file": "../output/model.bin",
-    "id_column_name": "CLIENT_ID",
-    "label_col_name": "OVERDUE"
+    "data_node": {},
+    "compute_node": {
+      "role_p0": {
+        "name": "companyC",
+        "host": "127.0.0.1",
+        "port": 33001
+      },
+      "role_p1": {
+        "name": "companyD",
+        "host": "127.0.0.1",
+        "port": 33002
+      },
+      "role_p2": {
+        "name": "companyE",
+        "host": "127.0.0.1",
+        "port": 33003
+      }
+    },
+    "result_node": {}
   },
-  "algorithm_cfg": {
-    "lr": {
-      "epochs": 10,
-      "batch_size": 256,
-      "learning_rate": 0.1,
+  "user_cfg": {
+    "common_cfg": {
       "float_pricision": 16,
-      "result_save_mode": 0
+      "result_save_mode": 0,
+      "algorithm_cfg": {
+        "epochs": 10,
+        "batch_size": 256,
+        "learning_rate": 0.1
+      }
+    },
+    "role_cfg": {
+      "party_id": 0,
+      "input_file": "../data/p0_after_alignment.csv",
+      "output_file": "../output/model.bin",
+      "id_column_name": "CLIENT_ID",
+      "with_label": true,
+      "label_column_name": "OVERDUE"
     }
   }
 }
