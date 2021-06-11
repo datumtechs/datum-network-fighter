@@ -10,6 +10,9 @@ import pandas as pd
 import tensorflow as tf
 import latticex.rosetta as rtt
 
+np.set_printoptions(suppress=True)
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class PrivacyLogisticRegression(object):
     '''隐私的逻辑回归'''
@@ -35,29 +38,31 @@ class PrivacyLogisticRegression(object):
         self.float_pricision = common_cfg["float_pricision"]
         self.result_save_mode = common_cfg["result_save_mode"]
         algorithm_cfg = common_cfg["algorithm_cfg"]
-        self.epochs = algorithm_cfg["epochs"]
-        self.batch_size = algorithm_cfg["batch_size"]
-        self.learning_rate = algorithm_cfg["learning_rate"]
+        algorithm_type = algorithm_cfg["algorithm_type"]
         self.party_id = role_cfg["party_id"]
         self.input_file = role_cfg["input_file"]
         self.output_file = role_cfg["output_file"]
         self.id_column_name = role_cfg["id_column_name"]
-        self.with_label = role_cfg["with_label"]
-        self.label_column_name = role_cfg["label_column_name"]
+        if algorithm_type == 'logistic_regression_train':
+            self.epochs = algorithm_cfg["epochs"]
+            self.batch_size = algorithm_cfg["batch_size"]
+            self.learning_rate = algorithm_cfg["learning_rate"]
+            self.with_label = role_cfg["with_label"]
+            self.label_column_name = role_cfg["label_column_name"]
+        elif algorithm_type == 'logistic_regression_predict':
+            self.model_file = role_cfg["model_file"]
+        else:
+            raise Exception(f"no this algorithm type :{algorithm_type}.")
 
-    def lr_svc(self):
+    def train(self):
         '''
-        逻辑回归算法实现函数
+        逻辑回归算法训练实现函数
         '''
-
-        np.set_printoptions(suppress=True)
-        tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
-        os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
         # 获取rtt的配置参数
         rtt_cfg_str = self.get_rtt_config_str('./rtt_config_template.json')
         print("rtt_cfg_str = {}".format(rtt_cfg_str))
-        file_x, file_y = self.split_file_to_feature_label()
+        file_x, file_y = self.extract_feature_or_label(with_label=self.with_label)
         # 设置是否需要打开ssl，True-打开，False-关闭
         self.set_open_gmssl(use_ssl=False)
 
@@ -78,9 +83,6 @@ class PrivacyLogisticRegression(object):
         optimizer = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(loss)
         init = tf.global_variables_initializer()
         saver = tf.train.Saver(var_list=None, max_to_keep=5, name='v2')
-        # predict
-        pred_Y = tf.sigmoid(tf.matmul(X, W) + b)
-        reveal_Y = rtt.SecureReveal(pred_Y, 1)
 
         with tf.compat.v1.Session() as sess:
             sess.run(init)
@@ -98,13 +100,46 @@ class PrivacyLogisticRegression(object):
             train_use_time = round(time.time()-train_start_time, 3)
             print(f"save model success. train_use_time={train_use_time}s")
 
-            # test predict
+        rtt.deactivate()
+        print("train finish.")
+
+    def predict(self):
+        '''
+        逻辑回归算法预测实现函数
+        '''
+
+        # 获取rtt的配置参数
+        rtt_cfg_str = self.get_rtt_config_str('./rtt_config_template.json')
+        print("rtt_cfg_str = {}".format(rtt_cfg_str))
+        file_x, _ = self.extract_feature_or_label(with_label=False)
+        # 设置是否需要打开ssl，True-打开，False-关闭
+        self.set_open_gmssl(use_ssl=False)
+
+        print("waiting other party...")
+        rtt.activate("Helix", rtt_cfg_str)
+        # sharing data
+        shard_x = rtt.PrivateDataset(data_owner=(0, 1)).load_X(file_x, header=0)
+        column_total_num = shard_x.shape[1]
+
+        X = tf.placeholder(tf.float64, [None, column_total_num])
+        W = tf.Variable(tf.zeros([column_total_num, 1], dtype=tf.float64))
+        b = tf.Variable(tf.zeros([1], dtype=tf.float64))
+        saver = tf.train.Saver(var_list=None, max_to_keep=5, name='v2')
+        # predict
+        pred_Y = tf.sigmoid(tf.matmul(X, W) + b)
+        reveal_Y = rtt.SecureReveal(pred_Y, 1)
+
+        with tf.compat.v1.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            if os.path.exists(os.path.join(os.path.dirname(self.model_file), "checkpoint")):
+                saver.restore(sess, self.model_file)
+            # predict
             predict_start_time = time.time()
-            Y_pred_prob = sess.run(reveal_Y, feed_dict={X: shard_x, Y: shard_y})
+            Y_pred_prob = sess.run(reveal_Y, feed_dict={X: shard_x})
             Y_pred_prob = Y_pred_prob.astype('str').astype("float")
             print("Y_pred_prob:\n", Y_pred_prob)
             if self.party_id == 0:
-                id_column = pd.read_csv(self.input_file, usecols=[self.id_column_name])
+                id_column = pd.read_csv(self.input_file, usecols=[self.id_column_name], dtype="str")
                 print("predict result write to file.")
                 output_file_predict_prob = os.path.splitext(self.output_file)[0] + "_predict_prob.csv"
                 Y_id_prob = pd.DataFrame(np.hstack((id_column.values, Y_pred_prob)), columns=[self.id_column_name, "Y_prob"])
@@ -114,9 +149,9 @@ class PrivacyLogisticRegression(object):
                 Y_id_class = pd.DataFrame(np.hstack((id_column.values, Y_class)), columns=[self.id_column_name, "Y_class"])
                 Y_id_class.to_csv(output_file_predict_class, header=True, index=False)
             predict_use_time = round(time.time() - predict_start_time, 3)
-            print(f"trainset predict finish. predict_use_time={predict_use_time}s")
+            print(f"predict success. predict_use_time={predict_use_time}s")
         rtt.deactivate()
-        print("lr finish.")
+        print("predict finish.")
 
     def set_open_gmssl(self, use_ssl: bool=False):
         '''设置是否打开ssl'''
@@ -175,7 +210,7 @@ class PrivacyLogisticRegression(object):
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
 
-    def split_file_to_feature_label(self):
+    def extract_feature_or_label(self, with_label: bool):
         '''
         为了满足rosetta的数据输入，
         1. 首先需要对数据文件去掉id列。
@@ -186,7 +221,7 @@ class PrivacyLogisticRegression(object):
         temp_dir = self.get_temp_dir()
         if self.input_file:
             input_data = pd.read_csv(self.input_file, dtype="str")
-            if self.with_label:
+            if with_label:
                 file_y = os.path.join(temp_dir, f"file_y_{self.task_id}.csv")
                 y_data = input_data[self.label_column_name]
                 y_data = pd.DataFrame(y_data.values, columns=[self.label_column_name])
@@ -196,35 +231,3 @@ class PrivacyLogisticRegression(object):
             x_data = input_data.drop(labels=self.id_column_name, axis=1)
             x_data.to_csv(file_x, header=True, index=False)
         return file_x, file_y
-
-def main(cfg_dict):
-    '''主函数，模块入口'''
-    privacy_lr = PrivacyLogisticRegression(cfg_dict)
-    privacy_lr.lr_svc()
-
-
-if __name__ == '__main__':
-    def assemble_cfg():
-        '''收集参与方的参数'''
-
-        import json
-        import sys
-
-        party_id = int(sys.argv[1])
-        with open('lr_config.json', 'r') as load_f:
-            cfg_dict = json.load(load_f)
-
-        role_cfg = cfg_dict["user_cfg"]["role_cfg"]
-        role_cfg["party_id"] = party_id
-        role_cfg["input_file"] = ""
-        if party_id != 2:
-            role_cfg["input_file"] = f"../output/p{party_id}/alignment_result.csv"
-        role_cfg["output_file"] = f"../output/p{party_id}/my_result"
-        if party_id != 0:
-            role_cfg["with_label"] = False
-            role_cfg["label_column_name"] = ""
-
-        return cfg_dict
-
-    cfg_dict = assemble_cfg()
-    main(cfg_dict)
