@@ -1,0 +1,32 @@
+syntax = "proto3";
+package io_channel;
+//option cc_enable_arenas = true;
+//import "google/protobuf/empty.proto";
+
+service IoChannel {
+  rpc Send(SendRequest) returns (RetCode) {}         // 发送消息
+  // rpc Recv(RecvRequest) returns (RetData) {}  // 接收消息
+}
+
+message SendRequest {
+  string nodeid = 1;
+  string id = 2;
+  string data = 3;
+  int32  timeout = 4;
+}
+
+message RetCode {
+  int32 code = 1;
+}
+
+/*
+message RecvRequest {
+    string nodeid = 1;
+    string id = 2;
+    int32  timeout  = 3;
+}
+
+message RetData {
+	string data = 1;
+}
+*/

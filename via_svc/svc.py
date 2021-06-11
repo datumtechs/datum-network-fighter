@@ -2,17 +2,21 @@ from collections import defaultdict
 from functools import partialmethod
 
 import grpc
+from grpc_reflection.v1alpha import reflection
 
+import compute_svc_pb2
 import compute_svc_pb2_grpc
+import data_svc_pb2
 import data_svc_pb2_grpc
-import net_comm_svc_pb2_grpc
+import io_channel_pb2
+import io_channel_pb2_grpc
 import schedule_svc_pb2_grpc
 import via_svc_pb2
 import via_svc_pb2_grpc
 from config import cfg
 
 
-def expose_me(cfg, task_id, svc_type):
+def expose_me(cfg, task_id, svc_type, party_id):
     if 'via_svc' not in cfg:
         return
 
@@ -20,6 +24,7 @@ def expose_me(cfg, task_id, svc_type):
         stub = via_svc_pb2_grpc.ViaProviderStub(channel)
         req = via_svc_pb2.ExposeReq(task_id=task_id,
                                     svc_type=svc_type,
+                                    party_id=party_id,
                                     ip=cfg['bind_ip'],
                                     port=int(cfg['port']))
         ans = stub.Expose(req)
@@ -29,7 +34,7 @@ def expose_me(cfg, task_id, svc_type):
 def get_call_meta(context):
     meta = context.invocation_metadata()
     interest = defaultdict(str)
-    interest.update({k: v for k, v in meta if k in {'task_id', 'party'}})
+    interest.update({k: v for k, v in meta if k in {'task_id', 'party_id'}})
     return interest
 
 
@@ -65,25 +70,24 @@ class ViaProvider(via_svc_pb2_grpc.ViaProviderServicer):
     def Expose(self, request, context):
         print(context.peer())
         if request.svc_type == via_svc_pb2.DATA_SVC:
-            HostedServicer = create_hosted_svc_cls(data_svc_pb2_grpc.DataProviderServicer)
-            data_svc_pb2_grpc.add_DataProviderServicer_to_server(
-                HostedServicer(self, request.svc_type), self.server)
-            svc_addr = f'{request.ip}:{request.port}'
-            channel = grpc.insecure_channel(svc_addr)
-            call_id = self._get_call_id(request.svc_type, request.task_id, request.party_id)
-            self.holders[call_id] = channel
+            self._hold(data_svc_pb2_grpc.DataProviderServicer,
+                       data_svc_pb2_grpc.add_DataProviderServicer_to_server,
+                       request,
+                       data_svc_pb2.DESCRIPTOR.services_by_name['DataProvider'].full_name)
+
         elif request.svc_type == via_svc_pb2.COMPUTE_SVC:
-            HostedServicer = create_hosted_svc_cls(compute_svc_pb2_grpc.ComputeProviderServicer)
-            compute_svc_pb2_grpc.add_ComputeProviderServicer_to_server(
-                HostedServicer(self, request.svc_type), self.server)
-            svc_addr = f'{request.ip}:{request.port}'
-            channel = grpc.insecure_channel(svc_addr)
-            call_id = self._get_call_id(request.svc_type, request.task_id, request.party_id)
-            self.holders[call_id] = channel
+            self._hold(compute_svc_pb2_grpc.ComputeProviderServicer,
+                       compute_svc_pb2_grpc.add_ComputeProviderServicer_to_server,
+                       request,
+                       compute_svc_pb2.DESCRIPTOR.services_by_name['ComputeProvider'].full_name)
+
         elif request.svc_type == via_svc_pb2.SCHEDULE_SVC:
             print('no impl')
         elif request.svc_type == via_svc_pb2.NET_COMM_SVC:
-            print('TODO')
+            self._hold(io_channel_pb2_grpc.IoChannelServicer,
+                       io_channel_pb2_grpc.add_IoChannelServicer_to_server,
+                       request,
+                       io_channel_pb2.DESCRIPTOR.services_by_name['IoChannel'].full_name)
         else:
             raise ValueError(f'unknown svc type: {request.svc_type}')
         return via_svc_pb2.ExposeAns(ok=True, ip=cfg['public_ip'], port=cfg['port'])
@@ -98,7 +102,7 @@ class ViaProvider(via_svc_pb2_grpc.ViaProviderServicer):
         svc_stub = {via_svc_pb2.DATA_SVC: data_svc_pb2_grpc.DataProviderStub,
                     via_svc_pb2.COMPUTE_SVC: compute_svc_pb2_grpc.ComputeProviderStub,
                     via_svc_pb2.SCHEDULE_SVC: schedule_svc_pb2_grpc.ScheduleProviderStub,
-                    via_svc_pb2.NET_COMM_SVC: net_comm_svc_pb2_grpc.NetCommProviderStub
+                    via_svc_pb2.NET_COMM_SVC: io_channel_pb2_grpc.IoChannelStub
                     }
         call_id = self._get_call_id(svc_type, task_id, party_id)
         channel = self.holders[call_id]
@@ -107,3 +111,13 @@ class ViaProvider(via_svc_pb2_grpc.ViaProviderServicer):
 
     def _get_call_id(self, svc_type, task_id, party_id):
         return f'{svc_type}:{task_id}:{party_id}'
+
+    def _hold(self, servicer, add_fn, request, svc_name):
+        HostedServicer = create_hosted_svc_cls(servicer)
+        add_fn(HostedServicer(self, request.svc_type), self.server)
+        reflection.enable_server_reflection((svc_name,), self.server)
+        svc_addr = f'{request.ip}:{request.port}'
+        channel = grpc.insecure_channel(svc_addr)
+        call_id = self._get_call_id(request.svc_type, request.task_id, request.party_id)
+        self.holders[call_id] = channel
+        print(f'call_id: {call_id}, svc_addr: {svc_addr}')

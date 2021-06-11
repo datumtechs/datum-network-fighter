@@ -29,3 +29,4 @@ protos/*.py
 data/
 private_data/
 *.so
+venv/
