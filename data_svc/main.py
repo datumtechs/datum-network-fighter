@@ -8,11 +8,11 @@ from config import cfg
 from protos import data_svc_pb2
 from protos import data_svc_pb2_grpc
 from protos import via_svc_pb2
-from svc import DataProvider
+from .svc import DataProvider
 
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']))
     data_svc_pb2_grpc.add_DataProviderServicer_to_server(DataProvider(), server)
     SERVICE_NAMES = (
         data_svc_pb2.DESCRIPTOR.services_by_name['DataProvider'].full_name,
@@ -21,11 +21,13 @@ def serve():
     reflection.enable_server_reflection(SERVICE_NAMES, server)
     server.add_insecure_port('[::]:%s' % cfg['port'])
     server.start()
+    print('pass via?', cfg['pass_via'])
     if cfg['pass_via']:
         from via_svc.svc import expose_me
-        expose_me(cfg, 'task-1', via_svc_pb2.DATA_SVC)
+        expose_me(cfg, 'task-1', via_svc_pb2.DATA_SVC, 'P0')
     print('Data Service ready for action.')
-    server.wait_for_termination()
+
+    return server
 
 
 if __name__ == '__main__':
@@ -37,4 +39,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
     logging.basicConfig()
 
-    serve()
+    server = serve()
+    server.wait_for_termination()

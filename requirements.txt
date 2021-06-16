@@ -9,3 +9,4 @@ prompt_toolkit
 psutil
 grpc-interceptor
 grpcio-reflection
+google-api-core==1.28.0

@@ -5,3 +5,4 @@ port: 50011
 chunk_size: 1024
 pass_via: no
 via_svc: 192.168.16.153:50041
+thread_pool_size: 4

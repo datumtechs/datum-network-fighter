@@ -4,16 +4,16 @@ from functools import partialmethod
 import grpc
 from grpc_reflection.v1alpha import reflection
 
-import compute_svc_pb2
-import compute_svc_pb2_grpc
-import data_svc_pb2
-import data_svc_pb2_grpc
-import io_channel_pb2
-import io_channel_pb2_grpc
-import schedule_svc_pb2_grpc
-import via_svc_pb2
-import via_svc_pb2_grpc
 from config import cfg
+from protos import compute_svc_pb2
+from protos import compute_svc_pb2_grpc
+from protos import data_svc_pb2
+from protos import data_svc_pb2_grpc
+from protos import io_channel_pb2
+from protos import io_channel_pb2_grpc
+from protos import schedule_svc_pb2_grpc
+from protos import via_svc_pb2
+from protos import via_svc_pb2_grpc
 
 
 def expose_me(cfg, task_id, svc_type, party_id):
