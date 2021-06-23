@@ -194,7 +194,7 @@ class UnitTest(unittest.TestCase):
 
     def test_download(self):
         now = time.strftime("%Y%m%d-%H%M%S")
-        self.assertEqual(True, download(self.data_stub, f'./test_data/download_{now}.csv', 'p0_20210614-091700.csv'))
+        self.assertEqual(True, download(self.data_stub, f'./test_data/download_{now}.csv', 'p0_20210623-124735.csv'))
 
     def test_list_data(self):
         self.assertEqual(True, list_data(self.data_stub))

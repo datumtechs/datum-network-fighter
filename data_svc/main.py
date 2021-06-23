@@ -8,7 +8,7 @@ from config import cfg
 from protos import data_svc_pb2
 from protos import data_svc_pb2_grpc
 from protos import via_svc_pb2
-from .svc import DataProvider
+from svc import DataProvider
 
 
 def serve():

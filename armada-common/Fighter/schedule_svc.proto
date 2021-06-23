@@ -1,0 +1,71 @@
+syntax = "proto3";
+package schedulesvc;
+import "google/protobuf/empty.proto";
+
+
+service ScheduleProvider {
+  rpc HandleEventRecord(EventRecordReq) returns (google.protobuf.Empty) {}
+
+  // 处理源组织内数据节点的消息
+  rpc HandleDataNodeReportStatus(DataNodeReportReq) returns (google.protobuf.Empty) {}
+
+  // 处理源组织内计算节点的消息
+  rpc HandleComputeNodeReportStatus(ComputeNodeReportReq) returns (google.protobuf.Empty) {}
+  rpc HandleTransmitShareDataDone(TransmitShareDataDoneReq) returns (google.protobuf.Empty) {}
+
+  // 处理客户端的消息
+  rpc PublishData(PublishDataReq) returns (google.protobuf.Empty) {}
+  rpc PublishComputeResource(PublishComputeResourceReq) returns (google.protobuf.Empty) {}
+  rpc PublishAlgo(PublishAlgoReq) returns (google.protobuf.Empty) {}
+  rpc CallContract(CallContractReq) returns (google.protobuf.Empty) {}
+  rpc Find(FindReq) returns (FindReply) {}
+
+  //  处理源自其它调度节点的消息
+  rpc PeerLogin(ComeGoReq) returns (google.protobuf.Empty) {}
+  rpc PeerLogout(ComeGoReq) returns (google.protobuf.Empty) {}
+  rpc PeerPublishData(PublishDataReq) returns (google.protobuf.Empty) {}
+  rpc PeerPublishComputeResource(PublishComputeResourceReq) returns (google.protobuf.Empty) {}
+  rpc PeerPublishAlgo(PublishAlgoReq) returns (google.protobuf.Empty) {}
+  rpc PeerCallContract(CallContractReq) returns (google.protobuf.Empty) {}
+
+}
+
+message DataNodeReportReq {
+
+}
+message ComputeNodeReportReq {
+
+}
+message TransmitShareDataDoneReq {
+
+}
+
+message EventRecordReq {
+
+}
+
+message PublishDataReq {
+
+}
+message PublishComputeResourceReq {
+
+}
+message PublishAlgoReq {
+
+}
+
+message CallContractReq {
+
+}
+
+message FindReq {
+
+}
+message FindReply {
+
+}
+
+message ComeGoReq {
+  int32 ttl = 1;
+  string node_id = 2;
+}

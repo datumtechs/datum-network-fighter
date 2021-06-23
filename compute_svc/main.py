@@ -5,13 +5,13 @@ from concurrent import futures
 import grpc
 from grpc_reflection.v1alpha import reflection
 
-import net_comm_svc_pb2_grpc
 from config import cfg
 from net_comm_svc import NetCommProvider
 from protos import compute_svc_pb2
 from protos import compute_svc_pb2_grpc
 from protos import net_comm_svc_pb2
 from protos import via_svc_pb2
+from protos import net_comm_svc_pb2_grpc
 from svc import ComputeProvider
 from task_manager import TaskManager
 

@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package rpcapi;
+
+option go_package = "github.com/RosettaFlow/Carrier-Go/lib/api";
+
+
+
+//  ------------------------  common  ------------------------
+
+// 系统本身资源抽象
+message ResourceUsedDetailShow {
+  uint64 total_mem = 2;             // 服务系统的总内存 (单位: byte)
+  uint64 used_mem = 3;              // 服务系统的已用内存 (单位: byte)
+  uint64 total_processor = 4;       // 服务的总内核数 (单位: 个)
+  uint64 used_processor = 5;        // 服务的已用内核数 (单位: 个)
+  uint64 total_bandwidth = 6;       // 服务的总带宽数 (单位: bps)
+  uint64 used_bandwidth = 7;        // 服务的已用带宽数 (单位: bps)
+}
+
+// 算力的基本仨元素
+message PurePower {
+  uint64 mem = 1;             // 系统的总内存 (单位: byte)
+  uint64 processor = 2;       // 系统的总核数 (单位: 个)
+  uint64 bandwidth = 3;       // 系统的总带宽 (单位: bps)
+}
+
+// 组织(节点)唯一标识抽象
+message OrganizationIdentityInfo  {
+  string name = 1;                           // 组织名称
+  string node_id = 2;                        // 组织中调度服务的 nodeId
+  string identity_id = 3;                    // 组织的身份标识Id
+}
+
+
+message DeleteRegisteredNodeRequest {
+  string id = 1;                            // 种子节点的唯一Id
+}
+
+
+message EmptyGetParams {}
+
+message SimpleResponseCode {
+  int32  status = 1;                      // 响应码
+  string msg = 2;                         // 错误信息
+}

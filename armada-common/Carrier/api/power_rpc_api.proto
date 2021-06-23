@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package rpcapi;
+
+option go_package = "github.com/RosettaFlow/Carrier-Go/lib/api";
+
+import "lib/api/common_message.proto";
+import "lib/api/task_rpc_api.proto";
+
+//  ------------------------  power  ------------------------
+
+//// 单个算力摘要 (不包含 正在处理的任务信息)
+//message PowerSingleSummary {
+//  string                 job_node_id = 1;                      // 计算服务id (节点内部的)
+//  string                 power_id = 2;                         // 算力id
+//  ResourceUsedDetailShow information = 3;                      // 算力实况
+//  string                 state = 4;                            // 算力状态 (create: 还未发布的算力; release: 已发布的算力; revoke: 已撤销的算力)
+//}
+//
+////  总算力摘要
+//message PowerTotalSummary {
+//  ResourceUsedDetailShow information = 1;                 // 算力实况
+//  uint32                 total_task_count = 2;            // 算力上总共执行的任务数 (已完成的和正在执行的)
+//  string                 state = 3;                       // 算力状态 (create: 还未发布的算力; release: 已发布的算力; revoke: 已撤销的算力)
+//}
+
+// 单个算力详情
+message PowerSingleDetail {
+    ResourceUsedDetailShow information        = 1;                      // 算力实况
+    string                 job_node_id        = 2;                      // 计算服务id (节点内部的)
+    string                 power_id           = 3;                         // 算力id
+    uint32                 total_task_count   = 4;                 // 算力上总共执行的任务数 (已完成的和正在执行的)
+    uint32                 current_task_count = 5;               // 算力上正在执行的任务数
+    repeated PowerTask     tasks              = 6;                            // 算力上正在执行的任务详情信息
+    string                 state              = 7;                            // 算力状态 (create: 还未发布的算力; release: 已发布的算力; revoke: 已撤销的算力)
+}
+
+//  总算力详情
+message PowerTotalDetail {
+    ResourceUsedDetailShow information        = 1;                 // 算力实况
+    uint32                 total_task_count   = 2;            // 算力上总共执行的任务数 (已完成的和正在执行的)
+    uint32                 current_task_count = 3;          // 算力上正在执行的任务数
+    repeated PowerTask     tasks              = 4;                       // 算力上正在执行的任务详情信息
+    string                 state              = 5;                       // 算力状态 (create: 还未发布的算力; release: 已发布的算力; revoke: 已撤销的算力)
+}
+
+//// 算力任务使用情况
+//message  PowerTaskDetail {
+//  uint32             total_task_count = 1;                     // 算力上总共执行的任务数 (已完成的和正在执行的)
+//  uint32             current_task_count = 2;                   // 算力上正在执行的任务数
+//  repeated PowerTask tasks = 3;                                // 算力上正在执行的任务详情信息
+//  string             state = 4;                                // 算力状态 (create: 还未发布的算力; release: 已发布的算力; revoke: 已撤销的算力)
+//}
+
+// 算力上的任务信息
+message PowerTask {
+    string                            task_id         = 1;              // 任务Id
+    OrganizationIdentityInfo          owner           = 2;                // 任务发起方身份信息
+    repeated OrganizationIdentityInfo patners         = 3;              // 任务协作方信息
+    repeated OrganizationIdentityInfo receivers       = 4;            // 任务结果接收方信息
+    TaskOperationCostDeclare          operation_cost  = 5;       // 任务所需的资源大小信息
+    TaskOperationCostDeclare          operation_spend = 6;      // 任务已经花费的资源大小信息
+}
+
+
+//message GetPowerTotalSummaryResponse {
+//  OrganizationIdentityInfo owner = 1;                  // 算力拥有者信息
+//  PowerTotalSummary        power = 2;                  // 算力总摘要
+//}
+//message GetPowerTotalSummaryListResponse {
+//  repeated GetPowerTotalSummaryResponse power_list = 1;  // 全网的算力总摘要列表
+//}
+
+
+//message GetPowerSingleSummaryResponse {
+//  OrganizationIdentityInfo owner = 1;                  // 算力拥有者信息
+//  PowerSingleSummary       power = 2;                  // 算力单个摘要
+//}
+//message GetPowerSingleSummaryListResponse {
+//  repeated GetPowerSingleSummaryResponse power_list = 1;  // 单个节点的算力总摘要列表
+//}
+
+//message GetPowerTotalSummaryByStateRequest {
+//  string state = 1;                         // 算力状态 (create: 还未发布的算力; release: 已发布的算力; revoke: 已撤销的算力)
+//}
+//
+//message GetPowerSingleSummaryByStateRequest {
+//  string state = 1;                         // 算力状态 (create: 还未发布的算力; release: 已发布的算力; revoke: 已撤销的算力)
+//}
+
+
+//message GetPowerTotalSummaryByOwnerRequest {
+//  string identity_id = 1;
+//}
+
+//message GetPowerSingleSummaryByOwnerRequest {
+//  string identity_id = 1;
+//}
+
+
+//message GetPowerSingleDetailRequest {
+//  string identity_id = 1;
+//  string power_id = 2;
+//}
+//message GetPowerSingleDetailResponse {
+//  OrganizationIdentityInfo owner = 1;              // 算力的拥有者
+//  PowerTaskDetail          information = 2;        // 算力详情主体
+//}
+
+
+message GetPowerTotalDetailResponse {
+    OrganizationIdentityInfo owner = 1;                  // 算力拥有者信息
+    PowerTotalDetail         power = 2;                  // 算力总详细
+}
+message GetPowerTotalDetailListResponse {
+    repeated GetPowerTotalDetailResponse power_list = 1;  // 全网的算力总详情列表
+}
+
+message PublishPowerRequest {
+    OrganizationIdentityInfo owner       = 1;           // 算力的拥有者
+    string                   job_node_id = 2;     // 计算服务id (节点内部的)
+    PurePower                information = 3;     // 发布的算力信息
+}
+
+message GetPowerSingleDetailResponse {
+    OrganizationIdentityInfo owner = 1;                  // 算力拥有者信息
+    PowerSingleDetail        power = 2;                  // 算力单个摘要
+}
+message GetPowerSingleDetailListResponse {
+    repeated GetPowerSingleDetailResponse power_list = 1;  // 单个节点的算力总摘要列表
+}
+
+message PublishPowerResponse {
+    int32  status   = 1;                         // 响应码
+    string msg      = 2;                            // 错误信息
+    string power_id = 3;                       // 算力id
+}
+
+message RevokePowerRequest {
+    OrganizationIdentityInfo owner    = 1;           // 算力的拥有者
+    string                   power_id = 2;        // 算力id
+}
+
+// ## 算力 相关接口
+///           【注意】 算力和元数据 不一样, 对外面人来说, 算力只需要知道总的, 而元数据则需要知道单个单个的;
+//                    对自己来说, 算力和元数据都需要知道单个单个的.
+service PowerService {
+  //  // 查看各个节点的总算力摘要列表 (不包含 任务描述)
+  //  rpc GetPowerTotalSummaryList (EmptyGetParams) returns (GetPowerTotalSummaryListResponse);
+  //  // 查看某个节点各个单算力摘要列表 (不包含 任务描述)
+  //  rpc GetPowerSingleSummaryList (EmptyGetParams) returns (GetPowerSingleSummaryListResponse);
+  //
+  //  // 查看指定状态的总算力摘要列表  (不包含 任务描述)
+  //  rpc GetPowerTotalSummaryByState (GetPowerTotalSummaryByStateRequest) returns (GetPowerTotalSummaryListResponse);
+  //  // 查看指定状态的各个单个算力摘要列表  (不包含 任务描述)
+  //  rpc GetPowerSingleSummaryByState (GetPowerSingleSummaryByStateRequest) returns (GetPowerSingleSummaryListResponse);
+  //
+  //  // 查看指定拥有者的总算力摘要  (不包含 任务描述)
+  //  rpc GetPowerTotalSummaryByOwner (GetPowerTotalSummaryByOwnerRequest) returns (GetPowerTotalSummaryResponse);
+  //  // 查看指定拥有者的单个算力摘要 (不包含 任务描述)
+  //  rpc GetPowerSingleSummaryByOwner (GetPowerSingleSummaryByOwnerRequest) returns (GetPowerSingleSummaryListResponse);
+  //
+  //  // 查看单个算力详情 (包含 任务描述)
+  //  rpc GetPowerSingleDetail (GetPowerSingleDetailRequest) returns (GetPowerSingleDetailResponse);
+
+  // 查看各个节点的总算力详情列表
+  rpc GetPowerTotalDetailList (EmptyGetParams) returns (GetPowerTotalDetailListResponse);
+  // 查看某个节点各个单算力详情列表
+  rpc GetPowerSingleDetailList (EmptyGetParams) returns (GetPowerSingleDetailListResponse);
+
+  // 启用算力 (发布算力)
+  rpc PublishPower (PublishPowerRequest) returns (PublishPowerResponse);
+  // 停用算力 (撤销算力)
+  rpc RevokePower (RevokePowerRequest) returns (SimpleResponseCode);
+}

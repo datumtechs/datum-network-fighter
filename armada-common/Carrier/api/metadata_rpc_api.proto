@@ -1,0 +1,123 @@
+syntax = "proto3";
+
+package rpcapi;
+
+option go_package = "github.com/RosettaFlow/Carrier-Go/lib/api";
+
+import "lib/api/common_message.proto";
+
+
+//  ------------------------  metadata  ------------------------
+
+// 源数据的摘要内容 (不包含详细 列描述)
+message MetaDataSummary {
+  string meta_data_id = 1;           // 元数据Id
+  string origin_id = 2;              // 源文件Id
+  string table_name = 3;             // 元数据名称 (表名)
+  string desc = 4;                   // 元数据的描述 (摘要)
+  string file_path = 5;              // 源文件存放路径
+  uint32 rows = 6;                   // 源文件的行数
+  uint32 columns = 7;                // 源文件的列数
+  uint32 size = 8;                   // 源文件的大小 (单位: byte)
+  string file_type = 9;              // 源文件的类型 (目前只有 csv)
+  bool   has_title = 10;             // 源文件是否包含标题
+  string state = 11;                 // 元数据的状态 (create: 还未发布的新表; release: 已发布的表; revoke: 已撤销的表)
+}
+
+
+
+// 源文件的列的描述详情
+message MetaDataColumnDetail {
+  uint32 cindex = 1;                         // 列的索引
+  string cname = 2;                          // 列名
+  string ctype = 3;                          // 列类型
+  uint32 csize = 4;                          // 列大小(单位: byte)
+  string ccomment = 5;                       // 列描述
+}
+
+// 源文件的详情
+message MetaDataDetailShow {
+  MetaDataSummary               meta_summary = 1;
+  repeated MetaDataColumnDetail column_meta = 2;
+}
+
+
+//message GetMetaDataSummaryResponse {
+//  OrganizationIdentityInfo owner = 1;              // 元数据的拥有者
+//  MetaDataSummary          information = 2;        // 元文件摘要主体
+//}
+//message GetMetaDataSummaryListResponse {
+//  repeated GetMetaDataSummaryResponse meta_list = 1;
+//}
+
+//message GetMetaDataSummaryByStateRequest {
+//    string state = 1;
+//}
+
+
+//message GetMetaDataSummaryByOwnerRequest {
+//    string identity_id = 1;
+//}
+
+message GetMetaDataDetailRequest {
+  string identity_id = 1;
+  string meta_data_id = 2;
+}
+
+message GetMetaDataDetailResponse {
+  OrganizationIdentityInfo owner = 1;              // 元数据的拥有者
+  MetaDataDetailShow       information = 2;        // 元文件详情主体
+}
+
+
+message PublishMetaDataRequest {
+  OrganizationIdentityInfo owner = 1;                          // 元数据拥有者
+  MetaDataDetailShow       information = 2;                    // 元数据详情
+}
+message PublishMetaDataResponse {
+  int32  status = 1;                         // 响应码
+  string msg = 2;                            // 错误信息
+  string meta_data_id = 3;                   // 元数据id
+}
+
+message RevokeMetaDataRequest {
+  OrganizationIdentityInfo owner = 1;                          // 元数据拥有者
+  string                   meta_data_id = 2;
+}
+
+
+message GetMetaDataDetailListResponse {
+  int32                              status = 1;                         // 响应码
+  string                             msg = 2;                         // 错误信息
+  repeated GetMetaDataDetailResponse meta_list = 3;                      // 元数据列表
+}
+
+message GetMetaDataDetailListByOwnerRequest {
+  string identity_id = 1;
+}
+
+// ## 元数据 相关接口
+service MetaDataService {
+  //  // 查看全部元数据摘要列表 (不包含 列字段描述)
+  //  rpc GetMetaDataSummaryList (EmptyGetParams) returns (GetMetaDataSummaryListResponse);
+  //  // 查看指定状态的元数据摘要列表 (不包含 列字段描述)
+  //  rpc GetMetaDataSummaryByState (GetMetaDataSummaryByStateRequest) returns (GetMetaDataSummaryListResponse);
+  //  // 查看指定拥有者的元数据摘要列表 (不包含 列字段描述)
+  //  rpc GetMetaDataSummaryByOwner (GetMetaDataSummaryByOwnerRequest) returns (GetMetaDataSummaryListResponse);
+
+  // 查看单个元数据详情 (包含 列字段描述)
+  rpc GetMetaDataDetail (GetMetaDataDetailRequest) returns (GetMetaDataDetailResponse);
+
+
+  rpc GetMetaDataDetailList (EmptyGetParams) returns (GetMetaDataDetailListResponse);
+
+  rpc GetMetaDataDetailListByOwner (GetMetaDataDetailListByOwnerRequest) returns (GetMetaDataDetailListResponse);
+
+  // 发布元数据  (新增和编辑 都是发布新的元数据) <底层根据 原始数据Id -- OriginId 来关联 新的MetaDataId>
+  rpc PublishMetaData (PublishMetaDataRequest) returns (PublishMetaDataResponse);
+  // 撤销元数据 (从底层网络撤销)
+  rpc RevokeMetaData (RevokeMetaDataRequest) returns (SimpleResponseCode);
+
+  // 分页拉取摘要列表
+  // 分页拉取详情列表
+}
