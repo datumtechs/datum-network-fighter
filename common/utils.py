@@ -3,5 +3,8 @@ import yaml
 
 def load_cfg(file):
     with open(file) as f:
-        cfg = yaml.load(f, Loader=yaml.FullLoader)
+        if hasattr(yaml, 'FullLoader'):
+            cfg = yaml.load(f, Loader=yaml.FullLoader)
+        else:
+            cfg = yaml.load(f)
     return cfg

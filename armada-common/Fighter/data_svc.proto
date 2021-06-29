@@ -1,6 +1,6 @@
 syntax = "proto3";
 package datasvc;
-option go_package = "../gateway/data_svc";
+option go_package = "../../gateway/data_svc";
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";

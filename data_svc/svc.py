@@ -127,6 +127,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         print(context.peer())
         ans = data_svc_pb2.ListDataReply()
         folder = cfg['data_root']
+        if not os.path.exists(folder):
+            os.makedirs(folder)
         files = os.listdir(folder)
         for f in files:
             path = os.path.join(folder, f)

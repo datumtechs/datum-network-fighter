@@ -1,0 +1,183 @@
+syntax = "proto3";
+
+package rpcapi;
+
+option go_package = "github.com/RosettaFlow/Carrier-Go/lib/api";
+
+import "lib/api/common_message.proto";
+
+
+
+//  ------------------------  task  ------------------------
+
+//// 任务摘要 (供展示用)
+//message TaskSummaryShow {
+//  string                            task_id = 1;                         // 任务Id
+//  string                            task_name = 2;                       // 任务名称
+//  OrganizationIdentityInfo          owner = 3;                           // 任务发起者
+//  repeated OrganizationIdentityInfo partners = 4;                        // 任务协作者
+//  repeated OrganizationIdentityInfo receivers = 5;                       // 任务结果方
+//  uint64                            create_at = 6;                       // 任务发起时间
+//  uint64                            end_at = 7;                          // 任务结束时间
+//  string                            state = 8;                           // 任务的状态
+//}
+
+// 任务详情 (供展示用)
+message TaskDetailShow {
+  string                            task_id = 1;                         // 任务Id
+  string                            task_name = 2;                       // 任务名称
+  OrganizationIdentityInfo          owner = 3;                           // 任务发起发
+  OrganizationIdentityInfo          algo_supplier = 4;                   // 算法提供方
+  repeated TaskDataSupplierShow     data_supplier = 5;                   // 数据提供方
+  repeated TaskPowerSupplierShow    power_supplier = 6;                  // 算力提供方
+  repeated OrganizationIdentityInfo receivers = 7;                       // 任务结果方
+  uint64                            create_at = 8;                       // 任务发起时间
+  uint64                            start_at = 9;                        // 任务启动时间
+  uint64                            end_at = 10;                         // 任务结束时间
+  string                            state = 11;                          // 任务的状态 (pending: 等在中; running: 计算中; failed: 失败; success: 成功)
+  TaskOperationCostDeclare          operation_cost = 12;                 // 任务所需资源声明
+}
+// 任务数据提供方信息 (任务详情展示用)
+message TaskDataSupplierShow {
+  OrganizationIdentityInfo member_info = 1;                         // 身份信息
+  string                   meta_id = 2;                             // 元数据Id
+  string                   meta_name = 3;                           // 元数据名称
+}
+// 任务算力提供方信息 (任务详情展示用)
+message TaskPowerSupplierShow {
+  OrganizationIdentityInfo member_info = 1;                         // 身份信息
+  ResourceUsedDetailShow   power_info = 2;                          // 算力使用情况
+}
+
+// 任务事件定义
+message TaskEventShow {
+  string                   type = 1;                        // 事件类型码
+  string                   task_id = 2;                     // 事件对应的任务id
+  OrganizationIdentityInfo owner = 3;                       // 产生事件的节点身份
+  string                   content = 4;                     // 事件内容
+  uint64                   create_at = 5;                   // 事件产生时间
+}
+
+message TaskEventDeclare {
+  string type = 1;                        // 事件类型码
+  string task_id = 2;                     // 事件对应的任务id
+  string identity_id = 3;                 // 产生事件的节点身份
+  string content = 4;                     // 事件内容
+  uint64 create_at = 5;                   // 事件产生时间
+}
+
+
+// 任务数据供应者信息 (任务详情定义用)
+message TaskDataSupplierDeclare {
+  OrganizationIdentityInfo member_info = 1;                         // 身份信息
+  TaskMetaDataDeclare      meta_data_info = 2;                      // 任务使用的元数据信息
+}
+
+message TaskMetaDataDeclare {
+  string          meta_data_id = 1;                                 // 元数据id
+  repeated uint64 column_index_list = 2;                            // 该任务使用原始数据的第几列
+}
+
+message TaskResultReceiverDeclare {
+  OrganizationIdentityInfo          member_info = 1;                       // 结果接收方身份信息
+  repeated OrganizationIdentityInfo providers = 2;                         // 被接收结果的生成方身份信息
+}
+
+
+// 任务的所需操作成本 (定义任务的大小)
+message TaskOperationCostDeclare {
+  uint64 cost_mem = 1;               // 任务所需的内存 (单位: byte)
+  uint64 cost_processor = 2;         // 任务所需的核数 (单位: 个)
+  uint64 cost_bandwidth = 3;         // 任务所需的带宽 (单位: bps)
+  uint64 duration = 4;               // 任务所需的运行时长 (单位: ms)
+}
+
+
+
+//message GetTaskSummaryListResponse {
+//  int32                    status = 1;                      // 响应码
+//  string                   msg = 2;                         // 错误信息
+//  repeated TaskSummaryShow task_list = 3;
+//}
+
+
+//message GetTaskJoinSummaryListRequest {
+//  OrganizationIdentityInfo member_info = 1;                       // 参与方身份信息
+//}
+//message GetTaskJoinSummaryResponse {
+//  string          role = 1;                               // 自己在任务中的角色 (owner/data_partner/job_partner/receiver)
+//  TaskSummaryShow task = 2;                               // 任务展示摘要
+//}
+//message GetTaskJoinSummaryListResponse {
+//  int32                               status = 1;                      // 响应码
+//  string                              msg = 2;                         // 错误信息
+//  repeated GetTaskJoinSummaryResponse task_list = 3;
+//}
+
+
+//message GetTaskDetailRequest {
+//  string task_id = 1;
+//}
+//message GetTaskDetailResponse {
+//  int32          status = 1;                      // 响应码
+//  string         msg = 2;                         // 错误信息
+//  TaskDetailShow information = 3;
+//}
+
+message GetTaskDetailResponse {
+  TaskDetailShow information = 1;             // 任务详情
+}
+message GetTaskDetailListResponse {
+  int32                          status = 1;                 // 响应码
+  string                         msg = 2;                    // 错误信息
+  repeated GetTaskDetailResponse task_list = 3;              // 任务详情列表
+}
+
+message GetTaskEventListRequest {
+  string task_id = 1;
+}
+message GetTaskEventListResponse {
+  int32                  status = 1;                      // 响应码
+  string                 msg = 2;                         // 错误信息
+  repeated TaskEventShow task_event_list = 3;             // 任务事件列表
+}
+
+
+message PublishTaskDeclareRequest {
+  string                             task_name = 1;                        //  任务名称
+  TaskDataSupplierDeclare            owner = 2;                            //  任务发起者
+  repeated TaskDataSupplierDeclare   partners = 3;                         //  任务参与方
+  repeated TaskResultReceiverDeclare receivers = 4;                        //  任务结果接受者
+  TaskOperationCostDeclare           operation_cost = 5;                   //  任务所需资源声明
+  string                             calculate_contractcode = 6;           //  计算合约
+  string                             datasplit_contractcode = 7;           //  数据分片合约
+}
+
+message PublishTaskDeclareResponse {
+  int32  status = 1;                      // 响应码
+  string msg = 2;                         // 错误信息
+  string task_id = 3;                     // 任务id
+}
+
+
+// ## 任务 相关接口
+service TaskService {
+
+  //  // 查看全部任务 摘要列表
+  //  rpc GetTaskSummaryList (EmptyGetParams) returns (GetTaskSummaryListResponse);
+  //  // 查看某个节点参与过的任务 摘要列表
+  //  rpc GetTaskJoinSummaryList (GetTaskJoinSummaryListRequest) returns (GetTaskJoinSummaryListResponse);
+  //  // 查看某个任务详情
+  //  rpc GetTaskDetail (GetTaskDetailRequest) returns (GetTaskDetailResponse);
+
+  // 查看全部任务详情列表
+  rpc GetTaskDetailList (EmptyGetParams) returns (GetTaskDetailListResponse);
+
+  // 查看某个任务的全部事件列表
+  rpc GetTaskEventList (GetTaskEventListRequest) returns (GetTaskEventListResponse);
+  // 发布任务
+  rpc PublishTaskDeclare (PublishTaskDeclareRequest) returns (PublishTaskDeclareResponse);
+
+}
+
+

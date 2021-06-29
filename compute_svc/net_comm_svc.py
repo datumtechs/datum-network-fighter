@@ -1,7 +1,7 @@
 import threading
 
-import net_comm_svc_pb2
-import net_comm_svc_pb2_grpc
+from protos import net_comm_svc_pb2
+from protos import net_comm_svc_pb2_grpc
 
 
 class NetCommProvider(net_comm_svc_pb2_grpc.NetCommProviderServicer):
