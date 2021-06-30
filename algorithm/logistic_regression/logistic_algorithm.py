@@ -22,16 +22,6 @@ class PrivacyLogisticRegression(object):
         system_cfg = cfg_dict["system_cfg"]
         self.work_mode = system_cfg["work_mode"]
         self.task_id = system_cfg["task_id"]
-        compute_node = system_cfg["compute_node"]
-        self.role_p0_name = compute_node["role_p0"]["name"]
-        self.role_p0_host = compute_node["role_p0"]["host"]
-        self.role_p0_port = compute_node["role_p0"]["port"]
-        self.role_p1_name = compute_node["role_p1"]["name"]
-        self.role_p1_host = compute_node["role_p1"]["host"]
-        self.role_p1_port = compute_node["role_p1"]["port"]
-        self.role_p2_name = compute_node["role_p2"]["name"]
-        self.role_p2_host = compute_node["role_p2"]["host"]
-        self.role_p2_port = compute_node["role_p2"]["port"]
 
         common_cfg = cfg_dict["user_cfg"]["common_cfg"]
         role_cfg = cfg_dict["user_cfg"]["role_cfg"]
@@ -59,15 +49,12 @@ class PrivacyLogisticRegression(object):
         逻辑回归算法训练实现函数
         '''
 
-        # 获取rtt的配置参数
-        rtt_cfg_str = self.get_rtt_config_str('./rtt_config_template.json')
-        print("rtt_cfg_str = {}".format(rtt_cfg_str))
         file_x, file_y = self.extract_feature_or_label(with_label=self.with_label)
         # 设置是否需要打开ssl，True-打开，False-关闭
         self.set_open_gmssl(use_ssl=False)
 
         print("waiting other party...")
-        rtt.activate("Helix", rtt_cfg_str)
+        rtt.activate("Helix")
         # sharing data
         shard_x, shard_y = rtt.PrivateDataset(data_owner=(0, 1), label_owner=0).load_data(file_x, file_y, header=0)
         column_total_num = shard_x.shape[1]
@@ -99,7 +86,6 @@ class PrivacyLogisticRegression(object):
             saver.save(sess, self.output_file)
             train_use_time = round(time.time()-train_start_time, 3)
             print(f"save model success. train_use_time={train_use_time}s")
-
         rtt.deactivate()
         print("train finish.")
 
@@ -108,15 +94,11 @@ class PrivacyLogisticRegression(object):
         逻辑回归算法预测实现函数
         '''
 
-        # 获取rtt的配置参数
-        rtt_cfg_str = self.get_rtt_config_str('./rtt_config_template.json')
-        print("rtt_cfg_str = {}".format(rtt_cfg_str))
         file_x, _ = self.extract_feature_or_label(with_label=False)
         # 设置是否需要打开ssl，True-打开，False-关闭
         self.set_open_gmssl(use_ssl=False)
-
         print("waiting other party...")
-        rtt.activate("Helix", rtt_cfg_str)
+        rtt.activate("Helix")
         # sharing data
         shard_x = rtt.PrivateDataset(data_owner=(0, 1)).load_X(file_x, header=0)
         column_total_num = shard_x.shape[1]
@@ -179,23 +161,6 @@ class PrivacyLogisticRegression(object):
                                           "certs/CE21.crt", "certs/CE21.key", party_id, 1)
                 rtt.Netutil.set_mpc_certs("certs/CA.crt", "certs/SS22.crt", "certs/SS22.key",
                                           "certs/SE22.crt", "certs/SE22.key", party_id, 2)
-
-    def get_rtt_config_str(self, rtt_cfg_template_file: str):
-        '''生成激活rosetta时所需要的配置'''
-        with open(rtt_cfg_template_file, 'r') as load_f:
-            rtt_cfg_template_dict = json.load(load_f)
-        rtt_cfg_template_dict["PARTY_ID"] = self.party_id
-        load_mpc = rtt_cfg_template_dict["MPC"]
-        load_mpc["P0"]["HOST"] = self.role_p0_host
-        load_mpc["P0"]["PORT"] = self.role_p0_port
-        load_mpc["P1"]["HOST"] = self.role_p1_host
-        load_mpc["P1"]["PORT"] = self.role_p1_port
-        load_mpc["P2"]["HOST"] = self.role_p2_host
-        load_mpc["P2"]["PORT"] = self.role_p2_port
-        load_mpc["FLOAT_PRECISION"] = self.float_pricision
-        load_mpc["SAVER_MODE"] = self.result_save_mode
-        rtt_cfg_str = json.dumps(rtt_cfg_template_dict)
-        return rtt_cfg_str
 
     def get_temp_dir(self):
         '''获取用于临时保存文件的目录路径'''

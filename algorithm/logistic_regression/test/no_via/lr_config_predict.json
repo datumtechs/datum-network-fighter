@@ -1,26 +1,7 @@
 {
   "system_cfg": {
     "work_mode": 0,
-    "task_id": "202106071215001",
-    "data_node": {},
-    "compute_node": {
-      "role_p0": {
-        "name": "companyC",
-        "host": "127.0.0.1",
-        "port": 33001
-      },
-      "role_p1": {
-        "name": "companyD",
-        "host": "127.0.0.1",
-        "port": 33002
-      },
-      "role_p2": {
-        "name": "companyE",
-        "host": "127.0.0.1",
-        "port": 33003
-      }
-    },
-    "result_node": {}
+    "task_id": "202106071215001"
   },
   "user_cfg": {
     "common_cfg": {
