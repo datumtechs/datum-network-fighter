@@ -26,7 +26,8 @@ protos/*.py
 *.ipynb
 .ipynb_checkpoints/
 
-data/
+# data/
+output/
 private_data/
 *.so
 venv/
