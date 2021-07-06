@@ -3,6 +3,7 @@ from concurrent import futures
 
 import grpc
 
+from common.utils import load_cfg
 from config import cfg
 from protos import via_svc_pb2_grpc
 from svc import ViaProvider
@@ -19,6 +20,15 @@ def serve():
 
 
 if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description="config for start up")
+    parser.add_argument('--config', help='new config')
+
+    args = parser.parse_args()
+    if args.config:
+        cfg.update(load_cfg(args.config))
+
     logging.basicConfig()
 
     server = serve()
