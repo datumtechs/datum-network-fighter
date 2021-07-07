@@ -32,3 +32,4 @@ private_data/
 *.so
 venv/
 armada-common/Fighter/google/
+protos
