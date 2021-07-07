@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import time
 
 import grpc
 import pandas as pd
@@ -32,8 +33,12 @@ def upload(args, stub):
     path = args[0]
     if not os.path.exists(path):
         print('path is wrong.')
+    start = time.time()
     response = stub.UploadData(_upload_chunk(path))
-    print("received: " + response.data_id)
+    cost = time.time() - start
+    size = os.stat(path).st_size
+    print('got data_id: {}, bytes: {}, time cost: {}, speed: {}'
+          .format(response.data_id, size, cost, size / cost))
 
 
 def upload_dir(args, stub):
