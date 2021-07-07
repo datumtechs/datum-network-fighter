@@ -40,11 +40,12 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     print(file, len(cols), ','.join(cols))
 
                     stem, ext = os.path.splitext(os.path.basename(file))
-                    new_name = os.path.join(folder, f'{stem}_{now}{ext}')
-                    print(new_name)
-                    os.rename(path, new_name)
+                    new_name = f'{stem}_{now}{ext}'
+                    full_new_name = os.path.join(folder, new_name)
+                    print(full_new_name)
+                    os.rename(path, full_new_name)
                     data_id = m.hexdigest()
-                    result = data_svc_pb2.UploadReply(ok=True, data_id=data_id)
+                    result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=new_name)
                     return result
                 else:
                     f.write(req.content)
@@ -76,14 +77,15 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                 print(file, len(cols), ','.join(cols))
 
                 stem, ext = os.path.splitext(os.path.basename(file))
-                new_name = os.path.join(folder, f'{stem}_{now}{ext}')
-                print(new_name)
-                os.rename(path, new_name)
+                new_name = f'{stem}_{now}{ext}'
+                full_name = os.path.join(folder, new_name)
+                print(full_name)
+                os.rename(path, full_name)
                 data_id = m.hexdigest()
                 state = 0
                 if f:
                     f.close()
-                result = data_svc_pb2.UploadReply(ok=True, data_id=data_id)
+                result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=new_name)
                 yield result
             else:
                 f.write(req.content)

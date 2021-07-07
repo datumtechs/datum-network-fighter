@@ -102,7 +102,7 @@ def download(args, stub):
 
     ok = False
     try:
-        response_it = stub.DownloadData(data_svc_pb2.DownloadRequest(data_id=data_id))
+        response_it = stub.DownloadData(data_svc_pb2.DownloadRequest(file_path=data_id))
         for ans in response_it:
             if ans.WhichOneof('data') == 'status':
                 print(data_svc_pb2.TaskStatus.Name(ans.status))

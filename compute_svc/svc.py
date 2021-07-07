@@ -38,7 +38,7 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
     def HandleTaskReadyGo(self, request, context):
         log.info(f'{context.peer()} submit a task, thread id: {threading.get_ident()}')
         task_id = request.task_id
-        party_id = request.party_id
+        party_id = request.node_id
         contract_id = request.contract_id
         data_id = request.data_id
         env_id = request.env_id
