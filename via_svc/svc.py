@@ -15,7 +15,7 @@ from protos import schedule_svc_pb2_grpc
 from protos import via_svc_pb2
 from protos import via_svc_pb2_grpc
 
-MAX_MESSAGE_LENGTH = 2 * 1024 ** 3
+MAX_MESSAGE_LENGTH = 2 * 1024 ** 3 - 1
 grpc_options = [
     ('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH),
 ]

@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import time
+import json
 
 import grpc
 import pandas as pd
@@ -10,9 +11,10 @@ from prompt_toolkit import prompt
 
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
-from protos import net_comm_svc_pb2_grpc
+from protos import io_channel_pb2_grpc
 from protos import schedule_svc_pb2_grpc
 from protos import via_svc_pb2
+
 
 task_id = None
 
@@ -171,33 +173,46 @@ def comp_upload_shard(args, stub):
 
 
 def comp_run_task(args, stub):
+    task_id = args[0]
+    run_task_cfg_file = args[1]
+    user_cfg_file = args[2]
+
     req = compute_svc_pb2.TaskReadyGoReq()
-    req.task_id = args[0]
-    req.contract_id = 'C0DE-01'
-    req.data_id = 'DA7A-01'
-    req.env_id = 'E5'
-    req.party_id = 0
+    req.task_id = task_id
+    with open(run_task_cfg_file) as load_f:
+        run_task_cfg = json.load(load_f)
+        print('run_task_cfg keys:\n', run_task_cfg)
 
-    p = req.peers.add()
-    p.ip = '192.168.16.151'
-    p.port = 50021
-    p.party = 0
-    p.name = 'P0'
+    with open(user_cfg_file) as load_f:
+        user_cfg = json.load(load_f)
+        print('user_cfg keys:\n', user_cfg)
 
-    p = req.peers.add()
-    p.ip = '192.168.16.151'
-    p.port = 50022
-    p.party = 1
-    p.name = 'P1'
+    req.contract_id = run_task_cfg['contract_id']
+    req.data_id = run_task_cfg['data_id']
+    req.env_id = run_task_cfg['env_id']
 
-    p = req.peers.add()
-    p.ip = '192.168.16.151'
-    p.port = 50023
-    p.party = 2
-    p.name = 'P2'
+    peers = {}
+    for peer_cfg in run_task_cfg['peers']:
+        p = req.peers.add()
+        addr = peer_cfg['ADDRESS']
+        ip_port = addr.split(':')
+        p.ip = ip_port[0]
+        p.port = int(ip_port[1])
+        party = peer_cfg['NODE_ID']
+        p.party = party
+        p.name = party
+        peers[party] = addr
+    _mock_schedule_dispatch_task(peers, req)
 
-    resp = stub.HandleTaskReadyGo(req)
-    print(resp)
+
+def _mock_schedule_dispatch_task(peers, req):
+    print(peers)
+    for party, addr in peers.items():
+        ch = grpc.insecure_channel(addr)
+        stub = svc_stub[via_svc_pb2.COMPUTE_SVC](ch)
+        req.node_id = party
+        resp = stub.HandleTaskReadyGo(req)
+        print(addr, resp)
 
 
 directions = {
@@ -213,12 +228,13 @@ directions = {
     'comp_task_details': comp_task_details,
     'comp_upload_shard': comp_upload_shard,
     'comp_run_task': comp_run_task,
+
 }
 
 svc_stub = {via_svc_pb2.DATA_SVC: data_svc_pb2_grpc.DataProviderStub,
             via_svc_pb2.COMPUTE_SVC: compute_svc_pb2_grpc.ComputeProviderStub,
             via_svc_pb2.SCHEDULE_SVC: schedule_svc_pb2_grpc.ScheduleProviderStub,
-            via_svc_pb2.NET_COMM_SVC: net_comm_svc_pb2_grpc.NetCommProviderStub
+            via_svc_pb2.NET_COMM_SVC: io_channel_pb2_grpc.IoChannelStub
             }
 
 channels = {}

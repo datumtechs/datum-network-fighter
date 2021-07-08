@@ -26,10 +26,13 @@ protos/*.py
 *.ipynb
 .ipynb_checkpoints/
 
-# data/
+data/
 output/
 private_data/
 *.so
 venv/
 armada-common/Fighter/google/
 protos
+compute_svc/config_*.yaml
+compute_svc/C0DE_*.py
+compute_svc/start_compute_svc_group.sh
