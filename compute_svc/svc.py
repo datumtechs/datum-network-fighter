@@ -37,11 +37,5 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
 
     def HandleTaskReadyGo(self, request, context):
         log.info(f'{context.peer()} submit a task, thread id: {threading.get_ident()}')
-        task_id = request.task_id
-        party_id = request.node_id
-        contract_id = request.contract_id
-        data_id = request.data_id
-        env_id = request.env_id
-        peers = request.peers
-        self.task_manager.start(task_id, party_id, contract_id, data_id, env_id, peers)
-        return compute_svc_pb2.UploadShardReply(ok=True, msg=f'submit task {task_id}')
+        ok, msg = self.task_manager.start(request)
+        return compute_svc_pb2.UploadShardReply(ok=ok, msg=msg)
