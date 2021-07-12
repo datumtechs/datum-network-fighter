@@ -8,6 +8,7 @@ import grpc
 from config import cfg
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
+from protos import common_pb2
 from third_party.rosetta_helper import split_data
 
 
@@ -140,3 +141,6 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             row.file_name = f
             row.size = sz
         return ans
+
+    def HandleTaskReadyGo(self, request, context):
+        return common_pb2.TaskReadyGoReply(ok=False, msg='no impl')

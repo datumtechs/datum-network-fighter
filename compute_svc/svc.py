@@ -2,12 +2,12 @@ import logging
 import threading
 
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
-from protos import task_run_pb2, task_run_pb2_grpc
+from protos import common_pb2
 
 log = logging.getLogger(__name__)
 
 
-class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer, task_run_pb2_grpc.TaskRunProviderServicer):
+class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
     def __init__(self, task_manager):
         self.task_manager = task_manager
 
@@ -39,4 +39,4 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer, task_run_pb2
     def HandleTaskReadyGo(self, request, context):
         log.info(f'{context.peer()} submit a task, thread id: {threading.get_ident()}')
         ok, msg = self.task_manager.start(request)
-        return task_run_pb2.TaskReadyGoReply(ok=ok, msg=msg)
+        return common_pb2.TaskReadyGoReply(ok=ok, msg=msg)

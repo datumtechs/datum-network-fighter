@@ -24,7 +24,7 @@ def serve():
     print('pass via?', cfg['pass_via'])
     if cfg['pass_via']:
         from via_svc.svc import expose_me
-        expose_me(cfg, 'task-1', via_svc_pb2.DATA_SVC, 'P0')
+        expose_me(cfg, '', via_svc_pb2.DATA_SVC, '')
     print('Data Service ready for action.')
 
     return server
