@@ -26,6 +26,7 @@ protos/*.py
 *.ipynb
 .ipynb_checkpoints/
 
+.vscode
 data/
 output/
 private_data/
@@ -36,3 +37,4 @@ protos
 compute_svc/config_*.yaml
 compute_svc/C0DE_*.py
 compute_svc/start_compute_svc_group.sh
+compute_svc/contract_work_dir

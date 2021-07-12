@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 class Task:
     def __init__(self, task_id, party_id, contract_id, data_id, env_id, peers,
-                 user_cfg, data_party, computation_party, result_party):
+                 contract_cfg, data_party, computation_party, result_party):
         log.info(f'thread id: {threading.get_ident()}')
         self.id_ = task_id
         self.name = None
@@ -32,7 +32,7 @@ class Task:
         self.start_time = time.time()
         self.events = []
         self.peers = peers
-        self.user_cfg = user_cfg
+        self.contract_cfg = contract_cfg
         self.data_party = data_party
         self.computation_party = computation_party
         self.result_party = result_party
@@ -71,9 +71,9 @@ class Task:
             import sys
 
             peers = {p.party: f'{p.ip}:{p.port}' for p in self.peers}
-            
-            pass_via =  cfg['pass_via']
-            pproc_ip =  cfg['bind_ip']
+
+            pass_via = cfg['pass_via']
+            pproc_ip = cfg['bind_ip']
 
             net_io.rtt_set_channel(self.id, self.party_id, peers,
                                    self.data_party, self.computation_party, self.result_party, pass_via, pproc_ip)
@@ -107,34 +107,44 @@ class Task:
         pass
 
     def download_algo(self):
-        code = """
-import numpy as np
-def main(cfg):
-    print(np.random.randint(10, size=(2, 3)))
-"""
-        code_path = os.path.join(self._get_code_dir(),
-                                 self._get_code_file_name())
+        dir_ = self._get_code_dir()
+        self._ensure_code_dir(dir_)
+        code_path = os.path.join(dir_, self._get_code_file_name())
         log.info(code_path)
         with open(code_path, 'w') as f:
-            f.write(code)
+            f.write(self.contract_id)  # the contract_id is code itself at now
             f.write('\n')
 
     def build_env(self):
         log.info(f'build env {self.env_id}')
 
     def assemble_cfg(self):
-        cfg = {p.name: p.party for i, p in enumerate(self.peers)}
-        return cfg
+        import json
+        cfg_dict = json.loads(self.contract_cfg)
+        # dir_ = self._get_code_dir()
+        # self._ensure_code_dir(dir_)
+        # code_path_path = os.path.join(dir_, self._get_code_cfg_file_name())
+        # log.info(code_path_path)
+        # with open(code_path_path, 'w') as f:
+        #     json.dump(cfg_dict, f)
+        return cfg_dict
 
     def _get_code_dir(self):
-        return cfg['code_root_dir']
+        return os.path.join(cfg['code_root_dir'], self.id)
+
+    def _ensure_code_dir(self, dir_):
+        if not os.path.exists(dir_):
+            os.makedirs(dir_)
 
     def _get_code_file_name(self):
-        name = hashlib.sha1(self.contract_id.encode()).hexdigest()[:6]
-        return f'C0DE_{name}.py'
+        # name = hashlib.sha1(self.contract_id.encode()).hexdigest()[:6]
+        # return f'C0DE_{name}.py'
+        return 'main.py'
+
+    def _get_code_cfg_file_name(self):
+        return 'config.json'
 
     def clean(self):
-        code_path = os.path.join(self._get_code_dir(),
-                                 self._get_code_file_name())
-        if os.path.exists(code_path):
-            os.remove(code_path)
+        import shutil
+        dir_ = self._get_code_dir()
+        shutil.rmtree(dir_, ignore_errors=True)

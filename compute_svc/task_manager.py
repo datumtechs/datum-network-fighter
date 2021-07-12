@@ -33,14 +33,14 @@ class TaskManager:
         data_id = req.data_id
         env_id = req.env_id
         peers = req.peers
-        user_cfg = req.user_cfg
+        contract_cfg = req.contract_cfg
         data_party = req.data_party
         computation_party = req.computation_party
         result_party = req.result_party
 
         peers = tuple(TPeer(p.ip, p.port, p.party, p.name) for p in peers)
         task = Task(task_id, party_id, contract_id, data_id, env_id, peers,
-                    user_cfg, data_party, computation_party, result_party)
+                    contract_cfg, data_party, computation_party, result_party)
         self.tasks[task_id] = task
         log.info(f'new task: {task.id}, thread id: {threading.get_ident()}')
         future = self.executor.submit(Task.run, task)
