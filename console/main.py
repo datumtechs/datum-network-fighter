@@ -14,6 +14,7 @@ from protos import data_svc_pb2, data_svc_pb2_grpc
 from protos import io_channel_pb2_grpc
 from protos import schedule_svc_pb2_grpc
 from protos import via_svc_pb2
+from protos import common_pb2
 
 
 task_id = None
@@ -175,21 +176,27 @@ def comp_upload_shard(args, stub):
 def comp_run_task(args, stub):
     task_id = args[0]
     run_task_cfg_file = args[1]
-    user_cfg_file = args[2]
+    contract_file = args[2]
+    contract_cfg_file = args[3]
 
-    req = compute_svc_pb2.TaskReadyGoReq()
+    req = common_pb2.TaskReadyGoReq()
     req.task_id = task_id
     with open(run_task_cfg_file) as load_f:
         run_task_cfg = json.load(load_f)
         print('run_task_cfg keys:\n', run_task_cfg)
 
-    with open(user_cfg_file) as load_f:
-        user_cfg = json.load(load_f)
-        print('user_cfg keys:\n', user_cfg)
+    with open(contract_cfg_file) as load_f:
+        contract_cfg = json.load(load_f)
+        print('contract_cfg:\n', contract_cfg)
 
-    req.contract_id = run_task_cfg['contract_id']
+    with open(contract_file) as load_f:
+        contract = load_f.read()
+        print('contract:\n', contract)
+
+    req.contract_id = contract
     req.data_id = run_task_cfg['data_id']
     req.env_id = run_task_cfg['env_id']
+    req.contract_cfg = json.dumps(contract_cfg)
 
     peers = {}
     for peer_cfg in run_task_cfg['peers']:

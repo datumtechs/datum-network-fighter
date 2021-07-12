@@ -7,6 +7,7 @@ import time
 from google.protobuf import empty_pb2
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
+from protos import common_pb2
 
 config = configparser.ConfigParser()
 config.read('../gateway/common/config.ini')
@@ -154,7 +155,7 @@ def comp_task_details(args, stub):
 
 def comp_run_task(args, stub):
     try:
-        req = compute_svc_pb2.TaskReadyGoReq()
+        req = common_pb2.TaskReadyGoReq()
         req.task_id = task_id
         req.contract_id = args['contract_id']
         req.data_id = args['data_id']
