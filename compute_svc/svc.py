@@ -1,10 +1,22 @@
 import logging
 import threading
 
-from protos import compute_svc_pb2, compute_svc_pb2_grpc
-from protos import common_pb2
+import psutil
+from protos import common_pb2, compute_svc_pb2, compute_svc_pb2_grpc
 
 log = logging.getLogger(__name__)
+
+
+def get_sys_stat():
+    stat = compute_svc_pb2.GetStatusReply()
+    _, _, load15 = psutil.getloadavg()
+    stat.cpu = str(load15 / psutil.cpu_count() * 100)
+    vm = psutil.virtual_memory()
+    stat.mem = str(vm.percent)
+    net = psutil.net_io_counters()
+    b = net.bytes_sent + net.bytes_recv
+    stat.bandwidth = str(b)
+    return stat
 
 
 class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
@@ -12,7 +24,7 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
         self.task_manager = task_manager
 
     def GetStatus(self, request, context):
-        return self.task_manager.get_sys_stat()
+        return get_sys_stat()
 
     def GetTaskDetails(self, request, context):
         ret = compute_svc_pb2.GetTaskDetailsReply()
@@ -26,15 +38,7 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
 
     def UploadShard(self, request_it, context):
         for req in request_it:
-            if req.HasField('meta'):
-                task_id = req.meta.task_id
-                data_id = req.meta.data_id
-                task = self.task_manager.get_task(task_id)
-                result = compute_svc_pb2.UploadShardReply(ok=True, msg='got a shard head')
-                yield result
-            else:
-                task.put_data(req.data)
-                yield compute_svc_pb2.UploadShardReply(ok=True, msg='got data piece')
+            yield compute_svc_pb2.UploadShardReply(ok=False, msg='deprecated')
 
     def HandleTaskReadyGo(self, request, context):
         log.info(f'{context.peer()} submit a task, thread id: {threading.get_ident()}')

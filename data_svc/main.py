@@ -9,11 +9,12 @@ from protos import data_svc_pb2
 from protos import data_svc_pb2_grpc
 from protos import via_svc_pb2
 from svc import DataProvider
+from common.task_manager import TaskManager
 
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']))
-    data_svc_pb2_grpc.add_DataProviderServicer_to_server(DataProvider(), server)
+    data_svc_pb2_grpc.add_DataProviderServicer_to_server(DataProvider(TaskManager(cfg)), server)
     SERVICE_NAMES = (
         data_svc_pb2.DESCRIPTOR.services_by_name['DataProvider'].full_name,
     )

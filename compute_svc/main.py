@@ -9,14 +9,12 @@ from protos import compute_svc_pb2, compute_svc_pb2_grpc, via_svc_pb2
 from config import cfg
 from common.utils import load_cfg
 from svc import ComputeProvider
-from task_manager import TaskManager
+from common.task_manager import TaskManager
 
 
 def serve():
-    task_manager = TaskManager()
-
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    compute_svc_pb2_grpc.add_ComputeProviderServicer_to_server(ComputeProvider(task_manager), server)
+    compute_svc_pb2_grpc.add_ComputeProviderServicer_to_server(ComputeProvider(TaskManager(cfg)), server)
     SERVICE_NAMES = (
         compute_svc_pb2.DESCRIPTOR.services_by_name['ComputeProvider'].full_name,
     )

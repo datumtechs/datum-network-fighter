@@ -1,26 +1,17 @@
 
-import hashlib
 import logging
-import multiprocessing as mp
 import os
-import queue
 import threading
 import time
-from collections import namedtuple
-from concurrent.futures import ProcessPoolExecutor
-
-import psutil
-from protos import compute_svc_pb2, via_svc_pb2
-
-from config import cfg
 
 log = logging.getLogger(__name__)
 
 
 class Task:
-    def __init__(self, task_id, party_id, contract_id, data_id, env_id, peers,
+    def __init__(self, cfg, task_id, party_id, contract_id, data_id, env_id, peers,
                  contract_cfg, data_party, computation_party, result_party):
         log.info(f'thread id: {threading.get_ident()}')
+        self.cfg = cfg
         self.id_ = task_id
         self.name = None
         self._party_id = party_id
@@ -36,10 +27,6 @@ class Task:
         self.data_party = data_party
         self.computation_party = computation_party
         self.result_party = result_party
-        m = mp.Manager()
-        self.bufs = {}
-        for p in peers:
-            self.bufs[p.party] = m.Queue()
 
     @property
     def id(self):
@@ -51,7 +38,7 @@ class Task:
 
     def run(self):
         log.info(f'thread id: {threading.get_ident()}')
-        log.info(cfg)
+        log.info(self.cfg)
         self.download_algo()
         self.build_env()
 
@@ -68,12 +55,11 @@ class Task:
         from common import net_io
         try:
             import importlib
-            import sys
 
             peers = {p.party: f'{p.ip}:{p.port}' for p in self.peers}
 
-            pass_via = cfg['pass_via']
-            pproc_ip = cfg['bind_ip']
+            pass_via = self.cfg['pass_via']
+            pproc_ip = self.cfg['bind_ip']
 
             net_io.rtt_set_channel(self.id, self.party_id, peers,
                                    self.data_party, self.computation_party, self.result_party, pass_via, pproc_ip)
@@ -83,7 +69,7 @@ class Task:
             module_name = os.path.splitext(self._get_code_file_name())[0]
             log.info(module_name)
             m = importlib.import_module(module_name)
-            m.main(user_cfg)
+            m.main(user_cfg, self.party_id)
         except Exception as e:
             log.error(repr(e))
         finally:
@@ -92,16 +78,6 @@ class Task:
     def get_elapsed_time(self):
         now = time.time()
         return now - self.start_time
-
-    def put_data(self, party_id, data):
-        try:
-            self.bufs[party_id].put(data, True, 10)
-        except queue.Full as e:
-            return False
-        return True
-
-    def get_data(self, party_id):
-        self.bufs[party_id].get()
 
     def get_stdout(self, task_id):
         pass
@@ -130,7 +106,7 @@ class Task:
         return cfg_dict
 
     def _get_code_dir(self):
-        return os.path.join(cfg['code_root_dir'], self.id)
+        return os.path.join(self.cfg['code_root_dir'], self.id)
 
     def _ensure_code_dir(self, dir_):
         if not os.path.exists(dir_):
