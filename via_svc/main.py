@@ -24,10 +24,13 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="config for start up")
     parser.add_argument('--config', help='new config')
+    parser.add_argument('--port', type=int, help='port listen at')
 
     args = parser.parse_args()
     if args.config:
         cfg.update(load_cfg(args.config))
+    if args.port:
+        cfg['port'] = args.port
 
     logging.basicConfig()
 

@@ -11,7 +11,7 @@ TPeer = namedtuple('TPeer', ['ip', 'port', 'party', 'name'])
 class TaskManager:
     def __init__(self, cfg):
         self.cfg = cfg
-        self.executor = ProcessPoolExecutor(cfg['pool_size'])
+        self.executor = ProcessPoolExecutor(cfg['thread_pool_size'])
         self.tasks = {}
         self.task_future = {}        
 
@@ -19,7 +19,7 @@ class TaskManager:
         task_id = req.task_id
         if task_id in self.tasks:
             return False, f'task: {task_id} repetitive submit'
-        party_id = req.node_id
+        party_id = req.party_id
         contract_id = req.contract_id
         data_id = req.data_id
         env_id = req.env_id

@@ -1,6 +1,7 @@
 import hashlib
 import os
 import threading
+import logging
 import time
 
 import grpc
@@ -11,9 +12,12 @@ from protos import data_svc_pb2, data_svc_pb2_grpc
 from protos import common_pb2
 from third_party.rosetta_helper import split_data
 
+log = logging.getLogger(__name__)
+
 
 class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
-    def __init__(self):
+    def __init__(self, task_manager):
+        self.task_manager = task_manager
         print(f'cur thread id: {threading.get_ident()}')
 
     def GetStatus(self, request, context):
@@ -143,4 +147,6 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         return ans
 
     def HandleTaskReadyGo(self, request, context):
-        return common_pb2.TaskReadyGoReply(ok=False, msg='no impl')
+        log.info(f'{context.peer()} submit a task, thread id: {threading.get_ident()}')
+        ok, msg = self.task_manager.start(request)
+        return common_pb2.TaskReadyGoReply(ok=ok, msg=msg)

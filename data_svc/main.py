@@ -10,6 +10,7 @@ from protos import data_svc_pb2_grpc
 from protos import via_svc_pb2
 from svc import DataProvider
 from common.task_manager import TaskManager
+from common.utils import load_cfg
 
 
 def serve():
@@ -35,9 +36,11 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(description="config for start up")
-    parser.add_argument('config', help='start info')
+    parser.add_argument('config', help='config')
 
     args = parser.parse_args()
+    if args.config:
+        cfg.update(load_cfg(args.config))
     logging.basicConfig()
 
     server = serve()

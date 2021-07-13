@@ -191,12 +191,14 @@ def comp_run_task(args, stub):
 
     with open(contract_file) as load_f:
         contract = load_f.read()
-        print('contract:\n', contract)
+        print('contract:\n', contract[:100])
 
     req.contract_id = contract
     req.data_id = run_task_cfg['data_id']
     req.env_id = run_task_cfg['env_id']
     req.contract_cfg = json.dumps(contract_cfg)
+    data_parties = list(contract_cfg['data_nodes'].keys())
+    print('data_parties:', data_parties)
 
     peers = {}
     for peer_cfg in run_task_cfg['peers']:
@@ -209,15 +211,16 @@ def comp_run_task(args, stub):
         p.party = party
         p.name = party
         peers[party] = addr
-    _mock_schedule_dispatch_task(peers, req)
+    _mock_schedule_dispatch_task(peers, req, data_parties)
 
 
-def _mock_schedule_dispatch_task(peers, req):
+def _mock_schedule_dispatch_task(peers, req, data_parties):
     print(peers)
     for party, addr in peers.items():
         ch = grpc.insecure_channel(addr)
-        stub = svc_stub[via_svc_pb2.COMPUTE_SVC](ch)
-        req.node_id = party
+        svc_type = via_svc_pb2.DATA_SVC if party in data_parties else via_svc_pb2.COMPUTE_SVC
+        stub = svc_stub[svc_type](ch)
+        req.party_id = party
         resp = stub.HandleTaskReadyGo(req)
         print(addr, resp)
 
