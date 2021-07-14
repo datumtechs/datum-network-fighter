@@ -62,9 +62,10 @@ class Task:
                                    self.data_party, self.computation_party, self.result_party, pass_via, pproc_ip)
 
             user_cfg = self.assemble_cfg()
-            sys.path.append(os.path.abspath(self._get_code_dir()))
-            module_name = os.path.splitext(self._get_code_file_name())[0]
-            log.info(module_name)
+            sys.path.insert(0, os.path.abspath(self._get_code_dir()))
+            code_path = self._get_code_file_name()
+            module_name = os.path.splitext(code_path)[0]
+            log.info(f'code path: {code_path}, module: {module_name}')
             m = importlib.import_module(module_name)
             result_dir = self._get_result_dir()
             self._ensure_dir(result_dir)
@@ -108,7 +109,7 @@ class Task:
         return os.path.join(self.cfg['code_root_dir'], self.id)
 
     def _get_result_dir(self):
-        return os.path.join(self.cfg['results_root_dir'], self.id)
+        return os.path.join(self.cfg['results_root_dir'], self.id, self.party_id)
 
     def _ensure_dir(self, dir_):
         if not os.path.exists(dir_):

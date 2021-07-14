@@ -100,7 +100,7 @@ def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, re
         task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via, self_internal_addr)
 
     rtt_config = json.dumps(config_dict)
-    # with open('tmp.json', 'w') as f:
+    # with open(f'tmp_{self_party_id}.json', 'w') as f:
     #     json.dump(config_dict, f)
 
     node_id = self_party_id

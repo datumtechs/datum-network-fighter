@@ -1,19 +1,86 @@
 {
-    "contract_id": "C0DE-1",
+    "contract_id": "algorithm_logistic_regression_lr_train.py",
     "data_id": "DA7A-1",
     "env_id": "E5",
+    "data_party": [
+        "p1",
+        "p2"
+    ],
+    "computation_party": [
+        "p5",
+        "p6",
+        "p7"
+    ],
+    "result_party": [],
     "peers": [
         {
-            "NODE_ID": "p0",
-            "ADDRESS": "192.168.16.153:10000"
-        },
-        {
             "NODE_ID": "p1",
-            "ADDRESS": "192.168.16.153:20000"
+            "ADDRESS": "192.168.16.153:30001"
         },
         {
             "NODE_ID": "p2",
-            "ADDRESS": "192.168.16.153:30000"
+            "ADDRESS": "192.168.16.153:30002"
+        },
+        {
+            "NODE_ID": "p5",
+            "ADDRESS": "192.168.16.153:30005"
+        },
+        {
+            "NODE_ID": "p6",
+            "ADDRESS": "192.168.16.153:30006"
+        },
+        {
+            "NODE_ID": "p7",
+            "ADDRESS": "192.168.16.153:30007"
+        }
+    ],
+    "dynamic_parameter": {
+        "data_party": {
+            "p0": {
+                "label_column_name": "OVERDUE"
+            }
+        },
+        "algorithm_parameter": {
+            "epochs": 10,
+            "batch_size": 256,
+            "learning_rate": 0.1
+        }
+    },
+    "each_party": [
+        {
+            "party_id": "p1",
+            "data_party": {
+                "input_file": "../data/bank_train_data.csv",
+                "id_column_name": "CLIENT_ID"
+            }
+        },
+        {
+            "party_id": "p2",
+            "data_party": {
+                "input_file": "../data/insurance_train_data.csv",
+                "id_column_name": "CLIENT_ID"
+            }
+        },
+        {
+            "party_id": "p5",
+            "data_party": {
+                "input_file": "",
+                "id_column_name": "CLIENT_ID"
+            }
+        },
+        {
+            "party_id": "p6",
+            "data_party": {
+                "input_file": "",
+                "id_column_name": "CLIENT_ID"
+            }
+        },
+        {
+            "party_id": "p7",
+            "data_party": {
+                "input_file": "",
+                "id_column_name": "CLIENT_ID"
+            }
         }
     ]
 }

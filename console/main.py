@@ -176,8 +176,6 @@ def comp_upload_shard(args, stub):
 def comp_run_task(args, stub):
     task_id = args[0]
     run_task_cfg_file = args[1]
-    contract_file = args[2]
-    contract_cfg_file = args[3]
 
     req = common_pb2.TaskReadyGoReq()
     req.task_id = task_id
@@ -185,10 +183,7 @@ def comp_run_task(args, stub):
         run_task_cfg = json.load(load_f)
         print('run_task_cfg keys:\n', run_task_cfg)
 
-    with open(contract_cfg_file) as load_f:
-        contract_cfg = json.load(load_f)
-        print('contract_cfg:\n', contract_cfg)
-
+    contract_file = run_task_cfg['contract_id']
     with open(contract_file) as load_f:
         contract = load_f.read()
         print('contract:\n', contract[:100])
@@ -196,9 +191,14 @@ def comp_run_task(args, stub):
     req.contract_id = contract
     req.data_id = run_task_cfg['data_id']
     req.env_id = run_task_cfg['env_id']
-    req.contract_cfg = json.dumps(contract_cfg)
-    data_parties = list(contract_cfg['data_nodes'].keys())
-    print('data_parties:', data_parties)
+
+    data_parties = run_task_cfg['data_party']
+    compute_parties = run_task_cfg['computation_party']
+    result_parties = run_task_cfg['result_party']
+    req.data_party.extend(data_parties)
+    req.computation_party.extend(compute_parties)
+    req.result_party.extend(result_parties)
+    each_party = {d['party_id']: d for d in run_task_cfg['each_party']}
 
     peers = {}
     for peer_cfg in run_task_cfg['peers']:
@@ -211,16 +211,21 @@ def comp_run_task(args, stub):
         p.party_id = party
         p.name = party
         peers[party] = addr
-    _mock_schedule_dispatch_task(peers, req, data_parties)
+    _mock_schedule_dispatch_task(peers, req, compute_parties, each_party, run_task_cfg['dynamic_parameter'])
 
 
-def _mock_schedule_dispatch_task(peers, req, data_parties):
+def _mock_schedule_dispatch_task(peers, req, compute_parties, each_party, dynamic_parameter):
     print(peers)
     for party, addr in peers.items():
         ch = grpc.insecure_channel(addr)
-        svc_type = via_svc_pb2.DATA_SVC if party in data_parties else via_svc_pb2.COMPUTE_SVC
+        svc_type = via_svc_pb2.COMPUTE_SVC if party in compute_parties else via_svc_pb2.DATA_SVC
         stub = svc_stub[svc_type](ch)
         req.party_id = party
+        contract_cfg = {'dynamic_parameter': dynamic_parameter}
+        contract_cfg.update(each_party[party])
+
+        req.contract_cfg = json.dumps(contract_cfg)
+        print(req.contract_cfg)
         resp = stub.HandleTaskReadyGo(req)
         print(addr, resp)
 
