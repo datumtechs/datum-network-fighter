@@ -165,7 +165,7 @@ def comp_run_task(args, stub):
             p = req.peers.add()
             p.ip = peer['ip']
             p.port = peer['port']
-            p.party = peer['party']
+            p.party_id = peer['party']
             p.name = peer['name']
         resp = stub.HandleTaskReadyGo(req)
         print(resp)

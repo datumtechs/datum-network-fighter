@@ -5,7 +5,7 @@ from concurrent.futures import ProcessPoolExecutor
 from task import Task
 
 log = logging.getLogger(__name__)
-TPeer = namedtuple('TPeer', ['ip', 'port', 'party', 'name'])
+TPeer = namedtuple('TPeer', ['ip', 'port', 'party_id', 'name'])
 
 
 class TaskManager:
@@ -23,13 +23,11 @@ class TaskManager:
         contract_id = req.contract_id
         data_id = req.data_id
         env_id = req.env_id
-        peers = req.peers
         contract_cfg = req.contract_cfg
-        data_party = req.data_party
-        computation_party = req.computation_party
-        result_party = req.result_party
-
-        peers = tuple(TPeer(p.ip, p.port, p.party, p.name) for p in peers)
+        data_party = tuple(req.data_party)
+        computation_party = tuple(req.computation_party)
+        result_party = tuple(req.result_party)
+        peers = tuple(TPeer(p.ip, p.port, p.party_id, p.name) for p in req.peers)
         task = Task(task_id, self.cfg, party_id, contract_id, data_id, env_id, peers,
                     contract_cfg, data_party, computation_party, result_party)
         self.tasks[task_id] = task

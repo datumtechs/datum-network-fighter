@@ -134,9 +134,9 @@ class UnitTest(unittest.TestCase):
             'data_id': '7777777777',
             'party_id': 1,
             'env_id': '9999999999',
-            'peers': [{'ip': '192.168.235.151', 'port': 4565, 'party': 0, 'name': 'Tom'},
-                      {'ip': '192.168.235.151', 'port': 4567, 'party': 1, 'name': 'Jerry'},
-                      {'ip': '192.168.235.151', 'port': 4568, 'party': 2, 'name': 'Peter'},
+            'peers': [{'ip': '192.168.235.151', 'port': 4565, 'party_id': 0, 'name': 'Tom'},
+                      {'ip': '192.168.235.151', 'port': 4567, 'party_id': 1, 'name': 'Jerry'},
+                      {'ip': '192.168.235.151', 'port': 4568, 'party_id': 2, 'name': 'Peter'},
                       ]
         }
         self.assertEqual(200, http_compute_task_go(task_info))

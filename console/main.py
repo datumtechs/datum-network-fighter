@@ -208,7 +208,7 @@ def comp_run_task(args, stub):
         p.ip = ip_port[0]
         p.port = int(ip_port[1])
         party = peer_cfg['NODE_ID']
-        p.party = party
+        p.party_id = party
         p.name = party
         peers[party] = addr
     _mock_schedule_dispatch_task(peers, req, data_parties)
