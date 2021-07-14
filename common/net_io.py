@@ -30,8 +30,8 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
     list_node_info = []
     via_dict = {}
     for i, node_info in enumerate(peers):
-        party_id = node_info['party']
-        addr = '{}:{}'.format(node_info['ip'], node_info['port'])
+        party_id = node_info.party_id
+        addr = '{}:{}'.format(node_info.ip, node_info.port)
         if not pass_via:
             addr = self_internal_addr
         via_name = 'VIA{}'.format(i+1)
@@ -39,7 +39,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
         internal_addr = self_internal_addr if self_party_id == party_id else ''
         one_node_info = dict(
             NODE_ID=party_id,
-            NAME=node_info['name'],
+            NAME=node_info.name,
             ADDRESS=internal_addr,
             VIA=via_name
         )
@@ -115,15 +115,15 @@ def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, re
 
 
 if __name__ == '__main__':
-    peers = [{'party': 'p0',
+    peers = [{'party_id': 'p0',
               'name': 'PartyA(P0)',
               'ip': '192.168.16.153',
               'port': '10000'},
-             {'party': 'p1',
+             {'party_id': 'p1',
               'name': 'PartyB(P1)',
               'ip': '192.168.16.153',
               'port': '20000'},
-             {'party': 'p2',
+             {'party_id': 'p2',
               'name': 'PartyC(P2)',
               'ip': '192.168.16.153',
               'port': '30000'}]

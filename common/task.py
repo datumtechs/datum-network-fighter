@@ -56,12 +56,9 @@ class Task:
         try:
             import importlib
 
-            peers = {p.party: f'{p.ip}:{p.port}' for p in self.peers}
-
             pass_via = self.cfg['pass_via']
             pproc_ip = self.cfg['bind_ip']
-
-            net_io.rtt_set_channel(self.id, self.party_id, peers,
+            net_io.rtt_set_channel(self.id, self.party_id, self.peers,
                                    self.data_party, self.computation_party, self.result_party, pass_via, pproc_ip)
 
             user_cfg = self.assemble_cfg()
@@ -69,7 +66,9 @@ class Task:
             module_name = os.path.splitext(self._get_code_file_name())[0]
             log.info(module_name)
             m = importlib.import_module(module_name)
-            m.main(user_cfg, self.party_id)
+            result_dir = self._get_result_dir()
+            self._ensure_dir(result_dir)
+            m.main(user_cfg, self.result_party, result_dir)
         except Exception as e:
             log.error(repr(e))
         finally:
@@ -84,9 +83,9 @@ class Task:
 
     def download_algo(self):
         dir_ = self._get_code_dir()
-        self._ensure_code_dir(dir_)
+        self._ensure_dir(dir_)
         code_path = os.path.join(dir_, self._get_code_file_name())
-        log.info(code_path)
+        log.info(f'code save to: {code_path}')
         with open(code_path, 'w') as f:
             f.write(self.contract_id)  # the contract_id is code itself at now
             f.write('\n')
@@ -108,7 +107,10 @@ class Task:
     def _get_code_dir(self):
         return os.path.join(self.cfg['code_root_dir'], self.id)
 
-    def _ensure_code_dir(self, dir_):
+    def _get_result_dir(self):
+        return os.path.join(self.cfg['results_root_dir'], self.id)
+
+    def _ensure_dir(self, dir_):
         if not os.path.exists(dir_):
             os.makedirs(dir_)
 

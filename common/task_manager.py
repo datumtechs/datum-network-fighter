@@ -28,7 +28,7 @@ class TaskManager:
         computation_party = tuple(req.computation_party)
         result_party = tuple(req.result_party)
         peers = tuple(TPeer(p.ip, p.port, p.party_id, p.name) for p in req.peers)
-        task = Task(task_id, self.cfg, party_id, contract_id, data_id, env_id, peers,
+        task = Task(self.cfg, task_id, party_id, contract_id, data_id, env_id, peers,
                     contract_cfg, data_party, computation_party, result_party)
         self.tasks[task_id] = task
         log.info(f'new task: {task.id}, thread id: {threading.get_ident()}')
