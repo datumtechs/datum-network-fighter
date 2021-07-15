@@ -1,1 +1,4 @@
+data_svc_ip: 192.168.16.151
 data_svc_port: 50011
+compute_svc_ip: 192.168.16.151
+compute_svc_port: 50021

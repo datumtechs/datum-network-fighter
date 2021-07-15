@@ -8,7 +8,7 @@ import grpc
 import pandas as pd
 from google.protobuf import empty_pb2
 from prompt_toolkit import prompt
-
+from common.utils import load_cfg
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
 from protos import io_channel_pb2_grpc
@@ -17,6 +17,7 @@ from protos import via_svc_pb2
 from protos import common_pb2
 
 
+cfg = {}
 task_id = None
 
 
@@ -258,19 +259,29 @@ stubs = {}
 if __name__ == '__main__':
     logging.basicConfig()
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_svc_ip', type=str, default='192.168.16.151')
-    parser.add_argument('--data_svc_port', type=int, default=50011)
-    parser.add_argument('--compute_svc_ip', type=str, default='192.168.16.151')
-    parser.add_argument('--compute_svc_port', type=int, default=50021)
+    parser.add_argument('--config', type=str, default='config.yaml')
+    parser.add_argument('--data_svc_ip', type=str)
+    parser.add_argument('--data_svc_port', type=int)
+    parser.add_argument('--compute_svc_ip', type=str)
+    parser.add_argument('--compute_svc_port', type=int)
     parser.add_argument('--task_id', type=str)
     args = parser.parse_args()
 
+    cfg.update(load_cfg(args.config))
+    if args.data_svc_ip:
+        cfg['data_svc_ip'] = args.data_svc_ip
+    if args.data_svc_port:
+        cfg['data_svc_port'] = args.data_svc_port
+    if args.compute_svc_ip:
+        cfg['compute_svc_ip'] = args.compute_svc_ip
+    if args.compute_svc_port:
+        cfg['compute_svc_port'] = args.compute_svc_port
     task_id = args.task_id
-    addr = f'{args.data_svc_ip}:{args.data_svc_port}'
+    addr = '{}:{}'.format(cfg['data_svc_ip'], cfg['data_svc_port'])
     ch = grpc.insecure_channel(addr)
     stubs[via_svc_pb2.DATA_SVC] = svc_stub[via_svc_pb2.DATA_SVC](ch)
     channels[via_svc_pb2.DATA_SVC] = ch
-    addr = f'{args.compute_svc_ip}:{args.compute_svc_port}'
+    addr = '{}:{}'.format(cfg['compute_svc_ip'], cfg['compute_svc_port'])
     ch = grpc.insecure_channel(addr)
     stubs[via_svc_pb2.COMPUTE_SVC] = svc_stub[via_svc_pb2.COMPUTE_SVC](ch)
     channels[via_svc_pb2.COMPUTE_SVC] = ch

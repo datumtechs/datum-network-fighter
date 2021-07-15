@@ -13,7 +13,7 @@ from common.task_manager import TaskManager
 
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']))
     compute_svc_pb2_grpc.add_ComputeProviderServicer_to_server(ComputeProvider(TaskManager(cfg)), server)
     SERVICE_NAMES = (
         compute_svc_pb2.DESCRIPTOR.services_by_name['ComputeProvider'].full_name,
@@ -21,13 +21,12 @@ def serve():
     reflection.enable_server_reflection(SERVICE_NAMES, server)
     bind_port = cfg['port']
     server.add_insecure_port('[::]:%s' % bind_port)
-
     server.start()
     if cfg['pass_via']:
         from via_svc.svc import expose_me
         expose_me(cfg, '', via_svc_pb2.COMPUTE_SVC, '')
     print(f'Compute Service work on port {bind_port}.')
-    server.wait_for_termination()
+    return server
 
 
 if __name__ == '__main__':
@@ -46,4 +45,5 @@ if __name__ == '__main__':
         stream=sys.stderr,
     )
 
-    serve()
+    server = serve()
+    server.wait_for_termination()

@@ -11,7 +11,7 @@
         "p6",
         "p7"
     ],
-    "result_party": [],
+    "result_party": ["p3", "p4"],
     "peers": [
         {
             "NODE_ID": "p1",
@@ -20,6 +20,14 @@
         {
             "NODE_ID": "p2",
             "ADDRESS": "192.168.16.153:30002"
+        },
+        {
+            "NODE_ID": "p3",
+            "ADDRESS": "192.168.16.153:30003"
+        },
+        {
+            "NODE_ID": "p4",
+            "ADDRESS": "192.168.16.153:30004"
         },
         {
             "NODE_ID": "p5",
@@ -59,6 +67,20 @@
             "data_party": {
                 "input_file": "../data/insurance_train_data.csv",
                 "id_column_name": "CLIENT_ID"
+            }
+        },
+        {
+            "party_id": "p3",
+            "data_party": {
+                "input_file": "",
+                "id_column_name": ""
+            }
+        },
+        {
+            "party_id": "p4",
+            "data_party": {
+                "input_file": "",
+                "id_column_name": ""
             }
         },
         {

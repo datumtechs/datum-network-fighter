@@ -1,16 +1,15 @@
 import logging
+import sys
 from concurrent import futures
 
 import grpc
-from grpc_reflection.v1alpha import reflection
-
-from config import cfg
-from protos import data_svc_pb2
-from protos import data_svc_pb2_grpc
-from protos import via_svc_pb2
-from svc import DataProvider
 from common.task_manager import TaskManager
 from common.utils import load_cfg
+from grpc_reflection.v1alpha import reflection
+from protos import data_svc_pb2, data_svc_pb2_grpc, via_svc_pb2
+
+from config import cfg
+from svc import DataProvider
 
 
 def serve():
@@ -19,29 +18,30 @@ def serve():
     SERVICE_NAMES = (
         data_svc_pb2.DESCRIPTOR.services_by_name['DataProvider'].full_name,
     )
-    print(reflection.SERVICE_NAME)
     reflection.enable_server_reflection(SERVICE_NAMES, server)
     server.add_insecure_port('[::]:%s' % cfg['port'])
     server.start()
-    print('pass via?', cfg['pass_via'])
     if cfg['pass_via']:
         from via_svc.svc import expose_me
         expose_me(cfg, '', via_svc_pb2.DATA_SVC, '')
     print('Data Service ready for action.')
-
     return server
 
 
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser(description="config for start up")
-    parser.add_argument('config', help='config')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', help='new config')
 
     args = parser.parse_args()
     if args.config:
         cfg.update(load_cfg(args.config))
-    logging.basicConfig()
+    logging.basicConfig(
+        level=logging.INFO,
+        format='##### PID %(process)-8d %(processName)-15s %(filename)10s line %(lineno)-5d %(name)10s %(funcName)-10s: %(message)s',
+        stream=sys.stderr,
+    )
 
     server = serve()
     server.wait_for_termination()

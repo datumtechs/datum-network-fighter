@@ -10,7 +10,6 @@ from config import cfg
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
 from protos import common_pb2
-from third_party.rosetta_helper import split_data
 
 log = logging.getLogger(__name__)
 
@@ -115,11 +114,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             print('sending content done')
 
     def SendSharesData(self, request, context):
-        n_parts = len(request.receivers)
-        parts = split_data(request.data_id, n_parts)
-        for dat, addr in zip(parts, request.receivers):
-            self._send_dat(dat, addr)
-        ans = data_svc_pb2.SendSharesDataReply(status=data_svc_pb2.TaskStatus.Start)
+        ans = data_svc_pb2.SendSharesDataReply(status=data_svc_pb2.TaskStatus.Cancelled)
         return ans
 
     def _send_dat(self, dat, to):
