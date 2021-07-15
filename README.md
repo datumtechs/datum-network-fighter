@@ -1,5 +1,5 @@
 ### 步骤
-0. `git clone git@192.168.9.66:RosettaFlow/fighter-py.git && cd fighter-py`
+0. ` git clone -b develop --recurse-submodules git@192.168.9.66:RosettaFlow/fighter-py.git && cd fighter-py`
 
 1. 安装依赖：`pip install -r requirements.txt`
 
