@@ -106,7 +106,7 @@ class Task:
         return cfg_dict
 
     def _get_code_dir(self):
-        return os.path.join(self.cfg['code_root_dir'], self.id)
+        return os.path.join(self.cfg['code_root_dir'], self.id, self.party_id)
 
     def _get_result_dir(self):
         return os.path.join(self.cfg['results_root_dir'], self.id, self.party_id)
