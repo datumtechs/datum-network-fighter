@@ -42,23 +42,21 @@ class Task:
         self.download_algo()
         self.build_env()
 
-        log.info(f'cwd:{os.getcwd()}')
         the_dir = os.path.dirname(__file__)
         pdir = os.path.dirname(the_dir)
+        log.info(f'cwd: {os.getcwd()}\nthe dir: {the_dir}\nparent dir: {pdir}')
 
         import sys
-        sys.path.append(os.path.join(pdir, 'common'))
-        sys.path.append(os.path.join(pdir, 'protos'))
-        sys.path.append(os.path.join(pdir, 'third_party'))
         sys.path.append(os.path.join(pdir, 'via_svc'))
-
-        from common import net_io
+        log.info('sys.path:\n{}'.format('\n'.join(sys.path)))
+        from io_channel_helper import rtt_set_channel
         try:
             import importlib
 
             pass_via = self.cfg['pass_via']
             pproc_ip = self.cfg['bind_ip']
-            net_io.rtt_set_channel(self.id, self.party_id, self.peers,
+
+            rtt_set_channel(self.id, self.party_id, self.peers,
                                    self.data_party, self.computation_party, self.result_party, pass_via, pproc_ip)
 
             user_cfg = self.assemble_cfg()

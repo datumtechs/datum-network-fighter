@@ -4,8 +4,6 @@ import socket
 from contextlib import contextmanager
 from typing import Iterable
 
-import io_channel
-import latticex.rosetta as rtt
 from protos import via_svc_pb2
 
 log = logging.getLogger(__name__)
@@ -105,29 +103,31 @@ def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, re
 
     node_id = self_party_id
     global channel
+    import channel_sdk.grpc as io_channel
     channel = io_channel.create_channel(node_id, rtt_config, error_callback)
 
     if pass_via:
         reg_to_via(task_id, config_dict, node_id)
 
+    import latticex.rosetta as rtt
     rtt.set_channel(channel)
     print('set channel succeed==================')
 
 
 if __name__ == '__main__':
-    peers = [{'party_id': 'p0',
+    peers = [{'party_id': 'p5',
               'name': 'PartyA(P0)',
               'ip': '192.168.16.153',
-              'port': '10000'},
-             {'party_id': 'p1',
+              'port': '30005'},
+             {'party_id': 'p6',
               'name': 'PartyB(P1)',
               'ip': '192.168.16.153',
-              'port': '20000'},
-             {'party_id': 'p2',
+              'port': '30005'},
+             {'party_id': 'p7',
               'name': 'PartyC(P2)',
               'ip': '192.168.16.153',
-              'port': '30000'}]
+              'port': '30006'}]
 
-    rtt_set_channel('task-1', 'p0', peers,
-                    [], ['p0', 'p1', 'p2'], [],
-                    True, '192.168.16.151')
+    rtt_set_channel('task-1', 'p5', peers,
+                    [], ['p5', 'p6', 'p7'], [],
+                    True, '192.168.9.32')
