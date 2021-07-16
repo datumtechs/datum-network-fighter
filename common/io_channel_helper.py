@@ -103,13 +103,15 @@ def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, re
 
     node_id = self_party_id
     global channel
+
+    print('before create_channel')
+    import latticex.rosetta as rtt
     import channel_sdk.grpc as io_channel
     channel = io_channel.create_channel(node_id, rtt_config, error_callback)
+    print('before create_channel')
 
     if pass_via:
         reg_to_via(task_id, config_dict, node_id)
-
-    import latticex.rosetta as rtt
     rtt.set_channel(channel)
     print('set channel succeed==================')
 

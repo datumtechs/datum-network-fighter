@@ -49,6 +49,8 @@ class Task:
         import sys
         sys.path.append(os.path.join(pdir, 'via_svc'))
         log.info('sys.path:\n{}'.format('\n'.join(sys.path)))
+        import warnings
+        warnings.filterwarnings('ignore', message=r'Passing', category=FutureWarning)
         from io_channel_helper import rtt_set_channel
         try:
             import importlib
@@ -57,7 +59,7 @@ class Task:
             pproc_ip = self.cfg['bind_ip']
 
             rtt_set_channel(self.id, self.party_id, self.peers,
-                                   self.data_party, self.computation_party, self.result_party, pass_via, pproc_ip)
+                            self.data_party, self.computation_party, self.result_party, pass_via, pproc_ip)
 
             user_cfg = self.assemble_cfg()
             sys.path.insert(0, os.path.abspath(self._get_code_dir()))
