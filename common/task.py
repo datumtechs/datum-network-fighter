@@ -69,7 +69,8 @@ class Task:
             m = importlib.import_module(module_name)
             result_dir = self._get_result_dir()
             self._ensure_dir(result_dir)
-            m.main(user_cfg, self.result_party, result_dir)
+            m.main(user_cfg, self.result_party, result_dir, self.data_party)
+            log.info(f'run task done')
         except Exception as e:
             log.error(repr(e))
         finally:
