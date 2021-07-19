@@ -3,8 +3,9 @@ import logging
 import socket
 from contextlib import contextmanager
 from typing import Iterable
-
 from protos import via_svc_pb2
+from common.event_engine import event_engine
+from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 
 log = logging.getLogger(__name__)
 channel = None
@@ -87,7 +88,7 @@ def reg_to_via(task_id, config_dict, node_id):
     expose_me(cfg, task_id, via_svc_pb2.NET_COMM_SVC, node_id)
 
 
-def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via, parent_proc_ip):
+def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via, parent_proc_ip, event_type):
     with get_free_loopback_tcp_port() as self_internal_addr:
         pass
     port = self_internal_addr.split(':')[-1]
@@ -106,14 +107,31 @@ def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, re
 
     print('before create_channel')
     import latticex.rosetta as rtt
-    import channel_sdk.grpc as io_channel
-    channel = io_channel.create_channel(node_id, rtt_config, error_callback)
-    print('before create_channel')
+    try:
+        import channel_sdk.grpc as io_channel
+        channel = io_channel.create_channel(node_id, rtt_config, error_callback)
+        print('create_channel success.')
+        event_engine.fire_event(event_type["CREATE_CHANNEL_SUCCESS"], task_id, "", "create channel success.")
+    except Exception as e:
+        event_engine.fire_event(event_type["CREATE_CHANNEL_FAILED"], task_id, "", f"create channel fail. {str(e)}")
+        event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], task_id, "", "service stop.")
 
     if pass_via:
-        reg_to_via(task_id, config_dict, node_id)
-    rtt.set_channel(channel)
-    print('set channel succeed==================')
+        try:
+            reg_to_via(task_id, config_dict, node_id)
+            event_engine.fire_event(event_type["REGISTER_TO_VIA_SUCCESS"], task_id, "", "register to via success.")
+        except Exception as e:
+            event_engine.fire_event(event_type["REGISTER_TO_VIA_FAILED"], task_id, "", f"register to via failed. {str(e)}")
+            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], task_id, "", "service stop.")
+
+    try:
+        rtt.set_channel(channel)
+        print('set channel succeed==================')
+        event_engine.fire_event(event_type["SET_CHANNEL_SUCCESS"], task_id, "", "set channel success.")
+    except Exception as e:
+        event_engine.fire_event(event_type["SET_CHANNEL_FAILED"], task_id, "", f"set channel fail. {str(e)}")
+        event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], task_id, "", "service stop.")
+
 
 
 if __name__ == '__main__':

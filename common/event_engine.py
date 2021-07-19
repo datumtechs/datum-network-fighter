@@ -14,20 +14,20 @@ class EventEngine(object):
     def __init__(self):
         self.__queue = EVENT_QUEUE
 
-    def fire_event(self, event_type, identity, task_id, content, time_format='%Y-%m-%d %H:%M:%S'):
+    def fire_event(self, event_type, task_id, identity_id, content):
         '''
         生成事件，并推入队列
         args:
-            event_type: 事件类型
-            identity: 节点标识，格式是did:pid:0xeeeeff...efaab
-            task_id: 任务id
+            event_type: 事件类型码
+            task_id: 事件对应的任务id
+            identity_id: 产生事件的节点身份标识，格式是did:pid:0xeeeeff...efaab
             content: 事件内容
-            create_time: 事件生成时间
+            create_at: 事件产生时间
         '''
 
         event = Event(event_type)
-        create_time = time.strftime(time_format)
-        info = dict(identity=identity, task_id=task_id, content=content, create_time=create_time)
+        create_at = time.time()
+        info = dict(task_id=task_id, identity_id=identity_id, content=content, create_at=create_at)
         event.dict_.update(info)
         self.put_event(event)
 
@@ -37,4 +37,11 @@ class EventEngine(object):
         """
         self.__queue.put(event)
 
+event_engine = EventEngine()
 
+if __name__ == '__main__':
+    type_ = "0301001"
+    task_id = "sfasasfasdfasdfa"
+    identity_id = "did:pid:0xeeeeff...efaab"
+    content = "compute task start."
+    event_engine.fire_event(type_, task_id, identity_id, content)

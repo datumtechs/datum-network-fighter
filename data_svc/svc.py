@@ -10,6 +10,8 @@ from config import cfg
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
 from protos import common_pb2
+from common.event_engine import event_engine
+from common.consts import EVENT_TYPE
 
 log = logging.getLogger(__name__)
 
@@ -50,11 +52,15 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     os.rename(path, full_new_name)
                     data_id = m.hexdigest()
                     result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=new_name)
+                    event_engine.fire_event(EVENT_TYPE["UPLOAD_DATA_SUCCESS"], "", "", "upload data success.")
                     return result
                 else:
                     f.write(req.content)
                     m.update(req.content)
                     data_svc_pb2.UploadReply(ok=False)
+        except Exception as e:
+            event_engine.fire_event(EVENT_TYPE["UPLOAD_DATA_FAILED"], "", "", f"upload data fail. {str(e)}")
+            event_engine.fire_event(EVENT_TYPE["END_FLAG_FAILED"], "", "", "service stop.")
         finally:
             if f:
                 f.close()
@@ -97,21 +103,26 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                 data_svc_pb2.UploadReply(ok=False)
 
     def DownloadData(self, request, context):
-        folder = cfg['data_root']
-        path = os.path.join(folder, os.path.basename(request.data_id))
-        print(f'to download: {path}')
-        if not os.path.exists(path):
-            yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
-        else:
-            print('start sending content')
-            with open(path, 'rb') as content_file:
-                chunk_size = cfg['chunk_size']
-                chunk = content_file.read(chunk_size)
-                while chunk:
-                    yield data_svc_pb2.DownloadReply(content=chunk)
+        try:
+            folder = cfg['data_root']
+            path = os.path.join(folder, os.path.basename(request.data_id))
+            print(f'to download: {path}')
+            if not os.path.exists(path):
+                yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
+            else:
+                print('start sending content')
+                with open(path, 'rb') as content_file:
+                    chunk_size = cfg['chunk_size']
                     chunk = content_file.read(chunk_size)
-                yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Finished)
-            print('sending content done')
+                    while chunk:
+                        yield data_svc_pb2.DownloadReply(content=chunk)
+                        chunk = content_file.read(chunk_size)
+                    yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Finished)
+                print('sending content done')
+            event_engine.fire_event(EVENT_TYPE["DOWNLOAD_DATA_SUCCESS"], "", "", "download data success.")
+        except Exception as e:
+            event_engine.fire_event(EVENT_TYPE["DOWNLOAD_DATA_FAILED"], "", "", f"download data fail. {str(e)}")
+            event_engine.fire_event(EVENT_TYPE["END_FLAG_FAILED"], "", "", "service stop.")
 
     def SendSharesData(self, request, context):
         ans = data_svc_pb2.SendSharesDataReply(status=data_svc_pb2.TaskStatus.Cancelled)

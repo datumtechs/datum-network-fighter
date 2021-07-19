@@ -5,3 +5,4 @@ thread_pool_size: 4
 pass_via: no
 via_svc: 192.168.16.153:50041
 results_root_dir: results_root
+schedule_svc: 192.168.16.151:51131
