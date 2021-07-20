@@ -10,7 +10,8 @@ from config import cfg
 from common.utils import load_cfg
 from svc import ComputeProvider
 from common.task_manager import TaskManager
-from common.report_engine import ReportEngine
+from common.report_engine import report_engine
+from multiprocessing import Process
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']))
@@ -46,8 +47,6 @@ if __name__ == '__main__':
     )
 
     server = serve()
-    report_engine = ReportEngine(cfg['schedule_svc'])
-    while True:
-        report_engine.report_event()
-
-    # server.wait_for_termination()
+    report_process = Process(target=report_engine, args=(cfg['schedule_svc'],))
+    report_process.start()
+    server.wait_for_termination()

@@ -30,3 +30,8 @@ class ReportEngine(object):
     def get_event(self):
         event = self.__queue.get()
         return event
+
+def report_engine(server_addr: str):
+    report_engine = ReportEngine(server_addr)
+    while True:
+        report_engine.report_event()

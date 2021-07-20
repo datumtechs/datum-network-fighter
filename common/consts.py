@@ -1,4 +1,4 @@
-from queue import Queue
+from multiprocessing import Queue
 
 EVENT_QUEUE = Queue()
 

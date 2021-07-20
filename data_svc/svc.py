@@ -60,7 +60,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     data_svc_pb2.UploadReply(ok=False)
         except Exception as e:
             event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_FAILED"], "", "", f"upload data fail. {str(e)}")
-            event_engine.fire_event(DATA_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
+            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
         finally:
             if f:
                 f.close()
@@ -122,7 +122,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             event_engine.fire_event(DATA_EVENT["DOWNLOAD_DATA_SUCCESS"], "", "", "download data success.")
         except Exception as e:
             event_engine.fire_event(DATA_EVENT["DOWNLOAD_DATA_FAILED"], "", "", f"download data fail. {str(e)}")
-            event_engine.fire_event(DATA_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
+            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
+
 
     def SendSharesData(self, request, context):
         ans = data_svc_pb2.SendSharesDataReply(status=data_svc_pb2.TaskStatus.Cancelled)
