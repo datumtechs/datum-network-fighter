@@ -11,7 +11,7 @@ from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
 from protos import common_pb2
 from common.event_engine import event_engine
-from common.consts import EVENT_TYPE
+from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 
 log = logging.getLogger(__name__)
 
@@ -52,15 +52,15 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     os.rename(path, full_new_name)
                     data_id = m.hexdigest()
                     result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=new_name)
-                    event_engine.fire_event(EVENT_TYPE["UPLOAD_DATA_SUCCESS"], "", "", "upload data success.")
+                    event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_SUCCESS"], "", "", "upload data success.")
                     return result
                 else:
                     f.write(req.content)
                     m.update(req.content)
                     data_svc_pb2.UploadReply(ok=False)
         except Exception as e:
-            event_engine.fire_event(EVENT_TYPE["UPLOAD_DATA_FAILED"], "", "", f"upload data fail. {str(e)}")
-            event_engine.fire_event(EVENT_TYPE["END_FLAG_FAILED"], "", "", "service stop.")
+            event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_FAILED"], "", "", f"upload data fail. {str(e)}")
+            event_engine.fire_event(DATA_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
         finally:
             if f:
                 f.close()
@@ -119,10 +119,10 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                         chunk = content_file.read(chunk_size)
                     yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Finished)
                 print('sending content done')
-            event_engine.fire_event(EVENT_TYPE["DOWNLOAD_DATA_SUCCESS"], "", "", "download data success.")
+            event_engine.fire_event(DATA_EVENT["DOWNLOAD_DATA_SUCCESS"], "", "", "download data success.")
         except Exception as e:
-            event_engine.fire_event(EVENT_TYPE["DOWNLOAD_DATA_FAILED"], "", "", f"download data fail. {str(e)}")
-            event_engine.fire_event(EVENT_TYPE["END_FLAG_FAILED"], "", "", "service stop.")
+            event_engine.fire_event(DATA_EVENT["DOWNLOAD_DATA_FAILED"], "", "", f"download data fail. {str(e)}")
+            event_engine.fire_event(DATA_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
 
     def SendSharesData(self, request, context):
         ans = data_svc_pb2.SendSharesDataReply(status=data_svc_pb2.TaskStatus.Cancelled)

@@ -11,7 +11,6 @@ from protos import data_svc_pb2
 from protos import data_svc_pb2_grpc
 from protos import io_channel_pb2
 from protos import io_channel_pb2_grpc
-from protos import schedule_svc_pb2_grpc
 from protos import via_svc_pb2
 from protos import via_svc_pb2_grpc
 
