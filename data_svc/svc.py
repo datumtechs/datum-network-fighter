@@ -12,6 +12,7 @@ from protos import data_svc_pb2, data_svc_pb2_grpc
 from protos import common_pb2
 from common.event_engine import event_engine
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
+from common.report_engine import report_file_summary
 
 log = logging.getLogger(__name__)
 
@@ -52,6 +53,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     os.rename(path, full_new_name)
                     data_id = m.hexdigest()
                     result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=new_name)
+                    file_summary = {"origin_id": data_id, "file_path": full_new_name, "ip": cfg["bind_ip"], "port": cfg["port"]}
+                    report_file_summary(cfg['schedule_svc'], file_summary)
                     event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_SUCCESS"], "", "", "upload data success.")
                     return result
                 else:
