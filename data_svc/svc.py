@@ -11,7 +11,7 @@ from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
 from protos import common_pb2
 from common.event_engine import event_engine
-from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
+from common.consts import DATA_EVENT, COMMON_EVENT
 from common.report_engine import report_file_summary
 
 log = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         print(f'cur thread id: {threading.get_ident()}')
 
     def GetStatus(self, request, context):
-        print(context.peer(), f'cur thread id: {threading.get_ident()}')
+        log.info(context.peer())
         return data_svc_pb2.GetStatusReply(node_type='data_node')
 
     def UploadData(self, request_it, context):
@@ -48,6 +48,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
 
                     stem, ext = os.path.splitext(os.path.basename(file))
                     new_name = f'{stem}_{now}{ext}'
+                    m.update(new_name)
                     full_new_name = os.path.join(folder, new_name)
                     print(full_new_name)
                     os.rename(path, full_new_name)
@@ -60,8 +61,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                 else:
                     f.write(req.content)
                     m.update(req.content)
-                    data_svc_pb2.UploadReply(ok=False)
         except Exception as e:
+            log.error(repr(e))
             event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_FAILED"], "", "", f"upload data fail. {str(e)}")
             event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
         finally:
@@ -103,27 +104,27 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             else:
                 f.write(req.content)
                 m.update(req.content)
-                data_svc_pb2.UploadReply(ok=False)
 
     def DownloadData(self, request, context):
         try:
             folder = cfg['data_root']
-            path = os.path.join(folder, os.path.basename(request.data_id))
-            print(f'to download: {path}')
+            path = os.path.join(folder, os.path.basename(request.file_path))
+            log.info(f'to download: {path}')
             if not os.path.exists(path):
                 yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
             else:
-                print('start sending content')
+                log.info('start sending content')
                 with open(path, 'rb') as content_file:
                     chunk_size = cfg['chunk_size']
                     chunk = content_file.read(chunk_size)
                     while chunk:
                         yield data_svc_pb2.DownloadReply(content=chunk)
                         chunk = content_file.read(chunk_size)
-                    yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Finished)
-                print('sending content done')
+                yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Finished)
+                log.info('sending content done')
             event_engine.fire_event(DATA_EVENT["DOWNLOAD_DATA_SUCCESS"], "", "", "download data success.")
         except Exception as e:
+            log.error(repr(e))
             event_engine.fire_event(DATA_EVENT["DOWNLOAD_DATA_FAILED"], "", "", f"download data fail. {str(e)}")
             event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
 
