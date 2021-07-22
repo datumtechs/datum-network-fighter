@@ -10,7 +10,7 @@ from config import cfg
 from common.utils import load_cfg
 from svc import ComputeProvider
 from common.task_manager import TaskManager
-from common.report_engine import report_engine
+from common.report_engine import report_event
 from multiprocessing import Process
 
 def serve():
@@ -47,6 +47,6 @@ if __name__ == '__main__':
     )
 
     server = serve()
-    report_process = Process(target=report_engine, args=(cfg['schedule_svc'],))
+    report_process = Process(target=report_event, args=(cfg['schedule_svc'],))
     report_process.start()
     server.wait_for_termination()

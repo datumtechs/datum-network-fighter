@@ -10,7 +10,7 @@ from protos import data_svc_pb2, data_svc_pb2_grpc, via_svc_pb2
 
 from config import cfg
 from svc import DataProvider
-from common.report_engine import report_engine
+from common.report_engine import report_event
 from multiprocessing import Process
 
 
@@ -46,6 +46,6 @@ if __name__ == '__main__':
     )
 
     server = serve()
-    report_process = Process(target=report_engine, args=(cfg['schedule_svc'],))
+    report_process = Process(target=report_event, args=(cfg['schedule_svc'],))
     report_process.start()
     server.wait_for_termination()
