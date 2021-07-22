@@ -12,7 +12,6 @@ from common.utils import load_cfg
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
 from protos import io_channel_pb2_grpc
-from protos import schedule_svc_pb2_grpc
 from protos import via_svc_pb2
 from protos import common_pb2
 
@@ -249,7 +248,6 @@ directions = {
 
 svc_stub = {via_svc_pb2.DATA_SVC: data_svc_pb2_grpc.DataProviderStub,
             via_svc_pb2.COMPUTE_SVC: compute_svc_pb2_grpc.ComputeProviderStub,
-            via_svc_pb2.SCHEDULE_SVC: schedule_svc_pb2_grpc.ScheduleProviderStub,
             via_svc_pb2.NET_COMM_SVC: io_channel_pb2_grpc.IoChannelStub
             }
 

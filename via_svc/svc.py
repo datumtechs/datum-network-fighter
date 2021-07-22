@@ -105,7 +105,6 @@ class ViaProvider(via_svc_pb2_grpc.ViaProviderServicer):
     def get_real_svc(self, svc_type, task_id, party_id):
         svc_stub = {via_svc_pb2.DATA_SVC: data_svc_pb2_grpc.DataProviderStub,
                     via_svc_pb2.COMPUTE_SVC: compute_svc_pb2_grpc.ComputeProviderStub,
-                    via_svc_pb2.SCHEDULE_SVC: schedule_svc_pb2_grpc.ScheduleProviderStub,
                     via_svc_pb2.NET_COMM_SVC: io_channel_pb2_grpc.IoChannelStub
                     }
         call_id = self._get_call_id(svc_type, task_id, party_id)

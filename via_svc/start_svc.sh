@@ -6,4 +6,4 @@ fi
 
 cfg=$1
 
-PYTHONPATH="..:../protos/" python main.py --config $cfg
+PYTHONPATH="..:../protos/" python main.py --config $cfg &
