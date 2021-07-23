@@ -48,7 +48,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
 
                     stem, ext = os.path.splitext(os.path.basename(file))
                     new_name = f'{stem}_{now}{ext}'
-                    m.update(new_name)
+                    m.update(new_name.encode())
                     full_new_name = os.path.join(folder, new_name)
                     print(full_new_name)
                     os.rename(path, full_new_name)
