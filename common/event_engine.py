@@ -26,7 +26,7 @@ class EventEngine(object):
         '''
 
         event = Event(event_type)
-        create_at = int(time.time())
+        create_at = int(time.time() * 1000)  # in ms
         info = dict(task_id=task_id, identity_id=identity_id, content=content, create_at=create_at)
         event.dict_.update(info)
         self.put_event(event)

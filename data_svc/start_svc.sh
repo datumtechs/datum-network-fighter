@@ -5,5 +5,5 @@ if [ "$1" == "" ]; then
 fi
 
 cfg=$1
-
-PYTHONPATH="..:../protos/:../common" python main.py --config $cfg &
+log=${cfg/yaml/log}
+#PYTHONPATH="..:../protos/:../common" python main.py --config $cfg >$log 2>&1 &
