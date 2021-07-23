@@ -1,26 +1,15 @@
 import json
 import logging
-import socket
-from contextlib import contextmanager
-from typing import Iterable
+
 from protos import via_svc_pb2
+from common.socket_utils import get_free_loopback_tcp_port
 from common.event_engine import event_engine
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
+
 
 log = logging.getLogger(__name__)
 channel = None
 
-
-@contextmanager
-def get_free_loopback_tcp_port() -> Iterable[str]:
-    if socket.has_ipv6:
-        tcp_socket = socket.socket(socket.AF_INET6)
-    else:
-        tcp_socket = socket.socket(socket.AF_INET)
-    tcp_socket.bind(('', 0))
-    address_tuple = tcp_socket.getsockname()
-    yield f"localhost:{address_tuple[1]}"
-    tcp_socket.close()
 
 
 def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via, self_internal_addr):
@@ -89,9 +78,8 @@ def reg_to_via(task_id, config_dict, node_id):
 
 
 def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via, parent_proc_ip, event_type):
-    with get_free_loopback_tcp_port() as self_internal_addr:
-        pass
-    port = self_internal_addr.split(':')[-1]
+    with get_free_loopback_tcp_port() as port:
+        print(f'got a free port: {port}')
     self_internal_addr = f'{parent_proc_ip}:{port}'
     print('get a free port:', self_internal_addr)
 

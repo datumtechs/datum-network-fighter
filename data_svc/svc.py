@@ -53,7 +53,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     print(full_new_name)
                     os.rename(path, full_new_name)
                     data_id = m.hexdigest()
-                    result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=new_name)
+                    result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=full_new_name)
                     file_summary = {"origin_id": data_id, "file_path": full_new_name, "ip": cfg["bind_ip"], "port": cfg["port"]}
                     report_file_summary(cfg['schedule_svc'], file_summary)
                     # event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_SUCCESS"], "", "", "upload data success.")

@@ -2,7 +2,7 @@ import logging
 import threading
 from collections import namedtuple
 from concurrent.futures import ProcessPoolExecutor
-from task import Task
+from .task import Task
 
 log = logging.getLogger(__name__)
 TPeer = namedtuple('TPeer', ['ip', 'port', 'party_id', 'name'])

@@ -6,4 +6,4 @@ fi
 
 cfg=$1
 log=${cfg/yaml/log}
-#PYTHONPATH="..:../protos/:../common" python main.py --config $cfg >$log 2>&1 &
+PYTHONPATH="..:../protos/:../common" python main.py --config $cfg >$log 2>&1 &
