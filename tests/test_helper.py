@@ -47,20 +47,20 @@ def upload(stub, file_path):
     try:
         if not os.path.exists(file_path):
             print('path is wrong.')
-            return False
+            return False, None
         response = stub.UploadData(_upload_chunk(file_path))
         print("received: " + response.data_id)
-        return True
+        return response.ok, response.file_path
     except Exception as e:
         print(e)
-        return False
+        return False, None
 
 
 def upload_dir(stub, file_dir):
     try:
         if not os.path.exists(file_dir):
             print(f'file_dir {file_dir} is wrong.')
-            return False
+            return False, []
 
         def files(dir_):
             for f in os.listdir(dir_):
@@ -70,12 +70,14 @@ def upload_dir(stub, file_dir):
                     yield from _upload_chunk(file)
 
         response_it = stub.BatchUpload(files(file_dir))
+        all_files = []
         for ans in response_it:
             print("received: " + ans.data_id)
-        return True
+            all_files.append(ans.file_path)
+        return True, all_files
     except Exception as e:
         print(e)
-        return False
+        return False, []
 
 
 def download(stub, file_path, file_name):

@@ -28,10 +28,12 @@ class UnitTest(unittest.TestCase):
         self.assertEqual(True, get_status(self.data_stub, task_id))
 
     def test_upload(self):
-        self.assertEqual(True, upload(self.data_stub, './test_data/p1.csv'))
+        ok, _ = upload(self.data_stub, './test_data/p1.csv')
+        self.assertEqual(True, ok)
 
     def test_upload_dir(self):
-        self.assertEqual(True, upload_dir(self.data_stub, './test_data/'))
+        ok, _ = upload_dir(self.data_stub, './test_data/')
+        self.assertEqual(True, ok)
 
     def test_download(self):
         now = time.strftime("%Y%m%d-%H%M%S")

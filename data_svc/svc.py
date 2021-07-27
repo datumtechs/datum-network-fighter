@@ -99,7 +99,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                 state = 0
                 if f:
                     f.close()
-                result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=new_name)
+                result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=full_name)
                 yield result
             else:
                 f.write(req.content)
