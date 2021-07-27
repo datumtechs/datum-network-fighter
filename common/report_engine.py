@@ -4,6 +4,7 @@ import grpc
 from protos.lib.api import sys_rpc_api_pb2 as pb2
 from protos.lib.api import sys_rpc_api_pb2_grpc as pb2_grpc
 from common.consts import EVENT_QUEUE
+import queue
 
 class ReportEngine(object):
 
@@ -14,8 +15,7 @@ class ReportEngine(object):
     def report_event(self):
         try:
             # get event
-            event = EVENT_QUEUE.get()
-
+            event = EVENT_QUEUE.get(block=True, timeout=1)
             req = pb2.ReportTaskEventRequest()
             req_task_event = req.task_event
             req_task_event.type = event.type_
@@ -24,6 +24,8 @@ class ReportEngine(object):
             req_task_event.content = event.dict_["content"]
             req_task_event.create_at = event.dict_["create_at"]
             self.__client.ReportTaskEvent(req)
+        except queue.Empty as e:
+            pass
         except Exception as e:
             print(e)
 
@@ -41,15 +43,18 @@ class ReportEngine(object):
     def close(self):
         self.conn.close()
 
-def report_event(server_addr: str):
+def report_event(server_addr: str, stop_event):
     report_engine = ReportEngine(server_addr)
     try:
         while True:
             report_engine.report_event()
+            if stop_event.is_set():
+                break
     except Exception as e:
         print(f"report event error. {str(e)}")
     finally:
         report_engine.close()
+        print('report_engine closed')
 
 def report_file_summary(server_addr: str, summary: dict):
     report_engine = ReportEngine(server_addr)

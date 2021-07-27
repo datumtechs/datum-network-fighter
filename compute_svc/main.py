@@ -11,7 +11,9 @@ from common.utils import load_cfg
 from svc import ComputeProvider
 from common.task_manager import TaskManager
 from common.report_engine import report_event
-from multiprocessing import Process
+import multiprocessing as mp
+from signal import signal, SIGTERM
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']))
@@ -47,6 +49,19 @@ if __name__ == '__main__':
     )
 
     server = serve()
-    report_process = Process(target=report_event, args=(cfg['schedule_svc'],))
+
+    event_stop = mp.Event()
+    report_process = mp.Process(target=report_event, args=(cfg['schedule_svc'], event_stop))
     report_process.start()
+
+    def handle_sigterm(*_):
+        print("Received shutdown signal")
+        all_rpcs_done_event = server.stop(5)
+        all_rpcs_done_event.wait(5)
+        event_stop.set()
+        print("Shut down gracefully")
+    signal(SIGTERM, handle_sigterm)
+
     server.wait_for_termination()
+    report_process.join()
+    print('over')

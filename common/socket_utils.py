@@ -9,9 +9,10 @@ def get_free_loopback_tcp_port():
     else:
         tcp_socket = socket.socket(socket.AF_INET)
     tcp_socket.bind(('', 0))
-    address_tuple = tcp_socket.getsockname()
-    yield address_tuple[1]
-    tcp_socket.close()
+    try:
+        yield tcp_socket.getsockname()[1]
+    finally:
+        tcp_socket.close()
 
 
 def is_port_in_use(port: int) -> bool:
