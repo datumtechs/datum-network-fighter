@@ -8,3 +8,7 @@ def load_cfg(file):
         else:
             cfg = yaml.load(f)
     return cfg
+
+
+def dump_yaml(data, file_handle):
+    yaml.dump(data, file_handle, default_flow_style=False)

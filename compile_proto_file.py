@@ -14,6 +14,10 @@ exclude_include = ['google']
 
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)
+init_py = os.path.join(out_dir, '__init__.py')
+if not os.path.exists(init_py):
+    with open(init_py, 'w') as f:
+        pass
 
 base_cmd = f'{sdk_path} -m grpc_tools.protoc --python_out={out_dir} --grpc_python_out={out_dir}'
 
