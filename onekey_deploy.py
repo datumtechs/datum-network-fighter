@@ -113,18 +113,15 @@ if __name__ == '__main__':
         user, password = cfg['user'], cfg['passwd']
         print(server, port, user, password)
 
-        ssh = createSSHClient(server, port, user, password)
-        scp = SCPClient(ssh.get_transport())
+        with createSSHClient(server, port, user, password) as ssh:
+            with SCPClient(ssh.get_transport()) as scp:
+                ssh.exec_command(f'mkdir {remote_dir}')
 
-        ssh.exec_command(f'mkdir {remote_dir}')
+                tranfer_file(scp, env_zip, remote_dir)
+                unzip(ssh, f'{remote_dir}/{env_zip}', remote_dir)
 
-        tranfer_file(scp, env_zip, remote_dir)
-        unzip(ssh, f'{remote_dir}/{env_zip}', remote_dir)
+                tranfer_file(scp, src_zip, remote_dir)
+                unzip(ssh, f'{remote_dir}/{src_zip}', remote_dir)
 
-        tranfer_file(scp, src_zip, remote_dir)
-        unzip(ssh, f'{remote_dir}/{src_zip}', remote_dir)
-
-        update_svc_cfg(scp, remote_dir, cfg)
-        modify_start_sh(scp, remote_dir, cfg)
-
-        scp.close()
+                update_svc_cfg(scp, remote_dir, cfg)
+                modify_start_sh(scp, remote_dir, cfg)
