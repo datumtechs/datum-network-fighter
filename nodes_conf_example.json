@@ -3,6 +3,7 @@
     "host": "192.168.16.151",
     "port": 22,
     "rpc_port": 8801,
+    "pass_via": true,
     "via_svc": "192.168.16.151:20000",
     "user": "juzix",
     "passwd": "123456",

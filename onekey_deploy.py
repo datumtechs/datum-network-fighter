@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import re
 import tempfile
 
 import paramiko
@@ -45,9 +46,8 @@ def unzip(ssh, a_file, to_dir):
     print(f'unzip {a_file} {ret}')
 
 
-def update_svc_cfg(scp, remote_dir, cfg):
-    svc_type = cfg['svc_type']
-    key_align = {'rpc_port': 'port', 'via_svc': 'via_svc', 'schedule_svc': 'schedule_svc'}
+def update_svc_cfg(scp, remote_dir, cfg, svc_type):
+    key_align = {'rpc_port': 'port', 'via_svc': 'via_svc', 'schedule_svc': 'schedule_svc', 'pass_via': 'pass_via'}
     cfg = {k: v for k, v in cfg.items() if k in key_align.keys()}
     cfg = {key_align[k]: v for k, v in cfg.items()}
     if svc_type in ('data_svc', 'compute_svc'):
@@ -58,11 +58,7 @@ def update_svc_cfg(scp, remote_dir, cfg):
     new_cfg = load_cfg(cfg_tmpl)
     new_cfg.update(cfg)
     target = f'{remote_dir}/{cfg_tmpl}'
-    with tempfile.TemporaryFile('w+t') as f:
-        dump_yaml(new_cfg, f)
-        f.seek(0)
-        scp.putfo(f, target)
-    print(f'update {target}')
+    _dump_yaml_to_remote(new_cfg, target)
 
     dir_key = ['data_root', 'code_root_dir', 'results_root_dir']
     for k in dir_key:
@@ -75,18 +71,37 @@ def update_svc_cfg(scp, remote_dir, cfg):
         print(f'mkdir {new_dir}')
 
 
-def modify_start_sh(scp, remote_dir, cfg):
-    svc_type = cfg['svc_type']
+def modify_start_sh(scp, remote_dir, cfg, svc_type):
     sh = f'{svc_type}/start_svc.sh'
     with open(sh) as f:
         c = f.read()
-        c = c.replace('python37', '../python37/bin/python3')
+        c = re.sub(r'(.*PYTHONPATH=.*) python\d* (.*)', r'\1 ../python37/bin/python3 \2', c)
     target = f'{remote_dir}/{sh}'
     with tempfile.TemporaryFile('w+t') as f:
         f.write(c)
         f.seek(0)
         scp.putfo(f, target)
         print(f'update {target}')
+
+
+def update_via_cfg(scp, remote_dir, cfg):
+    if not cfg.get('pass_via'):
+        return
+    ip, port = cfg['via_svc'].split(':')
+    cfg = {'public_ip': ip, 'port': int(port)}
+    cfg_tmpl = 'via_svc/config.yaml'
+    new_cfg = load_cfg(cfg_tmpl)
+    new_cfg.update(cfg)
+    target = f'{remote_dir}/{cfg_tmpl}'
+    _dump_yaml_to_remote(new_cfg, target)
+
+
+def _dump_yaml_to_remote(dict_, target):
+    with tempfile.TemporaryFile('w+t') as f:
+        dump_yaml(dict_, f)
+        f.seek(0)
+        scp.putfo(f, target)
+    print(f'update {target}')
 
 
 if __name__ == '__main__':
@@ -123,5 +138,9 @@ if __name__ == '__main__':
                 tranfer_file(scp, src_zip, remote_dir)
                 unzip(ssh, f'{remote_dir}/{src_zip}', remote_dir)
 
-                update_svc_cfg(scp, remote_dir, cfg)
-                modify_start_sh(scp, remote_dir, cfg)
+                svc_type = cfg['svc_type']
+                update_svc_cfg(scp, remote_dir, cfg, svc_type)
+                modify_start_sh(scp, remote_dir, cfg, svc_type)
+
+                update_via_cfg(scp, remote_dir, cfg)
+                modify_start_sh(scp, remote_dir, cfg, 'via_svc')
