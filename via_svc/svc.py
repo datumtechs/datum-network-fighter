@@ -31,7 +31,7 @@ def expose_me(cfg, task_id, svc_type, party_id):
                                     party_id=party_id,
                                     ip=cfg['bind_ip'],
                                     port=int(cfg['port']))
-        ans = stub.Expose(req)
+        ans = stub.Expose(req, wait_for_ready=True)
         print(ans.ok, ans.ip, ans.port)
 
 
