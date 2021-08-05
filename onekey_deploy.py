@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import re
+import sys
 import tempfile
 
 import paramiko
@@ -107,18 +108,90 @@ def _dump_yaml_to_remote(dict_, target):
     print(f'update {target}')
 
 
+def start_svc(ssh, remote_dir, svc_type, cfg_file):
+    print(f'start {svc_type} {cfg_file}')
+    _, stdout, stderr = ssh.exec_command(f'cd {remote_dir}/{svc_type}; ./start_svc.sh {cfg_file};')
+    print(stdout.read().decode())
+    print(stderr.read().decode())
+
+
+def kill_svc(ssh):
+    print(f'kill all svc')
+    _, stdout, _ = ssh.exec_command(r'ps -ef | grep "[p]ython3 -u main.py --config config.*.yaml"')
+    lines = stdout.read().decode()
+    print(lines)
+    pids = []
+    for row in lines.split('\n'):
+        if not row:
+            continue
+        fields = row.split()
+        if len(fields) < 3:
+            continue
+        if fields[2] == '1':  # ppid
+            pids.append(fields[1])
+
+    if pids:
+        pids = ' '.join(pids)
+        cmd = f'kill {pids}'
+        print(cmd)
+        ssh.exec_command(cmd)
+
+
+def kill_all(node_cfg):
+    node_cfg = parse_cfg(node_cfg)
+    one_time_ops = {cfg['host']: False for cfg in node_cfg}
+    for cfg in node_cfg:
+        server, port = cfg['host'], cfg['port']
+        user, password = cfg['user'], cfg['passwd']
+        print(server, port, user, password)
+
+        with createSSHClient(server, port, user, password) as ssh:
+            with SCPClient(ssh.get_transport()) as scp:
+                if not one_time_ops[server]:
+                    one_time_ops[server] = True
+                    kill_svc(ssh)
+
+
+def start_all(node_cfg):
+    node_cfg = parse_cfg(node_cfg)
+    one_time_ops = {cfg['host']: False for cfg in node_cfg}
+    for cfg in node_cfg:
+        server, port = cfg['host'], cfg['port']
+        user, password = cfg['user'], cfg['passwd']
+        print(server, port, user, password)
+
+        with createSSHClient(server, port, user, password) as ssh:
+            with SCPClient(ssh.get_transport()) as scp:
+                if not one_time_ops[server]:
+                    one_time_ops[server] = True
+                    start_svc(ssh, remote_dir, 'via_svc', 'config.yaml')
+
+                svc_type = cfg['svc_type']
+                rpc_port = cfg['rpc_port']
+                start_svc(ssh, remote_dir, svc_type, f'config_{rpc_port}.yaml')
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('node_config', type=str)
     parser.add_argument('--remote_dir', type=str, default='fighter')
     parser.add_argument('--py_env_zip', type=str, default='python37.tar.gz')
     parser.add_argument('--src_zip', type=str)
+    parser.add_argument('--start_all', action='store_true')
+    parser.add_argument('--kill_all', action='store_true')
 
     args = parser.parse_args()
 
     node_cfg = args.node_config
     remote_dir = args.remote_dir
     env_zip = args.py_env_zip
+
+    if args.start_all:
+        start_all(node_cfg)
+        sys.exit(0)
+    if args.kill_all:
+        kill_all(node_cfg)
+        sys.exit(0)
 
     if not args.src_zip:
         pack_src()
@@ -134,7 +207,7 @@ if __name__ == '__main__':
 
         with createSSHClient(server, port, user, password) as ssh:
             with SCPClient(ssh.get_transport()) as scp:
-                ssh.exec_command(f'mkdir {remote_dir}')
+                ssh.exec_command(f'mkdir -p {remote_dir}')
 
                 if not one_time_ops[server]:
                     one_time_ops[server] = True
@@ -143,9 +216,9 @@ if __name__ == '__main__':
                     tranfer_file(scp, src_zip, remote_dir)
                     unzip(ssh, f'{remote_dir}/{os.path.basename(src_zip)}', remote_dir)
 
-                    update_via_cfg(scp, remote_dir, cfg)
                     modify_start_sh(scp, remote_dir, cfg, 'via_svc')
+                    update_via_cfg(scp, remote_dir, cfg)
 
                 svc_type = cfg['svc_type']
-                update_svc_cfg(scp, remote_dir, cfg, svc_type)
                 modify_start_sh(scp, remote_dir, cfg, svc_type)
+                update_svc_cfg(scp, remote_dir, cfg, svc_type)
