@@ -2,12 +2,43 @@
   {
     "host": "192.168.16.151",
     "port": 22,
-    "rpc_port": 8801,
-    "pass_via": true,
-    "via_svc": "192.168.16.151:20000",
     "user": "juzix",
     "passwd": "123456",
-    "schedule_svc": "192.168.10.150:10000",
-    "svc_type": "data_svc"
+    "svc_type": "data_svc",
+    "rpc_port": 8972,
+    "data_dir": "../data8972",
+    "code_dir": "../contracts8972",
+    "results_dir": "../results8972",
+    "pass_via": true,
+    "via_svc": "192.168.16.151:20000",
+    "schedule_svc": "192.168.10.150:10000"
+  },
+  {
+    "host": "192.168.16.151",
+    "port": 22,
+    "user": "juzix",
+    "passwd": "123456",
+    "svc_type": "data_svc",
+    "rpc_port": 6954,
+    "data_dir": "../data6954",
+    "code_dir": "../contracts6954",
+    "results_dir": "../results6954",
+    "pass_via": true,
+    "via_svc": "192.168.16.151:20000",
+    "schedule_svc": "192.168.10.150:10000"
+  },
+  {
+    "host": "192.168.16.151",
+    "port": 22,
+    "user": "juzix",
+    "passwd": "123456",
+    "svc_type": "compute_svc",
+    "rpc_port": 5945,
+    "data_dir": "../data5945",
+    "code_dir": "../contracts5945",
+    "results_dir": "../results5945",
+    "pass_via": true,
+    "via_svc": "192.168.16.151:20000",
+    "schedule_svc": "192.168.10.150:10000"
   }
 ]

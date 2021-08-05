@@ -34,7 +34,7 @@ def pack_src():
 
 
 def tranfer_file(scp, a_file, to_dir):
-    print(f'transfer {a_file}')
+    print(f'transfering {a_file}')
     scp.put(f'{a_file}', to_dir)
     print('transfer done.')
 
@@ -47,7 +47,9 @@ def unzip(ssh, a_file, to_dir):
 
 
 def update_svc_cfg(scp, remote_dir, cfg, svc_type):
-    key_align = {'rpc_port': 'port', 'via_svc': 'via_svc', 'schedule_svc': 'schedule_svc', 'pass_via': 'pass_via'}
+    key_align = {'rpc_port': 'port', 'via_svc': 'via_svc', 'schedule_svc': 'schedule_svc',
+                 'pass_via': 'pass_via', 'data_dir': 'data_root', 'code_dir': 'code_root_dir',
+                 'results_dir': 'results_root_dir'}
     cfg = {k: v for k, v in cfg.items() if k in key_align.keys()}
     cfg = {key_align[k]: v for k, v in cfg.items()}
     if svc_type in ('data_svc', 'compute_svc'):
@@ -57,7 +59,8 @@ def update_svc_cfg(scp, remote_dir, cfg, svc_type):
         return
     new_cfg = load_cfg(cfg_tmpl)
     new_cfg.update(cfg)
-    target = f'{remote_dir}/{cfg_tmpl}'
+    port = cfg['port']
+    target = f'{remote_dir}/{svc_type}/config_{port}.yaml'
     _dump_yaml_to_remote(new_cfg, target)
 
     dir_key = ['data_root', 'code_root_dir', 'results_root_dir']
@@ -123,6 +126,7 @@ if __name__ == '__main__':
         src_zip = args.src_zip
 
     node_cfg = parse_cfg(node_cfg)
+    one_time_ops = {cfg['host']: False for cfg in node_cfg}
     for cfg in node_cfg:
         server, port = cfg['host'], cfg['port']
         user, password = cfg['user'], cfg['passwd']
@@ -132,15 +136,16 @@ if __name__ == '__main__':
             with SCPClient(ssh.get_transport()) as scp:
                 ssh.exec_command(f'mkdir {remote_dir}')
 
-                tranfer_file(scp, env_zip, remote_dir)
-                unzip(ssh, f'{remote_dir}/{env_zip}', remote_dir)
+                if not one_time_ops[server]:
+                    one_time_ops[server] = True
+                    tranfer_file(scp, env_zip, remote_dir)
+                    unzip(ssh, f'{remote_dir}/{os.path.basename(env_zip)}', remote_dir)
+                    tranfer_file(scp, src_zip, remote_dir)
+                    unzip(ssh, f'{remote_dir}/{os.path.basename(src_zip)}', remote_dir)
 
-                tranfer_file(scp, src_zip, remote_dir)
-                unzip(ssh, f'{remote_dir}/{src_zip}', remote_dir)
+                    update_via_cfg(scp, remote_dir, cfg)
+                    modify_start_sh(scp, remote_dir, cfg, 'via_svc')
 
                 svc_type = cfg['svc_type']
                 update_svc_cfg(scp, remote_dir, cfg, svc_type)
                 modify_start_sh(scp, remote_dir, cfg, svc_type)
-
-                update_via_cfg(scp, remote_dir, cfg)
-                modify_start_sh(scp, remote_dir, cfg, 'via_svc')
