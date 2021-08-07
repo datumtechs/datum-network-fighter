@@ -50,7 +50,7 @@ def unzip(ssh, a_file, to_dir):
 def update_svc_cfg(scp, remote_dir, cfg, svc_type):
     key_align = {'rpc_port': 'port', 'via_svc': 'via_svc', 'schedule_svc': 'schedule_svc',
                  'pass_via': 'pass_via', 'data_dir': 'data_root', 'code_dir': 'code_root_dir',
-                 'results_dir': 'results_root_dir'}
+                 'results_dir': 'results_root_dir', 'host': 'bind_ip'}
     cfg = {k: v for k, v in cfg.items() if k in key_align.keys()}
     cfg = {key_align[k]: v for k, v in cfg.items()}
     if svc_type in ('data_svc', 'compute_svc'):
@@ -175,7 +175,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('node_config', type=str)
     parser.add_argument('--remote_dir', type=str, default='fighter')
-    parser.add_argument('--py_env_zip', type=str, default='python37.tar.gz')
+    parser.add_argument('--py_env_zip', type=str)
     parser.add_argument('--src_zip', type=str)
     parser.add_argument('--start_all', action='store_true')
     parser.add_argument('--kill_all', action='store_true')
@@ -211,10 +211,12 @@ if __name__ == '__main__':
 
                 if not one_time_ops[server]:
                     one_time_ops[server] = True
-                    tranfer_file(scp, env_zip, remote_dir)
-                    unzip(ssh, f'{remote_dir}/{os.path.basename(env_zip)}', remote_dir)
-                    tranfer_file(scp, src_zip, remote_dir)
-                    unzip(ssh, f'{remote_dir}/{os.path.basename(src_zip)}', remote_dir)
+                    if env_zip:
+                        tranfer_file(scp, env_zip, remote_dir)
+                        unzip(ssh, f'{remote_dir}/{os.path.basename(env_zip)}', remote_dir)
+                    if src_zip != 'none':
+                        tranfer_file(scp, src_zip, remote_dir)
+                        unzip(ssh, f'{remote_dir}/{os.path.basename(src_zip)}', remote_dir)
 
                     modify_start_sh(scp, remote_dir, cfg, 'via_svc')
                     update_via_cfg(scp, remote_dir, cfg)
