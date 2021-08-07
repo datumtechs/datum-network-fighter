@@ -10,8 +10,6 @@ from scp import SCPClient
 
 from common.utils import load_cfg, dump_yaml
 
-src_zip = 'fighter.tar.gz'
-
 
 def createSSHClient(server, port, user, password):
     client = paramiko.SSHClient()
@@ -28,10 +26,13 @@ def parse_cfg(json_file):
 
 
 def pack_src():
-    cmd = f'tar -czf {src_zip} common protos data_svc compute_svc via_svc tests gateway'
+    src_zip_name = 'fighter.tar.gz'
+    cmd = f'tar -czf {src_zip_name} common protos data_svc compute_svc via_svc tests gateway'
     print(cmd)
     ret = os.system(cmd)
-    print(f'pack src {not bool(ret)}')
+    succ = not bool(ret)
+    print(f'pack src {succ}')
+    return src_zip_name if succ else None
 
 
 def tranfer_file(scp, a_file, to_dir):
@@ -179,6 +180,7 @@ if __name__ == '__main__':
     parser.add_argument('--src_zip', type=str)
     parser.add_argument('--start_all', action='store_true')
     parser.add_argument('--kill_all', action='store_true')
+    parser.add_argument('--repack_src', action='store_true')
 
     args = parser.parse_args()
 
@@ -193,10 +195,11 @@ if __name__ == '__main__':
         kill_all(node_cfg)
         sys.exit(0)
 
-    if not args.src_zip:
-        pack_src()
+    if args.repack_src:
+        src_zip = pack_src()
     else:
         src_zip = args.src_zip
+        print(src_zip)
 
     node_cfg = parse_cfg(node_cfg)
     one_time_ops = {cfg['host']: False for cfg in node_cfg}
@@ -214,7 +217,7 @@ if __name__ == '__main__':
                     if env_zip:
                         tranfer_file(scp, env_zip, remote_dir)
                         unzip(ssh, f'{remote_dir}/{os.path.basename(env_zip)}', remote_dir)
-                    if src_zip != 'none':
+                    if src_zip:
                         tranfer_file(scp, src_zip, remote_dir)
                         unzip(ssh, f'{remote_dir}/{os.path.basename(src_zip)}', remote_dir)
 
