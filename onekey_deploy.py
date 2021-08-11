@@ -205,7 +205,8 @@ if __name__ == '__main__':
     print('src_zip:', src_zip)
 
     if env_zip and env_zip.endswith('.tar.gz'):
-        py_home = f"../{env_zip.rstrip('.tar.gz')}'"
+        l = len('.tar.gz')
+        py_home = f'../{env_zip[:-l]}'
     else:
         py_home = py_home.rstrip('/')
 
