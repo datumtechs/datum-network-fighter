@@ -31,6 +31,7 @@ def expose_me(cfg, task_id, svc_type, party_id):
                                     party_id=party_id,
                                     ip=cfg['bind_ip'],
                                     port=int(cfg['port']))
+        print('expose before', req)
         ans = stub.Expose(req, wait_for_ready=True)
         print(ans.ok, ans.ip, ans.port)
 
@@ -118,7 +119,6 @@ class ViaProvider(via_svc_pb2_grpc.ViaProviderServicer):
     def _hold(self, servicer, add_fn, request, svc_name):
         HostedServicer = create_hosted_svc_cls(servicer)
         add_fn(HostedServicer(self, request.svc_type), self.server)
-        reflection.enable_server_reflection((svc_name,), self.server)
         svc_addr = f'{request.ip}:{request.port}'
         channel = grpc.insecure_channel(svc_addr, options=grpc_options)
         call_id = self._get_call_id(request.svc_type, request.task_id, request.party_id)

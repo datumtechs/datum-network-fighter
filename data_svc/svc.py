@@ -55,9 +55,13 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     data_id = m.hexdigest()
                     result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=full_new_name)
                     file_summary = {"origin_id": data_id, "file_path": full_new_name, "ip": cfg["bind_ip"], "port": cfg["port"]}
-                    report_file_summary(cfg['schedule_svc'], file_summary)
+                    ret = report_file_summary(cfg['schedule_svc'], file_summary)
                     # event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_SUCCESS"], "", "", "upload data success.")
-                    return result
+                    log.info(ret)
+                    if ret.status == 0:
+                        return result
+                    else:
+                        return data_svc_pb2.UploadReply(ok=False)
                 else:
                     f.write(req.content)
                     m.update(req.content)
@@ -158,6 +162,6 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         return ans
 
     def HandleTaskReadyGo(self, request, context):
-        log.info(f'{context.peer()} submit a task, thread id: {threading.get_ident()}')
+        log.info(f'{context.peer()} submit a task {request.task_id}, thread id: {threading.get_ident()}')
         ok, msg = self.task_manager.start(request)
         return common_pb2.TaskReadyGoReply(ok=ok, msg=msg)

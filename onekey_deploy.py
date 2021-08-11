@@ -27,7 +27,7 @@ def parse_cfg(json_file):
 
 def pack_src():
     src_zip_name = 'fighter.tar.gz'
-    cmd = f'tar -czf {src_zip_name} common protos data_svc compute_svc via_svc tests gateway'
+    cmd = f'tar -czf {src_zip_name} common protos data_svc compute_svc via_svc tests console gateway'
     print(cmd)
     ret = os.system(cmd)
     succ = not bool(ret)
@@ -76,11 +76,11 @@ def update_svc_cfg(scp, remote_dir, cfg, svc_type):
         print(f'mkdir {new_dir}')
 
 
-def modify_start_sh(scp, remote_dir, cfg, svc_type):
+def modify_start_sh(scp, remote_dir, cfg, svc_type, py_home):
     sh = f'{svc_type}/start_svc.sh'
     with open(sh) as f:
         c = f.read()
-        c = re.sub(r'(.*PYTHONPATH=.*) python\d* (.*)', r'\1 ../python37/bin/python3 \2', c)
+        c = re.sub(r'(.*PYTHONPATH=.*) python\d* (.*)', f'\\1 {py_home}/bin/python \\2', c)
     target = f'{remote_dir}/{sh}'
     with tempfile.TemporaryFile('w+t') as f:
         f.write(c)
@@ -181,12 +181,15 @@ if __name__ == '__main__':
     parser.add_argument('--start_all', action='store_true')
     parser.add_argument('--kill_all', action='store_true')
     parser.add_argument('--repack_src', action='store_true')
+    parser.add_argument('--do_not_overwrite_config', action='store_true')
+    parser.add_argument('--py_home', type=str, default='../python37')
 
     args = parser.parse_args()
 
     node_cfg = args.node_config
     remote_dir = args.remote_dir
     env_zip = args.py_env_zip
+    py_home = args.py_home
 
     if args.start_all:
         start_all(node_cfg)
@@ -199,7 +202,12 @@ if __name__ == '__main__':
         src_zip = pack_src()
     else:
         src_zip = args.src_zip
-        print(src_zip)
+    print('src_zip:', src_zip)
+
+    if env_zip and env_zip.endswith('.tar.gz'):
+        py_home = f"../{env_zip.rstrip('.tar.gz')}'"
+    else:
+        py_home = py_home.rstrip('/')
 
     node_cfg = parse_cfg(node_cfg)
     one_time_ops = {cfg['host']: False for cfg in node_cfg}
@@ -221,9 +229,11 @@ if __name__ == '__main__':
                         tranfer_file(scp, src_zip, remote_dir)
                         unzip(ssh, f'{remote_dir}/{os.path.basename(src_zip)}', remote_dir)
 
-                    modify_start_sh(scp, remote_dir, cfg, 'via_svc')
-                    update_via_cfg(scp, remote_dir, cfg)
+                    if not args.do_not_overwrite_config:
+                        modify_start_sh(scp, remote_dir, cfg, 'via_svc', py_home)
+                        update_via_cfg(scp, remote_dir, cfg)
 
-                svc_type = cfg['svc_type']
-                modify_start_sh(scp, remote_dir, cfg, svc_type)
-                update_svc_cfg(scp, remote_dir, cfg, svc_type)
+                if not args.do_not_overwrite_config:
+                    svc_type = cfg['svc_type']
+                    modify_start_sh(scp, remote_dir, cfg, svc_type, py_home)
+                    update_svc_cfg(scp, remote_dir, cfg, svc_type)

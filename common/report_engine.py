@@ -36,7 +36,7 @@ class ReportEngine(object):
             req.file_path = summary["file_path"]
             req.ip = summary["ip"]
             req.port = str(summary["port"])
-            self.__client.ReportUpFileSummary(req)
+            return self.__client.ReportUpFileSummary(req)
         except Exception as e:
             print(e)
 
@@ -58,5 +58,6 @@ def report_event(server_addr: str, stop_event):
 
 def report_file_summary(server_addr: str, summary: dict):
     report_engine = ReportEngine(server_addr)
-    report_engine.report_file_summary(summary)
+    ret = report_engine.report_file_summary(summary)
     report_engine.close()
+    return ret

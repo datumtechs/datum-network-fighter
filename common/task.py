@@ -82,20 +82,19 @@ class Task:
             code_path = self._get_code_file_name()
             module_name = os.path.splitext(code_path)[0]
             log.info(f'code path: {code_path}, module: {module_name}')
-            try:
-                event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_START"], self.id_, "", "contract execute start.")
-                m = importlib.import_module(module_name)
-                result_dir = self._get_result_dir()
-                self._ensure_dir(result_dir)
-                m.main(user_cfg, self.result_party, result_dir, self.data_party)
-                log.info(f'run task done')
-                event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], self.id_, "", "contract execute success.")
-                event_engine.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], self.id_, "", "task finish.")
-            except Exception as e:
-                event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], self.id_, "", f"contract execute failed. {str(e)}")
-                event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.id_, "", "service stop.")
+
+            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_START"], self.id_, "", "contract execute start.")
+            m = importlib.import_module(module_name)
+            result_dir = self._get_result_dir()
+            self._ensure_dir(result_dir)
+            m.main(user_cfg, self.result_party, result_dir, self.data_party)
+            log.info(f'run task done')
+            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], self.id_, "", "contract execute success.")
+            event_engine.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], self.id_, "", "task finish.")
         except Exception as e:
             log.error(repr(e))
+            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], self.id_, "", f"contract execute failed. {str(e)}")
+            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.id_, "", "service stop.")
         finally:
             self.clean()
 

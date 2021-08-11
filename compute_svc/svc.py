@@ -41,6 +41,6 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
             yield compute_svc_pb2.UploadShardReply(ok=False, msg='deprecated')
 
     def HandleTaskReadyGo(self, request, context):
-        log.info(f'{context.peer()} submit a task, thread id: {threading.get_ident()}')
+        log.info(f'{context.peer()} submit a task {request.task_id}, thread id: {threading.get_ident()}')
         ok, msg = self.task_manager.start(request)
         return common_pb2.TaskReadyGoReply(ok=ok, msg=msg)
