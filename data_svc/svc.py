@@ -58,7 +58,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     ret = report_file_summary(cfg['schedule_svc'], file_summary)
                     # event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_SUCCESS"], "", "", "upload data success.")
                     log.info(ret)
-                    if ret.status == 0:
+                    if ret and ret.status == 0:
                         return result
                     else:
                         return data_svc_pb2.UploadReply(ok=False)

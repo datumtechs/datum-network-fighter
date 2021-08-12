@@ -118,7 +118,7 @@ def start_svc(ssh, remote_dir, svc_type, cfg_file):
 
 def kill_svc(ssh):
     print(f'kill all svc')
-    _, stdout, _ = ssh.exec_command(r'ps -ef | grep "[p]ython3 -u main.py --config config.*.yaml"')
+    _, stdout, _ = ssh.exec_command(r'ps -ef | grep "[p]ython -u main.py --config config.*.yaml"')
     lines = stdout.read().decode()
     print(lines)
     pids = []

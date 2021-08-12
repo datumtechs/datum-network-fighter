@@ -1,22 +1,23 @@
 import logging
+import multiprocessing as mp
 import sys
 from concurrent import futures
+from signal import signal, SIGTERM
 
 import grpc
 from grpc_reflection.v1alpha import reflection
-from protos import compute_svc_pb2, compute_svc_pb2_grpc, via_svc_pb2
 
-from config import cfg
-from common.utils import load_cfg
-from svc import ComputeProvider
-from common.task_manager import TaskManager
+from common.consts import GRPC_OPTIONS
 from common.report_engine import report_event
-import multiprocessing as mp
-from signal import signal, SIGTERM
+from common.task_manager import TaskManager
+from common.utils import load_cfg
+from config import cfg
+from protos import compute_svc_pb2, compute_svc_pb2_grpc, via_svc_pb2
+from svc import ComputeProvider
 
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']))
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']), options=GRPC_OPTIONS)
     compute_svc_pb2_grpc.add_ComputeProviderServicer_to_server(ComputeProvider(TaskManager(cfg)), server)
     SERVICE_NAMES = (
         compute_svc_pb2.DESCRIPTOR.services_by_name['ComputeProvider'].full_name,
@@ -54,12 +55,15 @@ if __name__ == '__main__':
     report_process = mp.Process(target=report_event, args=(cfg['schedule_svc'], event_stop))
     report_process.start()
 
+
     def handle_sigterm(*_):
         print("Received shutdown signal")
         all_rpcs_done_event = server.stop(5)
         all_rpcs_done_event.wait(5)
         event_stop.set()
         print("Shut down gracefully")
+
+
     signal(SIGTERM, handle_sigterm)
 
     server.wait_for_termination()

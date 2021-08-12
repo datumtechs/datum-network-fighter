@@ -1,5 +1,8 @@
 import logging
 import threading
+import os
+import sys
+import signal
 from collections import namedtuple
 from concurrent.futures import ProcessPoolExecutor
 from .task import Task
@@ -8,12 +11,21 @@ log = logging.getLogger(__name__)
 TPeer = namedtuple('TPeer', ['ip', 'port', 'party_id', 'name'])
 
 
+def handler(signum, frame):
+    log.info('handle SIGINT')
+    sys.exit(0)
+
+
+def init():
+    signal.signal(signal.SIGINT, handler)
+
+
 class TaskManager:
     def __init__(self, cfg):
         self.cfg = cfg
-        self.executor = ProcessPoolExecutor(cfg['thread_pool_size'])
+        self.executor = ProcessPoolExecutor(cfg['thread_pool_size'], initializer=init)
         self.tasks = {}
-        self.task_future = {}        
+        self.task_future = {}
 
     def start(self, req):
         task_id = req.task_id
@@ -42,7 +54,7 @@ class TaskManager:
         future = self.task_future[task_id]
         future.cancel()
         self.erase(task_id)
-        
+
     def erase(self, task_id):
         del self.task_future[task_id]
         del self.tasks[task_id]

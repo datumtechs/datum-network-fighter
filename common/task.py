@@ -96,6 +96,7 @@ class Task:
             event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], self.id_, "", f"contract execute failed. {str(e)}")
             event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.id_, "", "service stop.")
         finally:
+            log.info('task final clean')
             self.clean()
 
     def get_elapsed_time(self):

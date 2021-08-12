@@ -2,8 +2,8 @@ from collections import defaultdict
 from functools import partialmethod
 
 import grpc
-from grpc_reflection.v1alpha import reflection
 
+from common.consts import GRPC_OPTIONS
 from config import cfg
 from protos import compute_svc_pb2
 from protos import compute_svc_pb2_grpc
@@ -14,17 +14,12 @@ from protos import io_channel_pb2_grpc
 from protos import via_svc_pb2
 from protos import via_svc_pb2_grpc
 
-MAX_MESSAGE_LENGTH = 2 * 1024 ** 3 - 1
-grpc_options = [
-    ('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH),
-]
-
 
 def expose_me(cfg, task_id, svc_type, party_id):
     if 'via_svc' not in cfg:
         return
 
-    with grpc.insecure_channel(cfg['via_svc'], options=grpc_options) as channel:
+    with grpc.insecure_channel(cfg['via_svc'], options=GRPC_OPTIONS) as channel:
         stub = via_svc_pb2_grpc.ViaProviderStub(channel)
         req = via_svc_pb2.ExposeReq(task_id=task_id,
                                     svc_type=svc_type,
@@ -120,7 +115,7 @@ class ViaProvider(via_svc_pb2_grpc.ViaProviderServicer):
         HostedServicer = create_hosted_svc_cls(servicer)
         add_fn(HostedServicer(self, request.svc_type), self.server)
         svc_addr = f'{request.ip}:{request.port}'
-        channel = grpc.insecure_channel(svc_addr, options=grpc_options)
+        channel = grpc.insecure_channel(svc_addr, options=GRPC_OPTIONS)
         call_id = self._get_call_id(request.svc_type, request.task_id, request.party_id)
         self.holders[call_id] = channel
         print(f'call_id: {call_id}, svc_addr: {svc_addr}')
