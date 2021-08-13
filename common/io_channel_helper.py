@@ -73,7 +73,7 @@ def reg_to_via(task_id, config_dict, node_id):
     ip = arr_[0]
     port = arr_[1]
     cfg = {'via_svc': via_address, 'bind_ip': ip, 'port': port}
-    from via_svc.svc import expose_me
+    from common.via_client import expose_me
     expose_me(cfg, task_id, via_svc_pb2.NET_COMM_SVC, node_id)
 
 

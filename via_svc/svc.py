@@ -15,22 +15,6 @@ from protos import via_svc_pb2
 from protos import via_svc_pb2_grpc
 
 
-def expose_me(cfg, task_id, svc_type, party_id):
-    if 'via_svc' not in cfg:
-        return
-
-    with grpc.insecure_channel(cfg['via_svc'], options=GRPC_OPTIONS) as channel:
-        stub = via_svc_pb2_grpc.ViaProviderStub(channel)
-        req = via_svc_pb2.ExposeReq(task_id=task_id,
-                                    svc_type=svc_type,
-                                    party_id=party_id,
-                                    ip=cfg['bind_ip'],
-                                    port=int(cfg['port']))
-        print('expose before', req)
-        ans = stub.Expose(req, wait_for_ready=True)
-        print(ans.ok, ans.ip, ans.port)
-
-
 def get_call_meta(context):
     meta = context.invocation_metadata()
     interest = defaultdict(str)

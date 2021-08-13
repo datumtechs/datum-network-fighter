@@ -18,7 +18,8 @@ from svc import DataProvider
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']), options=GRPC_OPTIONS)
-    data_svc_pb2_grpc.add_DataProviderServicer_to_server(DataProvider(TaskManager(cfg)), server)
+    svc_provider = DataProvider(TaskManager(cfg))
+    data_svc_pb2_grpc.add_DataProviderServicer_to_server(svc_provider, server)
     SERVICE_NAMES = (
         data_svc_pb2.DESCRIPTOR.services_by_name['DataProvider'].full_name,
     )
@@ -26,7 +27,7 @@ def serve():
     server.add_insecure_port('[::]:%s' % cfg['port'])
     server.start()
     if cfg['pass_via']:
-        from via_svc.svc import expose_me
+        from common.via_client import expose_me
         expose_me(cfg, '', via_svc_pb2.DATA_SVC, '')
     print('Data Service ready for action.')
     return server

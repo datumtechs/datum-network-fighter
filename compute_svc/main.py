@@ -18,7 +18,8 @@ from svc import ComputeProvider
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']), options=GRPC_OPTIONS)
-    compute_svc_pb2_grpc.add_ComputeProviderServicer_to_server(ComputeProvider(TaskManager(cfg)), server)
+    svc_provider = ComputeProvider(TaskManager(cfg))
+    compute_svc_pb2_grpc.add_ComputeProviderServicer_to_server(svc_provider, server)
     SERVICE_NAMES = (
         compute_svc_pb2.DESCRIPTOR.services_by_name['ComputeProvider'].full_name,
     )
@@ -27,7 +28,7 @@ def serve():
     server.add_insecure_port('[::]:%s' % bind_port)
     server.start()
     if cfg['pass_via']:
-        from via_svc.svc import expose_me
+        from common.via_client import expose_me
         expose_me(cfg, '', via_svc_pb2.COMPUTE_SVC, '')
     print(f'Compute Service work on port {bind_port}.')
     return server

@@ -51,5 +51,5 @@ COMMON_EVENT = {
 MAX_MESSAGE_LENGTH = 2 * 1024 ** 3 - 1
 GRPC_OPTIONS = [
     ('grpc.max_receive_message_length', MAX_MESSAGE_LENGTH),
-    ('grpc.max_send_message_length', MAX_MESSAGE_LENGTH),
+    # ('grpc.max_send_message_length', -1),  # default no limited
 ]
