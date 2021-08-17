@@ -44,7 +44,7 @@ if __name__ == '__main__':
         cfg.update(load_cfg(args.config))
     logging.basicConfig(
         level=logging.INFO,
-        format='##### PID %(process)-8d %(processName)-15s %(filename)10s line %(lineno)-5d %(name)10s %(funcName)-10s: %(message)s',
+        format='##### %(asctime)s PID %(process)-8d %(processName)-15s %(filename)10s line %(lineno)-5d %(name)10s %(funcName)-10s: %(message)s',
         stream=sys.stderr,
     )
 

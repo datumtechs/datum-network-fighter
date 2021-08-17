@@ -1,31 +1,18 @@
 import logging
+import multiprocessing as mp
 import threading
-import os
-import sys
-import signal
 from collections import namedtuple
-from concurrent.futures import ProcessPoolExecutor
+
 from .task import Task
 
 log = logging.getLogger(__name__)
 TPeer = namedtuple('TPeer', ['ip', 'port', 'party_id', 'name'])
 
 
-def handler(signum, frame):
-    log.info('handle SIGINT')
-    sys.exit(0)
-
-
-def init():
-    signal.signal(signal.SIGINT, handler)
-
-
 class TaskManager:
     def __init__(self, cfg):
         self.cfg = cfg
-        self.executor = ProcessPoolExecutor(cfg['thread_pool_size'], initializer=init)
         self.tasks = {}
-        self.task_future = {}
 
     def start(self, req):
         task_id = req.task_id
@@ -44,20 +31,10 @@ class TaskManager:
                     contract_cfg, data_party, computation_party, result_party)
         self.tasks[task_id] = task
         log.info(f'new task: {task.id}, thread id: {threading.get_ident()}')
-        future = self.executor.submit(Task.run, task)
-        self.task_future[task_id] = future
-        log.info(f'task {task_id} done? {future.done()}')
         # TODO clean info after task finished
+        p = mp.Process(target=Task.run, args=(task,))
+        p.start()
         return True, f'submit task {task_id}'
-
-    def cancel(self, task_id):
-        future = self.task_future[task_id]
-        future.cancel()
-        self.erase(task_id)
-
-    def erase(self, task_id):
-        del self.task_future[task_id]
-        del self.tasks[task_id]
 
     def get_task(self, task_id):
         return self.tasks.get(task_id, None)
