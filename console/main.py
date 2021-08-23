@@ -210,7 +210,7 @@ def comp_run_task(args, stub):
         party = peer_cfg['NODE_ID']
         p.party_id = party
         p.name = party
-        peers[party] = addr
+        peers[party] = peer_cfg['INTERNAL']
     _mock_schedule_dispatch_task(peers, req, compute_parties, each_party, run_task_cfg['dynamic_parameter'])
 
 
