@@ -1,9 +1,16 @@
 import logging
+import os
+import sys
 from concurrent import futures
 
 import grpc
 from grpc_reflection.v1alpha import reflection
 
+cur_dir = os.path.abspath(os.path.dirname(__file__))
+par_dir = os.path.abspath(os.path.join(cur_dir, os.pardir))
+sys.path.insert(0, par_dir)
+sys.path.insert(0, os.path.join(par_dir, 'protos'))
+sys.path.insert(0, cur_dir)
 from common.utils import load_cfg
 from config import cfg
 from protos import via_svc_pb2, via_svc_pb2_grpc
@@ -23,16 +30,15 @@ def serve():
     return server
 
 
-if __name__ == '__main__':
+def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="config for start up")
-    parser.add_argument('--config', help='new config')
+    parser.add_argument('config')
     parser.add_argument('--port', type=int, help='port listen at')
 
     args = parser.parse_args()
-    if args.config:
-        cfg.update(load_cfg(args.config))
+    cfg.update(load_cfg(args.config))
     if args.port:
         cfg['port'] = args.port
 
@@ -40,3 +46,7 @@ if __name__ == '__main__':
 
     server = serve()
     server.wait_for_termination()
+
+
+if __name__ == '__main__':
+    main()
