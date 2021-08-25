@@ -43,3 +43,7 @@ console/run_task*
 results_root
 *.log
 *.csv
+build/
+dist/
+*.whl
+*egg-info
