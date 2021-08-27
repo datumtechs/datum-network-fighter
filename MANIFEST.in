@@ -1,11 +1,7 @@
-recursive-include data_svc *.yaml
-recursive-include data_svc *.sh
-recursive-include compute_svc *.yaml
-recursive-include compute_svc *.sh
-recursive-include via_svc *.yaml
-recursive-include via_svc *.sh
+include data_svc/config.yaml
+include compute_svc/config.yaml
+include via_svc/config.yaml
 
-exclude via_svc/start_svc_batch.sh
 exclude pyproject.toml
 exclude setup.cfg
 exclude MANIFEST.in
