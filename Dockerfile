@@ -31,3 +31,11 @@ COPY $PKG_FIGHTER /home
 RUN cd /home && pip3 install "$(basename $PKG_ROSETTA)"
 RUN cd /home && pip3 install "$(basename $PKG_CHANNEL_SDK)"
 RUN cd /home && pip3 install "$(basename $PKG_FIGHTER)"
+
+RUN cd /home && rm *.whl
+
+COPY data_svc/start_data_svc.sh /home
+COPY compute_svc/start_compute_svc.sh /home
+COPY via_svc/start_via_svc.sh /home
+
+WORKDIR /home
