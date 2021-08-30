@@ -2,6 +2,7 @@ import logging
 import multiprocessing as mp
 import os
 import sys
+import threading
 from concurrent import futures
 from signal import signal, SIGTERM
 
@@ -22,9 +23,9 @@ from protos import data_svc_pb2, data_svc_pb2_grpc, via_svc_pb2
 from svc import DataProvider
 
 
-def serve():
+def serve(task_manager):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']), options=GRPC_OPTIONS)
-    svc_provider = DataProvider(TaskManager(cfg))
+    svc_provider = DataProvider(task_manager)
     data_svc_pb2_grpc.add_DataProviderServicer_to_server(svc_provider, server)
     SERVICE_NAMES = (
         data_svc_pb2.DESCRIPTOR.services_by_name['DataProvider'].full_name,
@@ -53,12 +54,20 @@ def main():
         stream=sys.stderr,
     )
 
-    server = serve()
-
     event_stop = mp.Event()
+    task_manager = TaskManager(cfg)
+
+    def task_clean(task_manager, event_stop):
+        while not event_stop.wait(60):
+            task_manager.clean()
+
+    t_task_clean = threading.Thread(target=task_clean, args=(task_manager, event_stop))
+    t_task_clean.start()
+
+    server = serve(task_manager)
+
     report_process = mp.Process(target=report_event, args=(cfg['schedule_svc'], event_stop))
     report_process.start()
-
 
     def handle_sigterm(*_):
         print("Received shutdown signal")
@@ -67,9 +76,9 @@ def main():
         event_stop.set()
         print("Shut down gracefully")
 
-
     signal(SIGTERM, handle_sigterm)
 
+    t_task_clean.join()
     server.wait_for_termination()
     report_process.join()
     print('over')

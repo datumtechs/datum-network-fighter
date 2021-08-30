@@ -8,6 +8,9 @@ import tempfile
 import paramiko
 from scp import SCPClient
 
+cur_dir = os.path.abspath(os.path.dirname(__file__))
+par_dir = os.path.abspath(os.path.join(cur_dir, os.pardir))
+sys.path.insert(0, par_dir)
 from common.utils import load_cfg, dump_yaml
 
 
@@ -118,7 +121,7 @@ def start_svc(ssh, remote_dir, svc_type, cfg_file):
 
 def kill_svc(ssh):
     print(f'kill all svc')
-    _, stdout, _ = ssh.exec_command(r'ps -ef | grep "[p]ython -u main.py --config config.*.yaml"')
+    _, stdout, _ = ssh.exec_command(r'ps -ef | grep "[p]ython -u main.py config.*.yaml"')
     lines = stdout.read().decode()
     print(lines)
     pids = []

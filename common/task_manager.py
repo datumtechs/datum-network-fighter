@@ -1,6 +1,7 @@
 import logging
 import multiprocessing as mp
 import threading
+import time
 from collections import namedtuple
 
 from .task import Task
@@ -13,6 +14,7 @@ class TaskManager:
     def __init__(self, cfg):
         self.cfg = cfg
         self.tasks = {}
+        self.procs = {}
 
     def start(self, req):
         task_id = req.task_id
@@ -31,10 +33,29 @@ class TaskManager:
                     contract_cfg, data_party, computation_party, result_party)
         self.tasks[task_id] = task
         log.info(f'new task: {task.id}, thread id: {threading.get_ident()}')
-        # TODO clean info after task finished
         p = mp.Process(target=Task.run, args=(task,))
+        self.procs[task_id] = p
         p.start()
         return True, f'submit task {task_id}'
 
     def get_task(self, task_id):
         return self.tasks.get(task_id, None)
+
+    def cancel_task(self, task_id):
+        if task_id not in self.procs:
+            return False, f'process for task {task_id} not found'
+        p = self.procs[task_id]
+        p.terminate()
+        time.sleep(0.1)
+        msg = 'will soon' if p.is_alive() else 'succ'
+        return True, f'cancel task {task_id} {msg}'
+
+    def clean(self):
+        exited = []
+        for task_id, p in self.procs.items():
+            if p.exitcode is not None:
+                exited.append(task_id)
+        log.info(f'detect {len(exited)} out of {len(self.procs)} tasks has terminated')
+        for task_id in exited:
+            self.tasks.pop(task_id, None)
+            self.procs.pop(task_id, None)

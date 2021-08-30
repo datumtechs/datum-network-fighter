@@ -15,7 +15,6 @@ from protos import io_channel_pb2_grpc
 from protos import via_svc_pb2
 from protos import common_pb2
 
-
 cfg = {}
 task_id = None
 
@@ -230,6 +229,34 @@ def _mock_schedule_dispatch_task(peers, req, compute_parties, each_party, dynami
         print(addr, resp)
 
 
+def comp_cancel_task(args, stub):
+    task_id = args[0]
+    run_task_cfg_file = args[1]
+
+    req = common_pb2.TaskCancelReq()
+    req.task_id = task_id
+    with open(run_task_cfg_file) as load_f:
+        run_task_cfg = json.load(load_f)
+        print('run_task_cfg keys:\n', run_task_cfg)
+
+    compute_parties = run_task_cfg['computation_party']
+    peers = {}
+    for peer_cfg in run_task_cfg['peers']:
+        party = peer_cfg['NODE_ID']
+        peers[party] = peer_cfg['INTERNAL']
+    _mock_cancel_task(peers, req, compute_parties)
+
+
+def _mock_cancel_task(peers, req, compute_parties):
+    print(peers)
+    for party, addr in peers.items():
+        ch = grpc.insecure_channel(addr)
+        svc_type = via_svc_pb2.COMPUTE_SVC if party in compute_parties else via_svc_pb2.DATA_SVC
+        stub = svc_stub[svc_type](ch)
+        resp = stub.HandleCancelTask(req)
+        print(addr, resp)
+
+
 directions = {
     'status': get_status,
     'list_data': list_data,
@@ -243,6 +270,7 @@ directions = {
     'comp_task_details': comp_task_details,
     'comp_upload_shard': comp_upload_shard,
     'comp_run_task': comp_run_task,
+    'comp_cancel_task': comp_cancel_task,
 
 }
 

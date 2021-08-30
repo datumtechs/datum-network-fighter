@@ -54,7 +54,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     os.rename(path, full_new_name)
                     data_id = m.hexdigest()
                     result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=full_new_name)
-                    file_summary = {"origin_id": data_id, "file_path": full_new_name, "ip": cfg["bind_ip"], "port": cfg["port"]}
+                    file_summary = {"origin_id": data_id, "file_path": full_new_name, "ip": cfg["bind_ip"],
+                                    "port": cfg["port"]}
                     ret = report_file_summary(cfg['schedule_svc'], file_summary)
                     # event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_SUCCESS"], "", "", "upload data success.")
                     log.info(ret)
@@ -132,7 +133,6 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             # event_engine.fire_event(DATA_EVENT["DOWNLOAD_DATA_FAILED"], "", "", f"download data fail. {str(e)}")
             # event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
 
-
     def SendSharesData(self, request, context):
         ans = data_svc_pb2.SendSharesDataReply(status=data_svc_pb2.TaskStatus.Cancelled)
         return ans
@@ -165,3 +165,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         log.info(f'{context.peer()} submit a task {request.task_id}, thread id: {threading.get_ident()}')
         ok, msg = self.task_manager.start(request)
         return common_pb2.TaskReadyGoReply(ok=ok, msg=msg)
+
+    def HandleCancelTask(self, request, context):
+        log.info(f'{context.peer()} want to cancel task {request.task_id}')
+        ok, msg = self.task_manager.cancel_task(request.task_id)
+        return common_pb2.TaskCancelReply(ok=ok, msg=msg)

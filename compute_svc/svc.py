@@ -44,3 +44,8 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
         log.info(f'{context.peer()} submit a task {request.task_id}, thread id: {threading.get_ident()}')
         ok, msg = self.task_manager.start(request)
         return common_pb2.TaskReadyGoReply(ok=ok, msg=msg)
+
+    def HandleCancelTask(self, request, context):
+        log.info(f'{context.peer()} want to cancel task {request.task_id}')
+        ok, msg = self.task_manager.cancel_task(request.task_id)
+        return common_pb2.TaskCancelReply(ok=ok, msg=msg)

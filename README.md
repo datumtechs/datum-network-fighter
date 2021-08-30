@@ -1,7 +1,7 @@
 ### 步骤
 0. ` git clone -b develop --recurse-submodules git@192.168.9.66:RosettaFlow/fighter-py.git && cd fighter-py`
 1. 安装依赖：`pip install -r requirements.txt`
-2. 编译 gRPC 协议：`python compile_proto_file.py`
+2. 编译 gRPC 协议：`python tools/compile_proto_file.py`
 3. 测试：`cd tests && ./fast_check.sh`
 4. 进入到相应的服务目录
 
