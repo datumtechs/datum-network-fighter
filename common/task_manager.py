@@ -33,7 +33,7 @@ class TaskManager:
                     contract_cfg, data_party, computation_party, result_party)
         self.tasks[task_id] = task
         log.info(f'new task: {task.id}, thread id: {threading.get_ident()}')
-        p = mp.Process(target=Task.run, args=(task,))
+        p = mp.Process(target=Task.run, args=(task,), daemon=True)
         self.procs[task_id] = p
         p.start()
         return True, f'submit task {task_id}'
@@ -45,8 +45,9 @@ class TaskManager:
         if task_id not in self.procs:
             return False, f'process for task {task_id} not found'
         p = self.procs[task_id]
-        p.terminate()
-        time.sleep(0.1)
+        p.kill()
+        log.info(f'wait {task_id} terminate')
+        p.join()
         msg = 'will soon' if p.is_alive() else 'succ'
         return True, f'cancel task {task_id} {msg}'
 
