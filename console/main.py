@@ -1,19 +1,20 @@
 import argparse
+import json
 import logging
 import os
 import time
-import json
 
 import grpc
 import pandas as pd
 from google.protobuf import empty_pb2
 from prompt_toolkit import prompt
+
 from common.utils import load_cfg
+from protos import common_pb2
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
 from protos import io_channel_pb2_grpc
 from protos import via_svc_pb2
-from protos import common_pb2
 
 cfg = {}
 task_id = None

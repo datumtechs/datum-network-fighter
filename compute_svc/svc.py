@@ -2,6 +2,7 @@ import logging
 import threading
 
 import psutil
+
 from protos import common_pb2, compute_svc_pb2, compute_svc_pb2_grpc
 
 log = logging.getLogger(__name__)

@@ -1,14 +1,17 @@
 # coding:utf-8
 
 import time
+
 from common.consts import EVENT_QUEUE
+
 
 class Event(object):
     """事件对象"""
 
     def __init__(self, event_type=None):
         self.type_: str = event_type  # 事件类型
-        self.dict_ = {}               # 事件的内容的其他字段
+        self.dict_ = {}  # 事件的内容的其他字段
+
 
 class EventEngine(object):
     def __init__(self):
@@ -36,6 +39,7 @@ class EventEngine(object):
         向事件队列中存入事件
         """
         self.__queue.put(event)
+
 
 event_engine = EventEngine()
 

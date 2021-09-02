@@ -1,18 +1,16 @@
 import hashlib
+import logging
 import os
 import threading
-import logging
 import time
 
 import grpc
 
+from common.report_engine import report_file_summary
 from config import cfg
+from protos import common_pb2
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
-from protos import common_pb2
-from common.event_engine import event_engine
-from common.consts import DATA_EVENT, COMMON_EVENT
-from common.report_engine import report_file_summary
 
 log = logging.getLogger(__name__)
 

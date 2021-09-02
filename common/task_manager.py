@@ -1,7 +1,6 @@
 import logging
 import multiprocessing as mp
 import threading
-import time
 from collections import namedtuple
 
 from .task import Task

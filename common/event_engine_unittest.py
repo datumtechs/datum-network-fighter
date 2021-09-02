@@ -5,6 +5,7 @@ import unittest
 from common.consts import EVENT_QUEUE
 from common.event_engine import EventEngine
 
+
 class TestEventEngine(unittest.TestCase):
     def test_init(self):
         event_engine = EventEngine()
@@ -23,6 +24,7 @@ class TestEventEngine(unittest.TestCase):
         self.assertEqual(event.dict_.get("identity"), identity)
         self.assertEqual(event.dict_.get("task_id"), task_id)
         self.assertEqual(event.dict_.get("content"), content)
+
 
 if __name__ == '__main__':
     unittest.main()

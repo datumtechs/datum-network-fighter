@@ -1,18 +1,17 @@
 import json
 import logging
 
-from protos import via_svc_pb2
-from common.socket_utils import get_free_loopback_tcp_port
+from common.consts import COMMON_EVENT
 from common.event_engine import event_engine
-from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
-
+from common.socket_utils import get_free_loopback_tcp_port
+from protos import via_svc_pb2
 
 log = logging.getLogger(__name__)
 channel = None
 
 
-
-def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via, self_internal_addr):
+def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via,
+                         self_internal_addr):
     config_dict = {'TASK_ID': task_id}
 
     list_node_info = []
@@ -22,7 +21,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
         addr = '{}:{}'.format(node_info.ip, node_info.port)
         if not pass_via:
             addr = self_internal_addr
-        via_name = 'VIA{}'.format(i+1)
+        via_name = 'VIA{}'.format(i + 1)
         via_dict[via_name] = addr
         internal_addr = self_internal_addr if self_party_id == party_id else ''
         one_node_info = dict(
@@ -77,7 +76,8 @@ def reg_to_via(task_id, config_dict, node_id):
     expose_me(cfg, task_id, via_svc_pb2.NET_COMM_SVC, node_id)
 
 
-def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via, parent_proc_ip, event_type):
+def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via, parent_proc_ip,
+                    event_type):
     with get_free_loopback_tcp_port() as port:
         print(f'got a free port: {port}')
     self_internal_addr = f'{parent_proc_ip}:{port}'
@@ -109,7 +109,8 @@ def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, re
             reg_to_via(task_id, config_dict, node_id)
             event_engine.fire_event(event_type["REGISTER_TO_VIA_SUCCESS"], task_id, "", "register to via success.")
         except Exception as e:
-            event_engine.fire_event(event_type["REGISTER_TO_VIA_FAILED"], task_id, "", f"register to via failed. {str(e)}")
+            event_engine.fire_event(event_type["REGISTER_TO_VIA_FAILED"], task_id, "",
+                                    f"register to via failed. {str(e)}")
             event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], task_id, "", "service stop.")
 
     try:
@@ -119,7 +120,6 @@ def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, re
     except Exception as e:
         event_engine.fire_event(event_type["SET_CHANNEL_FAILED"], task_id, "", f"set channel fail. {str(e)}")
         event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], task_id, "", "service stop.")
-
 
 
 if __name__ == '__main__':

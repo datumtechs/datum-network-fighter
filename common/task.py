@@ -1,10 +1,10 @@
-
 import logging
 import os
 import threading
 import time
-from common.event_engine import event_engine
+
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
+from common.event_engine import event_engine
 
 log = logging.getLogger(__name__)
 
@@ -51,9 +51,11 @@ class Task:
         event_engine.fire_event(self.event_type["TASK_START"], self.id_, "", "task start.")
         try:
             self.download_algo()
-            event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], self.id_, "", "download contract success.")
+            event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], self.id_, "",
+                                    "download contract success.")
         except Exception as e:
-            event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], self.id_, "", f"download contract fail. {str(e)}")
+            event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], self.id_, "",
+                                    f"download contract fail. {str(e)}")
             event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.id_, "", "service stop.")
 
         self.build_env()
@@ -75,7 +77,8 @@ class Task:
             pproc_ip = self.cfg['bind_ip']
 
             rtt_set_channel(self.id, self.party_id, self.peers,
-                            self.data_party, self.computation_party, self.result_party, pass_via, pproc_ip, self.event_type)
+                            self.data_party, self.computation_party, self.result_party, pass_via, pproc_ip,
+                            self.event_type)
 
             user_cfg = self.assemble_cfg()
             sys.path.insert(0, os.path.abspath(self._get_code_dir()))
@@ -89,11 +92,13 @@ class Task:
             self._ensure_dir(result_dir)
             m.main(user_cfg, self.result_party, result_dir, self.data_party)
             log.info(f'run task done')
-            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], self.id_, "", "contract execute success.")
+            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], self.id_, "",
+                                    "contract execute success.")
             event_engine.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], self.id_, "", "task finish.")
         except Exception as e:
             log.error(repr(e))
-            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], self.id_, "", f"contract execute failed. {str(e)}")
+            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], self.id_, "",
+                                    f"contract execute failed. {str(e)}")
             event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.id_, "", "service stop.")
         finally:
             log.info('task final clean')

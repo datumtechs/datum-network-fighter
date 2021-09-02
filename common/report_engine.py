@@ -1,10 +1,13 @@
 # coding:utf-8
 
+import queue
+
 import grpc
+
+from common.consts import EVENT_QUEUE
 from protos.lib.api import sys_rpc_api_pb2 as pb2
 from protos.lib.api import sys_rpc_api_pb2_grpc as pb2_grpc
-from common.consts import EVENT_QUEUE
-import queue
+
 
 class ReportEngine(object):
 
@@ -43,6 +46,7 @@ class ReportEngine(object):
     def close(self):
         self.conn.close()
 
+
 def report_event(server_addr: str, stop_event):
     report_engine = ReportEngine(server_addr)
     try:
@@ -55,6 +59,7 @@ def report_event(server_addr: str, stop_event):
     finally:
         report_engine.close()
         print('report_engine closed')
+
 
 def report_file_summary(server_addr: str, summary: dict):
     report_engine = ReportEngine(server_addr)
