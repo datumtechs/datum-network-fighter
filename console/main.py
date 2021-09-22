@@ -314,7 +314,8 @@ if __name__ == '__main__':
     channels[via_svc_pb2.COMPUTE_SVC] = ch
 
     while True:
-        user_input = prompt('> ')
+        print("***************************")
+        user_input = prompt('command>>> ')
         if user_input == 'exit':
             break
         user_input = user_input.strip().split()

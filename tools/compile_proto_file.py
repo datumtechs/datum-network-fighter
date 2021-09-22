@@ -19,7 +19,7 @@ if not os.path.exists(init_py):
     with open(init_py, 'w') as f:
         pass
 
-base_cmd = f'{sdk_path} -m grpc_tools.protoc --python_out={out_dir} --grpc_python_out={out_dir}'
+base_cmd = f'{sdk_path} -m grpc_tools.protoc --experimental_allow_proto3_optional --python_out={out_dir} --grpc_python_out={out_dir}'
 
 for proto, file in protos_to_compile.items():
     include_path = os.path.join(proto_root_path, proto)

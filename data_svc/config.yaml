@@ -3,9 +3,20 @@ bind_ip: 192.168.16.151
 port: 50011
 chunk_size: 1024
 pass_via: yes
-via_svc: 192.168.16.153:50041
+via_svc: 192.168.16.151:50041
 thread_pool_size: 4
 data_root: ../data
 code_root_dir: ../contract_work_dir
 results_root_dir: results_root
 schedule_svc: 192.168.16.151:51131
+certs: 
+  base_path: /home/juzix/fighter-v2/fighter-py/certs
+  root_cert: CA.crt
+  server_sign_key: SS00.key
+  server_sign_cert: SS00.crt
+  server_enc_key: SE00.key
+  server_enc_cert: SE00.crt
+  client_sign_key: CS01.key
+  client_sign_cert: CS01.crt
+  client_enc_key: CE01.key
+  client_enc_cert: CE01.crt

@@ -1,3 +1,0 @@
-port: 50041
-public_ip: 192.168.16.153
-thread_pool_size: 4

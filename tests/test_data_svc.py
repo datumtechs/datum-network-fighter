@@ -3,25 +3,29 @@ import os
 import tempfile
 import time
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch,MagicMock
 
 import grpc
 from common.socket_utils import get_free_loopback_tcp_port, is_port_in_use
 from google.protobuf import empty_pb2
 
 from test_helper import *
+from common.task_manager import TaskManager
+from common.utils import load_cfg
 
 
 class DataSvcTest(unittest.TestCase):
     def setUp(self):
         os.chdir('../data_svc')
         from data_svc.main import cfg, serve
+        cfg.update(load_cfg("config.yaml"))
         with get_free_loopback_tcp_port() as port:
             print(f'got a free port: {port}')
         cfg['port'] = port
         cfg['pass_via'] = False
         self._cfg = cfg
-        self._server = serve()
+        task_manager = TaskManager(cfg)
+        self._server = serve(task_manager)
 
     def tearDown(self):
         self._server.stop(0)
@@ -40,15 +44,19 @@ class DataSvcRpcTest(unittest.TestCase):
     def setUp(self):
         os.chdir('../data_svc')
         from data_svc.main import cfg, serve
+        cfg.update(load_cfg("config.yaml"))
         with get_free_loopback_tcp_port() as port:
             print(f'got a free port: {port}')
         cfg['port'] = port
         cfg['pass_via'] = False
-        self._server = serve()
+        task_manager = TaskManager(cfg)
+        self._server = serve(task_manager)
         from protos import data_svc_pb2_grpc
         self.channel = grpc.insecure_channel(f'localhost:{port}')
         self.data_stub = data_svc_pb2_grpc.DataProviderStub(self.channel)
         self.data_root_dir = cfg['data_root']
+        if not os.path.exists(self.data_root_dir):
+            os.makedirs(self.data_root_dir, exist_ok=True)
         self.a_test_file_name = os.path.join(self.data_root_dir, 'abc.csv')
         self._prepare_data()
         self.uploaded_files = []
@@ -73,6 +81,7 @@ class DataSvcRpcTest(unittest.TestCase):
 
     @patch('svc.report_file_summary')
     def test_upload(self, mock_report_file_summary):
+        mock_report_file_summary.return_value = MagicMock(status=0)
         with tempfile.NamedTemporaryFile('w+t', suffix='.csv') as f:
             c = 'id,x,y\n1,3.14,pi\n'
             f.write(c)
@@ -98,6 +107,7 @@ class DataSvcRpcTest(unittest.TestCase):
         download_to = f'tmp_{now}.csv'
         self.assertEqual(True, download(
             self.data_stub, download_to, self.a_test_file_name))
+        self.uploaded_files.append(download_to)
 
     def test_list_data(self):
         self.assertEqual(True, list_data(self.data_stub))

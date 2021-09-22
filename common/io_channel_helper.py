@@ -1,18 +1,22 @@
+import os
 import json
 import logging
 
 from common.consts import COMMON_EVENT
 from common.event_engine import event_engine
 from common.socket_utils import get_free_loopback_tcp_port
-from protos import via_svc_pb2
+import channel_sdk.grpc
+import latticex.rosetta as rtt
+
 
 log = logging.getLogger(__name__)
-channel = None
 
-
-def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via,
-                         self_internal_addr):
-    config_dict = {'TASK_ID': task_id}
+def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, 
+                         result_party, pass_via, certs, self_internal_addr):
+    certs_base_path = certs.get('base_path', '')
+    config_dict = {'TASK_ID': task_id,
+                   'ROOT_CERT': os.path.join(certs_base_path, certs['root_cert']),
+                   'LOG_LEVEL': 2}
 
     list_node_info = []
     via_dict = {}
@@ -23,12 +27,36 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
             addr = self_internal_addr
         via_name = 'VIA{}'.format(i + 1)
         via_dict[via_name] = addr
-        internal_addr = self_internal_addr if self_party_id == party_id else ''
+        if self_party_id == party_id:
+            internal_addr = self_internal_addr
+            server_sign_key = os.path.join(certs_base_path, certs['server_sign_key'])
+            server_sign_cert = os.path.join(certs_base_path, certs['server_sign_cert'])
+            server_enc_key = os.path.join(certs_base_path, certs['server_enc_key'])
+            server_enc_cert = os.path.join(certs_base_path, certs['server_enc_cert'])
+        else:
+            internal_addr = ''
+            server_sign_key = ''
+            server_sign_cert = ''
+            server_enc_key = ''
+            server_enc_cert = ''
+        # Clients of all parties must have certificates.
+        client_sign_key = os.path.join(certs_base_path, certs['client_sign_key'])
+        client_sign_cert = os.path.join(certs_base_path, certs['client_sign_cert'])
+        client_enc_key = os.path.join(certs_base_path, certs['client_enc_key'])
+        client_enc_cert = os.path.join(certs_base_path, certs['client_enc_cert'])
         one_node_info = dict(
             NODE_ID=party_id,
             NAME=node_info.name,
             ADDRESS=internal_addr,
-            VIA=via_name
+            VIA=via_name,
+            SERVER_SIGN_KEY=server_sign_key,
+            SERVER_SIGN_CERT=server_sign_cert,
+            SERVER_ENC_KEY=server_enc_key,
+            SERVER_ENC_CERT=server_enc_cert,
+            CLIENT_SIGN_KEY=client_sign_key,
+            CLIENT_SIGN_CERT=client_sign_cert,
+            CLIENT_ENC_KEY=client_enc_key,
+            CLIENT_ENC_CERT=client_enc_cert   
         )
         list_node_info.append(one_node_info)
 
@@ -41,86 +69,34 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
     return config_dict
 
 
-def error_callback(a, b, c, d, e):
-    print('nodeid:{}, id:{}, errno:{}, error_msg:{}, ext_data:{}'.format(a, b, c, d, e))
-
-
-def get_current_via_address(config_dict, current_node_id):
-    list_node_info = config_dict['NODE_INFO']
-    address = ''
-    via = ''
-    for node_info in list_node_info:
-        nodeid = node_info['NODE_ID']
-        if nodeid == current_node_id:
-            address = node_info['ADDRESS']
-            via = node_info['VIA']
-            break
-
-    if '' == via:
-        return '', ''
-
-    via_info = config_dict['VIA_INFO']
-    via_address = via_info[via]
-
-    return address, via_address
-
-
-def reg_to_via(task_id, config_dict, node_id):
-    address, via_address = get_current_via_address(config_dict, node_id)
-    print('========cur addr:{}, cur via addr:{}'.format(address, via_address))
-    arr_ = address.split(':')
-    ip = arr_[0]
-    port = arr_[1]
-    cfg = {'via_svc': via_address, 'bind_ip': ip, 'port': port}
-    from common.via_client import expose_me
-    expose_me(cfg, task_id, via_svc_pb2.NET_COMM_SVC, node_id)
-
-
-def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via, parent_proc_ip,
-                    event_type):
+def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, result_party, 
+                    pass_via, parent_proc_ip, certs, event_type):
     with get_free_loopback_tcp_port() as port:
         print(f'got a free port: {port}')
     self_internal_addr = f'{parent_proc_ip}:{port}'
     print('get a free port:', self_internal_addr)
-
-    config_dict = build_io_channel_cfg(
-        task_id, self_party_id, peers, data_party, compute_party, result_party, pass_via, self_internal_addr)
-
+    config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, 
+                                       result_party, pass_via, certs, self_internal_addr)
     rtt_config = json.dumps(config_dict)
-    # with open(f'tmp_{self_party_id}.json', 'w') as f:
-    #     json.dump(config_dict, f)
-
-    node_id = self_party_id
-    global channel
-
+    print(f'self_party_id: {self_party_id}')
+    print(f'rtt_config: {rtt_config}')
     print('before create_channel')
-    import latticex.rosetta as rtt
     try:
-        import channel_sdk.grpc as io_channel
-        channel = io_channel.create_channel(node_id, rtt_config, error_callback)
-        print('create_channel success.')
-        event_engine.fire_event(event_type["CREATE_CHANNEL_SUCCESS"], task_id, "", "create channel success.")
+        io_channel = channel_sdk.grpc.APIManager()
+        channel = io_channel.create_channel(self_party_id, rtt_config)
+        print('create channel success.')
+        event_engine.fire_event(event_type["CREATE_CHANNEL_SUCCESS"], self_party_id, task_id, "create channel success.")
     except Exception as e:
-        event_engine.fire_event(event_type["CREATE_CHANNEL_FAILED"], task_id, "", f"create channel fail. {str(e)}")
-        event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], task_id, "", "service stop.")
-
-    if pass_via:
-        try:
-            reg_to_via(task_id, config_dict, node_id)
-            event_engine.fire_event(event_type["REGISTER_TO_VIA_SUCCESS"], task_id, "", "register to via success.")
-        except Exception as e:
-            event_engine.fire_event(event_type["REGISTER_TO_VIA_FAILED"], task_id, "",
-                                    f"register to via failed. {str(e)}")
-            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], task_id, "", "service stop.")
-
+        event_engine.fire_event(event_type["CREATE_CHANNEL_FAILED"], self_party_id, task_id, f"create channel fail. {str(e)}")
+        event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self_party_id, task_id, "service stop.")
+    
     try:
-        rtt.set_channel(channel)
-        print('set channel succeed==================')
-        event_engine.fire_event(event_type["SET_CHANNEL_SUCCESS"], task_id, "", "set channel success.")
+        rtt.set_channel("", channel)
+        print('set channel success.')
+        event_engine.fire_event(event_type["SET_CHANNEL_SUCCESS"], self_party_id, task_id, "set channel success.")
     except Exception as e:
-        event_engine.fire_event(event_type["SET_CHANNEL_FAILED"], task_id, "", f"set channel fail. {str(e)}")
-        event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], task_id, "", "service stop.")
-
+        event_engine.fire_event(event_type["SET_CHANNEL_FAILED"], self_party_id, task_id, f"set channel fail. {str(e)}")
+        event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self_party_id, task_id, "service stop.")
 
 if __name__ == '__main__':
     peers = [{'party_id': 'p5',
@@ -138,4 +114,4 @@ if __name__ == '__main__':
 
     rtt_set_channel('task-1', 'p5', peers,
                     [], ['p5', 'p6', 'p7'], [],
-                    True, '192.168.9.32')
+                    True, '192.168.9.32', {}, {})
