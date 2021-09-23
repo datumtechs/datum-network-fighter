@@ -1,31 +1,71 @@
 
 bash kill.sh
 
-workdir=$(cd $(dirname $0); pwd)
-workdir=${workdir}"/../.."
-cfg=config.yaml
+source config.ini
+via_svc_num=$[${data_svc_num} + ${compute_svc_num}]
+schedule_svc_num=$[${data_svc_num} + ${compute_svc_num}]
+via_port=${via_svc_base_port}
+schedule_port=${schedule_svc_base_port}
+
 export PYTHONPATH=$PYTHONPATH:..:../protos/:../common
-mkdir -p ../log
+mkdir -p log
+current_dir=$(cd $(dirname $0); pwd)
+log_path=${current_dir}"/log"
+base_dir=${current_dir}"/../.."
+cfg=config.yaml
+ip=127.0.0.1
 
-cd $workdir; cd data_svc
-echo "start data_svc that use port 50011,50012,50013"
-nohup python -u main.py $cfg --port=50011 --via_svc=192.168.16.151:50041 > ../log/data_svc_50011.log 2>&1 &
-nohup python -u main.py $cfg --port=50012 --via_svc=192.168.16.151:50042 > ../log/data_svc_50012.log 2>&1 &
-nohup python -u main.py $cfg --port=50013 --via_svc=192.168.16.151:50043 > ../log/data_svc_50013.log 2>&1 &
-nohup python -u main.py $cfg --port=50017 --via_svc=192.168.16.151:50047 > ../log/data_svc_50017.log 2>&1 &
-nohup python -u main.py $cfg --port=50018 --via_svc=192.168.16.151:50048 > ../log/data_svc_50018.log 2>&1 &
-nohup python -u main.py $cfg --port=50019 --via_svc=192.168.16.151:50049 > ../log/data_svc_50019.log 2>&1 &
 
-cd $workdir; cd compute_svc
-echo "start compute_svc that use port 50014,50015,50016"
-nohup python -u main.py $cfg --port=50014 --via_svc=192.168.16.151:50044 > ../log/comp_svc_50014.log 2>&1 &
-nohup python -u main.py $cfg --port=50015 --via_svc=192.168.16.151:50045 > ../log/comp_svc_50015.log 2>&1 &
-nohup python -u main.py $cfg --port=50016 --via_svc=192.168.16.151:50046 > ../log/comp_svc_50016.log 2>&1 &
+############## data_svc #############
+cd $base_dir; cd data_svc
+data_svc_log=${log_path}"/data_svc"
+mkdir -p ${data_svc_log}
+for port in $(seq ${data_svc_base_port} $[${data_svc_base_port}+${data_svc_num}-1])
+do 
+    echo "start data_svc that use port ${port}"
+    nohup python -u main.py $cfg --bind_ip=${ip} --port=${port} --via_svc=${ip}:${via_port} --schedule_svc=${ip}:${schedule_port} > ${data_svc_log}/data_svc_${port}.log 2>&1 &
+    via_port=$[${via_port}+1]
+    schedule_port=$[${schedule_port}+1]
+done
 
-cd $workdir; cd third_party/via_svc
-bash run_via.sh
 
-cd $workdir; cd console
-python get_config.py
-echo "start console that connect to data_svc which use via port 50041"
-python -u main.py --config=$cfg --data_svc_ip=192.168.16.151 --data_svc_port=50041
+############## compute_svc #############
+cd $base_dir; cd compute_svc
+compute_svc_log=${log_path}"/compute_svc"
+mkdir -p ${compute_svc_log}
+for port in $(seq ${compute_svc_base_port} $[${compute_svc_base_port}+${compute_svc_num}-1])
+do 
+    echo "start compute_svc that use port ${port}"
+    nohup python -u main.py $cfg --bind_ip=${ip} --port=${port} --via_svc=${ip}:${via_port} --schedule_svc=${ip}:${schedule_port} > ${compute_svc_log}/compute_svc_${port}.log 2>&1 &
+    via_port=$[${via_port}+1]
+    schedule_port=$[${schedule_port}+1]
+done
+
+
+############## via_svc #############
+cd $base_dir; cd third_party/via_svc
+via_svc_log=${log_path}"/via_svc"
+mkdir -p ${via_svc_log}
+for port in $(seq ${via_svc_base_port} $[${via_svc_base_port}+${via_svc_num}-1])
+do
+    echo "start via_svc that use port ${port}"
+    nohup ./via-go -ssl ./conf/ssl-conf.yml -address 0.0.0.0:${port} > ${via_svc_log}/via_svc_${port}.log 2>&1 &
+done
+
+
+############## schedule_svc #############
+cd $base_dir; cd tests/schedule_svc
+schedule_svc_log=${log_path}"/schedule_svc"
+mkdir -p ${schedule_svc_log}
+for port in $(seq ${schedule_svc_base_port} $[${schedule_svc_base_port}+${schedule_svc_num}-1])
+do
+    echo "start schedule_svc that use port ${port}"
+    PYTHONPATH="../..:../../protos/:../../common" nohup python -u main.py $cfg --bind_ip=${ip} --port=${port} > ${schedule_svc_log}/schedule_svc_${port}.log 2>&1 &
+done
+
+
+############## console #############
+cd $base_dir; cd console
+# python get_task_cfg.py
+echo "start console that connect to data_svc which internal port ${data_svc_base_port}"
+python -u main.py --config=$cfg --compute_svc_ip=${ip} --compute_svc_port=${compute_svc_base_port}

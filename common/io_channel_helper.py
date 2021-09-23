@@ -72,29 +72,31 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
 def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, result_party, 
                     pass_via, parent_proc_ip, certs, event_type):
     with get_free_loopback_tcp_port() as port:
-        print(f'got a free port: {port}')
+        log.info(f'got a free port: {port}')
     self_internal_addr = f'{parent_proc_ip}:{port}'
-    print('get a free port:', self_internal_addr)
+    log.info(f'get a free port: {self_internal_addr}')
     config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, 
                                        result_party, pass_via, certs, self_internal_addr)
     rtt_config = json.dumps(config_dict)
-    print(f'self_party_id: {self_party_id}')
-    print(f'rtt_config: {rtt_config}')
-    print('before create_channel')
+    log.info(f'self_party_id: {self_party_id}')
+    log.info(f'rtt_config: {rtt_config}')
+    log.info('before create_channel')
     try:
         io_channel = channel_sdk.grpc.APIManager()
         channel = io_channel.create_channel(self_party_id, rtt_config)
-        print('create channel success.')
+        log.info('create channel success.')
         event_engine.fire_event(event_type["CREATE_CHANNEL_SUCCESS"], self_party_id, task_id, "create channel success.")
     except Exception as e:
+        log.exception(f'create channel fail. {str(e)}')
         event_engine.fire_event(event_type["CREATE_CHANNEL_FAILED"], self_party_id, task_id, f"create channel fail. {str(e)}")
         event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self_party_id, task_id, "service stop.")
     
     try:
         rtt.set_channel("", channel)
-        print('set channel success.')
+        log.info('set channel success.')
         event_engine.fire_event(event_type["SET_CHANNEL_SUCCESS"], self_party_id, task_id, "set channel success.")
     except Exception as e:
+        log.exception(f'set channel fail. {str(e)}')
         event_engine.fire_event(event_type["SET_CHANNEL_FAILED"], self_party_id, task_id, f"set channel fail. {str(e)}")
         event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self_party_id, task_id, "service stop.")
 

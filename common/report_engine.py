@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 class ReportEngine(object):
 
     def __init__(self, server_addr: str):
-        self.conn = grpc.insecure_channel(server_addr)  # 连接调度节点的ip和port
+        self.conn = grpc.insecure_channel(server_addr)
         self.__client = pb2_grpc.YarnServiceStub(channel=self.conn)
 
     def report_task_event(self):
@@ -45,12 +45,14 @@ class ReportEngine(object):
             # get event
             event = EVENT_QUEUE.get(block=True, timeout=1)
             req = pb2.ReportTaskEventRequest()
-            # req.party_id = event.dict_["party_id"]
+            req.party_id = event.dict_["party_id"]
             req.task_event.type = event.type_
             req.task_event.task_id = event.dict_["task_id"]
             req.task_event.identity_id = event.dict_["identity_id"]
             req.task_event.content = "{}:{}".format(event.dict_["party_id"], event.dict_["content"])
             req.task_event.create_at = event.dict_["create_at"]
+            str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+            log.debug(str_req)
             self.__client.ReportTaskEvent(req)
         except queue.Empty as e:
             pass
@@ -80,11 +82,13 @@ class ReportEngine(object):
             req.file_path = summary["file_path"]
             req.ip = summary["ip"]
             req.port = str(summary["port"])
+            str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+            log.debug(str_req)
             return self.__client.ReportUpFileSummary(req)
         except Exception as e:
             log.exception(str(e))
 
-    def report_task_resource_expense(self, node_type, node_id:str, resource_usage):
+    def report_task_resource_expense(self, node_type, ip:str, port:str, resource_usage):
         """
         service YarnService {
             rpc ReportTaskResourceExpense (ReportTaskResourceExpenseRequest) returns (api.protobuf.SimpleResponse) {
@@ -96,8 +100,9 @@ class ReportEngine(object):
         }
         message ReportTaskResourceExpenseRequest {
             NodeType                    node_type = 1;
-            string                      node_id = 2;
-            types.ResourceUsageOverview usage = 3;
+            string                      ip = 2;
+            string                      port = 3;
+            types.ResourceUsageOverview usage = 4;
         }
         enum NodeType {
             NodeType_Unknown = 0;           // Unknown node
@@ -127,7 +132,8 @@ class ReportEngine(object):
         try:
             req = pb2.ReportTaskResourceExpenseRequest()
             req.node_type = report_node_type
-            req.node_id = node_id
+            req.ip = ip 
+            req.port = str(port)
             req.usage.total_mem = resource_usage["total_mem"]
             req.usage.used_mem = resource_usage["used_mem"]
             req.usage.total_processor = resource_usage["total_processor"]
@@ -136,7 +142,9 @@ class ReportEngine(object):
             req.usage.used_bandwidth = resource_usage["used_bandwidth"]
             req.usage.total_disk = resource_usage["total_disk"]
             req.usage.used_disk = resource_usage["used_disk"]
-            self.__client.ReportTaskResourceExpenseRequest(req)
+            str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+            log.debug(str_req)
+            self.__client.ReportTaskResourceExpense(req)
         except Exception as e:
             log.exception(str(e))
     
@@ -164,14 +172,13 @@ def report_upload_file_summary(server_addr: str, summary: dict):
     report_engine.close()
     return ret
 
-def get_resource_usage():
+def _get_resource_usage(total_bandwidth):
     resource_usage = {}
     resource_usage["total_mem"] = psutil.virtual_memory().total
     resource_usage["used_mem"] = psutil.virtual_memory().used
     resource_usage["total_processor"] = psutil.cpu_count()
-    load1, load5, load15 = psutil.getloadavg()
-    resource_usage["used_processor"] = math.ceil(load15 * psutil.cpu_count())
-    resource_usage["total_bandwidth"] = 0
+    resource_usage["used_processor"] = math.ceil(psutil.cpu_count() * psutil.cpu_percent() / 100)
+    resource_usage["total_bandwidth"] = total_bandwidth
     net_1 = psutil.net_io_counters()
     time.sleep(1)
     net_2 = psutil.net_io_counters()
@@ -180,12 +187,12 @@ def get_resource_usage():
     resource_usage["used_disk"] = psutil.disk_usage('/').used
     return resource_usage
 
-def report_task_resource_expense(server_addr:str, node_type, node_id, interval=10):
+def report_task_resource_expense(server_addr:str, node_type, ip, port:str, total_bandwidth, interval=10):
     report_engine = ReportEngine(server_addr)
     try:
         while True:
-            resource_usage = get_resource_usage()
-            report_engine.report_task_resource_expense(node_type, node_id, resource_usage)
+            resource_usage = _get_resource_usage(total_bandwidth)
+            report_engine.report_task_resource_expense(node_type, ip, port, resource_usage)
             time.sleep(interval)
     except Exception as e:
         log.exception(f"report resource usage error. {str(e)}")

@@ -9,8 +9,9 @@ data_root: ../data
 code_root_dir: ../contract_work_dir
 results_root_dir: results_root
 schedule_svc: 192.168.16.151:51131
+total_bandwidth: 20000000
 certs: 
-  base_path: /home/juzix/fighter-v2/fighter-py/certs
+  base_path: ../certs
   root_cert: CA.crt
   server_sign_key: SS00.key
   server_sign_cert: SS00.crt

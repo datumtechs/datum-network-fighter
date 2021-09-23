@@ -1,5 +1,5 @@
 {
-    "contract_id": "../tests/lr_train.py",
+    "contract_id": "../tests/standalone_test/lr_train.py",
     "data_id": "DA7A-1",
     "env_id": "E5",
     "data_party": [
@@ -17,33 +17,33 @@
     "peers": [
         {
             "NODE_ID": "p1",
-            "ADDRESS": "192.168.16.151:50041",
-            "INTERNAL": "192.168.16.151:50011"
+            "ADDRESS": "127.0.0.1:50301",
+            "INTERNAL": "127.0.0.1:50101"
         },
         {
             "NODE_ID": "p2",
-            "ADDRESS": "192.168.16.151:50042",
-            "INTERNAL": "192.168.16.151:50012"
+            "ADDRESS": "127.0.0.1:50302",
+            "INTERNAL": "127.0.0.1:50102"
         },
         {
             "NODE_ID": "p3",
-            "ADDRESS": "192.168.16.151:50043",
-            "INTERNAL": "192.168.16.151:50013"
+            "ADDRESS": "127.0.0.1:50303",
+            "INTERNAL": "127.0.0.1:50103"
         },
         {
             "NODE_ID": "p4",
-            "ADDRESS": "192.168.16.151:50044",
-            "INTERNAL": "192.168.16.151:50014"
+            "ADDRESS": "127.0.0.1:50304",
+            "INTERNAL": "127.0.0.1:50201"
         },
         {
             "NODE_ID": "p5",
-            "ADDRESS": "192.168.16.151:50045",
-            "INTERNAL": "192.168.16.151:50015"
+            "ADDRESS": "127.0.0.1:50305",
+            "INTERNAL": "127.0.0.1:50202"
         },
 	    {
             "NODE_ID": "p6",
-            "ADDRESS": "192.168.16.151:50046",
-            "INTERNAL": "192.168.16.151:50016"
+            "ADDRESS": "127.0.0.1:50306",
+            "INTERNAL": "127.0.0.1:50203"
         }
     ],
     "dynamic_parameter": {

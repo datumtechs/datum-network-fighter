@@ -7,8 +7,9 @@ proto_root_path = './armada-common'
 out_dir = './protos'
 
 protos_to_compile = {'Fighter': '*.proto',
+                     'google': 'api/*.proto',
                      'Carrier': 'lib/api/*.proto',
-                     'google': 'api/*.proto'}
+                     'Carrier': 'lib/types/*.proto'}
 
 exclude_include = ['google']
 

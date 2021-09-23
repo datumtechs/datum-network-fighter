@@ -84,22 +84,22 @@ class PrivacyLRTrain(object):
 
         log.info("extract feature or label.")
         train_x, train_y, val_x, val_y = self.extract_feature_or_label(with_label=self.data_with_label)
-
-        log.info("waiting other party...")
+        log.info("waiting other party connect...")
         rtt.activate("SecureNN")
         log.info("protocol has been activated.")
+        
+        log.info(f"start set save model. save to party: {self.result_party}")
         rtt.set_saver_model(False, plain_model=self.result_party)
-        log.info("finish set save model.")
         # sharing data
-        log.info("start sharing train data .")
+        log.info(f"start sharing train data. data_owner={self.data_party}, label_owner={self.label_owner}")
         shard_x, shard_y = rtt.PrivateDataset(data_owner=self.data_party, label_owner=self.label_owner).load_data(train_x, train_y, header=0)
-        log.info("finish sharing train data .")
+        log.info("finish sharing train data.")
         column_total_num = shard_x.shape[1]
         
         if self.use_validation_set:
-            log.info("start sharing validation data .")
+            log.info("start sharing validation data.")
             shard_x_val, shard_y_val = rtt.PrivateDataset(data_owner=self.data_party, label_owner=self.label_owner).load_data(val_x, val_y, header=0)
-            log.info("finish sharing validation data .")
+            log.info("finish sharing validation data.")
 
         if self.party_id not in self.data_party:  
             # mean the compute party and result party
@@ -146,9 +146,9 @@ class PrivacyLRTrain(object):
                     Y_actual = sess.run(reveal_Y_actual, feed_dict={actual_Y: shard_y_val})
                     log.debug(f"Y_actual:\n {Y_actual[:10]}")
         
-            log.info(f"running stats:\n {rtt.get_perf_stats(True)}")
+            running_stats = str(rtt.get_perf_stats(True)).replace('\n', '').replace(' ', '')
+            log.info(f"running stats: {running_stats}")
         else:
-            log.info(f"running stats:\n {rtt.get_perf_stats(True)}")
             log.info("computing, please waiting for compute finish...")
         rtt.deactivate()
      

@@ -67,13 +67,14 @@ class PrivacyLRPredict(object):
 
         log.info("extract feature or id.")
         file_x, id_col = self.extract_feature_or_index()
-        log.info("waiting other party...")
+        log.info("waiting other party connect...")
         rtt.activate("SecureNN")
         log.info("protocol has been activated.")
+        
+        log.info(f"start set restore model. restore party={self.model_restore_party}")
         rtt.set_restore_model(False, plain_model=self.model_restore_party)
-        log.info("finish set restore model.")
         # sharing data
-        log.info("start sharing data .")
+        log.info(f"start sharing data. data_owner={self.data_party}")
         shard_x = rtt.PrivateDataset(data_owner=self.data_party).load_X(file_x, header=0)
         log.info("finish sharing data .")
         column_total_num = shard_x.shape[1]
@@ -88,7 +89,9 @@ class PrivacyLRPredict(object):
         reveal_Y = rtt.SecureReveal(pred_Y)  # only reveal to result party
 
         with tf.Session() as sess:
+            log.info("session init.")
             sess.run(init)
+            log.info("start restore model.")
             if self.party_id == self.model_restore_party:
                 if os.path.exists(os.path.join(os.path.dirname(self.model_file), "checkpoint")):
                     log.info(f"model restore from: {self.model_file}.")
@@ -96,30 +99,33 @@ class PrivacyLRPredict(object):
                 else:
                     raise Exception("model not found or model damaged")
             else:
-                log.info("restore model")
+                log.info("restore model...")
                 temp_file = os.path.join(self.get_temp_dir(), 'ckpt_temp_file')
                 with open(temp_file, "w") as f:
                     pass
                 saver.restore(sess, temp_file)
+            log.info("finish restore model.")
             
             # predict
             log.info("predict start.")
             predict_start_time = time.time()
             Y_pred_prob = sess.run(reveal_Y, feed_dict={X: shard_x})
-            Y_pred_prob = Y_pred_prob.astype("float")
             log.debug(f"Y_pred_prob:\n {Y_pred_prob[:10]}")
-
-            if self.party_id in self.result_party:
-                log.info("predict result write to file.")
-                output_file_predict_prob = os.path.splitext(self.output_file)[0] + "_predict.csv"
-                Y_prob = pd.DataFrame(Y_pred_prob, columns=["Y_prob"])
-                Y_class = (Y_pred_prob > self.predict_threshold) * 1
-                Y_class = pd.DataFrame(Y_class, columns=["Y_class"])
-                Y_result = pd.concat([Y_prob, Y_class], axis=1)
-                Y_result.to_csv(output_file_predict_prob, header=True, index=False)
             predict_use_time = round(time.time() - predict_start_time, 3)
             log.info(f"predict success. predict_use_time={predict_use_time}s")
         rtt.deactivate()
+        log.info("rtt deactivate finish.")
+        
+        if self.party_id in self.result_party:
+            log.info("predict result write to file.")
+            output_file_predict_prob = os.path.splitext(self.output_file)[0] + "_predict.csv"
+            Y_pred_prob = Y_pred_prob.astype("float")
+            Y_prob = pd.DataFrame(Y_pred_prob, columns=["Y_prob"])
+            Y_class = (Y_pred_prob > self.predict_threshold) * 1
+            Y_class = pd.DataFrame(Y_class, columns=["Y_class"])
+            Y_result = pd.concat([Y_prob, Y_class], axis=1)
+            Y_result.to_csv(output_file_predict_prob, header=True, index=False)
+        log.info("start remove temp dir.")
         self.remove_temp_dir()
         log.info("predict finish.")
 

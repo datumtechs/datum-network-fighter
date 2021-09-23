@@ -48,7 +48,7 @@ class Task:
 
     def run(self):
         log.info(f'thread id: {threading.get_ident()}')
-        log.info(self.cfg)
+        log.info(f'run_cfg: {self.cfg}')
         event_engine.fire_event(self.event_type["TASK_START"], self.party_id, self.id_, "task start.")
         try:
             self.download_algo()
@@ -63,7 +63,7 @@ class Task:
 
         the_dir = os.path.dirname(__file__)
         pdir = os.path.dirname(the_dir)
-        log.info(f'cwd: {os.getcwd()}\nthe dir: {the_dir}\nparent dir: {pdir}')
+        log.info(f'cwd: {os.getcwd()}, the dir: {the_dir}, parent dir: {pdir}')
 
         import warnings
         warnings.filterwarnings('ignore', message=r'Passing', category=FutureWarning)

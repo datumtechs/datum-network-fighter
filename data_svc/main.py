@@ -23,6 +23,13 @@ from protos import data_svc_pb2, data_svc_pb2_grpc, via_svc_pb2
 from svc import DataProvider
 
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='##### %(asctime)s %(levelname)-5s PID=%(process)-5d %(processName)-15s %(filename)-10s line=%(lineno)-5d %(name)-10s %(funcName)-10s: %(message)s',
+    stream=sys.stderr
+)
+log = logging.getLogger(__name__)
+
 def serve(task_manager):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']), options=GRPC_OPTIONS)
     svc_provider = DataProvider(task_manager)
@@ -33,7 +40,7 @@ def serve(task_manager):
     reflection.enable_server_reflection(SERVICE_NAMES, server)
     server.add_insecure_port('[::]:%s' % cfg['port'])
     server.start()
-    print('Data Service ready for action.')
+    log.info('Data Service ready for action.')
     return server
 
 
@@ -57,12 +64,6 @@ def main():
     if args.schedule_svc:
         cfg['schedule_svc'] = args.schedule_svc
     
-    logging.basicConfig(
-        level=logging.INFO,
-        format='##### %(asctime)s %(levelname)-5s PID=%(process)-5d %(processName)-15s %(filename)-10s line=%(lineno)-5d %(name)-10s %(funcName)-10s: %(message)s',
-        stream=sys.stderr
-    )
-
     event_stop = mp.Event()
     task_manager = TaskManager(cfg)
 
@@ -77,25 +78,25 @@ def main():
 
     report_process = mp.Process(target=report_task_event, args=(cfg['schedule_svc'], event_stop))
     report_process.start()
-    # report_resource = mp.Process(target=report_task_resource_expense,
-    #                             args=(cfg['schedule_svc'], "data_svc", "", 10))
-    # report_resource.daemon = True
-    # report_resource.start()
+    report_resource = mp.Process(target=report_task_resource_expense,
+            args=(cfg['schedule_svc'], "data_svc", cfg['bind_ip'], cfg['port'], cfg['total_bandwidth'], 10))
+    report_resource.daemon = True
+    report_resource.start()
 
     def handle_sigterm(*_):
-        print("Received shutdown signal")
+        log.info("Received shutdown signal")
         all_rpcs_done_event = server.stop(5)
         all_rpcs_done_event.wait(5)
         event_stop.set()
-        print("Shut down gracefully")
+        log.info("Shut down gracefully")
 
     signal(SIGTERM, handle_sigterm)
 
     t_task_clean.join()
     server.wait_for_termination()
     report_process.join()
-    # report_resource.join()
-    print('over')
+    report_resource.join()
+    log.info('svc over')
 
 
 if __name__ == '__main__':
