@@ -7,8 +7,8 @@ proto_root_path = './armada-common'
 out_dir = './protos'
 
 protos_to_compile = {'Fighter': '*.proto',
-                     'Carrier': 'lib/api/*.proto',
-                     'google': 'api/*.proto'}
+                     'google': 'api/*.proto',
+                     'Carrier': 'lib/common/*.proto'}
 
 exclude_include = ['google']
 
@@ -19,7 +19,7 @@ if not os.path.exists(init_py):
     with open(init_py, 'w') as f:
         pass
 
-base_cmd = f'{sdk_path} -m grpc_tools.protoc --python_out={out_dir} --grpc_python_out={out_dir}'
+base_cmd = f'{sdk_path} -m grpc_tools.protoc --experimental_allow_proto3_optional --python_out={out_dir} --grpc_python_out={out_dir}'
 
 for proto, file in protos_to_compile.items():
     include_path = os.path.join(proto_root_path, proto)
@@ -29,3 +29,12 @@ for proto, file in protos_to_compile.items():
         cmd = f'{base_cmd} -I{proto_root_path} {ff}'
     print(cmd)
     os.system(cmd)
+
+include_path = os.path.join(proto_root_path, 'Carrier')
+ff = os.path.join(include_path, 'lib/types/*.proto')
+cmd = f'{base_cmd} -I{include_path} -I{proto_root_path} {ff}'
+os.system(cmd)
+
+ff = os.path.join(include_path, 'lib/api/*.proto')
+cmd = f'{base_cmd} -I{include_path} -I{proto_root_path} {ff}'
+os.system(cmd)

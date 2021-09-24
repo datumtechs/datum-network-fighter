@@ -15,12 +15,20 @@ sys.path.insert(0, par_dir)
 sys.path.insert(0, os.path.join(par_dir, 'protos'))
 sys.path.insert(0, cur_dir)
 from common.consts import GRPC_OPTIONS
-from common.report_engine import report_event
+from common.report_engine import report_task_event, report_task_resource_expense
 from common.task_manager import TaskManager
 from common.utils import load_cfg
 from config import cfg
 from protos import compute_svc_pb2, compute_svc_pb2_grpc, via_svc_pb2
 from svc import ComputeProvider
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='##### %(asctime)s %(levelname)-5s PID=%(process)-5d %(processName)-15s %(filename)-10s line=%(lineno)-5d %(name)-10s %(funcName)-10s: %(message)s',
+    stream=sys.stderr
+)
+log = logging.getLogger(__name__)
 
 
 def serve(task_manager):
@@ -34,10 +42,7 @@ def serve(task_manager):
     bind_port = cfg['port']
     server.add_insecure_port('[::]:%s' % bind_port)
     server.start()
-    if cfg['pass_via']:
-        from common.via_client import expose_me
-        expose_me(cfg, '', via_svc_pb2.COMPUTE_SVC, '')
-    print(f'Compute Service work on port {bind_port}.')
+    log.info(f'Compute Service work on port {bind_port}.')
     return server
 
 
@@ -45,16 +50,21 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('config')
-
+    parser.add_argument('config', type=str, default='config.yaml')
+    parser.add_argument('--bind_ip', type=str)
+    parser.add_argument('--port', type=int)
+    parser.add_argument('--via_svc', type=str)
+    parser.add_argument('--schedule_svc', type=str)
     args = parser.parse_args()
     cfg.update(load_cfg(args.config))
-
-    logging.basicConfig(
-        level=logging.INFO,
-        format='##### %(asctime)s PID %(process)-8d %(processName)-15s %(filename)10s line %(lineno)-5d %(name)10s %(funcName)-10s: %(message)s',
-        stream=sys.stderr,
-    )
+    if args.bind_ip:
+        cfg['bind_ip'] = args.bind_ip
+    if args.port:
+        cfg['port'] = args.port
+    if args.via_svc:
+        cfg['via_svc'] = args.via_svc
+    if args.schedule_svc:
+        cfg['schedule_svc'] = args.schedule_svc
 
     event_stop = mp.Event()
     task_manager = TaskManager(cfg)
@@ -68,22 +78,27 @@ def main():
 
     server = serve(task_manager)
 
-    report_process = mp.Process(target=report_event, args=(cfg['schedule_svc'], event_stop))
+    report_process = mp.Process(target=report_task_event, args=(cfg['schedule_svc'], event_stop))
     report_process.start()
+    report_resource = mp.Process(target=report_task_resource_expense,
+            args=(cfg['schedule_svc'], "compute_svc", cfg['bind_ip'], cfg['port'], cfg['total_bandwidth'], 10))
+    report_resource.daemon = True
+    report_resource.start()
 
     def handle_sigterm(*_):
-        print("Received shutdown signal")
+        log.info("Received shutdown signal")
         all_rpcs_done_event = server.stop(5)
         all_rpcs_done_event.wait(5)
         event_stop.set()
-        print("Shut down gracefully")
+        log.info("Shut down gracefully")
 
     signal(SIGTERM, handle_sigterm)
 
     t_task_clean.join()
     server.wait_for_termination()
     report_process.join()
-    print('over')
+    report_resource.join()
+    log.info('svc over')
 
 
 if __name__ == '__main__':

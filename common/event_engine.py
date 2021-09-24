@@ -1,42 +1,46 @@
 # coding:utf-8
 
 import time
-
 from common.consts import EVENT_QUEUE
 
 
 class Event(object):
-    """事件对象"""
+    """
+    Event Object
+    """
 
     def __init__(self, event_type=None):
-        self.type_: str = event_type  # 事件类型
-        self.dict_ = {}  # 事件的内容的其他字段
+        self.type_: str = event_type  # Event type, different types can have different event content
+        self.dict_ = {}  # Contents of the event
 
 
 class EventEngine(object):
     def __init__(self):
         self.__queue = EVENT_QUEUE
 
-    def fire_event(self, event_type, task_id, identity_id, content):
+    def fire_event(self, event_type, party_id, task_id, content, identity_id=""):
         '''
-        生成事件，并推入队列
+        Generate events and push them to the queue
         args:
-            event_type: 事件类型码
-            task_id: 事件对应的任务id
-            identity_id: 产生事件的节点身份标识，格式是did:pid:0xeeeeff...efaab
-            content: 事件内容
-            create_at: 事件产生时间
+            event_type: Event type code
+            party_id: The party id corresponding to current node
+            task_id: The task id corresponding to the event
+            content: The content of the event
+            create_at: Time of event
+            identity_id: The identity of the node that generated the event, 
+                         the format is 'did:pid:0xeeeeff...efaab'
         '''
 
         event = Event(event_type)
         create_at = int(time.time() * 1000)  # in ms
-        info = dict(task_id=task_id, identity_id=identity_id, content=content, create_at=create_at)
+        info = dict(party_id=party_id, task_id=task_id, content=content, 
+                    identity_id=identity_id, create_at=create_at)
         event.dict_.update(info)
         self.put_event(event)
 
     def put_event(self, event: Event) -> None:
         """
-        向事件队列中存入事件
+        Push events into the queue
         """
         self.__queue.put(event)
 
@@ -45,7 +49,8 @@ event_engine = EventEngine()
 
 if __name__ == '__main__':
     type_ = "0301001"
+    party_id = "p0"
     task_id = "sfasasfasdfasdfa"
-    identity_id = "did:pid:0xeeeeff...efaab"
     content = "compute task start."
-    event_engine.fire_event(type_, task_id, identity_id, content)
+    identity_id = "did:pid:0xeeeeff...efaab"
+    event_engine.fire_event(type_, party_id, task_id, content, identity_id)

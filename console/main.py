@@ -215,7 +215,7 @@ def comp_run_task(args, stub):
 
 
 def _mock_schedule_dispatch_task(peers, req, compute_parties, each_party, dynamic_parameter):
-    print(peers)
+    print("peers:", peers)
     for party, addr in peers.items():
         ch = grpc.insecure_channel(addr)
         svc_type = via_svc_pb2.COMPUTE_SVC if party in compute_parties else via_svc_pb2.DATA_SVC
@@ -225,9 +225,9 @@ def _mock_schedule_dispatch_task(peers, req, compute_parties, each_party, dynami
         contract_cfg.update(each_party[party])
 
         req.contract_cfg = json.dumps(contract_cfg)
-        print(req.contract_cfg)
+        print("req.contract_cfg:", req.contract_cfg)
         resp = stub.HandleTaskReadyGo(req)
-        print(addr, resp)
+        print(f"addr:{addr}, resp: {resp}")
 
 
 def comp_cancel_task(args, stub):
@@ -314,7 +314,8 @@ if __name__ == '__main__':
     channels[via_svc_pb2.COMPUTE_SVC] = ch
 
     while True:
-        user_input = prompt('> ')
+        print("***************************")
+        user_input = prompt('command>>> ')
         if user_input == 'exit':
             break
         user_input = user_input.strip().split()

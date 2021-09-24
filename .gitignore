@@ -37,13 +37,14 @@ protos
 */config_*.yaml
 compute_svc/C0DE_*.py
 compute_svc/start_compute_svc_group.sh
-compute_svc/contract_work_dir
 console/algorithm*
 console/run_task*
+contract_work_dir
 results_root
+log/
 *.log
 *.csv
 build/
 dist/
-*.whl
+# *.whl
 *egg-info

@@ -1,3 +1,4 @@
 [submodule "armada-common"]
 	path = armada-common
-	url = git@192.168.9.66:RosettaFlow/armada-common.git
+	url = https://github.com/Metisnetwork/Metis-Armada-Common.git
+	branch = v2.0

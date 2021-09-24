@@ -1,7 +1,8 @@
-import logging
 import os
-import threading
+import sys
 import time
+import logging
+import threading
 
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
@@ -47,26 +48,23 @@ class Task:
 
     def run(self):
         log.info(f'thread id: {threading.get_ident()}')
-        log.info(self.cfg)
-        event_engine.fire_event(self.event_type["TASK_START"], self.id_, "", "task start.")
+        log.info(f'run_cfg: {self.cfg}')
+        event_engine.fire_event(self.event_type["TASK_START"], self.party_id, self.id_, "task start.")
         try:
             self.download_algo()
-            event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], self.id_, "",
+            event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], self.party_id, self.id_,
                                     "download contract success.")
         except Exception as e:
-            event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], self.id_, "",
+            event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], self.party_id, self.id_,
                                     f"download contract fail. {str(e)}")
-            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.id_, "", "service stop.")
+            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.party_id, self.id_, "service stop.")
 
         self.build_env()
 
         the_dir = os.path.dirname(__file__)
         pdir = os.path.dirname(the_dir)
-        log.info(f'cwd: {os.getcwd()}\nthe dir: {the_dir}\nparent dir: {pdir}')
+        log.info(f'cwd: {os.getcwd()}, the dir: {the_dir}, parent dir: {pdir}')
 
-        import sys
-        sys.path.append(os.path.join(pdir, 'via_svc'))
-        log.info('sys.path:\n{}'.format('\n'.join(sys.path)))
         import warnings
         warnings.filterwarnings('ignore', message=r'Passing', category=FutureWarning)
         from io_channel_helper import rtt_set_channel
@@ -75,31 +73,32 @@ class Task:
 
             pass_via = self.cfg['pass_via']
             pproc_ip = self.cfg['bind_ip']
+            certs = self.cfg['certs']
 
             rtt_set_channel(self.id, self.party_id, self.peers,
-                            self.data_party, self.computation_party, self.result_party, pass_via, pproc_ip,
-                            self.event_type)
-
+                            self.data_party, self.computation_party, self.result_party, 
+                            pass_via, pproc_ip, certs, self.event_type)
+         
             user_cfg = self.assemble_cfg()
             sys.path.insert(0, os.path.abspath(self._get_code_dir()))
             code_path = self._get_code_file_name()
             module_name = os.path.splitext(code_path)[0]
             log.info(f'code path: {code_path}, module: {module_name}')
 
-            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_START"], self.id_, "", "contract execute start.")
+            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_START"], self.party_id, self.id_, "contract execute start.")
             m = importlib.import_module(module_name)
-            result_dir = self._get_result_dir()
-            self._ensure_dir(result_dir)
-            m.main(user_cfg, self.result_party, result_dir, self.data_party)
+            results_root_dir = self._get_result_dir()
+            self._ensure_dir(results_root_dir)
+            m.main(self.id, user_cfg, self.data_party, self.result_party, results_root_dir)
             log.info(f'run task done')
-            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], self.id_, "",
+            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], self.party_id, self.id_,
                                     "contract execute success.")
-            event_engine.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], self.id_, "", "task finish.")
+            event_engine.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], self.party_id, self.id_, "task finish.")
         except Exception as e:
-            log.error(repr(e))
-            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], self.id_, "",
+            log.exception(repr(e))
+            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], self.party_id, self.id_,
                                     f"contract execute failed. {str(e)}")
-            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.id_, "", "service stop.")
+            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.party_id, self.id_, "service stop.")
         finally:
             log.info('task final clean')
             self.clean()
@@ -138,11 +137,11 @@ class Task:
         return os.path.join(self.cfg['code_root_dir'], self.id, self.party_id)
 
     def _get_result_dir(self):
-        return os.path.join(self.cfg['results_root_dir'], self.id, self.party_id)
+        return os.path.abspath(self.cfg['results_root_dir'])
 
     def _ensure_dir(self, dir_):
         if not os.path.exists(dir_):
-            os.makedirs(dir_)
+            os.makedirs(dir_, exist_ok=True)
 
     def _get_code_file_name(self):
         # name = hashlib.sha1(self.contract_id.encode()).hexdigest()[:6]
