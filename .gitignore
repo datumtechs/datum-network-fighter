@@ -46,5 +46,5 @@ log/
 *.csv
 build/
 dist/
-*.whl
+# *.whl
 *egg-info

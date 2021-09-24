@@ -68,4 +68,4 @@ done
 cd $base_dir; cd console
 # python get_task_cfg.py
 echo "start console that connect to data_svc which internal port ${data_svc_base_port}"
-python -u main.py --config=$cfg --compute_svc_ip=${ip} --compute_svc_port=${compute_svc_base_port}
+python -u main.py --config=$cfg --data_svc_ip=${ip} --data_svc_port=${data_svc_base_port}

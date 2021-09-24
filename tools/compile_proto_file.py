@@ -8,8 +8,7 @@ out_dir = './protos'
 
 protos_to_compile = {'Fighter': '*.proto',
                      'google': 'api/*.proto',
-                     'Carrier': 'lib/api/*.proto',
-                     'Carrier': 'lib/types/*.proto'}
+                     'Carrier': 'lib/common/*.proto'}
 
 exclude_include = ['google']
 
@@ -30,3 +29,12 @@ for proto, file in protos_to_compile.items():
         cmd = f'{base_cmd} -I{proto_root_path} {ff}'
     print(cmd)
     os.system(cmd)
+
+include_path = os.path.join(proto_root_path, 'Carrier')
+ff = os.path.join(include_path, 'lib/types/*.proto')
+cmd = f'{base_cmd} -I{include_path} -I{proto_root_path} {ff}'
+os.system(cmd)
+
+ff = os.path.join(include_path, 'lib/api/*.proto')
+cmd = f'{base_cmd} -I{include_path} -I{proto_root_path} {ff}'
+os.system(cmd)
