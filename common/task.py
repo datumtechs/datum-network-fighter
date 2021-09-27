@@ -3,9 +3,11 @@ import sys
 import time
 import logging
 import threading
+import multiprocessing as mp
 
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
+from common.report_engine import report_task_resource_usage
 
 log = logging.getLogger(__name__)
 
@@ -33,8 +35,10 @@ class Task:
 
         if self._party_id in (self.data_party + self.result_party):
             self.event_type = DATA_EVENT
+            self.party_type = "data_svc"
         elif self._party_id in self.computation_party:
             self.event_type = COMPUTE_EVENT
+            self.party_type = "compute_svc"
         else:
             self.event_type = None
 
@@ -50,6 +54,11 @@ class Task:
         log.info(f'thread id: {threading.get_ident()}')
         log.info(f'run_cfg: {self.cfg}')
         event_engine.fire_event(self.event_type["TASK_START"], self.party_id, self.id_, "task start.")
+        current_task_pid = os.getpid()
+        report_resource = mp.Process(target=report_task_resource_usage,
+            args=(current_task_pid, self.cfg['schedule_svc'], self.party_type, self.cfg['bind_ip'], self.cfg['port'], self.cfg['total_bandwidth'], 10))
+        report_resource.daemon = True
+        report_resource.start()
         try:
             self.download_algo()
             event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], self.party_id, self.id_,

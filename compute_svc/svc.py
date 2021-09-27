@@ -1,3 +1,5 @@
+import time
+import math
 import logging
 import threading
 import psutil
@@ -6,24 +8,36 @@ from protos import common_pb2, compute_svc_pb2, compute_svc_pb2_grpc
 
 log = logging.getLogger(__name__)
 
-def get_sys_stat():
+def get_sys_stat(cfg):
     stat = compute_svc_pb2.GetStatusReply()
-    _, _, load15 = psutil.getloadavg()
-    stat.cpu = str(load15 / psutil.cpu_count() * 100)
-    vm = psutil.virtual_memory()
-    stat.mem = str(vm.percent)
-    net = psutil.net_io_counters()
-    b = net.bytes_sent + net.bytes_recv
-    stat.bandwidth = str(b)
+    stat.total_cpu = psutil.cpu_count()
+    stat.used_cpu = math.ceil(stat.total_cpu * psutil.cpu_percent(0.1) / 100)
+    stat.idle_cpu = max(stat.total_cpu - stat.used_cpu, 0)
+    
+    stat.total_memory = psutil.virtual_memory().total
+    stat.used_memory = psutil.virtual_memory().used
+    stat.idle_memory = psutil.virtual_memory().free
+    
+    stat.total_disk = psutil.disk_usage('/').total
+    stat.used_disk = psutil.disk_usage('/').used
+    stat.idle_disk = psutil.disk_usage('/').free
+    
+    stat.total_bandwidth = cfg["total_bandwidth"]
+    net_1 = psutil.net_io_counters()
+    time.sleep(1)
+    net_2 = psutil.net_io_counters()
+    stat.used_bandwidth = (net_2.bytes_sent - net_1.bytes_sent) + (net_2.bytes_recv - net_1.bytes_recv)
+    stat.idle_bandwidth = max(stat.total_bandwidth - stat.used_bandwidth, 0)
+    str_res = '{' + str(stat).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+    log.info(f"get sys stat: {str_res}")
     return stat
-
 
 class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
     def __init__(self, task_manager):
         self.task_manager = task_manager
 
     def GetStatus(self, request, context):
-        return get_sys_stat()
+        return get_sys_stat(self.task_manager.cfg)
 
     def GetTaskDetails(self, request, context):
         ret = compute_svc_pb2.GetTaskDetailsReply()

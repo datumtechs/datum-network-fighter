@@ -53,7 +53,7 @@ class ReportEngine(object):
             req.task_event.create_at = event.dict_["create_at"]
             str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
             log.debug(str_req)
-            self.__client.ReportTaskEvent(req)
+            return self.__client.ReportTaskEvent(req)
         except queue.Empty as e:
             pass
         except Exception as e:
@@ -88,17 +88,17 @@ class ReportEngine(object):
         except Exception as e:
             log.exception(str(e))
 
-    def report_task_resource_expense(self, node_type, ip:str, port:str, resource_usage):
+    def report_task_resource_usage(self, node_type, ip:str, port:str, resource_usage):
         """
         service YarnService {
-            rpc ReportTaskResourceExpense (ReportTaskResourceExpenseRequest) returns (api.protobuf.SimpleResponse) {
+            rpc ReportTaskResourceUsage (ReportTaskResourceUsageRequest) returns (api.protobuf.SimpleResponse) {
                 option (google.api.http) = {
-                    post: "/carrier/v1/yarn/reportTaskResourceExpense"
+                    post: "/carrier/v1/yarn/reportTaskResourceUsage"
                     body: "*"
                 };
             }
         }
-        message ReportTaskResourceExpenseRequest {
+        message ReportTaskResourceUsageRequest {
             NodeType                    node_type = 1;
             string                      ip = 2;
             string                      port = 3;
@@ -130,7 +130,7 @@ class ReportEngine(object):
             raise Exception("node_type only support compute_svc/data_svc")
 
         try:
-            req = pb2.ReportTaskResourceExpenseRequest()
+            req = pb2.ReportTaskResourceUsageRequest()
             req.node_type = report_node_type
             req.ip = ip 
             req.port = str(port)
@@ -144,7 +144,7 @@ class ReportEngine(object):
             req.usage.used_disk = resource_usage["used_disk"]
             str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
             log.debug(str_req)
-            self.__client.ReportTaskResourceExpense(req)
+            return self.__client.ReportTaskResourceUsage(req)
         except Exception as e:
             log.exception(str(e))
     
@@ -172,12 +172,13 @@ def report_upload_file_summary(server_addr: str, summary: dict):
     report_engine.close()
     return ret
 
-def _get_resource_usage(total_bandwidth):
+def _get_resource_usage(task_pid, total_bandwidth):
+    p = psutil.Process(task_pid)
     resource_usage = {}
     resource_usage["total_mem"] = psutil.virtual_memory().total
-    resource_usage["used_mem"] = psutil.virtual_memory().used
+    resource_usage["used_mem"] = p.memory_info().rss
     resource_usage["total_processor"] = psutil.cpu_count()
-    resource_usage["used_processor"] = math.ceil(psutil.cpu_count() * psutil.cpu_percent() / 100)
+    resource_usage["used_processor"] = math.ceil(psutil.cpu_count() * p.cpu_percent() / 100)
     resource_usage["total_bandwidth"] = total_bandwidth
     net_1 = psutil.net_io_counters()
     time.sleep(1)
@@ -187,12 +188,12 @@ def _get_resource_usage(total_bandwidth):
     resource_usage["used_disk"] = psutil.disk_usage('/').used
     return resource_usage
 
-def report_task_resource_expense(server_addr:str, node_type, ip, port:str, total_bandwidth, interval=10):
+def report_task_resource_usage(task_pid, server_addr:str, node_type, ip, port:str, total_bandwidth, interval=10):
     report_engine = ReportEngine(server_addr)
     try:
         while True:
-            resource_usage = _get_resource_usage(total_bandwidth)
-            report_engine.report_task_resource_expense(node_type, ip, port, resource_usage)
+            resource_usage = _get_resource_usage(task_pid, total_bandwidth)
+            report_engine.report_task_resource_usage(node_type, ip, port, resource_usage)
             time.sleep(interval)
     except Exception as e:
         log.exception(f"report resource usage error. {str(e)}")
