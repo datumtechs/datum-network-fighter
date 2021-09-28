@@ -15,7 +15,7 @@ sys.path.insert(0, par_dir)
 sys.path.insert(0, os.path.join(par_dir, 'protos'))
 sys.path.insert(0, cur_dir)
 from common.consts import GRPC_OPTIONS
-from common.report_engine import report_task_event, report_task_resource_expense
+from common.report_engine import report_task_event
 from common.task_manager import TaskManager
 from common.utils import load_cfg
 from config import cfg
@@ -80,10 +80,6 @@ def main():
 
     report_process = mp.Process(target=report_task_event, args=(cfg['schedule_svc'], event_stop))
     report_process.start()
-    report_resource = mp.Process(target=report_task_resource_expense,
-            args=(cfg['schedule_svc'], "compute_svc", cfg['bind_ip'], cfg['port'], cfg['total_bandwidth'], 10))
-    report_resource.daemon = True
-    report_resource.start()
 
     def handle_sigterm(*_):
         log.info("Received shutdown signal")
@@ -97,7 +93,6 @@ def main():
     t_task_clean.join()
     server.wait_for_termination()
     report_process.join()
-    report_resource.join()
     log.info('svc over')
 
 

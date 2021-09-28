@@ -1,3 +1,5 @@
-bind_ip: 192.168.16.151
-port: 51131
-thread_pool_size: 4
+bind_ip: 127.0.0.1
+port: 50401
+thread_pool_size: 12
+data_svc_port: 50101
+compute_svc_port: 50201

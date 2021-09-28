@@ -24,9 +24,11 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         return base_pb2.SimpleResponse(status=0, msg="report event ok.")
         
 
-    def ReportTaskResourceExpense(self, request, context):
-        log.info(f'get task resourece expense start.')
+    def ReportTaskResourceUsage(self, request, context):
+        log.info(f'get task resourece usage start.')
         resource_usage = {}
+        resource_usage["task_id"] = request.task_id
+        resource_usage["party_id"] = request.party_id
         resource_usage["node_type"] = request.node_type
         resource_usage["ip"] = request.ip
         resource_usage["port"] = request.port
@@ -38,7 +40,7 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         resource_usage["used_bandwidth"] = request.usage.used_bandwidth
         resource_usage["total_disk"] = request.usage.total_disk
         resource_usage["used_disk"] = request.usage.used_disk
-        log.info(f'get task resourece expense: {resource_usage}')
+        log.info(f'get task resourece usage: {resource_usage}')
         return base_pb2.SimpleResponse(status=0, msg="report resource ok.")
 
     def ReportUpFileSummary(self, request, context):

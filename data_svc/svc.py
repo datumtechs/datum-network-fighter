@@ -3,7 +3,8 @@ import logging
 import os
 import threading
 import time
-
+import math
+import psutil
 import grpc
 
 from common.report_engine import report_upload_file_summary
@@ -12,7 +13,32 @@ from protos import common_pb2
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
 
+
 log = logging.getLogger(__name__)
+
+def get_sys_stat(cfg):
+    stat = data_svc_pb2.GetStatusReply()
+    stat.total_cpu = psutil.cpu_count()
+    stat.used_cpu = math.ceil(stat.total_cpu * psutil.cpu_percent(0.1) / 100)
+    stat.idle_cpu = max(stat.total_cpu - stat.used_cpu, 0)
+    
+    stat.total_memory = psutil.virtual_memory().total
+    stat.used_memory = psutil.virtual_memory().used
+    stat.idle_memory = psutil.virtual_memory().free
+    
+    stat.total_disk = psutil.disk_usage('/').total
+    stat.used_disk = psutil.disk_usage('/').used
+    stat.idle_disk = psutil.disk_usage('/').free
+    
+    stat.total_bandwidth = cfg["total_bandwidth"]
+    net_1 = psutil.net_io_counters()
+    time.sleep(1)
+    net_2 = psutil.net_io_counters()
+    stat.used_bandwidth = (net_2.bytes_sent - net_1.bytes_sent) + (net_2.bytes_recv - net_1.bytes_recv)
+    stat.idle_bandwidth = max(stat.total_bandwidth - stat.used_bandwidth, 0)
+    str_res = '{' + str(stat).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+    log.info(f"get sys stat: {str_res}")
+    return stat
 
 
 class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
@@ -21,9 +47,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         print(f'cur thread id: {threading.get_ident()}')
 
     def GetStatus(self, request, context):
-        log.info(context.peer())
-        return data_svc_pb2.GetStatusReply(node_type='data_node')
-
+        return get_sys_stat(self.task_manager.cfg)
+    
     def UploadData(self, request_it, context):
         print(type(request_it))
         folder = cfg['data_root']

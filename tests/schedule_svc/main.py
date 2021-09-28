@@ -2,6 +2,7 @@ import logging
 import multiprocessing as mp
 import os
 import sys
+import time
 from concurrent import futures
 import grpc
 
@@ -10,7 +11,12 @@ from common.utils import load_cfg
 from config import cfg
 from protos.lib.api import sys_rpc_api_pb2
 from protos.lib.api import sys_rpc_api_pb2_grpc
+from protos import compute_svc_pb2
+from protos import compute_svc_pb2_grpc
+from protos import data_svc_pb2
+from protos import data_svc_pb2_grpc
 from svc import YarnService
+from google.protobuf import empty_pb2
 
 
 logging.basicConfig(
@@ -30,6 +36,22 @@ def serve():
     log.info(f'Schedule Service work on port {bind_port}.')
     return server
 
+def client(cfg):
+    time.sleep(1)  # wait the data_svc/compute_svc set up.
+    data_svc_address = '{}:{}'.format(cfg["bind_ip"], cfg["data_svc_port"])
+    conn = grpc.insecure_channel(data_svc_address)
+    client = data_svc_pb2_grpc.DataProviderStub(channel=conn)
+    response = client.GetStatus(empty_pb2.Empty())
+    str_res = '{' + str(response).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+    log.info(f"get data svc status: {str_res}")
+    
+    compute_svc_address = '{}:{}'.format(cfg["bind_ip"], cfg["compute_svc_port"])
+    conn = grpc.insecure_channel(compute_svc_address)
+    client = compute_svc_pb2_grpc.ComputeProviderStub(channel=conn)
+    response = client.GetStatus(empty_pb2.Empty())
+    str_res = '{' + str(response).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+    log.info(f"get compute svc status: {str_res}")
+    
 
 def main():
     import argparse
@@ -46,6 +68,7 @@ def main():
         cfg['port'] = args.port
 
     server = serve()
+    client(cfg)
     server.wait_for_termination()
     log.info('svc over')
 

@@ -23,7 +23,7 @@ mkdir -p ${data_svc_log}
 for port in $(seq ${data_svc_base_port} $[${data_svc_base_port}+${data_svc_num}-1])
 do 
     echo "start data_svc that use port ${port}"
-    nohup python -u main.py $cfg --bind_ip=${ip} --port=${port} --via_svc=${ip}:${via_port} --schedule_svc=${ip}:${schedule_port} > ${data_svc_log}/data_svc_${port}.log 2>&1 &
+    nohup python main.py $cfg --bind_ip=${ip} --port=${port} --via_svc=${ip}:${via_port} --schedule_svc=${ip}:${schedule_port} > ${data_svc_log}/data_svc_${port}.log 2>&1 &
     via_port=$[${via_port}+1]
     schedule_port=$[${schedule_port}+1]
 done
@@ -36,7 +36,7 @@ mkdir -p ${compute_svc_log}
 for port in $(seq ${compute_svc_base_port} $[${compute_svc_base_port}+${compute_svc_num}-1])
 do 
     echo "start compute_svc that use port ${port}"
-    nohup python -u main.py $cfg --bind_ip=${ip} --port=${port} --via_svc=${ip}:${via_port} --schedule_svc=${ip}:${schedule_port} > ${compute_svc_log}/compute_svc_${port}.log 2>&1 &
+    nohup python main.py $cfg --bind_ip=${ip} --port=${port} --via_svc=${ip}:${via_port} --schedule_svc=${ip}:${schedule_port} > ${compute_svc_log}/compute_svc_${port}.log 2>&1 &
     via_port=$[${via_port}+1]
     schedule_port=$[${schedule_port}+1]
 done
@@ -60,7 +60,7 @@ mkdir -p ${schedule_svc_log}
 for port in $(seq ${schedule_svc_base_port} $[${schedule_svc_base_port}+${schedule_svc_num}-1])
 do
     echo "start schedule_svc that use port ${port}"
-    PYTHONPATH="../..:../../protos/:../../common" nohup python -u main.py $cfg --bind_ip=${ip} --port=${port} > ${schedule_svc_log}/schedule_svc_${port}.log 2>&1 &
+    PYTHONPATH="../..:../../protos/:../../common" nohup python main.py $cfg --bind_ip=${ip} --port=${port} > ${schedule_svc_log}/schedule_svc_${port}.log 2>&1 &
 done
 
 
@@ -68,4 +68,4 @@ done
 cd $base_dir; cd console
 # python get_task_cfg.py
 echo "start console that connect to data_svc which internal port ${data_svc_base_port}"
-python -u main.py --config=$cfg --data_svc_ip=${ip} --data_svc_port=${data_svc_base_port}
+python main.py --config=$cfg --data_svc_ip=${ip} --data_svc_port=${data_svc_base_port}
