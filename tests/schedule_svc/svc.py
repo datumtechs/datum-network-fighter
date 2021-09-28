@@ -27,6 +27,8 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
     def ReportTaskResourceUsage(self, request, context):
         log.info(f'get task resourece usage start.')
         resource_usage = {}
+        resource_usage["task_id"] = request.task_id
+        resource_usage["party_id"] = request.party_id
         resource_usage["node_type"] = request.node_type
         resource_usage["ip"] = request.ip
         resource_usage["port"] = request.port

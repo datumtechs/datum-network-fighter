@@ -55,10 +55,10 @@ class Task:
         log.info(f'run_cfg: {self.cfg}')
         event_engine.fire_event(self.event_type["TASK_START"], self.party_id, self.id_, "task start.")
         current_task_pid = os.getpid()
-        report_resource = mp.Process(target=report_task_resource_usage,
-            args=(current_task_pid, self.cfg['schedule_svc'], self.party_type, self.cfg['bind_ip'], self.cfg['port'], self.cfg['total_bandwidth'], 10))
-        report_resource.daemon = True
+        report_resource = threading.Thread(target=report_task_resource_usage, args=(current_task_pid, self.cfg['schedule_svc'], 
+                    self.id, self.party_id, self.party_type, self.cfg['bind_ip'], self.cfg['port'], self.cfg['total_bandwidth'], 10))
         report_resource.start()
+        
         try:
             self.download_algo()
             event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], self.party_id, self.id_,

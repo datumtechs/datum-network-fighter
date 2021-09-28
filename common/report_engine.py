@@ -88,7 +88,7 @@ class ReportEngine(object):
         except Exception as e:
             log.exception(str(e))
 
-    def report_task_resource_usage(self, node_type, ip:str, port:str, resource_usage):
+    def report_task_resource_usage(self, task_id, party_id, node_type, ip:str, port:str, resource_usage):
         """
         service YarnService {
             rpc ReportTaskResourceUsage (ReportTaskResourceUsageRequest) returns (api.protobuf.SimpleResponse) {
@@ -99,10 +99,12 @@ class ReportEngine(object):
             }
         }
         message ReportTaskResourceUsageRequest {
-            NodeType                    node_type = 1;
-            string                      ip = 2;
-            string                      port = 3;
-            types.ResourceUsageOverview usage = 4;
+            string                      task_id = 1;
+            string                      party_id = 2;
+            NodeType                    node_type = 3; 
+            string                      ip = 4;
+            string                      port = 5;
+            types.ResourceUsageOverview usage = 6;
         }
         enum NodeType {
             NodeType_Unknown = 0;           // Unknown node
@@ -131,6 +133,8 @@ class ReportEngine(object):
 
         try:
             req = pb2.ReportTaskResourceUsageRequest()
+            req.task_id = task_id
+            req.party_id = party_id
             req.node_type = report_node_type
             req.ip = ip 
             req.port = str(port)
@@ -188,12 +192,12 @@ def _get_resource_usage(task_pid, total_bandwidth):
     resource_usage["used_disk"] = psutil.disk_usage('/').used
     return resource_usage
 
-def report_task_resource_usage(task_pid, server_addr:str, node_type, ip, port:str, total_bandwidth, interval=10):
+def report_task_resource_usage(task_pid, server_addr:str, task_id, party_id, node_type, ip, port:str, total_bandwidth, interval=10):
     report_engine = ReportEngine(server_addr)
     try:
         while True:
             resource_usage = _get_resource_usage(task_pid, total_bandwidth)
-            report_engine.report_task_resource_usage(node_type, ip, port, resource_usage)
+            report_engine.report_task_resource_usage(task_id, party_id, node_type, ip, port, resource_usage)
             time.sleep(interval)
     except Exception as e:
         log.exception(f"report resource usage error. {str(e)}")
