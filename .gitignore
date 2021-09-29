@@ -33,7 +33,6 @@ private_data/
 *.so
 venv/
 armada-common/Fighter/google/
-protos
 */config_*.yaml
 compute_svc/C0DE_*.py
 compute_svc/start_compute_svc_group.sh
