@@ -54,7 +54,7 @@ with open("run_task_cfg_train.json", 'w+') as f:
 cfg_dict["contract_id"] = "../tests/standalone_test/lr_predict.py"
 cfg_dict["dynamic_parameter"] = {
     "model_restore_party": "p3", 
-    "train_task_id": "abc/p3"
+    "model_path": "/home/juzix/fighter-v2/fighter-py/data_svc/results_root/abc/p7"
 }
 
 model_restore_party = cfg_dict["dynamic_parameter"]["model_restore_party"]

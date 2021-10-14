@@ -52,6 +52,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
     def UploadData(self, request_it, context):
         print(type(request_it))
         folder = cfg['data_root']
+        folder = os.path.abspath(folder)
         now = time.strftime("%Y%m%d-%H%M%S")
         if not os.path.exists(folder):
             os.makedirs(folder)

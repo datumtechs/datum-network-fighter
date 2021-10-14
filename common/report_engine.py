@@ -88,6 +88,37 @@ class ReportEngine(object):
         except Exception as e:
             log.exception(str(e))
 
+    def report_task_result_file_summary(self, summary):
+        """
+        service YarnService {
+            rpc ReportTaskResultFileSummary (ReportTaskResultFileSummaryRequest) returns (api.protobuf.SimpleResponse) {
+                option (google.api.http) = {
+                post: "/carrier/v1/yarn/reportTaskResultFileSummary"
+                body: "*"
+                };
+            }
+        }
+        message ReportTaskResultFileSummaryRequest {
+            string task_id = 1;
+            string origin_id = 2;
+            string file_path = 3;
+            string ip = 4;
+            string port = 5;
+        }
+        """
+        try:
+            req = pb2.ReportTaskResultFileSummaryRequest()
+            req.task_id = summary["task_id"]
+            req.origin_id = summary["origin_id"]
+            req.file_path = summary["file_path"]
+            req.ip = summary["ip"]
+            req.port = str(summary["port"])
+            str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+            log.debug(str_req)
+            return self.__client.ReportTaskResultFileSummary(req)
+        except Exception as e:
+            log.exception(str(e))
+
     def report_task_resource_usage(self, task_id, party_id, node_type, ip:str, port:str, resource_usage):
         """
         service YarnService {
@@ -151,7 +182,7 @@ class ReportEngine(object):
             return self.__client.ReportTaskResourceUsage(req)
         except Exception as e:
             log.exception(str(e))
-    
+        
     def close(self):
         self.conn.close()
 
@@ -173,6 +204,12 @@ def report_task_event(server_addr: str, stop_event):
 def report_upload_file_summary(server_addr: str, summary: dict):
     report_engine = ReportEngine(server_addr)
     ret = report_engine.report_upload_file_summary(summary)
+    report_engine.close()
+    return ret
+
+def report_task_result_file_summary(server_addr: str, summary: dict):
+    report_engine = ReportEngine(server_addr)
+    ret = report_engine.report_task_result_file_summary(summary)
     report_engine.close()
     return ret
 
