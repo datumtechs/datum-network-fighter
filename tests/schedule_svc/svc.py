@@ -44,7 +44,7 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         return base_pb2.SimpleResponse(status=0, msg="report resource ok.")
 
     def ReportUpFileSummary(self, request, context):
-        log.info(f'get up file summary start.')
+        log.info(f'get upload file summary start.')
         summary = {}
         summary["origin_id"] = request.origin_id
         summary["file_path"] = request.file_path
@@ -54,5 +54,13 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         return base_pb2.SimpleResponse(status=0, msg="report file summary ok.")
 
     def ReportTaskResultFileSummary(self, request, context):
-        pass
+        log.info(f'get task result file summary start.')
+        summary = {}
+        summary["task_id"] = request.task_id
+        summary["origin_id"] = request.origin_id
+        summary["file_path"] = request.file_path
+        summary["ip"] = request.ip
+        summary["port"] = request.port
+        log.info(f'get task result file summary: {summary}')
+        return base_pb2.SimpleResponse(status=0, msg="report task result file summary ok.")
 

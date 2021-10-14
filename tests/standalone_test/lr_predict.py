@@ -26,18 +26,16 @@ class PrivacyLRPredict(object):
     '''
 
     def __init__(self,
-                 task_id: str,
                  cfg_dict: dict,
                  data_party: list,
                  result_party: list,
-                 results_root_dir: str):
-        log.info(f"task_id:{task_id}, cfg_dict:{cfg_dict}, data_party:{data_party},"
-                 f"result_party:{result_party}, results_root_dir:{results_root_dir}")
-        assert isinstance(task_id, str), "type of task_id must be string"
+                 results_dir: str):
+        log.info(f"cfg_dict:{cfg_dict}, data_party:{data_party},"
+                 f"result_party:{result_party}, results_dir:{results_dir}")
         assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
         assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
         assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
-        assert isinstance(results_root_dir, str), "type of results_root_dir must be str"
+        assert isinstance(results_dir, str), "type of results_dir must be str"
         
         self.data_party = list(data_party)
         self.result_party = list(result_party)
@@ -47,15 +45,12 @@ class PrivacyLRPredict(object):
         self.feature_column_name = cfg_dict["data_party"].get("selected_columns")
         dynamic_parameter = cfg_dict["dynamic_parameter"]
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
-        train_task_id = dynamic_parameter.get("train_task_id")
-        self.model_file = os.path.join(results_root_dir, f"{train_task_id}/model")
+        model_path = dynamic_parameter.get("model_path")
+        self.model_file = f"{model_path}/model"
         self.predict_threshold = dynamic_parameter.get("predict_threshold", 0.5)
         assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
-        output_path = os.path.join(results_root_dir, f"{task_id}/{self.party_id}")
-        if not os.path.exists(output_path):
-            os.makedirs(output_path, exist_ok=True)
-        self.output_file = os.path.join(output_path, "result")
+        self.output_file = os.path.join(results_dir, "result")
         
         self.data_party.remove(self.model_restore_party)  # except restore party
        
@@ -168,9 +163,9 @@ class PrivacyLRPredict(object):
             shutil.rmtree(temp_dir)
 
 
-def main(task_id: str, cfg_dict: dict, data_party: list, result_party: list, results_root_dir: str):
+def main(cfg_dict: dict, data_party: list, result_party: list, results_dir: str):
     '''
     This is the entrance to this module
     '''
-    privacy_lr = PrivacyLRPredict(task_id, cfg_dict, data_party, result_party, results_root_dir)
+    privacy_lr = PrivacyLRPredict(cfg_dict, data_party, result_party, results_dir)
     privacy_lr.predict()

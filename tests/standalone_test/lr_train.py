@@ -26,18 +26,16 @@ class PrivacyLRTrain(object):
     '''
 
     def __init__(self,
-                 task_id: str,
                  cfg_dict: dict,
                  data_party: list,
                  result_party: list,
-                 results_root_dir: str):
-        log.info(f"task_id:{task_id}, cfg_dict:{cfg_dict}, data_party:{data_party}, "
-                 f"result_party:{result_party}, results_root_dir:{results_root_dir}")
-        assert isinstance(task_id, str), "type of task_id must be string"
+                 results_dir: str):
+        log.info(f"cfg_dict:{cfg_dict}, data_party:{data_party}, "
+                 f"result_party:{result_party}, results_dir:{results_dir}")
         assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
         assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
         assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
-        assert isinstance(results_root_dir, str), "type of results_root_dir must be str"
+        assert isinstance(results_dir, str), "type of results_dir must be str"
         
         self.data_party = list(data_party)
         self.result_party = list(result_party)
@@ -63,10 +61,7 @@ class PrivacyLRTrain(object):
         self.validation_set_rate = algorithm_parameter.get("validation_set_rate", 0.2)
         self.predict_threshold = algorithm_parameter.get("predict_threshold", 0.5)
 
-        output_path = os.path.join(results_root_dir, f'{task_id}/{self.party_id}')
-        if not os.path.exists(output_path):
-            os.makedirs(output_path, exist_ok=True)
-        self.output_file = os.path.join(output_path, "model")
+        self.output_file = os.path.join(results_dir, "model")
         
         self.check_parameters()
 
@@ -253,9 +248,9 @@ class PrivacyLRTrain(object):
             shutil.rmtree(temp_dir)
 
 
-def main(task_id: str, cfg_dict: dict, data_party: list, result_party: list, results_root_dir: str):
+def main(cfg_dict: dict, data_party: list, result_party: list, results_dir: str):
     '''
     This is the entrance to this module
     '''
-    privacy_lr = PrivacyLRTrain(task_id, cfg_dict, data_party, result_party, results_root_dir)
+    privacy_lr = PrivacyLRTrain(cfg_dict, data_party, result_party, results_dir)
     privacy_lr.train()

@@ -4,10 +4,11 @@ import time
 import logging
 import threading
 import multiprocessing as mp
+import hashlib
 
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
-from common.report_engine import report_task_resource_usage
+from common.report_engine import report_task_resource_usage, report_task_result_file_summary
 
 log = logging.getLogger(__name__)
 
@@ -96,10 +97,20 @@ class Task:
 
             event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_START"], self.party_id, self.id_, "contract execute start.")
             m = importlib.import_module(module_name)
-            results_root_dir = self._get_result_dir()
-            self._ensure_dir(results_root_dir)
-            m.main(self.id, user_cfg, self.data_party, self.result_party, results_root_dir)
+            result_dir = self._get_result_dir()
+            self._ensure_dir(result_dir)
+            m.main(user_cfg, self.data_party, self.result_party, result_dir)
             log.info(f'run task done')
+            if self.party_id in self.result_party:
+                file_path = result_dir
+                m = hashlib.sha256()
+                m.update(file_path.encode())
+                data_id = m.hexdigest()
+                file_summary = {"task_id": self.id, "origin_id": data_id, "file_path": file_path,
+                                "ip": self.cfg["bind_ip"], "port": self.cfg["port"]}
+                log.info(f'start report task result file summary.')
+                ret = report_task_result_file_summary(self.cfg['schedule_svc'], file_summary)
+                log.info(f'finish report task result file summary. ')
             event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], self.party_id, self.id_,
                                     "contract execute success.")
             event_engine.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], self.party_id, self.id_, "task finish.")
@@ -146,7 +157,8 @@ class Task:
         return os.path.join(self.cfg['code_root_dir'], self.id, self.party_id)
 
     def _get_result_dir(self):
-        return os.path.abspath(self.cfg['results_root_dir'])
+        result_dir = os.path.join(self.cfg['results_root_dir'], f"{self.id}/{self.party_id}")
+        return os.path.abspath(result_dir)
 
     def _ensure_dir(self, dir_):
         if not os.path.exists(dir_):
