@@ -30,25 +30,25 @@ class ReportEngine(object):
             }
         }
         message ReportTaskEventRequest {
-            string          party_id = 1;
-            types.TaskEvent task_event = 2;
+            types.TaskEvent task_event = 1;
         }
         message TaskEvent {
             string type = 1;
             string task_id = 2;
             string identity_id = 3;
-            string content = 4;
-            uint64 create_at = 5;
+            string party_id = 4;
+            string content = 5;
+            uint64 create_at = 6;
         }
         """
         try:
             # get event
             event = EVENT_QUEUE.get(block=True, timeout=1)
             req = pb2.ReportTaskEventRequest()
-            req.party_id = event.dict_["party_id"]
             req.task_event.type = event.type_
             req.task_event.task_id = event.dict_["task_id"]
             req.task_event.identity_id = event.dict_["identity_id"]
+            req.task_event.party_id = event.dict_["party_id"]
             req.task_event.content = "{}:{}".format(event.dict_["party_id"], event.dict_["content"])
             req.task_event.create_at = event.dict_["create_at"]
             str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
