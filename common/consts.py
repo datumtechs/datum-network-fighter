@@ -3,13 +3,6 @@ from multiprocessing import Queue
 EVENT_QUEUE = Queue()
 
 DATA_EVENT = {
-    "UPLOAD_DATA_SUCCESS": "0207000",  # 源数据上传成功
-    "UPLOAD_DATA_FAILED": "0207001",  # 源数据上传失败
-    "DOWNLOAD_DATA_SUCCESS": "0207002",  # 源数据下载成功
-    "DOWNLOAD_DATA_FAILED": "0207003",  # 源数据下载失败
-    "DELETE_DATA_SUCCESS": "0207004",  # 源数据删除成功
-    "DELETE_DATA_FAILED": "0207005",  # 源数据删除失败
-
     "TASK_START": "0209000",  # 开始新任务
     "DOWNLOAD_CONTRACT_SUCCESS": "0209001",  # 下载合约代码成功
     "DOWNLOAD_CONTRACT_FAILED": "0209002",  # 下载合约代码失败

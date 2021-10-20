@@ -18,7 +18,7 @@ class EventEngine(object):
     def __init__(self):
         self.__queue = EVENT_QUEUE
 
-    def fire_event(self, event_type, party_id, task_id, content, identity_id=""):
+    def fire_event(self, event_type:str, content:str, task_id:str, party_id:str, identity_id=""):
         '''
         Generate events and push them to the queue
         args:
@@ -33,7 +33,7 @@ class EventEngine(object):
 
         event = Event(event_type)
         create_at = int(time.time() * 1000)  # in ms
-        info = dict(party_id=party_id, task_id=task_id, content=content, 
+        info = dict(task_id=task_id, party_id=party_id, content=content, 
                     identity_id=identity_id, create_at=create_at)
         event.dict_.update(info)
         self.put_event(event)
@@ -53,4 +53,4 @@ if __name__ == '__main__':
     task_id = "sfasasfasdfasdfa"
     content = "compute task start."
     identity_id = "did:pid:0xeeeeff...efaab"
-    event_engine.fire_event(type_, party_id, task_id, content, identity_id)
+    event_engine.fire_event(type_, content, task_id, party_id, identity_id)

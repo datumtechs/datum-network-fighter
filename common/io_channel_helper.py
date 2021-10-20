@@ -3,7 +3,6 @@ import json
 import logging
 
 from common.consts import COMMON_EVENT
-from common.event_engine import event_engine
 from common.socket_utils import get_free_loopback_tcp_port
 import channel_sdk.grpc
 
@@ -78,27 +77,6 @@ def get_channel_config(task_id, self_party_id, peers, data_party, compute_party,
                                        result_party, pass_via, certs, self_internal_addr)
     channel_config = json.dumps(config_dict)
     log.info(f'self_party_id: {self_party_id}, channel_config: {channel_config}')
-    
-    # try:
-    #     import latticex.rosetta as rtt
-    #     log.info('start create_channel')
-    #     io_channel = channel_sdk.grpc.APIManager()
-    #     channel = io_channel.create_channel(self_party_id, channel_config)
-    #     log.info('create channel success.')
-    #     event_engine.fire_event(event_type["CREATE_CHANNEL_SUCCESS"], self_party_id, task_id, "create channel success.")
-    # except Exception as e:
-    #     log.exception(f'create channel fail. {str(e)}')
-    #     event_engine.fire_event(event_type["CREATE_CHANNEL_FAILED"], self_party_id, task_id, f"create channel fail. {str(e)}")
-    #     event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self_party_id, task_id, "service stop.")
-    
-    # try:
-    #     rtt.set_channel("", channel)
-    #     log.info('set channel success.')
-    #     event_engine.fire_event(event_type["SET_CHANNEL_SUCCESS"], self_party_id, task_id, "set channel success.")
-    # except Exception as e:
-    #     log.exception(f'set channel fail. {str(e)}')
-    #     event_engine.fire_event(event_type["SET_CHANNEL_FAILED"], self_party_id, task_id, f"set channel fail. {str(e)}")
-    #     event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self_party_id, task_id, "service stop.")
     
     return channel_config
 

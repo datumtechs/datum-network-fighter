@@ -81,7 +81,6 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     file_summary = {"origin_id": data_id, "file_path": full_new_name, "ip": cfg["bind_ip"],
                                     "port": cfg["port"]}
                     ret = report_upload_file_summary(cfg['schedule_svc'], file_summary)
-                    # event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_SUCCESS"], "", "", "upload data success.")
                     log.info(ret)
                     if ret and ret.status == 0:
                         return result
@@ -92,8 +91,6 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     m.update(req.content)
         except Exception as e:
             log.error(repr(e))
-            # event_engine.fire_event(DATA_EVENT["UPLOAD_DATA_FAILED"], "", "", f"upload data fail. {str(e)}")
-            # event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
         finally:
             if f:
                 f.close()
@@ -151,11 +148,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                         chunk = content_file.read(chunk_size)
                 yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Finished)
                 log.info('sending content done')
-            # event_engine.fire_event(DATA_EVENT["DOWNLOAD_DATA_SUCCESS"], "", "", "download data success.")
         except Exception as e:
             log.error(repr(e))
-            # event_engine.fire_event(DATA_EVENT["DOWNLOAD_DATA_FAILED"], "", "", f"download data fail. {str(e)}")
-            # event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "", "", "service stop.")
 
     def SendSharesData(self, request, context):
         ans = data_svc_pb2.SendSharesDataReply(status=data_svc_pb2.TaskStatus.Cancelled)
