@@ -1,0 +1,66 @@
+{
+	"TASK_ID": "task-1",
+	"ROOT_CERT": "gmssl_key/CA.crt",
+	"LOG_LEVEL": 2,
+	"NODE_INFO": [
+		{
+			"NODE_ID": "p0",
+			"ADDRESS": "127.0.0.1:10001",
+			"VIA": "VIA1",
+			"SERVER_SIGN_KEY": "gmssl_key/SS.key",
+			"SERVER_SIGN_CERT": "gmssl_key/SS.crt",
+			"SERVER_ENC_KEY": "gmssl_key/SE.key",
+			"SERVER_ENC_CERT": "gmssl_key/SE.crt",
+			"CLIENT_SIGN_KEY": "gmssl_key/CS.key",
+			"CLIENT_SIGN_CERT": "gmssl_key/CS.crt",
+			"CLIENT_ENC_KEY": "gmssl_key/CE.key",
+			"CLIENT_ENC_CERT": "gmssl_key/CE.crt"
+		},
+		{
+			"NODE_ID": "p1",
+			"ADDRESS": "127.0.0.1:20001",
+			"VIA": "VIA2",
+			"SERVER_SIGN_KEY": "gmssl_key/SS.key",
+			"SERVER_SIGN_CERT": "gmssl_key/SS.crt",
+			"SERVER_ENC_KEY": "gmssl_key/SE.key",
+			"SERVER_ENC_CERT": "gmssl_key/SE.crt",
+			"CLIENT_SIGN_KEY": "gmssl_key/CS.key",
+			"CLIENT_SIGN_CERT": "gmssl_key/CS.crt",
+			"CLIENT_ENC_KEY": "gmssl_key/CE.key",
+			"CLIENT_ENC_CERT": "gmssl_key/CE.crt"
+		},
+		{
+			"NODE_ID": "p2",
+			"ADDRESS": "127.0.0.1:30001",
+			"VIA": "VIA3",
+			"SERVER_SIGN_KEY": "gmssl_key/SS.key",
+			"SERVER_SIGN_CERT": "gmssl_key/SS.crt",
+			"SERVER_ENC_KEY": "gmssl_key/SE.key",
+			"SERVER_ENC_CERT": "gmssl_key/SE.crt",
+			"CLIENT_SIGN_KEY": "gmssl_key/CS.key",
+			"CLIENT_SIGN_CERT": "gmssl_key/CS.crt",
+			"CLIENT_ENC_KEY": "gmssl_key/CE.key",
+			"CLIENT_ENC_CERT": "gmssl_key/CE.crt"
+		}
+	],
+	"VIA_INFO": {
+		"VIA1": "127.0.0.1:10001",
+		"VIA2": "127.0.0.1:20001",
+		"VIA3": "127.0.0.1:30001"
+	},
+	"DATA_NODES": [
+		"p0",
+		"p1",
+		"p2"
+	],
+	"COMPUTATION_NODES": {
+		"p0": "P0",
+		"p1": "P1",
+		"p2": "P2"
+	},
+	"RESULT_NODES": [
+		"p0",
+		"p1",
+		"p2"
+	]
+}

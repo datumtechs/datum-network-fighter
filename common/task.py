@@ -77,7 +77,7 @@ class Task:
 
         import warnings
         warnings.filterwarnings('ignore', message=r'Passing', category=FutureWarning)
-        from io_channel_helper import rtt_set_channel
+        from io_channel_helper import get_channel_config
         try:
             import importlib
 
@@ -85,8 +85,8 @@ class Task:
             pproc_ip = self.cfg['bind_ip']
             certs = self.cfg['certs']
 
-            rtt_set_channel(self.id, self.party_id, self.peers,
-                            self.data_party, self.computation_party, self.result_party, 
+            channel_config = get_channel_config(self.id, self.party_id, self.peers,
+                            self.data_party, self.computation_party, self.result_party,
                             pass_via, pproc_ip, certs, self.event_type)
          
             user_cfg = self.assemble_cfg()
@@ -99,7 +99,7 @@ class Task:
             m = importlib.import_module(module_name)
             result_dir = self._get_result_dir()
             self._ensure_dir(result_dir)
-            m.main(user_cfg, self.data_party, self.result_party, result_dir)
+            m.main(channel_config, user_cfg, self.data_party, self.result_party, result_dir)
             log.info(f'run task done')
             if self.party_id in self.result_party:
                 file_path = result_dir
@@ -145,12 +145,6 @@ class Task:
     def assemble_cfg(self):
         import json
         cfg_dict = json.loads(self.contract_cfg)
-        # dir_ = self._get_code_dir()
-        # self._ensure_code_dir(dir_)
-        # code_path_path = os.path.join(dir_, self._get_code_cfg_file_name())
-        # log.info(code_path_path)
-        # with open(code_path_path, 'w') as f:
-        #     json.dump(cfg_dict, f)
         return cfg_dict
 
     def _get_code_dir(self):

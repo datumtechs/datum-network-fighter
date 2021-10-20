@@ -12,7 +12,7 @@ with open(config_file, 'r') as f:
 cfg_dict["contract_id"] = "../tests/standalone_test/lr_train.py"
 cfg_dict["dynamic_parameter"] = {
     "label_owner": "p1",
-    "label_column_name": "Y",
+    "label_column": "Y",
     "algorithm_parameter": {
         "epochs": 10,
         "batch_size": 256,

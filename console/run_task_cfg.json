@@ -48,7 +48,7 @@
     ],
     "dynamic_parameter": {
         "label_owner": "p1",
-        "label_column_name": "Y",
+        "label_column": "Y",
         "algorithm_parameter": {
             "epochs": 2,
             "batch_size": 256,
