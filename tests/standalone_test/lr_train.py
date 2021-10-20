@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import latticex.rosetta as rtt
+import channel_sdk
 
 
 np.set_printoptions(suppress=True)
@@ -26,31 +27,34 @@ class PrivacyLRTrain(object):
     '''
 
     def __init__(self,
+                 channel_config: str,
                  cfg_dict: dict,
                  data_party: list,
                  result_party: list,
                  results_dir: str):
-        log.info(f"cfg_dict:{cfg_dict}, data_party:{data_party}, "
+        log.info(f"channel_config:{channel_config}, cfg_dict:{cfg_dict}, data_party:{data_party}, "
                  f"result_party:{result_party}, results_dir:{results_dir}")
+        assert isinstance(channel_config, str), "type of channel_config must be str"
         assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
         assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
         assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
         assert isinstance(results_dir, str), "type of results_dir must be str"
         
+        self.channel_config = channel_config
         self.data_party = list(data_party)
         self.result_party = list(result_party)
         self.party_id = cfg_dict["party_id"]
         self.input_file = cfg_dict["data_party"].get("input_file")
-        self.id_column_name = cfg_dict["data_party"].get("key_column")
-        self.feature_column_name = cfg_dict["data_party"].get("selected_columns")
+        self.key_column = cfg_dict["data_party"].get("key_column")
+        self.selected_columns = cfg_dict["data_party"].get("selected_columns")
 
         dynamic_parameter = cfg_dict["dynamic_parameter"]
         self.label_owner = dynamic_parameter.get("label_owner")
         if self.party_id == self.label_owner:
-            self.label_column_name = dynamic_parameter.get("label_column_name")
+            self.label_column = dynamic_parameter.get("label_column")
             self.data_with_label = True
         else:
-            self.label_column_name = ""
+            self.label_column = ""
             self.data_with_label = False
                         
         algorithm_parameter = dynamic_parameter["algorithm_parameter"]
@@ -79,6 +83,9 @@ class PrivacyLRTrain(object):
 
         log.info("extract feature or label.")
         train_x, train_y, val_x, val_y = self.extract_feature_or_label(with_label=self.data_with_label)
+        
+        log.info("start create and set channel.")
+        self.create_set_channel()
         log.info("waiting other party connect...")
         rtt.activate("SecureNN")
         log.info("protocol has been activated.")
@@ -174,6 +181,17 @@ class PrivacyLRTrain(object):
             log.info("********************")
         log.info("train finish.")
     
+    def create_set_channel(self):
+        '''
+        create and set channel.
+        '''
+        io_channel = channel_sdk.grpc.APIManager()
+        log.info("start create channel")
+        channel = io_channel.create_channel(self.party_id, self.channel_config)
+        log.info("start set channel")
+        rtt.set_channel("", channel)
+        log.info("set channel success.")
+    
     def extract_feature_or_label(self, with_label: bool=False):
         '''
         Extract feature columns or label column from input file,
@@ -187,9 +205,9 @@ class PrivacyLRTrain(object):
         if self.party_id in self.data_party:
             if self.input_file:
                 if with_label:
-                    usecols = self.feature_column_name + [self.label_column_name]
+                    usecols = self.selected_columns + [self.label_column]
                 else:
-                    usecols = self.feature_column_name
+                    usecols = self.selected_columns
                 
                 input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str")
                 input_data = input_data[usecols]
@@ -198,7 +216,7 @@ class PrivacyLRTrain(object):
                 assert split_point > 0, f"train set is empty, because validation_set_rate:{self.validation_set_rate} is too big"
                 
                 if with_label:
-                    y_data = input_data[self.label_column_name]
+                    y_data = input_data[self.label_column]
                     train_y = os.path.join(temp_dir, f"train_y_{self.party_id}.csv")
                     y_data.iloc[:split_point].to_csv(train_y, header=True, index=False)
                     if self.use_validation_set:
@@ -206,7 +224,7 @@ class PrivacyLRTrain(object):
                             f"validation set is empty, because validation_set_rate:{self.validation_set_rate} is too small"
                         val_y = os.path.join(temp_dir, f"val_y_{self.party_id}.csv")
                         y_data.iloc[split_point:].to_csv(val_y, header=True, index=False)
-                    del input_data[self.label_column_name]
+                    del input_data[self.label_column]
                 
                 x_data = input_data
                 train_x = os.path.join(temp_dir, f"train_x_{self.party_id}.csv")
@@ -248,9 +266,9 @@ class PrivacyLRTrain(object):
             shutil.rmtree(temp_dir)
 
 
-def main(cfg_dict: dict, data_party: list, result_party: list, results_dir: str):
+def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: list, results_dir: str):
     '''
     This is the entrance to this module
     '''
-    privacy_lr = PrivacyLRTrain(cfg_dict, data_party, result_party, results_dir)
+    privacy_lr = PrivacyLRTrain(channel_config, cfg_dict, data_party, result_party, results_dir)
     privacy_lr.train()

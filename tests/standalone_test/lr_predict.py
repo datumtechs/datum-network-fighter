@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import latticex.rosetta as rtt
+import channel_sdk
 
 
 np.set_printoptions(suppress=True)
@@ -26,23 +27,26 @@ class PrivacyLRPredict(object):
     '''
 
     def __init__(self,
+                 channel_config: str,
                  cfg_dict: dict,
                  data_party: list,
                  result_party: list,
                  results_dir: str):
-        log.info(f"cfg_dict:{cfg_dict}, data_party:{data_party},"
+        log.info(f"channel_config:{channel_config}, cfg_dict:{cfg_dict}, data_party:{data_party},"
                  f"result_party:{result_party}, results_dir:{results_dir}")
+        assert isinstance(channel_config, str), "type of channel_config must be str"
         assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
         assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
         assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
         assert isinstance(results_dir, str), "type of results_dir must be str"
         
+        self.channel_config = channel_config
         self.data_party = list(data_party)
         self.result_party = list(result_party)
         self.party_id = cfg_dict["party_id"]
         self.input_file = cfg_dict["data_party"].get("input_file")
-        self.id_column_name = cfg_dict["data_party"].get("key_column")
-        self.feature_column_name = cfg_dict["data_party"].get("selected_columns")
+        self.key_column = cfg_dict["data_party"].get("key_column")
+        self.selected_columns = cfg_dict["data_party"].get("selected_columns")
         dynamic_parameter = cfg_dict["dynamic_parameter"]
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
         model_path = dynamic_parameter.get("model_path")
@@ -62,6 +66,9 @@ class PrivacyLRPredict(object):
 
         log.info("extract feature or id.")
         file_x, id_col = self.extract_feature_or_index()
+        
+        log.info("start create and set channel.")
+        self.create_set_channel()
         log.info("waiting other party connect...")
         rtt.activate("SecureNN")
         log.info("protocol has been activated.")
@@ -124,6 +131,17 @@ class PrivacyLRPredict(object):
         self.remove_temp_dir()
         log.info("predict finish.")
 
+    def create_set_channel(self):
+        '''
+        create and set channel.
+        '''
+        io_channel = channel_sdk.grpc.APIManager()
+        log.info("start create channel")
+        channel = io_channel.create_channel(self.party_id, self.channel_config)
+        log.info("start set channel")
+        rtt.set_channel("", channel)
+        log.info("set channel success.")
+        
     def extract_feature_or_index(self):
         '''
         Extract feature columns or index column from input file.
@@ -133,12 +151,12 @@ class PrivacyLRPredict(object):
         temp_dir = self.get_temp_dir()
         if self.party_id in self.data_party:
             if self.input_file:
-                usecols = [self.id_column_name] + self.feature_column_name
+                usecols = [self.key_column] + self.selected_columns
                 input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str")
                 input_data = input_data[usecols]
-                id_col = input_data[self.id_column_name]
+                id_col = input_data[self.key_column]
                 file_x = os.path.join(temp_dir, f"file_x_{self.party_id}.csv")
-                x_data = input_data.drop(labels=self.id_column_name, axis=1)
+                x_data = input_data.drop(labels=self.key_column, axis=1)
                 x_data.to_csv(file_x, header=True, index=False)
             else:
                 raise Exception(f"data_party:{self.party_id} not have data. input_file:{self.input_file}")
@@ -163,9 +181,9 @@ class PrivacyLRPredict(object):
             shutil.rmtree(temp_dir)
 
 
-def main(cfg_dict: dict, data_party: list, result_party: list, results_dir: str):
+def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: list, results_dir: str):
     '''
     This is the entrance to this module
     '''
-    privacy_lr = PrivacyLRPredict(cfg_dict, data_party, result_party, results_dir)
+    privacy_lr = PrivacyLRPredict(channel_config, cfg_dict, data_party, result_party, results_dir)
     privacy_lr.predict()

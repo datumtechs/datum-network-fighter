@@ -6,7 +6,6 @@ from common.consts import COMMON_EVENT
 from common.event_engine import event_engine
 from common.socket_utils import get_free_loopback_tcp_port
 import channel_sdk.grpc
-import latticex.rosetta as rtt
 
 
 log = logging.getLogger(__name__)
@@ -69,7 +68,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
     return config_dict
 
 
-def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, result_party, 
+def get_channel_config(task_id, self_party_id, peers, data_party, compute_party, result_party, 
                     pass_via, parent_proc_ip, certs, event_type):
     with get_free_loopback_tcp_port() as port:
         log.info(f'got a free port: {port}')
@@ -77,28 +76,32 @@ def rtt_set_channel(task_id, self_party_id, peers, data_party, compute_party, re
     log.info(f'get a free port: {self_internal_addr}')
     config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, 
                                        result_party, pass_via, certs, self_internal_addr)
-    rtt_config = json.dumps(config_dict)
-    log.info(f'self_party_id: {self_party_id}')
-    log.info(f'rtt_config: {rtt_config}')
-    log.info('before create_channel')
-    try:
-        io_channel = channel_sdk.grpc.APIManager()
-        channel = io_channel.create_channel(self_party_id, rtt_config)
-        log.info('create channel success.')
-        event_engine.fire_event(event_type["CREATE_CHANNEL_SUCCESS"], self_party_id, task_id, "create channel success.")
-    except Exception as e:
-        log.exception(f'create channel fail. {str(e)}')
-        event_engine.fire_event(event_type["CREATE_CHANNEL_FAILED"], self_party_id, task_id, f"create channel fail. {str(e)}")
-        event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self_party_id, task_id, "service stop.")
+    channel_config = json.dumps(config_dict)
+    log.info(f'self_party_id: {self_party_id}, channel_config: {channel_config}')
     
-    try:
-        rtt.set_channel("", channel)
-        log.info('set channel success.')
-        event_engine.fire_event(event_type["SET_CHANNEL_SUCCESS"], self_party_id, task_id, "set channel success.")
-    except Exception as e:
-        log.exception(f'set channel fail. {str(e)}')
-        event_engine.fire_event(event_type["SET_CHANNEL_FAILED"], self_party_id, task_id, f"set channel fail. {str(e)}")
-        event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self_party_id, task_id, "service stop.")
+    # try:
+    #     import latticex.rosetta as rtt
+    #     log.info('start create_channel')
+    #     io_channel = channel_sdk.grpc.APIManager()
+    #     channel = io_channel.create_channel(self_party_id, channel_config)
+    #     log.info('create channel success.')
+    #     event_engine.fire_event(event_type["CREATE_CHANNEL_SUCCESS"], self_party_id, task_id, "create channel success.")
+    # except Exception as e:
+    #     log.exception(f'create channel fail. {str(e)}')
+    #     event_engine.fire_event(event_type["CREATE_CHANNEL_FAILED"], self_party_id, task_id, f"create channel fail. {str(e)}")
+    #     event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self_party_id, task_id, "service stop.")
+    
+    # try:
+    #     rtt.set_channel("", channel)
+    #     log.info('set channel success.')
+    #     event_engine.fire_event(event_type["SET_CHANNEL_SUCCESS"], self_party_id, task_id, "set channel success.")
+    # except Exception as e:
+    #     log.exception(f'set channel fail. {str(e)}')
+    #     event_engine.fire_event(event_type["SET_CHANNEL_FAILED"], self_party_id, task_id, f"set channel fail. {str(e)}")
+    #     event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self_party_id, task_id, "service stop.")
+    
+    return channel_config
+
 
 if __name__ == '__main__':
     peers = [{'party_id': 'p5',
@@ -114,6 +117,6 @@ if __name__ == '__main__':
               'ip': '192.168.16.153',
               'port': '30006'}]
 
-    rtt_set_channel('task-1', 'p5', peers,
+    create_channel('task-1', 'p5', peers,
                     [], ['p5', 'p6', 'p7'], [],
                     True, '192.168.9.32', {}, {})

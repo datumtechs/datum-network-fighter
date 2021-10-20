@@ -11,6 +11,7 @@ import shutil
 import numpy as np
 import pandas as pd
 import latticex.psi as psi
+import channel_sdk
 
 
 log = logging.getLogger(__name__)
@@ -21,96 +22,78 @@ class PrivateSetIntersection(object):
     '''
 
     def __init__(self,
-                 task_id: str,
+                 channel_config: str,
                  cfg_dict: dict,
                  data_party: list,
                  result_party: list,
-                 results_root_dir: str):
-        log.info(f"task_id:{task_id}, cfg_dict:{cfg_dict}, data_party:{data_party}, "
-                 f"result_party:{result_party}, results_root_dir:{results_root_dir}")
-        assert isinstance(task_id, str), "type of task_id must be string"
+                 results_dir: str):
+        log.info(f"channel_config:{channel_config}, cfg_dict:{cfg_dict}, data_party:{data_party}, "
+                 f"result_party:{result_party}, results_dir:{results_dir}")
+        assert isinstance(channel_config, str), "type of channel_config must be string"
         assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
         assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
         assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
-        assert isinstance(results_root_dir, str), "type of results_root_dir must be str"
+        assert isinstance(results_dir, str), "type of results_dir must be str"
         
+        self.channel_config = channel_config
         self.data_party = list(data_party)
         self.result_party = list(result_party)
         self.party_id = cfg_dict["party_id"]
         self.input_file = cfg_dict["data_party"].get("input_file")
         self.id_column_name = cfg_dict["data_party"].get("key_column")
         self.feature_column_name = cfg_dict["data_party"].get("selected_columns")
-
+        
         dynamic_parameter = cfg_dict["dynamic_parameter"]
-        self.label_owner = dynamic_parameter.get("label_owner")
-        if self.party_id == self.label_owner:
-            self.label_column_name = dynamic_parameter.get("label_column_name")
-            self.data_with_label = True
-        else:
-            self.label_column_name = ""
-            self.data_with_label = False
-                        
-        algorithm_parameter = dynamic_parameter["algorithm_parameter"]
-        self.epochs = algorithm_parameter.get("epochs", 10)
-        self.batch_size = algorithm_parameter.get("batch_size", 256)
-        self.learning_rate = algorithm_parameter.get("learning_rate", 0.001)
-        self.use_validation_set = algorithm_parameter.get("use_validation_set", True)
-        self.validation_set_rate = algorithm_parameter.get("validation_set_rate", 0.2)
-        self.predict_threshold = algorithm_parameter.get("predict_threshold", 0.5)
+        self.psi_type = dynamic_parameter.get("psi_type")  # default 'T_V1_Basic_GLS254'
+        # self.receiveParty = dynamic_parameter.get("receiveParty")   # 0:P0, 1:P1, 2: P0 and P1
 
-        output_path = os.path.join(results_root_dir, f'{task_id}/{self.party_id}')
-        if not os.path.exists(output_path):
-            os.makedirs(output_path, exist_ok=True)
-        self.output_file = os.path.join(output_path, "model")
+        self.output_file = os.path.join(results_dir, "psi_result.csv")
                 
     def run(self):
         '''
         run psi
         '''
 
-        if self.party_id == 0:
-            nodeId = 'P0'
-        else:
-            nodeId = 'P1'
-
         psihandler = psi.PSIHandler()
         log.info("start set log.")
         psihandler.log_to_stdout(True)
         psihandler.set_loglevel(psi.LogLevel.Info)
-
         log.info("start set recv party.")
-        psihandler.set_recv_party(receiveParty, jobId) # 0:P0, 1:P1, 2: P0 and P1
+        psihandler.set_recv_party(2, "")
 
-        # IO
-        iohandler = psi.IOHandler()
-        log.info("start create io.")
-        io = iohandler.create_io(jobId, nodeId, cfg_json)
-        log.info("start set io.")
-        psihandler.set_io(io, jobId)
+        log.info("start create and set channel.")
+        self.create_set_channel()
         log.info("start activate.")
-        psihandler.activate('T_V1_Basic_GLS254', jobId)
+        psihandler.activate(self.psi_type, "")
         log.info("finish activate.")
 
-        log.info("start set batchsize.")
-        psihandler.set_sender_batchsize(1000 * 1000 * 6, jobId)  # the number of row per batch
-        psihandler.set_receiver_batchsize(1000 * 1000 * 6, jobId)
-        psihandler.set_receiver_finder_batchsize(1000 * 1000 * 6, jobId)
-
         log.info("extract id.")
-        input_file = extract_id()
+        input_file = self.extract_id()
         log.info("start prepare data.")
-        psihandler.prepare(input_file, taskid=jobId)
+        psihandler.prepare(input_file, taskid="")
         log.info("start run.")
-        psihandler.run(input_file, output_file, taskid=jobId)
+        psihandler.run(input_file, self.output_file, taskid="")
         log.info("finish run.")
-        run_stats = psihandler.get_perf_stats(True, jobId)
+        run_stats = psihandler.get_perf_stats(True, "")
         run_stats = run_stats.replace('\n', '').replace(' ', '')
         log.info(f"run stats: {run_stats}")
-        log.info("start deactivate !")
-        psihandler.deactivate(jobId)
-        log.info("start release io !")
-        iohandler.release_io(jobId)
-        log.info("psi success!")
+        log.info("start deactivate.")
+        psihandler.deactivate("")
+        log.info("remove temp dir.")
+        self.remove_temp_dir()
+        log.info("psi finish.")
+    
+    def create_set_channel(self):
+        '''
+        create and set channel.
+        '''
+        iohandler = psi.IOHandler()
+        io_channel = channel_sdk.grpc.APIManager()
+        log.info("start create channel.")
+        channel = io_channel.create_channel(self.party_id, self.channel_config)
+        log.info("start set channel.")
+        iohandler.set_channel("", channel)
+        log.info("set channel success.")   
     
     def extract_id(self):
         '''
@@ -122,10 +105,11 @@ class PrivateSetIntersection(object):
         val_x = ""
         val_y = ""
         temp_dir = self.get_temp_dir()
-        
-        usecol = self.key_column
-        input_data = pd.read_csv(self.input_file, usecols=usecol, dtype="str")
         input_file = os.path.join(temp_dir, f"input_{self.party_id}.csv")
+        
+        # if self.party_id in self.data_party:
+        usecol = [self.id_column_name]
+        input_data = pd.read_csv(self.input_file, usecols=usecol, dtype="str")
         input_data.to_csv(input_file, header=True, index=False)
         return input_file
     
@@ -157,9 +141,9 @@ class PrivateSetIntersection(object):
             shutil.rmtree(temp_dir)
 
 
-def main(task_id: str, cfg_dict: dict, data_party: list, result_party: list, results_root_dir: str):
+def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: list, results_dir: str):
     '''
     This is the entrance to this module
     '''
-    psi = PrivateSetIntersection(task_id, cfg_dict, data_party, result_party, results_root_dir)
+    psi = PrivateSetIntersection(channel_config, cfg_dict, data_party, result_party, results_dir)
     psi.run()
