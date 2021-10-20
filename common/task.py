@@ -5,13 +5,18 @@ import logging
 import threading
 import multiprocessing as mp
 import hashlib
+import importlib
+import warnings
+warnings.filterwarnings('ignore', message=r'Passing', category=FutureWarning)
+import functools
 
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
 from common.report_engine import report_task_resource_usage, report_task_result_file_summary
+from io_channel_helper import get_channel_config
+
 
 log = logging.getLogger(__name__)
-
 
 class Task:
     def __init__(self, cfg, task_id, party_id, contract_id, data_id, env_id, peers,
@@ -42,6 +47,8 @@ class Task:
             self.party_type = "compute_svc"
         else:
             self.event_type = None
+        
+        self.fire_event = functools.partial(event_engine.fire_event, task_id=self.id, party_id=self.party_id)
 
     @property
     def id(self):
@@ -54,7 +61,7 @@ class Task:
     def run(self):
         log.info(f'thread id: {threading.get_ident()}')
         log.info(f'run_cfg: {self.cfg}')
-        event_engine.fire_event(self.event_type["TASK_START"], self.party_id, self.id_, "task start.")
+        self.fire_event(self.event_type["TASK_START"], "task start.")
         current_task_pid = os.getpid()
         report_resource = threading.Thread(target=report_task_resource_usage, args=(current_task_pid, self.cfg['schedule_svc'], 
                     self.id, self.party_id, self.party_type, self.cfg['bind_ip'], self.cfg['port'], self.cfg['total_bandwidth'], 10))
@@ -62,12 +69,10 @@ class Task:
         
         try:
             self.download_algo()
-            event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], self.party_id, self.id_,
-                                    "download contract success.")
+            self.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], "download contract success.")
         except Exception as e:
-            event_engine.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], self.party_id, self.id_,
-                                    f"download contract fail. {str(e)}")
-            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.party_id, self.id_, "service stop.")
+            self.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail. {str(e)}")
+            self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "service stop.")
 
         self.build_env()
 
@@ -75,16 +80,10 @@ class Task:
         pdir = os.path.dirname(the_dir)
         log.info(f'cwd: {os.getcwd()}, the dir: {the_dir}, parent dir: {pdir}')
 
-        import warnings
-        warnings.filterwarnings('ignore', message=r'Passing', category=FutureWarning)
-        from io_channel_helper import get_channel_config
         try:
-            import importlib
-
             pass_via = self.cfg['pass_via']
             pproc_ip = self.cfg['bind_ip']
             certs = self.cfg['certs']
-
             channel_config = get_channel_config(self.id, self.party_id, self.peers,
                             self.data_party, self.computation_party, self.result_party,
                             pass_via, pproc_ip, certs, self.event_type)
@@ -95,7 +94,7 @@ class Task:
             module_name = os.path.splitext(code_path)[0]
             log.info(f'code path: {code_path}, module: {module_name}')
 
-            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_START"], self.party_id, self.id_, "contract execute start.")
+            self.fire_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
             m = importlib.import_module(module_name)
             result_dir = self._get_result_dir()
             self._ensure_dir(result_dir)
@@ -111,14 +110,12 @@ class Task:
                 log.info(f'start report task result file summary.')
                 ret = report_task_result_file_summary(self.cfg['schedule_svc'], file_summary)
                 log.info(f'finish report task result file summary. ')
-            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], self.party_id, self.id_,
-                                    "contract execute success.")
-            event_engine.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], self.party_id, self.id_, "task finish.")
+            self.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], "contract execute success.")
+            self.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task finish.")
         except Exception as e:
             log.exception(repr(e))
-            event_engine.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], self.party_id, self.id_,
-                                    f"contract execute failed. {str(e)}")
-            event_engine.fire_event(COMMON_EVENT["END_FLAG_FAILED"], self.party_id, self.id_, "service stop.")
+            self.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed. {str(e)}")
+            self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "service stop.")
         finally:
             log.info('task final clean')
             self.clean()
