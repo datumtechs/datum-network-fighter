@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z+github.com/RosettaFlow/Carrier-Go/lib/types',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x18lib/types/metadata.proto\x12\x05types\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\"\xc2\x03\n\nMetadataPB\x12\x13\n\x0bmetadata_id\x18\x01 \x01(\t\x12\x13\n\x0bidentity_id\x18\x02 \x01(\t\x12\x0f\n\x07node_id\x18\x03 \x01(\t\x12\x11\n\tnode_name\x18\x04 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x05 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x06 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12\x11\n\torigin_id\x18\x07 \x01(\t\x12\x12\n\ntable_name\x18\x08 \x01(\t\x12\x11\n\tfile_path\x18\t \x01(\t\x12\x0c\n\x04\x64\x65sc\x18\n \x01(\t\x12\x0c\n\x04rows\x18\x0b \x01(\r\x12\x0f\n\x07\x63olumns\x18\x0c \x01(\r\x12\x0c\n\x04size\x18\r \x01(\x04\x12/\n\tfile_type\x18\x0e \x01(\x0e\x32\x1c.api.protobuf.OriginFileType\x12*\n\x05state\x18\x0f \x01(\x0e\x32\x1b.api.protobuf.MetadataState\x12\x11\n\thas_title\x18\x10 \x01(\x08\x12/\n\x10metadata_columns\x18\x11 \x03(\x0b\x32\x15.types.MetadataColumn\x12\x10\n\x08industry\x18\x12 \x01(\t\"d\n\x0eMetadataColumn\x12\x0f\n\x07\x63_index\x18\x01 \x01(\r\x12\x0e\n\x06\x63_name\x18\x02 \x01(\t\x12\x0e\n\x06\x63_type\x18\x03 \x01(\t\x12\x0e\n\x06\x63_size\x18\x04 \x01(\r\x12\x11\n\tc_comment\x18\x05 \x01(\t\"\xb4\x03\n\x13MetadataAuthorityPB\x12\x18\n\x10metadata_auth_id\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x03 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x04 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12)\n\tuser_type\x18\x05 \x01(\x0e\x32\x16.api.protobuf.UserType\x12&\n\x04\x61uth\x18\x06 \x01(\x0b\x32\x18.types.MetadataAuthority\x12\x37\n\x0c\x61udit_option\x18\x07 \x01(\x0e\x32!.api.protobuf.AuditMetadataOption\x12\x18\n\x10\x61udit_suggestion\x18\x08 \x01(\t\x12(\n\x08used_quo\x18\t \x01(\x0b\x32\x16.types.MetadataUsedQuo\x12\x10\n\x08\x61pply_at\x18\n \x01(\x04\x12\x10\n\x08\x61udit_at\x18\x0b \x01(\x04\x12\x33\n\x05state\x18\x0c \x01(\x0e\x32$.api.protobuf.MetadataAuthorityState\x12\x0c\n\x04sign\x18\r \x01(\x0c\"\x9d\x02\n\x0fMetadataSummary\x12\x13\n\x0bmetadata_id\x18\x01 \x01(\t\x12\x11\n\torigin_id\x18\x02 \x01(\t\x12\x12\n\ntable_name\x18\x03 \x01(\t\x12\x0c\n\x04\x64\x65sc\x18\x04 \x01(\t\x12\x11\n\tfile_path\x18\x05 \x01(\t\x12\x0c\n\x04rows\x18\x06 \x01(\r\x12\x0f\n\x07\x63olumns\x18\x07 \x01(\r\x12\x0c\n\x04size\x18\x08 \x01(\x04\x12/\n\tfile_type\x18\t \x01(\x0e\x32\x1c.api.protobuf.OriginFileType\x12\x11\n\thas_title\x18\n \x01(\x08\x12\x10\n\x08industry\x18\x0b \x01(\t\x12*\n\x05state\x18\x0c \x01(\x0e\x32\x1b.api.protobuf.MetadataState\"\x8d\x01\n\x0eMetadataDetail\x12\x30\n\x10metadata_summary\x18\x01 \x01(\x0b\x32\x16.types.MetadataSummary\x12/\n\x10metadata_columns\x18\x02 \x03(\x0b\x32\x15.types.MetadataColumn\x12\x18\n\x10total_task_count\x18\x03 \x01(\r\"y\n\x11MetadataUsageRule\x12\x33\n\nusage_type\x18\x01 \x01(\x0e\x32\x1f.api.protobuf.MetadataUsageType\x12\x10\n\x08start_at\x18\x02 \x01(\x04\x12\x0e\n\x06\x65nd_at\x18\x03 \x01(\x04\x12\r\n\x05times\x18\x04 \x01(\r\"\x81\x01\n\x11MetadataAuthority\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12\x13\n\x0bmetadata_id\x18\x02 \x01(\t\x12,\n\nusage_rule\x18\x03 \x01(\x0b\x32\x18.types.MetadataUsageRule\"j\n\x0fMetadataUsedQuo\x12\x33\n\nusage_type\x18\x01 \x01(\x0e\x32\x1f.api.protobuf.MetadataUsageType\x12\x0e\n\x06\x65xpire\x18\x02 \x01(\x08\x12\x12\n\nused_times\x18\x03 \x01(\rB-Z+github.com/RosettaFlow/Carrier-Go/lib/typesb\x06proto3'
+  serialized_pb=b'\n\x18lib/types/metadata.proto\x12\x05types\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\"\xe9\x03\n\nMetadataPB\x12\x13\n\x0bmetadata_id\x18\x01 \x01(\t\x12\x13\n\x0bidentity_id\x18\x02 \x01(\t\x12\x0f\n\x07node_id\x18\x03 \x01(\t\x12\x11\n\tnode_name\x18\x04 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x05 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x06 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12\x11\n\torigin_id\x18\x07 \x01(\t\x12\x12\n\ntable_name\x18\x08 \x01(\t\x12\x11\n\tfile_path\x18\t \x01(\t\x12\x0c\n\x04\x64\x65sc\x18\n \x01(\t\x12\x0c\n\x04rows\x18\x0b \x01(\r\x12\x0f\n\x07\x63olumns\x18\x0c \x01(\r\x12\x0c\n\x04size\x18\r \x01(\x04\x12/\n\tfile_type\x18\x0e \x01(\x0e\x32\x1c.api.protobuf.OriginFileType\x12*\n\x05state\x18\x0f \x01(\x0e\x32\x1b.api.protobuf.MetadataState\x12\x11\n\thas_title\x18\x10 \x01(\x08\x12/\n\x10metadata_columns\x18\x11 \x03(\x0b\x32\x15.types.MetadataColumn\x12\x10\n\x08industry\x18\x12 \x01(\t\x12\x12\n\npublish_at\x18\x13 \x01(\x04\x12\x11\n\tupdate_at\x18\x14 \x01(\x04\"d\n\x0eMetadataColumn\x12\x0f\n\x07\x63_index\x18\x01 \x01(\r\x12\x0e\n\x06\x63_name\x18\x02 \x01(\t\x12\x0e\n\x06\x63_type\x18\x03 \x01(\t\x12\x0e\n\x06\x63_size\x18\x04 \x01(\r\x12\x11\n\tc_comment\x18\x05 \x01(\t\"\xdb\x03\n\x13MetadataAuthorityPB\x12\x18\n\x10metadata_auth_id\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x03 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x04 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12)\n\tuser_type\x18\x05 \x01(\x0e\x32\x16.api.protobuf.UserType\x12&\n\x04\x61uth\x18\x06 \x01(\x0b\x32\x18.types.MetadataAuthority\x12\x37\n\x0c\x61udit_option\x18\x07 \x01(\x0e\x32!.api.protobuf.AuditMetadataOption\x12\x18\n\x10\x61udit_suggestion\x18\x08 \x01(\t\x12(\n\x08used_quo\x18\t \x01(\x0b\x32\x16.types.MetadataUsedQuo\x12\x10\n\x08\x61pply_at\x18\n \x01(\x04\x12\x10\n\x08\x61udit_at\x18\x0b \x01(\x04\x12\x33\n\x05state\x18\x0c \x01(\x0e\x32$.api.protobuf.MetadataAuthorityState\x12\x0c\n\x04sign\x18\r \x01(\x0c\x12\x12\n\npublish_at\x18\x0e \x01(\x04\x12\x11\n\tupdate_at\x18\x0f \x01(\x04\"\xc4\x02\n\x0fMetadataSummary\x12\x13\n\x0bmetadata_id\x18\x01 \x01(\t\x12\x11\n\torigin_id\x18\x02 \x01(\t\x12\x12\n\ntable_name\x18\x03 \x01(\t\x12\x0c\n\x04\x64\x65sc\x18\x04 \x01(\t\x12\x11\n\tfile_path\x18\x05 \x01(\t\x12\x0c\n\x04rows\x18\x06 \x01(\r\x12\x0f\n\x07\x63olumns\x18\x07 \x01(\r\x12\x0c\n\x04size\x18\x08 \x01(\x04\x12/\n\tfile_type\x18\t \x01(\x0e\x32\x1c.api.protobuf.OriginFileType\x12\x11\n\thas_title\x18\n \x01(\x08\x12\x10\n\x08industry\x18\x0b \x01(\t\x12*\n\x05state\x18\x0c \x01(\x0e\x32\x1b.api.protobuf.MetadataState\x12\x12\n\npublish_at\x18\r \x01(\x04\x12\x11\n\tupdate_at\x18\x0e \x01(\x04\"\x8d\x01\n\x0eMetadataDetail\x12\x30\n\x10metadata_summary\x18\x01 \x01(\x0b\x32\x16.types.MetadataSummary\x12/\n\x10metadata_columns\x18\x02 \x03(\x0b\x32\x15.types.MetadataColumn\x12\x18\n\x10total_task_count\x18\x03 \x01(\r\"y\n\x11MetadataUsageRule\x12\x33\n\nusage_type\x18\x01 \x01(\x0e\x32\x1f.api.protobuf.MetadataUsageType\x12\x10\n\x08start_at\x18\x02 \x01(\x04\x12\x0e\n\x06\x65nd_at\x18\x03 \x01(\x04\x12\r\n\x05times\x18\x04 \x01(\r\"\x81\x01\n\x11MetadataAuthority\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12\x13\n\x0bmetadata_id\x18\x02 \x01(\t\x12,\n\nusage_rule\x18\x03 \x01(\x0b\x32\x18.types.MetadataUsageRule\"j\n\x0fMetadataUsedQuo\x12\x33\n\nusage_type\x18\x01 \x01(\x0e\x32\x1f.api.protobuf.MetadataUsageType\x12\x0e\n\x06\x65xpire\x18\x02 \x01(\x08\x12\x12\n\nused_times\x18\x03 \x01(\rB-Z+github.com/RosettaFlow/Carrier-Go/lib/typesb\x06proto3'
   ,
   dependencies=[lib_dot_common_dot_base__pb2.DESCRIPTOR,lib_dot_common_dot_data__pb2.DESCRIPTOR,])
 
@@ -162,6 +162,20 @@ _METADATAPB = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='publish_at', full_name='types.MetadataPB.publish_at', index=18,
+      number=19, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='update_at', full_name='types.MetadataPB.update_at', index=19,
+      number=20, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -175,7 +189,7 @@ _METADATAPB = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=82,
-  serialized_end=532,
+  serialized_end=571,
 )
 
 
@@ -234,8 +248,8 @@ _METADATACOLUMN = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=534,
-  serialized_end=634,
+  serialized_start=573,
+  serialized_end=673,
 )
 
 
@@ -338,6 +352,20 @@ _METADATAAUTHORITYPB = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='publish_at', full_name='types.MetadataAuthorityPB.publish_at', index=13,
+      number=14, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='update_at', full_name='types.MetadataAuthorityPB.update_at', index=14,
+      number=15, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -350,8 +378,8 @@ _METADATAAUTHORITYPB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=637,
-  serialized_end=1073,
+  serialized_start=676,
+  serialized_end=1151,
 )
 
 
@@ -447,6 +475,20 @@ _METADATASUMMARY = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='publish_at', full_name='types.MetadataSummary.publish_at', index=12,
+      number=13, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='update_at', full_name='types.MetadataSummary.update_at', index=13,
+      number=14, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -459,8 +501,8 @@ _METADATASUMMARY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1076,
-  serialized_end=1361,
+  serialized_start=1154,
+  serialized_end=1478,
 )
 
 
@@ -505,8 +547,8 @@ _METADATADETAIL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1364,
-  serialized_end=1505,
+  serialized_start=1481,
+  serialized_end=1622,
 )
 
 
@@ -558,8 +600,8 @@ _METADATAUSAGERULE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1507,
-  serialized_end=1628,
+  serialized_start=1624,
+  serialized_end=1745,
 )
 
 
@@ -604,8 +646,8 @@ _METADATAAUTHORITY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1631,
-  serialized_end=1760,
+  serialized_start=1748,
+  serialized_end=1877,
 )
 
 
@@ -650,8 +692,8 @@ _METADATAUSEDQUO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1762,
-  serialized_end=1868,
+  serialized_start=1879,
+  serialized_end=1985,
 )
 
 _METADATAPB.fields_by_name['data_status'].enum_type = lib_dot_common_dot_base__pb2._DATASTATUS

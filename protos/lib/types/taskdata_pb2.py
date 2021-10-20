@@ -24,7 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z+github.com/RosettaFlow/Carrier-Go/lib/types',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x18lib/types/taskdata.proto\x12\x05types\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\x1a\x18lib/types/metadata.proto\x1a\x1clib/types/identitydata.proto\x1a\x1clib/types/resourcedata.proto\"\xa4\x06\n\x06TaskPB\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x11\n\tnode_name\x18\x03 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x04 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x05 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12\x0f\n\x07task_id\x18\x06 \x01(\t\x12\x11\n\ttask_name\x18\x07 \x01(\t\x12&\n\x05state\x18\x08 \x01(\x0e\x32\x17.api.protobuf.TaskState\x12\x0e\n\x06reason\x18\t \x01(\t\x12\x13\n\x0b\x65vent_count\x18\n \x01(\r\x12\x0c\n\x04\x64\x65sc\x18\x0b \x01(\t\x12\x11\n\tcreate_at\x18\x0c \x01(\x04\x12\x0e\n\x06\x65nd_at\x18\r \x01(\x04\x12\x10\n\x08start_at\x18\x0e \x01(\x04\x12\x10\n\x08party_id\x18\x0f \x01(\t\x12\x35\n\ralgo_supplier\x18\x14 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12=\n\x0eoperation_cost\x18\x15 \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12/\n\x0e\x64\x61ta_suppliers\x18\x16 \x03(\x0b\x32\x17.types.TaskDataSupplier\x12\x31\n\x0fpower_suppliers\x18\x17 \x03(\x0b\x32\x18.types.TaskPowerSupplier\x12\x31\n\treceivers\x18\x18 \x03(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12%\n\x0btask_events\x18\x19 \x03(\x0b\x32\x10.types.TaskEvent\x12\x1f\n\x17\x63\x61lculate_contract_code\x18\x1a \x01(\t\x12 \n\x18\x64\x61ta_split_contract_code\x18\x1b \x01(\t\x12\x1d\n\x15\x63ontract_extra_params\x18\x1c \x01(\t\x12\x0c\n\x04user\x18\x1d \x01(\t\x12)\n\tuser_type\x18\x1e \x01(\x0e\x32\x16.api.protobuf.UserType\x12\x0c\n\x04sign\x18\x1f \x01(\x0c\"\x87\x01\n\x11TaskPowerSupplier\x12\x34\n\x0corganization\x18\x01 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12<\n\x16resource_used_overview\x18\x02 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\"\xd0\x01\n\x10TaskDataSupplier\x12\x34\n\x0corganization\x18\x01 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x13\n\x0bmetadata_id\x18\x02 \x01(\t\x12\x15\n\rmetadata_name\x18\x03 \x01(\t\x12)\n\nkey_column\x18\x04 \x01(\x0b\x32\x15.types.MetadataColumn\x12/\n\x10selected_columns\x18\x05 \x03(\x0b\x32\x15.types.MetadataColumn\"c\n\tTaskEvent\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x0f\n\x07task_id\x18\x02 \x01(\t\x12\x13\n\x0bidentity_id\x18\x03 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x04 \x01(\t\x12\x11\n\tcreate_at\x18\x05 \x01(\x04\x42-Z+github.com/RosettaFlow/Carrier-Go/lib/typesb\x06proto3'
+  serialized_pb=b'\n\x18lib/types/taskdata.proto\x12\x05types\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\x1a\x18lib/types/metadata.proto\x1a\x1clib/types/identitydata.proto\x1a\x1clib/types/resourcedata.proto\"\xa4\x06\n\x06TaskPB\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x11\n\tnode_name\x18\x03 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x04 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x05 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12\x0f\n\x07task_id\x18\x06 \x01(\t\x12\x11\n\ttask_name\x18\x07 \x01(\t\x12&\n\x05state\x18\x08 \x01(\x0e\x32\x17.api.protobuf.TaskState\x12\x0e\n\x06reason\x18\t \x01(\t\x12\x13\n\x0b\x65vent_count\x18\n \x01(\r\x12\x0c\n\x04\x64\x65sc\x18\x0b \x01(\t\x12\x11\n\tcreate_at\x18\x0c \x01(\x04\x12\x0e\n\x06\x65nd_at\x18\r \x01(\x04\x12\x10\n\x08start_at\x18\x0e \x01(\x04\x12\x10\n\x08party_id\x18\x0f \x01(\t\x12\x35\n\ralgo_supplier\x18\x14 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12=\n\x0eoperation_cost\x18\x15 \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12/\n\x0e\x64\x61ta_suppliers\x18\x16 \x03(\x0b\x32\x17.types.TaskDataSupplier\x12\x31\n\x0fpower_suppliers\x18\x17 \x03(\x0b\x32\x18.types.TaskPowerSupplier\x12\x31\n\treceivers\x18\x18 \x03(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12%\n\x0btask_events\x18\x19 \x03(\x0b\x32\x10.types.TaskEvent\x12\x1f\n\x17\x63\x61lculate_contract_code\x18\x1a \x01(\t\x12 \n\x18\x64\x61ta_split_contract_code\x18\x1b \x01(\t\x12\x1d\n\x15\x63ontract_extra_params\x18\x1c \x01(\t\x12\x0c\n\x04user\x18\x1d \x01(\t\x12)\n\tuser_type\x18\x1e \x01(\x0e\x32\x16.api.protobuf.UserType\x12\x0c\n\x04sign\x18\x1f \x01(\x0c\"\x87\x01\n\x11TaskPowerSupplier\x12\x34\n\x0corganization\x18\x01 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12<\n\x16resource_used_overview\x18\x02 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\"\xd0\x01\n\x10TaskDataSupplier\x12\x34\n\x0corganization\x18\x01 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x13\n\x0bmetadata_id\x18\x02 \x01(\t\x12\x15\n\rmetadata_name\x18\x03 \x01(\t\x12)\n\nkey_column\x18\x04 \x01(\x0b\x32\x15.types.MetadataColumn\x12/\n\x10selected_columns\x18\x05 \x03(\x0b\x32\x15.types.MetadataColumn\"u\n\tTaskEvent\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x0f\n\x07task_id\x18\x02 \x01(\t\x12\x13\n\x0bidentity_id\x18\x03 \x01(\t\x12\x10\n\x08party_id\x18\x04 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x05 \x01(\t\x12\x11\n\tcreate_at\x18\x06 \x01(\x04\x42-Z+github.com/RosettaFlow/Carrier-Go/lib/typesb\x06proto3'
   ,
   dependencies=[lib_dot_common_dot_base__pb2.DESCRIPTOR,lib_dot_common_dot_data__pb2.DESCRIPTOR,lib_dot_types_dot_metadata__pb2.DESCRIPTOR,lib_dot_types_dot_identitydata__pb2.DESCRIPTOR,lib_dot_types_dot_resourcedata__pb2.DESCRIPTOR,])
 
@@ -374,15 +374,22 @@ _TASKEVENT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='content', full_name='types.TaskEvent.content', index=3,
+      name='party_id', full_name='types.TaskEvent.party_id', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='create_at', full_name='types.TaskEvent.create_at', index=4,
-      number=5, type=4, cpp_type=4, label=1,
+      name='content', full_name='types.TaskEvent.content', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='create_at', full_name='types.TaskEvent.create_at', index=5,
+      number=6, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -400,7 +407,7 @@ _TASKEVENT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1323,
-  serialized_end=1422,
+  serialized_end=1440,
 )
 
 _TASKPB.fields_by_name['data_status'].enum_type = lib_dot_common_dot_base__pb2._DATASTATUS

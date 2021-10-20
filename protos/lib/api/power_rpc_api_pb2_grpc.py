@@ -20,6 +20,11 @@ class PowerServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.GetGlobalPowerSummaryList = channel.unary_unary(
+                '/rpcapi.PowerService/GetGlobalPowerSummaryList',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                response_deserializer=lib_dot_api_dot_power__rpc__api__pb2.GetGlobalPowerSummaryListResponse.FromString,
+                )
         self.GetGlobalPowerDetailList = channel.unary_unary(
                 '/rpcapi.PowerService/GetGlobalPowerDetailList',
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
@@ -49,8 +54,15 @@ class PowerServiceServicer(object):
     查看自己组织时, 自己组织的算力和元数据都需要知道单个单个的.
     """
 
+    def GetGlobalPowerSummaryList(self, request, context):
+        """查看全网各个组织的总算力(累加)详情列表
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def GetGlobalPowerDetailList(self, request, context):
-        """查看全网各个组织的总算力详情列表
+        """查看全网各个组织的各个算力详情列表
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -80,6 +92,11 @@ class PowerServiceServicer(object):
 
 def add_PowerServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'GetGlobalPowerSummaryList': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetGlobalPowerSummaryList,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    response_serializer=lib_dot_api_dot_power__rpc__api__pb2.GetGlobalPowerSummaryListResponse.SerializeToString,
+            ),
             'GetGlobalPowerDetailList': grpc.unary_unary_rpc_method_handler(
                     servicer.GetGlobalPowerDetailList,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
@@ -113,6 +130,23 @@ class PowerService(object):
     查看外部组织时, 只需要知道外部组织的总算力, 而外部组织的元数据则需要知道单个单个的;
     查看自己组织时, 自己组织的算力和元数据都需要知道单个单个的.
     """
+
+    @staticmethod
+    def GetGlobalPowerSummaryList(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/rpcapi.PowerService/GetGlobalPowerSummaryList',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            lib_dot_api_dot_power__rpc__api__pb2.GetGlobalPowerSummaryListResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def GetGlobalPowerDetailList(request,

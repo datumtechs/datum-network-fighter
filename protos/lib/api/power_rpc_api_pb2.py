@@ -25,11 +25,96 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z)github.com/RosettaFlow/Carrier-Go/lib/api',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1blib/api/power_rpc_api.proto\x12\x06rpcapi\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\x1a\x1clib/types/resourcedata.proto\x1a\x1alib/api/task_rpc_api.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"q\n\x1cGetGlobalPowerDetailResponse\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12&\n\x05power\x18\x02 \x01(\x0b\x32\x17.types.PowerUsageDetail\"y\n GetGlobalPowerDetailListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x38\n\npower_list\x18\x03 \x03(\x0b\x32$.rpcapi.GetGlobalPowerDetailResponse\"\x97\x01\n\x1bGetLocalPowerDetailResponse\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12&\n\x05power\x18\x02 \x01(\x0b\x32\x17.types.PowerUsageDetail\x12\x13\n\x0bjob_node_id\x18\x03 \x01(\t\x12\x10\n\x08power_id\x18\x04 \x01(\t\"w\n\x1fGetLocalPowerDetailListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x37\n\npower_list\x18\x03 \x03(\x0b\x32#.rpcapi.GetLocalPowerDetailResponse\"*\n\x13PublishPowerRequest\x12\x13\n\x0bjob_node_id\x18\x01 \x01(\t\"E\n\x14PublishPowerResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x10\n\x08power_id\x18\x03 \x01(\t\"&\n\x12RevokePowerRequest\x12\x10\n\x08power_id\x18\x01 \x01(\t2\xfa\x03\n\x0cPowerService\x12\x85\x01\n\x18GetGlobalPowerDetailList\x12\x16.google.protobuf.Empty\x1a(.rpcapi.GetGlobalPowerDetailListResponse\"\'\x82\xd3\xe4\x93\x02!\"\x1c/carrier/v1/power/globalList:\x01*\x12\x82\x01\n\x17GetLocalPowerDetailList\x12\x16.google.protobuf.Empty\x1a\'.rpcapi.GetLocalPowerDetailListResponse\"&\x82\xd3\xe4\x93\x02 \"\x1b/carrier/v1/power/localList:\x01*\x12o\n\x0cPublishPower\x12\x1b.rpcapi.PublishPowerRequest\x1a\x1c.rpcapi.PublishPowerResponse\"$\x82\xd3\xe4\x93\x02\x1e\"\x19/carrier/v1/power/publish:\x01*\x12l\n\x0bRevokePower\x12\x1a.rpcapi.RevokePowerRequest\x1a\x1c.api.protobuf.SimpleResponse\"#\x82\xd3\xe4\x93\x02\x1d\"\x18/carrier/v1/power/revoke:\x01*B+Z)github.com/RosettaFlow/Carrier-Go/lib/apib\x06proto3'
+  serialized_pb=b'\n\x1blib/api/power_rpc_api.proto\x12\x06rpcapi\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\x1a\x1clib/types/resourcedata.proto\x1a\x1alib/api/task_rpc_api.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"r\n\x1dGetGlobalPowerSummaryResponse\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12&\n\x05power\x18\x02 \x01(\x0b\x32\x17.types.PowerUsageDetail\"{\n!GetGlobalPowerSummaryListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x39\n\npower_list\x18\x03 \x03(\x0b\x32%.rpcapi.GetGlobalPowerSummaryResponse\"\x83\x01\n\x1cGetGlobalPowerDetailResponse\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12&\n\x05power\x18\x02 \x01(\x0b\x32\x17.types.PowerUsageDetail\x12\x10\n\x08power_id\x18\x03 \x01(\t\"y\n GetGlobalPowerDetailListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x38\n\npower_list\x18\x03 \x03(\x0b\x32$.rpcapi.GetGlobalPowerDetailResponse\"\x97\x01\n\x1bGetLocalPowerDetailResponse\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12&\n\x05power\x18\x02 \x01(\x0b\x32\x17.types.PowerUsageDetail\x12\x13\n\x0bjob_node_id\x18\x03 \x01(\t\x12\x10\n\x08power_id\x18\x04 \x01(\t\"w\n\x1fGetLocalPowerDetailListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x37\n\npower_list\x18\x03 \x03(\x0b\x32#.rpcapi.GetLocalPowerDetailResponse\"*\n\x13PublishPowerRequest\x12\x13\n\x0bjob_node_id\x18\x01 \x01(\t\"E\n\x14PublishPowerResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x10\n\x08power_id\x18\x03 \x01(\t\"&\n\x12RevokePowerRequest\x12\x10\n\x08power_id\x18\x01 \x01(\t2\x8e\x05\n\x0cPowerService\x12\x8b\x01\n\x19GetGlobalPowerSummaryList\x12\x16.google.protobuf.Empty\x1a).rpcapi.GetGlobalPowerSummaryListResponse\"+\x82\xd3\xe4\x93\x02%\x12#/carrier/v1/power/globalSummaryList\x12\x88\x01\n\x18GetGlobalPowerDetailList\x12\x16.google.protobuf.Empty\x1a(.rpcapi.GetGlobalPowerDetailListResponse\"*\x82\xd3\xe4\x93\x02$\x12\"/carrier/v1/power/globalDetailList\x12\x85\x01\n\x17GetLocalPowerDetailList\x12\x16.google.protobuf.Empty\x1a\'.rpcapi.GetLocalPowerDetailListResponse\")\x82\xd3\xe4\x93\x02#\x12!/carrier/v1/power/localDetailList\x12o\n\x0cPublishPower\x12\x1b.rpcapi.PublishPowerRequest\x1a\x1c.rpcapi.PublishPowerResponse\"$\x82\xd3\xe4\x93\x02\x1e\"\x19/carrier/v1/power/publish:\x01*\x12l\n\x0bRevokePower\x12\x1a.rpcapi.RevokePowerRequest\x1a\x1c.api.protobuf.SimpleResponse\"#\x82\xd3\xe4\x93\x02\x1d\"\x18/carrier/v1/power/revoke:\x01*B+Z)github.com/RosettaFlow/Carrier-Go/lib/apib\x06proto3'
   ,
   dependencies=[lib_dot_common_dot_base__pb2.DESCRIPTOR,lib_dot_common_dot_data__pb2.DESCRIPTOR,lib_dot_types_dot_resourcedata__pb2.DESCRIPTOR,lib_dot_api_dot_task__rpc__api__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
 
+
+
+_GETGLOBALPOWERSUMMARYRESPONSE = _descriptor.Descriptor(
+  name='GetGlobalPowerSummaryResponse',
+  full_name='rpcapi.GetGlobalPowerSummaryResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='owner', full_name='rpcapi.GetGlobalPowerSummaryResponse.owner', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='power', full_name='rpcapi.GetGlobalPowerSummaryResponse.power', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=202,
+  serialized_end=316,
+)
+
+
+_GETGLOBALPOWERSUMMARYLISTRESPONSE = _descriptor.Descriptor(
+  name='GetGlobalPowerSummaryListResponse',
+  full_name='rpcapi.GetGlobalPowerSummaryListResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='status', full_name='rpcapi.GetGlobalPowerSummaryListResponse.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='msg', full_name='rpcapi.GetGlobalPowerSummaryListResponse.msg', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='power_list', full_name='rpcapi.GetGlobalPowerSummaryListResponse.power_list', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=318,
+  serialized_end=441,
+)
 
 
 _GETGLOBALPOWERDETAILRESPONSE = _descriptor.Descriptor(
@@ -54,6 +139,13 @@ _GETGLOBALPOWERDETAILRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='power_id', full_name='rpcapi.GetGlobalPowerDetailResponse.power_id', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -66,8 +158,8 @@ _GETGLOBALPOWERDETAILRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=202,
-  serialized_end=315,
+  serialized_start=444,
+  serialized_end=575,
 )
 
 
@@ -112,8 +204,8 @@ _GETGLOBALPOWERDETAILLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=317,
-  serialized_end=438,
+  serialized_start=577,
+  serialized_end=698,
 )
 
 
@@ -165,8 +257,8 @@ _GETLOCALPOWERDETAILRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=441,
-  serialized_end=592,
+  serialized_start=701,
+  serialized_end=852,
 )
 
 
@@ -211,8 +303,8 @@ _GETLOCALPOWERDETAILLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=594,
-  serialized_end=713,
+  serialized_start=854,
+  serialized_end=973,
 )
 
 
@@ -243,8 +335,8 @@ _PUBLISHPOWERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=715,
-  serialized_end=757,
+  serialized_start=975,
+  serialized_end=1017,
 )
 
 
@@ -289,8 +381,8 @@ _PUBLISHPOWERRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=759,
-  serialized_end=828,
+  serialized_start=1019,
+  serialized_end=1088,
 )
 
 
@@ -321,16 +413,21 @@ _REVOKEPOWERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=830,
-  serialized_end=868,
+  serialized_start=1090,
+  serialized_end=1128,
 )
 
+_GETGLOBALPOWERSUMMARYRESPONSE.fields_by_name['owner'].message_type = lib_dot_common_dot_base__pb2._ORGANIZATION
+_GETGLOBALPOWERSUMMARYRESPONSE.fields_by_name['power'].message_type = lib_dot_types_dot_resourcedata__pb2._POWERUSAGEDETAIL
+_GETGLOBALPOWERSUMMARYLISTRESPONSE.fields_by_name['power_list'].message_type = _GETGLOBALPOWERSUMMARYRESPONSE
 _GETGLOBALPOWERDETAILRESPONSE.fields_by_name['owner'].message_type = lib_dot_common_dot_base__pb2._ORGANIZATION
 _GETGLOBALPOWERDETAILRESPONSE.fields_by_name['power'].message_type = lib_dot_types_dot_resourcedata__pb2._POWERUSAGEDETAIL
 _GETGLOBALPOWERDETAILLISTRESPONSE.fields_by_name['power_list'].message_type = _GETGLOBALPOWERDETAILRESPONSE
 _GETLOCALPOWERDETAILRESPONSE.fields_by_name['owner'].message_type = lib_dot_common_dot_base__pb2._ORGANIZATION
 _GETLOCALPOWERDETAILRESPONSE.fields_by_name['power'].message_type = lib_dot_types_dot_resourcedata__pb2._POWERUSAGEDETAIL
 _GETLOCALPOWERDETAILLISTRESPONSE.fields_by_name['power_list'].message_type = _GETLOCALPOWERDETAILRESPONSE
+DESCRIPTOR.message_types_by_name['GetGlobalPowerSummaryResponse'] = _GETGLOBALPOWERSUMMARYRESPONSE
+DESCRIPTOR.message_types_by_name['GetGlobalPowerSummaryListResponse'] = _GETGLOBALPOWERSUMMARYLISTRESPONSE
 DESCRIPTOR.message_types_by_name['GetGlobalPowerDetailResponse'] = _GETGLOBALPOWERDETAILRESPONSE
 DESCRIPTOR.message_types_by_name['GetGlobalPowerDetailListResponse'] = _GETGLOBALPOWERDETAILLISTRESPONSE
 DESCRIPTOR.message_types_by_name['GetLocalPowerDetailResponse'] = _GETLOCALPOWERDETAILRESPONSE
@@ -339,6 +436,20 @@ DESCRIPTOR.message_types_by_name['PublishPowerRequest'] = _PUBLISHPOWERREQUEST
 DESCRIPTOR.message_types_by_name['PublishPowerResponse'] = _PUBLISHPOWERRESPONSE
 DESCRIPTOR.message_types_by_name['RevokePowerRequest'] = _REVOKEPOWERREQUEST
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+GetGlobalPowerSummaryResponse = _reflection.GeneratedProtocolMessageType('GetGlobalPowerSummaryResponse', (_message.Message,), {
+  'DESCRIPTOR' : _GETGLOBALPOWERSUMMARYRESPONSE,
+  '__module__' : 'lib.api.power_rpc_api_pb2'
+  # @@protoc_insertion_point(class_scope:rpcapi.GetGlobalPowerSummaryResponse)
+  })
+_sym_db.RegisterMessage(GetGlobalPowerSummaryResponse)
+
+GetGlobalPowerSummaryListResponse = _reflection.GeneratedProtocolMessageType('GetGlobalPowerSummaryListResponse', (_message.Message,), {
+  'DESCRIPTOR' : _GETGLOBALPOWERSUMMARYLISTRESPONSE,
+  '__module__' : 'lib.api.power_rpc_api_pb2'
+  # @@protoc_insertion_point(class_scope:rpcapi.GetGlobalPowerSummaryListResponse)
+  })
+_sym_db.RegisterMessage(GetGlobalPowerSummaryListResponse)
 
 GetGlobalPowerDetailResponse = _reflection.GeneratedProtocolMessageType('GetGlobalPowerDetailResponse', (_message.Message,), {
   'DESCRIPTOR' : _GETGLOBALPOWERDETAILRESPONSE,
@@ -399,33 +510,43 @@ _POWERSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=871,
-  serialized_end=1377,
+  serialized_start=1131,
+  serialized_end=1785,
   methods=[
   _descriptor.MethodDescriptor(
-    name='GetGlobalPowerDetailList',
-    full_name='rpcapi.PowerService.GetGlobalPowerDetailList',
+    name='GetGlobalPowerSummaryList',
+    full_name='rpcapi.PowerService.GetGlobalPowerSummaryList',
     index=0,
     containing_service=None,
     input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
+    output_type=_GETGLOBALPOWERSUMMARYLISTRESPONSE,
+    serialized_options=b'\202\323\344\223\002%\022#/carrier/v1/power/globalSummaryList',
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='GetGlobalPowerDetailList',
+    full_name='rpcapi.PowerService.GetGlobalPowerDetailList',
+    index=1,
+    containing_service=None,
+    input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     output_type=_GETGLOBALPOWERDETAILLISTRESPONSE,
-    serialized_options=b'\202\323\344\223\002!\"\034/carrier/v1/power/globalList:\001*',
+    serialized_options=b'\202\323\344\223\002$\022\"/carrier/v1/power/globalDetailList',
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
     name='GetLocalPowerDetailList',
     full_name='rpcapi.PowerService.GetLocalPowerDetailList',
-    index=1,
+    index=2,
     containing_service=None,
     input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     output_type=_GETLOCALPOWERDETAILLISTRESPONSE,
-    serialized_options=b'\202\323\344\223\002 \"\033/carrier/v1/power/localList:\001*',
+    serialized_options=b'\202\323\344\223\002#\022!/carrier/v1/power/localDetailList',
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
     name='PublishPower',
     full_name='rpcapi.PowerService.PublishPower',
-    index=2,
+    index=3,
     containing_service=None,
     input_type=_PUBLISHPOWERREQUEST,
     output_type=_PUBLISHPOWERRESPONSE,
@@ -435,7 +556,7 @@ _POWERSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='RevokePower',
     full_name='rpcapi.PowerService.RevokePower',
-    index=3,
+    index=4,
     containing_service=None,
     input_type=_REVOKEPOWERREQUEST,
     output_type=lib_dot_common_dot_base__pb2._SIMPLERESPONSE,

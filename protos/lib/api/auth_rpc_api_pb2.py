@@ -24,7 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z)github.com/RosettaFlow/Carrier-Go/lib/api',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1alib/api/auth_rpc_api.proto\x12\x06rpcapi\x1a\x15lib/common/base.proto\x1a\x1clib/types/identitydata.proto\x1a\x18lib/types/metadata.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"F\n\x18\x41pplyIdentityJoinRequest\x12*\n\x06member\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\"a\n\x17GetNodeIdentityResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12)\n\x05owner\x18\x03 \x01(\x0b\x32\x1a.api.protobuf.Organization\"g\n\x17GetIdentityListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12/\n\x0bmember_list\x18\x03 \x03(\x0b\x32\x1a.api.protobuf.Organization\"\x8e\x01\n\x1d\x41pplyMetadataAuthorityRequest\x12\x0c\n\x04user\x18\x01 \x01(\t\x12)\n\tuser_type\x18\x02 \x01(\x0e\x32\x16.api.protobuf.UserType\x12&\n\x04\x61uth\x18\x03 \x01(\x0b\x32\x18.types.MetadataAuthority\x12\x0c\n\x04sign\x18\x04 \x01(\x0c\"W\n\x1e\x41pplyMetadataAuthorityResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x18\n\x10metadata_auth_id\x18\x03 \x01(\t\"\x81\x01\n\x1eRevokeMetadataAuthorityRequest\x12\x0c\n\x04user\x18\x01 \x01(\t\x12)\n\tuser_type\x18\x02 \x01(\x0e\x32\x16.api.protobuf.UserType\x12\x18\n\x10metadata_auth_id\x18\x03 \x01(\t\x12\x0c\n\x04sign\x18\x04 \x01(\x0c\"\x7f\n\x1d\x41uditMetadataAuthorityRequest\x12\x18\n\x10metadata_auth_id\x18\x01 \x01(\t\x12\x30\n\x05\x61udit\x18\x02 \x01(\x0e\x32!.api.protobuf.AuditMetadataOption\x12\x12\n\nsuggestion\x18\x03 \x01(\t\"o\n\x1e\x41uditMetadataAuthorityResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x30\n\x05\x61udit\x18\x03 \x01(\x0e\x32!.api.protobuf.AuditMetadataOption\"\xe7\x02\n\x14GetMetadataAuthority\x12\x18\n\x10metadata_auth_id\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12)\n\tuser_type\x18\x03 \x01(\x0e\x32\x16.api.protobuf.UserType\x12&\n\x04\x61uth\x18\x04 \x01(\x0b\x32\x18.types.MetadataAuthority\x12\x37\n\x0c\x61udit_option\x18\x05 \x01(\x0e\x32!.api.protobuf.AuditMetadataOption\x12\x18\n\x10\x61udit_suggestion\x18\x06 \x01(\t\x12(\n\x08used_quo\x18\x07 \x01(\x0b\x32\x16.types.MetadataUsedQuo\x12\x10\n\x08\x61pply_at\x18\x08 \x01(\x04\x12\x10\n\x08\x61udit_at\x18\t \x01(\x04\x12\x33\n\x05state\x18\n \x01(\x0e\x32$.api.protobuf.MetadataAuthorityState\"k\n GetMetadataAuthorityListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12*\n\x04list\x18\x03 \x03(\x0b\x32\x1c.rpcapi.GetMetadataAuthority\"`\n%GetMetadataAuthorityListByUserRequest\x12\x0c\n\x04user\x18\x01 \x01(\t\x12)\n\tuser_type\x18\x02 \x01(\x0e\x32\x16.api.protobuf.UserType2\xf1\t\n\x0b\x41uthService\x12~\n\x11\x41pplyIdentityJoin\x12 .rpcapi.ApplyIdentityJoinRequest\x1a\x1c.api.protobuf.SimpleResponse\")\x82\xd3\xe4\x93\x02#\"\x1e/carrier/v1/auth/applyIdentity:\x01*\x12v\n\x12RevokeIdentityJoin\x12\x16.google.protobuf.Empty\x1a\x1c.api.protobuf.SimpleResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/carrier/v1/auth/revokeIdentity:\x01*\x12s\n\x0fGetNodeIdentity\x12\x16.google.protobuf.Empty\x1a\x1f.rpcapi.GetNodeIdentityResponse\"\'\x82\xd3\xe4\x93\x02!\"\x1c/carrier/v1/auth/getIdentity:\x01*\x12t\n\x0fGetIdentityList\x12\x16.google.protobuf.Empty\x1a\x1f.rpcapi.GetIdentityListResponse\"(\x82\xd3\xe4\x93\x02\"\"\x1d/carrier/v1/auth/identityList:\x01*\x12\x96\x01\n\x16\x41pplyMetadataAuthority\x12%.rpcapi.ApplyMetadataAuthorityRequest\x1a&.rpcapi.ApplyMetadataAuthorityResponse\"-\x82\xd3\xe4\x93\x02\'\"\"/carrier/v1/auth/applyMetaDataAuth:\x01*\x12\x8f\x01\n\x17RevokeMetadataAuthority\x12&.rpcapi.RevokeMetadataAuthorityRequest\x1a\x1c.api.protobuf.SimpleResponse\".\x82\xd3\xe4\x93\x02(\"#/carrier/v1/auth/revokeMetaDataAuth:\x01*\x12\x96\x01\n\x16\x41uditMetadataAuthority\x12%.rpcapi.AuditMetadataAuthorityRequest\x1a&.rpcapi.AuditMetadataAuthorityResponse\"-\x82\xd3\xe4\x93\x02\'\"\"/carrier/v1/auth/auditMetaDataAuth:\x01*\x12\x8a\x01\n\x18GetMetadataAuthorityList\x12\x16.google.protobuf.Empty\x1a(.rpcapi.GetMetadataAuthorityListResponse\",\x82\xd3\xe4\x93\x02&\"!/carrier/v1/auth/metaDataAuthList:\x01*\x12\xad\x01\n\x1eGetMetadataAuthorityListByUser\x12-.rpcapi.GetMetadataAuthorityListByUserRequest\x1a(.rpcapi.GetMetadataAuthorityListResponse\"2\x82\xd3\xe4\x93\x02,\"\'/carrier/v1/auth/metaDataAuthListByUser:\x01*B+Z)github.com/RosettaFlow/Carrier-Go/lib/apib\x06proto3'
+  serialized_pb=b'\n\x1alib/api/auth_rpc_api.proto\x12\x06rpcapi\x1a\x15lib/common/base.proto\x1a\x1clib/types/identitydata.proto\x1a\x18lib/types/metadata.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"F\n\x18\x41pplyIdentityJoinRequest\x12*\n\x06member\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\"a\n\x17GetNodeIdentityResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12)\n\x05owner\x18\x03 \x01(\x0b\x32\x1a.api.protobuf.Organization\"g\n\x17GetIdentityListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12/\n\x0bmember_list\x18\x03 \x03(\x0b\x32\x1a.api.protobuf.Organization\"\x8e\x01\n\x1d\x41pplyMetadataAuthorityRequest\x12\x0c\n\x04user\x18\x01 \x01(\t\x12)\n\tuser_type\x18\x02 \x01(\x0e\x32\x16.api.protobuf.UserType\x12&\n\x04\x61uth\x18\x03 \x01(\x0b\x32\x18.types.MetadataAuthority\x12\x0c\n\x04sign\x18\x04 \x01(\x0c\"W\n\x1e\x41pplyMetadataAuthorityResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x18\n\x10metadata_auth_id\x18\x03 \x01(\t\"\x81\x01\n\x1eRevokeMetadataAuthorityRequest\x12\x0c\n\x04user\x18\x01 \x01(\t\x12)\n\tuser_type\x18\x02 \x01(\x0e\x32\x16.api.protobuf.UserType\x12\x18\n\x10metadata_auth_id\x18\x03 \x01(\t\x12\x0c\n\x04sign\x18\x04 \x01(\x0c\"\x7f\n\x1d\x41uditMetadataAuthorityRequest\x12\x18\n\x10metadata_auth_id\x18\x01 \x01(\t\x12\x30\n\x05\x61udit\x18\x02 \x01(\x0e\x32!.api.protobuf.AuditMetadataOption\x12\x12\n\nsuggestion\x18\x03 \x01(\t\"o\n\x1e\x41uditMetadataAuthorityResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x30\n\x05\x61udit\x18\x03 \x01(\x0e\x32!.api.protobuf.AuditMetadataOption\"\xe7\x02\n\x14GetMetadataAuthority\x12\x18\n\x10metadata_auth_id\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12)\n\tuser_type\x18\x03 \x01(\x0e\x32\x16.api.protobuf.UserType\x12&\n\x04\x61uth\x18\x04 \x01(\x0b\x32\x18.types.MetadataAuthority\x12\x37\n\x0c\x61udit_option\x18\x05 \x01(\x0e\x32!.api.protobuf.AuditMetadataOption\x12\x18\n\x10\x61udit_suggestion\x18\x06 \x01(\t\x12(\n\x08used_quo\x18\x07 \x01(\x0b\x32\x16.types.MetadataUsedQuo\x12\x10\n\x08\x61pply_at\x18\x08 \x01(\x04\x12\x10\n\x08\x61udit_at\x18\t \x01(\x04\x12\x33\n\x05state\x18\n \x01(\x0e\x32$.api.protobuf.MetadataAuthorityState\"k\n GetMetadataAuthorityListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12*\n\x04list\x18\x03 \x03(\x0b\x32\x1c.rpcapi.GetMetadataAuthority2\xdb\t\n\x0b\x41uthService\x12~\n\x11\x41pplyIdentityJoin\x12 .rpcapi.ApplyIdentityJoinRequest\x1a\x1c.api.protobuf.SimpleResponse\")\x82\xd3\xe4\x93\x02#\"\x1e/carrier/v1/auth/applyIdentity:\x01*\x12v\n\x12RevokeIdentityJoin\x12\x16.google.protobuf.Empty\x1a\x1c.api.protobuf.SimpleResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/carrier/v1/auth/revokeIdentity:\x01*\x12p\n\x0fGetNodeIdentity\x12\x16.google.protobuf.Empty\x1a\x1f.rpcapi.GetNodeIdentityResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/carrier/v1/auth/getIdentity\x12t\n\x0fGetIdentityList\x12\x16.google.protobuf.Empty\x1a\x1f.rpcapi.GetIdentityListResponse\"(\x82\xd3\xe4\x93\x02\"\"\x1d/carrier/v1/auth/identityList:\x01*\x12\x96\x01\n\x16\x41pplyMetadataAuthority\x12%.rpcapi.ApplyMetadataAuthorityRequest\x1a&.rpcapi.ApplyMetadataAuthorityResponse\"-\x82\xd3\xe4\x93\x02\'\"\"/carrier/v1/auth/applyMetadataAuth:\x01*\x12\x8f\x01\n\x17RevokeMetadataAuthority\x12&.rpcapi.RevokeMetadataAuthorityRequest\x1a\x1c.api.protobuf.SimpleResponse\".\x82\xd3\xe4\x93\x02(\"#/carrier/v1/auth/revokeMetadataAuth:\x01*\x12\x96\x01\n\x16\x41uditMetadataAuthority\x12%.rpcapi.AuditMetadataAuthorityRequest\x1a&.rpcapi.AuditMetadataAuthorityResponse\"-\x82\xd3\xe4\x93\x02\'\"\"/carrier/v1/auth/auditMetadataAuth:\x01*\x12\x91\x01\n\x1dGetLocalMetadataAuthorityList\x12\x16.google.protobuf.Empty\x1a(.rpcapi.GetMetadataAuthorityListResponse\".\x82\xd3\xe4\x93\x02(\x12&/carrier/v1/auth/localMetadataAuthList\x12\x93\x01\n\x1eGetGlobalMetadataAuthorityList\x12\x16.google.protobuf.Empty\x1a(.rpcapi.GetMetadataAuthorityListResponse\"/\x82\xd3\xe4\x93\x02)\x12\'/carrier/v1/auth/globalMetadataAuthListB+Z)github.com/RosettaFlow/Carrier-Go/lib/apib\x06proto3'
   ,
   dependencies=[lib_dot_common_dot_base__pb2.DESCRIPTOR,lib_dot_types_dot_identitydata__pb2.DESCRIPTOR,lib_dot_types_dot_metadata__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
@@ -539,45 +539,6 @@ _GETMETADATAAUTHORITYLISTRESPONSE = _descriptor.Descriptor(
   serialized_end=1529,
 )
 
-
-_GETMETADATAAUTHORITYLISTBYUSERREQUEST = _descriptor.Descriptor(
-  name='GetMetadataAuthorityListByUserRequest',
-  full_name='rpcapi.GetMetadataAuthorityListByUserRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='user', full_name='rpcapi.GetMetadataAuthorityListByUserRequest.user', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='user_type', full_name='rpcapi.GetMetadataAuthorityListByUserRequest.user_type', index=1,
-      number=2, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1531,
-  serialized_end=1627,
-)
-
 _APPLYIDENTITYJOINREQUEST.fields_by_name['member'].message_type = lib_dot_common_dot_base__pb2._ORGANIZATION
 _GETNODEIDENTITYRESPONSE.fields_by_name['owner'].message_type = lib_dot_common_dot_base__pb2._ORGANIZATION
 _GETIDENTITYLISTRESPONSE.fields_by_name['member_list'].message_type = lib_dot_common_dot_base__pb2._ORGANIZATION
@@ -592,7 +553,6 @@ _GETMETADATAAUTHORITY.fields_by_name['audit_option'].enum_type = lib_dot_common_
 _GETMETADATAAUTHORITY.fields_by_name['used_quo'].message_type = lib_dot_types_dot_metadata__pb2._METADATAUSEDQUO
 _GETMETADATAAUTHORITY.fields_by_name['state'].enum_type = lib_dot_common_dot_base__pb2._METADATAAUTHORITYSTATE
 _GETMETADATAAUTHORITYLISTRESPONSE.fields_by_name['list'].message_type = _GETMETADATAAUTHORITY
-_GETMETADATAAUTHORITYLISTBYUSERREQUEST.fields_by_name['user_type'].enum_type = lib_dot_common_dot_base__pb2._USERTYPE
 DESCRIPTOR.message_types_by_name['ApplyIdentityJoinRequest'] = _APPLYIDENTITYJOINREQUEST
 DESCRIPTOR.message_types_by_name['GetNodeIdentityResponse'] = _GETNODEIDENTITYRESPONSE
 DESCRIPTOR.message_types_by_name['GetIdentityListResponse'] = _GETIDENTITYLISTRESPONSE
@@ -603,7 +563,6 @@ DESCRIPTOR.message_types_by_name['AuditMetadataAuthorityRequest'] = _AUDITMETADA
 DESCRIPTOR.message_types_by_name['AuditMetadataAuthorityResponse'] = _AUDITMETADATAAUTHORITYRESPONSE
 DESCRIPTOR.message_types_by_name['GetMetadataAuthority'] = _GETMETADATAAUTHORITY
 DESCRIPTOR.message_types_by_name['GetMetadataAuthorityListResponse'] = _GETMETADATAAUTHORITYLISTRESPONSE
-DESCRIPTOR.message_types_by_name['GetMetadataAuthorityListByUserRequest'] = _GETMETADATAAUTHORITYLISTBYUSERREQUEST
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ApplyIdentityJoinRequest = _reflection.GeneratedProtocolMessageType('ApplyIdentityJoinRequest', (_message.Message,), {
@@ -676,13 +635,6 @@ GetMetadataAuthorityListResponse = _reflection.GeneratedProtocolMessageType('Get
   })
 _sym_db.RegisterMessage(GetMetadataAuthorityListResponse)
 
-GetMetadataAuthorityListByUserRequest = _reflection.GeneratedProtocolMessageType('GetMetadataAuthorityListByUserRequest', (_message.Message,), {
-  'DESCRIPTOR' : _GETMETADATAAUTHORITYLISTBYUSERREQUEST,
-  '__module__' : 'lib.api.auth_rpc_api_pb2'
-  # @@protoc_insertion_point(class_scope:rpcapi.GetMetadataAuthorityListByUserRequest)
-  })
-_sym_db.RegisterMessage(GetMetadataAuthorityListByUserRequest)
-
 
 DESCRIPTOR._options = None
 
@@ -693,8 +645,8 @@ _AUTHSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1630,
-  serialized_end=2895,
+  serialized_start=1532,
+  serialized_end=2775,
   methods=[
   _descriptor.MethodDescriptor(
     name='ApplyIdentityJoin',
@@ -723,7 +675,7 @@ _AUTHSERVICE = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     output_type=_GETNODEIDENTITYRESPONSE,
-    serialized_options=b'\202\323\344\223\002!\"\034/carrier/v1/auth/getIdentity:\001*',
+    serialized_options=b'\202\323\344\223\002\036\022\034/carrier/v1/auth/getIdentity',
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
@@ -743,7 +695,7 @@ _AUTHSERVICE = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_APPLYMETADATAAUTHORITYREQUEST,
     output_type=_APPLYMETADATAAUTHORITYRESPONSE,
-    serialized_options=b'\202\323\344\223\002\'\"\"/carrier/v1/auth/applyMetaDataAuth:\001*',
+    serialized_options=b'\202\323\344\223\002\'\"\"/carrier/v1/auth/applyMetadataAuth:\001*',
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
@@ -753,7 +705,7 @@ _AUTHSERVICE = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_REVOKEMETADATAAUTHORITYREQUEST,
     output_type=lib_dot_common_dot_base__pb2._SIMPLERESPONSE,
-    serialized_options=b'\202\323\344\223\002(\"#/carrier/v1/auth/revokeMetaDataAuth:\001*',
+    serialized_options=b'\202\323\344\223\002(\"#/carrier/v1/auth/revokeMetadataAuth:\001*',
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
@@ -763,27 +715,27 @@ _AUTHSERVICE = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_AUDITMETADATAAUTHORITYREQUEST,
     output_type=_AUDITMETADATAAUTHORITYRESPONSE,
-    serialized_options=b'\202\323\344\223\002\'\"\"/carrier/v1/auth/auditMetaDataAuth:\001*',
+    serialized_options=b'\202\323\344\223\002\'\"\"/carrier/v1/auth/auditMetadataAuth:\001*',
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='GetMetadataAuthorityList',
-    full_name='rpcapi.AuthService.GetMetadataAuthorityList',
+    name='GetLocalMetadataAuthorityList',
+    full_name='rpcapi.AuthService.GetLocalMetadataAuthorityList',
     index=7,
     containing_service=None,
     input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     output_type=_GETMETADATAAUTHORITYLISTRESPONSE,
-    serialized_options=b'\202\323\344\223\002&\"!/carrier/v1/auth/metaDataAuthList:\001*',
+    serialized_options=b'\202\323\344\223\002(\022&/carrier/v1/auth/localMetadataAuthList',
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='GetMetadataAuthorityListByUser',
-    full_name='rpcapi.AuthService.GetMetadataAuthorityListByUser',
+    name='GetGlobalMetadataAuthorityList',
+    full_name='rpcapi.AuthService.GetGlobalMetadataAuthorityList',
     index=8,
     containing_service=None,
-    input_type=_GETMETADATAAUTHORITYLISTBYUSERREQUEST,
+    input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     output_type=_GETMETADATAAUTHORITYLISTRESPONSE,
-    serialized_options=b'\202\323\344\223\002,\"\'/carrier/v1/auth/metaDataAuthListByUser:\001*',
+    serialized_options=b'\202\323\344\223\002)\022\'/carrier/v1/auth/globalMetadataAuthList',
     create_key=_descriptor._internal_create_key,
   ),
 ])

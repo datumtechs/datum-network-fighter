@@ -51,14 +51,14 @@ class AuthServiceStub(object):
                 request_serializer=lib_dot_api_dot_auth__rpc__api__pb2.AuditMetadataAuthorityRequest.SerializeToString,
                 response_deserializer=lib_dot_api_dot_auth__rpc__api__pb2.AuditMetadataAuthorityResponse.FromString,
                 )
-        self.GetMetadataAuthorityList = channel.unary_unary(
-                '/rpcapi.AuthService/GetMetadataAuthorityList',
+        self.GetLocalMetadataAuthorityList = channel.unary_unary(
+                '/rpcapi.AuthService/GetLocalMetadataAuthorityList',
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=lib_dot_api_dot_auth__rpc__api__pb2.GetMetadataAuthorityListResponse.FromString,
                 )
-        self.GetMetadataAuthorityListByUser = channel.unary_unary(
-                '/rpcapi.AuthService/GetMetadataAuthorityListByUser',
-                request_serializer=lib_dot_api_dot_auth__rpc__api__pb2.GetMetadataAuthorityListByUserRequest.SerializeToString,
+        self.GetGlobalMetadataAuthorityList = channel.unary_unary(
+                '/rpcapi.AuthService/GetGlobalMetadataAuthorityList',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=lib_dot_api_dot_auth__rpc__api__pb2.GetMetadataAuthorityListResponse.FromString,
                 )
 
@@ -115,15 +115,15 @@ class AuthServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetMetadataAuthorityList(self, request, context):
-        """当前(组织)的所有元数据的授权申请及审核结果详情列表
+    def GetLocalMetadataAuthorityList(self, request, context):
+        """查询(本组织)的所有元数据的授权申请及审核结果详情列表
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetMetadataAuthorityListByUser(self, request, context):
-        """当前(用户)的所有元数据的授权申请及审核结果详情列表
+    def GetGlobalMetadataAuthorityList(self, request, context):
+        """查询(全网)的所有元数据的授权申请及审核结果详情列表
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -167,14 +167,14 @@ def add_AuthServiceServicer_to_server(servicer, server):
                     request_deserializer=lib_dot_api_dot_auth__rpc__api__pb2.AuditMetadataAuthorityRequest.FromString,
                     response_serializer=lib_dot_api_dot_auth__rpc__api__pb2.AuditMetadataAuthorityResponse.SerializeToString,
             ),
-            'GetMetadataAuthorityList': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetMetadataAuthorityList,
+            'GetLocalMetadataAuthorityList': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetLocalMetadataAuthorityList,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                     response_serializer=lib_dot_api_dot_auth__rpc__api__pb2.GetMetadataAuthorityListResponse.SerializeToString,
             ),
-            'GetMetadataAuthorityListByUser': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetMetadataAuthorityListByUser,
-                    request_deserializer=lib_dot_api_dot_auth__rpc__api__pb2.GetMetadataAuthorityListByUserRequest.FromString,
+            'GetGlobalMetadataAuthorityList': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetGlobalMetadataAuthorityList,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                     response_serializer=lib_dot_api_dot_auth__rpc__api__pb2.GetMetadataAuthorityListResponse.SerializeToString,
             ),
     }
@@ -307,7 +307,7 @@ class AuthService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def GetMetadataAuthorityList(request,
+    def GetLocalMetadataAuthorityList(request,
             target,
             options=(),
             channel_credentials=None,
@@ -317,14 +317,14 @@ class AuthService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/rpcapi.AuthService/GetMetadataAuthorityList',
+        return grpc.experimental.unary_unary(request, target, '/rpcapi.AuthService/GetLocalMetadataAuthorityList',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             lib_dot_api_dot_auth__rpc__api__pb2.GetMetadataAuthorityListResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def GetMetadataAuthorityListByUser(request,
+    def GetGlobalMetadataAuthorityList(request,
             target,
             options=(),
             channel_credentials=None,
@@ -334,8 +334,8 @@ class AuthService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/rpcapi.AuthService/GetMetadataAuthorityListByUser',
-            lib_dot_api_dot_auth__rpc__api__pb2.GetMetadataAuthorityListByUserRequest.SerializeToString,
+        return grpc.experimental.unary_unary(request, target, '/rpcapi.AuthService/GetGlobalMetadataAuthorityList',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             lib_dot_api_dot_auth__rpc__api__pb2.GetMetadataAuthorityListResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

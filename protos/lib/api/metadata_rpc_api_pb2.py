@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z)github.com/RosettaFlow/Carrier-Go/lib/api',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1elib/api/metadata_rpc_api.proto\x12\x06rpcapi\x1a\x15lib/common/base.proto\x1a\x18lib/types/metadata.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"x\n\x1fGetGlobalMetadataDetailResponse\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12*\n\x0binformation\x18\x02 \x01(\x0b\x32\x15.types.MetadataDetail\"\x82\x01\n#GetGlobalMetadataDetailListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12>\n\rmetadata_list\x18\x03 \x03(\x0b\x32\'.rpcapi.GetGlobalMetadataDetailResponse\"\x8c\x01\n\x1eGetLocalMetadataDetailResponse\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12*\n\x0binformation\x18\x02 \x01(\x0b\x32\x15.types.MetadataDetail\x12\x13\n\x0bis_internal\x18\x03 \x01(\x08\"\x80\x01\n\"GetLocalMetadataDetailListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12=\n\rmetadata_list\x18\x03 \x03(\x0b\x32&.rpcapi.GetLocalMetadataDetailResponse\"D\n\x16PublishMetadataRequest\x12*\n\x0binformation\x18\x01 \x01(\x0b\x32\x15.types.MetadataDetail\"K\n\x17PublishMetadataResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x13\n\x0bmetadata_id\x18\x03 \x01(\t\",\n\x15RevokeMetadataRequest\x12\x13\n\x0bmetadata_id\x18\x01 \x01(\t\"L\n GetMetadataUsedTaskIdListRequest\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x13\n\x0bmetadata_id\x18\x02 \x01(\t\"R\n!GetMetadataUsedTaskIdListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x10\n\x08task_ids\x18\x03 \x03(\t2\xc7\x05\n\x0fMetadataService\x12\x8e\x01\n\x1bGetGlobalMetadataDetailList\x12\x16.google.protobuf.Empty\x1a+.rpcapi.GetGlobalMetadataDetailListResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/carrier/v1/metadata/globalList:\x01*\x12\x8b\x01\n\x1aGetLocalMetadataDetailList\x12\x16.google.protobuf.Empty\x1a*.rpcapi.GetLocalMetadataDetailListResponse\")\x82\xd3\xe4\x93\x02#\"\x1e/carrier/v1/metadata/localList:\x01*\x12{\n\x0fPublishMetadata\x12\x1e.rpcapi.PublishMetadataRequest\x1a\x1f.rpcapi.PublishMetadataResponse\"\'\x82\xd3\xe4\x93\x02!\"\x1c/carrier/v1/metadata/publish:\x01*\x12u\n\x0eRevokeMetadata\x12\x1d.rpcapi.RevokeMetadataRequest\x1a\x1c.api.protobuf.SimpleResponse\"&\x82\xd3\xe4\x93\x02 \"\x1b/carrier/v1/metadata/revoke:\x01*\x12\xa0\x01\n\x19GetMetadataUsedTaskIdList\x12(.rpcapi.GetMetadataUsedTaskIdListRequest\x1a).rpcapi.GetMetadataUsedTaskIdListResponse\".\x82\xd3\xe4\x93\x02(\"#/carrier/v1/metadata/usedTaskIdList:\x01*B+Z)github.com/RosettaFlow/Carrier-Go/lib/apib\x06proto3'
+  serialized_pb=b'\n\x1elib/api/metadata_rpc_api.proto\x12\x06rpcapi\x1a\x15lib/common/base.proto\x1a\x18lib/types/metadata.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"x\n\x1fGetGlobalMetadataDetailResponse\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12*\n\x0binformation\x18\x02 \x01(\x0b\x32\x15.types.MetadataDetail\"\x82\x01\n#GetGlobalMetadataDetailListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12>\n\rmetadata_list\x18\x03 \x03(\x0b\x32\'.rpcapi.GetGlobalMetadataDetailResponse\"\x8c\x01\n\x1eGetLocalMetadataDetailResponse\x12)\n\x05owner\x18\x01 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12*\n\x0binformation\x18\x02 \x01(\x0b\x32\x15.types.MetadataDetail\x12\x13\n\x0bis_internal\x18\x03 \x01(\x08\"\x80\x01\n\"GetLocalMetadataDetailListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12=\n\rmetadata_list\x18\x03 \x03(\x0b\x32&.rpcapi.GetLocalMetadataDetailResponse\"D\n\x16PublishMetadataRequest\x12*\n\x0binformation\x18\x01 \x01(\x0b\x32\x15.types.MetadataDetail\"K\n\x17PublishMetadataResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x13\n\x0bmetadata_id\x18\x03 \x01(\t\",\n\x15RevokeMetadataRequest\x12\x13\n\x0bmetadata_id\x18\x01 \x01(\t\"L\n GetMetadataUsedTaskIdListRequest\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x13\n\x0bmetadata_id\x18\x02 \x01(\t\"R\n!GetMetadataUsedTaskIdListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x10\n\x08task_ids\x18\x03 \x03(\t2\xc1\x05\n\x0fMetadataService\x12\x8b\x01\n\x1bGetGlobalMetadataDetailList\x12\x16.google.protobuf.Empty\x1a+.rpcapi.GetGlobalMetadataDetailListResponse\"\'\x82\xd3\xe4\x93\x02!\x12\x1f/carrier/v1/metadata/globalList\x12\x88\x01\n\x1aGetLocalMetadataDetailList\x12\x16.google.protobuf.Empty\x1a*.rpcapi.GetLocalMetadataDetailListResponse\"&\x82\xd3\xe4\x93\x02 \x12\x1e/carrier/v1/metadata/localList\x12{\n\x0fPublishMetadata\x12\x1e.rpcapi.PublishMetadataRequest\x1a\x1f.rpcapi.PublishMetadataResponse\"\'\x82\xd3\xe4\x93\x02!\"\x1c/carrier/v1/metadata/publish:\x01*\x12u\n\x0eRevokeMetadata\x12\x1d.rpcapi.RevokeMetadataRequest\x1a\x1c.api.protobuf.SimpleResponse\"&\x82\xd3\xe4\x93\x02 \"\x1b/carrier/v1/metadata/revoke:\x01*\x12\xa0\x01\n\x19GetMetadataUsedTaskIdList\x12(.rpcapi.GetMetadataUsedTaskIdListRequest\x1a).rpcapi.GetMetadataUsedTaskIdListResponse\".\x82\xd3\xe4\x93\x02(\"#/carrier/v1/metadata/usedTaskIdList:\x01*B+Z)github.com/RosettaFlow/Carrier-Go/lib/apib\x06proto3'
   ,
   dependencies=[lib_dot_common_dot_base__pb2.DESCRIPTOR,lib_dot_types_dot_metadata__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
@@ -493,7 +493,7 @@ _METADATASERVICE = _descriptor.ServiceDescriptor(
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
   serialized_start=1035,
-  serialized_end=1746,
+  serialized_end=1740,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetGlobalMetadataDetailList',
@@ -502,7 +502,7 @@ _METADATASERVICE = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     output_type=_GETGLOBALMETADATADETAILLISTRESPONSE,
-    serialized_options=b'\202\323\344\223\002$\"\037/carrier/v1/metadata/globalList:\001*',
+    serialized_options=b'\202\323\344\223\002!\022\037/carrier/v1/metadata/globalList',
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
@@ -512,7 +512,7 @@ _METADATASERVICE = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
     output_type=_GETLOCALMETADATADETAILLISTRESPONSE,
-    serialized_options=b'\202\323\344\223\002#\"\036/carrier/v1/metadata/localList:\001*',
+    serialized_options=b'\202\323\344\223\002 \022\036/carrier/v1/metadata/localList',
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(

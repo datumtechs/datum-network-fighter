@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z+github.com/RosettaFlow/Carrier-Go/lib/types',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1clib/types/resourcedata.proto\x12\x05types\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\"\xdc\x02\n\nResourcePB\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x11\n\tnode_name\x18\x03 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x04 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x05 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12\'\n\x05state\x18\x06 \x01(\x0e\x32\x18.api.protobuf.PowerState\x12\x11\n\ttotal_mem\x18\x07 \x01(\x04\x12\x10\n\x08used_mem\x18\x08 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\t \x01(\r\x12\x16\n\x0eused_processor\x18\n \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x0b \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x0c \x01(\x04\x12\x12\n\ntotal_disk\x18\r \x01(\x04\x12\x11\n\tused_disk\x18\x0e \x01(\x04\"\xf6\x02\n\x0fLocalResourcePB\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x11\n\tnode_name\x18\x03 \x01(\t\x12\x13\n\x0bjob_node_id\x18\x04 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x05 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x06 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12\'\n\x05state\x18\x07 \x01(\x0e\x32\x18.api.protobuf.PowerState\x12\x11\n\ttotal_mem\x18\x08 \x01(\x04\x12\x10\n\x08used_mem\x18\t \x01(\x04\x12\x17\n\x0ftotal_processor\x18\n \x01(\r\x12\x16\n\x0eused_processor\x18\x0b \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x0c \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\r \x01(\x04\x12\x12\n\ntotal_disk\x18\x0e \x01(\x04\x12\x11\n\tused_disk\x18\x0f \x01(\x04\"\x8d\x01\n\x05Power\x12\x13\n\x0bjob_node_id\x18\x01 \x01(\t\x12\x10\n\x08power_id\x18\x02 \x01(\t\x12\x34\n\x0eusage_overview\x18\x03 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12\'\n\x05state\x18\x04 \x01(\x0e\x32\x18.api.protobuf.PowerState\"\xc5\x01\n\x10PowerUsageDetail\x12\x31\n\x0binformation\x18\x01 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12\x18\n\x10total_task_count\x18\x02 \x01(\r\x12\x1a\n\x12\x63urrent_task_count\x18\x03 \x01(\r\x12\x1f\n\x05tasks\x18\x04 \x03(\x0b\x32\x10.types.PowerTask\x12\'\n\x05state\x18\x05 \x01(\x0e\x32\x18.api.protobuf.PowerState\"\xc8\x02\n\tPowerTask\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12)\n\x05owner\x18\x03 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12,\n\x08partners\x18\x04 \x03(\x0b\x32\x1a.api.protobuf.Organization\x12-\n\treceivers\x18\x05 \x03(\x0b\x32\x1a.api.protobuf.Organization\x12=\n\x0eoperation_cost\x18\x06 \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12>\n\x0foperation_spend\x18\x07 \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12\x10\n\x08\x63reateAt\x18\x08 \x01(\x04\"\xc5\x01\n\x15ResourceUsageOverview\x12\x11\n\ttotal_mem\x18\x01 \x01(\x04\x12\x10\n\x08used_mem\x18\x02 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x03 \x01(\r\x12\x16\n\x0eused_processor\x18\x04 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x05 \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x06 \x01(\x04\x12\x12\n\ntotal_disk\x18\x07 \x01(\x04\x12\x11\n\tused_disk\x18\x08 \x01(\x04\x42-Z+github.com/RosettaFlow/Carrier-Go/lib/typesb\x06proto3'
+  serialized_pb=b'\n\x1clib/types/resourcedata.proto\x12\x05types\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\"\x83\x03\n\nResourcePB\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x11\n\tnode_name\x18\x03 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x04 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x05 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12\'\n\x05state\x18\x06 \x01(\x0e\x32\x18.api.protobuf.PowerState\x12\x11\n\ttotal_mem\x18\x07 \x01(\x04\x12\x10\n\x08used_mem\x18\x08 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\t \x01(\r\x12\x16\n\x0eused_processor\x18\n \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x0b \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x0c \x01(\x04\x12\x12\n\ntotal_disk\x18\r \x01(\x04\x12\x11\n\tused_disk\x18\x0e \x01(\x04\x12\x12\n\npublish_at\x18\x10 \x01(\x04\x12\x11\n\tupdate_at\x18\x11 \x01(\x04\"\xf6\x02\n\x0fLocalResourcePB\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x11\n\tnode_name\x18\x03 \x01(\t\x12\x13\n\x0bjob_node_id\x18\x04 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x05 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x06 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12\'\n\x05state\x18\x07 \x01(\x0e\x32\x18.api.protobuf.PowerState\x12\x11\n\ttotal_mem\x18\x08 \x01(\x04\x12\x10\n\x08used_mem\x18\t \x01(\x04\x12\x17\n\x0ftotal_processor\x18\n \x01(\r\x12\x16\n\x0eused_processor\x18\x0b \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x0c \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\r \x01(\x04\x12\x12\n\ntotal_disk\x18\x0e \x01(\x04\x12\x11\n\tused_disk\x18\x0f \x01(\x04\"\x8d\x01\n\x05Power\x12\x13\n\x0bjob_node_id\x18\x01 \x01(\t\x12\x10\n\x08power_id\x18\x02 \x01(\t\x12\x34\n\x0eusage_overview\x18\x03 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12\'\n\x05state\x18\x04 \x01(\x0e\x32\x18.api.protobuf.PowerState\"\xec\x01\n\x10PowerUsageDetail\x12\x31\n\x0binformation\x18\x01 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12\x18\n\x10total_task_count\x18\x02 \x01(\r\x12\x1a\n\x12\x63urrent_task_count\x18\x03 \x01(\r\x12\x1f\n\x05tasks\x18\x04 \x03(\x0b\x32\x10.types.PowerTask\x12\'\n\x05state\x18\x05 \x01(\x0e\x32\x18.api.protobuf.PowerState\x12\x12\n\npublish_at\x18\x06 \x01(\x04\x12\x11\n\tupdate_at\x18\x07 \x01(\x04\"\xc8\x02\n\tPowerTask\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12)\n\x05owner\x18\x03 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12,\n\x08partners\x18\x04 \x03(\x0b\x32\x1a.api.protobuf.Organization\x12-\n\treceivers\x18\x05 \x03(\x0b\x32\x1a.api.protobuf.Organization\x12=\n\x0eoperation_cost\x18\x06 \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12>\n\x0foperation_spend\x18\x07 \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12\x10\n\x08\x63reateAt\x18\x08 \x01(\x04\"\xc5\x01\n\x15ResourceUsageOverview\x12\x11\n\ttotal_mem\x18\x01 \x01(\x04\x12\x10\n\x08used_mem\x18\x02 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x03 \x01(\r\x12\x16\n\x0eused_processor\x18\x04 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x05 \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x06 \x01(\x04\x12\x12\n\ntotal_disk\x18\x07 \x01(\x04\x12\x11\n\tused_disk\x18\x08 \x01(\x04\x42-Z+github.com/RosettaFlow/Carrier-Go/lib/typesb\x06proto3'
   ,
   dependencies=[lib_dot_common_dot_base__pb2.DESCRIPTOR,lib_dot_common_dot_data__pb2.DESCRIPTOR,])
 
@@ -134,6 +134,20 @@ _RESOURCEPB = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='publish_at', full_name='types.ResourcePB.publish_at', index=14,
+      number=16, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='update_at', full_name='types.ResourcePB.update_at', index=15,
+      number=17, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -147,7 +161,7 @@ _RESOURCEPB = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=86,
-  serialized_end=434,
+  serialized_end=473,
 )
 
 
@@ -276,8 +290,8 @@ _LOCALRESOURCEPB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=437,
-  serialized_end=811,
+  serialized_start=476,
+  serialized_end=850,
 )
 
 
@@ -329,8 +343,8 @@ _POWER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=814,
-  serialized_end=955,
+  serialized_start=853,
+  serialized_end=994,
 )
 
 
@@ -377,6 +391,20 @@ _POWERUSAGEDETAIL = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='publish_at', full_name='types.PowerUsageDetail.publish_at', index=5,
+      number=6, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='update_at', full_name='types.PowerUsageDetail.update_at', index=6,
+      number=7, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -389,8 +417,8 @@ _POWERUSAGEDETAIL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=958,
-  serialized_end=1155,
+  serialized_start=997,
+  serialized_end=1233,
 )
 
 
@@ -470,8 +498,8 @@ _POWERTASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1158,
-  serialized_end=1486,
+  serialized_start=1236,
+  serialized_end=1564,
 )
 
 
@@ -551,8 +579,8 @@ _RESOURCEUSAGEOVERVIEW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1489,
-  serialized_end=1686,
+  serialized_start=1567,
+  serialized_end=1764,
 )
 
 _RESOURCEPB.fields_by_name['data_status'].enum_type = lib_dot_common_dot_base__pb2._DATASTATUS

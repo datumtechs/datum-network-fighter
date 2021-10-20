@@ -49,7 +49,7 @@ class MetadataServiceServicer(object):
     """
 
     def GetGlobalMetadataDetailList(self, request, context):
-        """查看全网元数据列表
+        """查看 全网元数据列表
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
