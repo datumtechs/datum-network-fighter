@@ -15,9 +15,9 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
     def ReportTaskEvent(self, request, context):
         log.info(f'get event start.')
         event = {}
-        event["party_id"] = request.party_id
         event["task_id"] = request.task_event.task_id
         event["identity_id"] = request.task_event.identity_id
+        event["party_id"] = request.task_event.party_id
         event["content"] = request.task_event.content
         event["create_at"] = request.task_event.create_at
         log.info(f'get event: {event}')
