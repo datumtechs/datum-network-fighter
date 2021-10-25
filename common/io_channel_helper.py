@@ -14,7 +14,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
     certs_base_path = certs.get('base_path', '')
     config_dict = {'TASK_ID': task_id,
                    'ROOT_CERT': os.path.join(certs_base_path, certs['root_cert']),
-                   'LOG_LEVEL': 2}
+                   'LOG_LEVEL': 0}
 
     list_node_info = []
     via_dict = {}
@@ -23,8 +23,16 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
         addr = '{}:{}'.format(node_info.ip, node_info.port)
         if not pass_via:
             addr = self_internal_addr
-        via_name = 'VIA{}'.format(i + 1)
-        via_dict[via_name] = addr
+        # via_name = 'VIA{}'.format(i + 1)
+        # via_dict[via_name] = addr
+        for k, v in via_dict.copy().items():
+            if addr == v:
+                via_name = k
+                break
+        else:
+            via_name = 'VIA{}'.format(i + 1)
+            via_dict[via_name] = addr
+        # log.info(f"via_name: {via_name}")
         if self_party_id == party_id:
             internal_addr = self_internal_addr
             server_sign_key = os.path.join(certs_base_path, certs['server_sign_key'])
@@ -76,7 +84,8 @@ def get_channel_config(task_id, self_party_id, peers, data_party, compute_party,
     config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, 
                                        result_party, pass_via, certs, self_internal_addr)
     channel_config = json.dumps(config_dict)
-    log.info(f'self_party_id: {self_party_id}, channel_config: {channel_config}')
+    # log.info(f'self_party_id: {self_party_id}, channel_config: {channel_config}')
+    log.info("get channel config finish.")
     
     return channel_config
 

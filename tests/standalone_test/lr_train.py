@@ -32,8 +32,9 @@ class PrivacyLRTrain(object):
                  data_party: list,
                  result_party: list,
                  results_dir: str):
-        log.info(f"channel_config:{channel_config}, cfg_dict:{cfg_dict}, data_party:{data_party}, "
-                 f"result_party:{result_party}, results_dir:{results_dir}")
+        log.info(f"channel_config:{channel_config}")
+        log.info(f"cfg_dict:{cfg_dict}")
+        log.info(f"data_party:{data_party}, result_party:{result_party}, results_dir:{results_dir}")
         assert isinstance(channel_config, str), "type of channel_config must be str"
         assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
         assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
@@ -69,12 +70,34 @@ class PrivacyLRTrain(object):
         
         self.check_parameters()
 
-    def check_parameters(self):        
+    def check_parameters(self):
+        log.info(f"check parameter start.")        
         assert self.epochs > 0, "epochs must be greater 0"
         assert self.batch_size > 0, "batch size must be greater 0"
         assert self.learning_rate > 0, "learning rate must be greater 0"
         assert 0 < self.validation_set_rate < 1, "validattion set rate must be between (0,1)"
         assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
+        
+        if self.input_file:
+            self.input_file = self.input_file.strip()
+        if self.input_file:
+            if os.path.exists(self.input_file):
+                input_columns = pd.read_csv(self.input_file, nrows=0)
+                input_columns = list(input_columns.columns)
+                if self.key_column:
+                    assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
+                if self.selected_columns:
+                    error_col = []
+                    for col in self.selected_columns:
+                        if col not in input_columns:
+                            error_col.append(col)   
+                    assert not error_col, f"selected_columns:{error_col} not in input_file"
+                if self.label_column:
+                    assert self.label_column in input_columns, f"label_column:{self.label_column} not in input_file"
+            else:
+                raise Exception(f"input_file is not exist. input_file={self.input_file}")
+        log.info(f"check parameter finish.")
+                        
         
     def train(self):
         '''
@@ -97,6 +120,7 @@ class PrivacyLRTrain(object):
         shard_x, shard_y = rtt.PrivateDataset(data_owner=self.data_party, label_owner=self.label_owner).load_data(train_x, train_y, header=0)
         log.info("finish sharing train data.")
         column_total_num = shard_x.shape[1]
+        log.info(f"column_total_num = {column_total_num}.")
         
         if self.use_validation_set:
             log.info("start sharing validation data.")

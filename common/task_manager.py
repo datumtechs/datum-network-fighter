@@ -16,9 +16,11 @@ class TaskManager:
         self.procs = {}
 
     def start(self, req):
+        log.info(f"task Manager start: task: {req.task_id}, party_id: {req.party_id}")
+        log.info(f"task request: {req}")
         task_id = req.task_id
-        if task_id in self.tasks:
-            return False, f'task: {task_id} repetitive submit'
+        # if task_id in self.tasks:
+        #     return False, f'task: {task_id} repetitive submit'
         party_id = req.party_id
         contract_id = req.contract_id
         data_id = req.data_id
@@ -32,7 +34,7 @@ class TaskManager:
                     contract_cfg, data_party, computation_party, result_party)
         self.tasks[task_id] = task
         log.info(f'new task: {task.id}, thread id: {threading.get_ident()}')
-        p = mp.Process(target=Task.run, args=(task,))
+        p = mp.Process(target=Task.run, args=(task,), name=f"{task_id[:15]}-{party_id}")
         self.procs[task_id] = p
         p.start()
         return True, f'submit task {task_id}'
@@ -55,7 +57,7 @@ class TaskManager:
         for task_id, p in self.procs.items():
             if p.exitcode is not None:
                 exited.append(task_id)
-        log.info(f'detect {len(exited)} out of {len(self.procs)} tasks has terminated')
+        # log.info(f'detect {len(exited)} out of {len(self.procs)} tasks has terminated')
         for task_id in exited:
             self.tasks.pop(task_id, None)
             self.procs.pop(task_id, None)

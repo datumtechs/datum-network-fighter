@@ -59,6 +59,7 @@ class Task:
         return self._party_id
 
     def run(self):
+        log.info(f'#################### New task start run, task_id: {self.id}, party_id: {self.party_id}')
         log.info(f'thread id: {threading.get_ident()}')
         log.info(f'run_cfg: {self.cfg}')
         self.fire_event(self.event_type["TASK_START"], "task start.")
@@ -119,6 +120,7 @@ class Task:
         finally:
             log.info('task final clean')
             self.clean()
+            log.info(f'#################### task finish run, task_id: {self.id}, party_id: {self.party_id}')
 
     def get_elapsed_time(self):
         now = time.time()

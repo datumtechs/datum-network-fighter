@@ -41,6 +41,7 @@ def serve(task_manager):
     server.add_insecure_port('[::]:%s' % cfg['port'])
     server.start()
     log.info('Data Service ready for action.')
+    log.info(f"python version: {sys.version}")
     return server
 
 

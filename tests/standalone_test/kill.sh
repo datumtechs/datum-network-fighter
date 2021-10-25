@@ -47,7 +47,7 @@ do
     fi
 done
 
-if [[ -n $(ps -aux | grep python | grep -v grep | awk '{print $2}') ]]
-then
-    ps -aux | grep python | grep -v grep | awk '{print $2}' | xargs sudo kill -9
-fi
+# if [[ -n $(ps -aux | grep python | grep -v grep | awk '{print $2}') ]]
+# then
+#     ps -aux | grep python | grep -v grep | awk '{print $2}' | xargs sudo kill -9
+# fi

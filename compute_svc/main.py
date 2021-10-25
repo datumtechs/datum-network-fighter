@@ -43,6 +43,7 @@ def serve(task_manager):
     server.add_insecure_port('[::]:%s' % bind_port)
     server.start()
     log.info(f'Compute Service work on port {bind_port}.')
+    log.info(f"python version: {sys.version}")
     return server
 
 

@@ -1,0 +1,1 @@
+pip install latticex_rosetta-1.0.0-cp37-cp37m-linux_x86_64.whl

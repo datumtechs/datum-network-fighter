@@ -32,8 +32,9 @@ class PrivacyLRPredict(object):
                  data_party: list,
                  result_party: list,
                  results_dir: str):
-        log.info(f"channel_config:{channel_config}, cfg_dict:{cfg_dict}, data_party:{data_party},"
-                 f"result_party:{result_party}, results_dir:{results_dir}")
+        log.info(f"channel_config:{channel_config}")
+        log.info(f"cfg_dict:{cfg_dict}")
+        log.info(f"data_party:{data_party}, result_party:{result_party}, results_dir:{results_dir}")
         assert isinstance(channel_config, str), "type of channel_config must be str"
         assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
         assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
@@ -49,14 +50,36 @@ class PrivacyLRPredict(object):
         self.selected_columns = cfg_dict["data_party"].get("selected_columns")
         dynamic_parameter = cfg_dict["dynamic_parameter"]
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
-        model_path = dynamic_parameter.get("model_path")
-        self.model_file = f"{model_path}/model"
-        self.predict_threshold = dynamic_parameter.get("predict_threshold", 0.5)
+        self.model_path = dynamic_parameter.get("model_path")
+        self.model_file = os.path.join(self.model_path, "model")
+        self.predict_threshold = dynamic_parameter.get("predict_threshold", 0.5)        
+        self.output_file = os.path.join(results_dir, "result")
+        self.data_party.remove(self.model_restore_party)  # except restore party
+        self.check_parameters()
+
+    def check_parameters(self):
+        log.info(f"check parameter start.")        
         assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
-        self.output_file = os.path.join(results_dir, "result")
-        
-        self.data_party.remove(self.model_restore_party)  # except restore party
+        if self.input_file:
+            self.input_file = self.input_file.strip()
+        if self.input_file:
+            if os.path.exists(self.input_file):
+                input_columns = pd.read_csv(self.input_file, nrows=0)
+                input_columns = list(input_columns.columns)
+                if self.key_column:
+                    assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
+                if self.selected_columns:
+                    error_col = []
+                    for col in self.selected_columns:
+                        if col not in input_columns:
+                            error_col.append(col)   
+                    assert not error_col, f"selected_columns:{error_col} not in input_file"
+            else:
+                raise Exception(f"input_file is not exist. input_file={self.input_file}")
+        if self.party_id == self.model_restore_party:
+            assert os.path.exists(self.model_path), f"model path not found. model_path={self.model_path}"
+        log.info(f"check parameter finish.")
        
 
     def predict(self):
@@ -80,6 +103,7 @@ class PrivacyLRPredict(object):
         shard_x = rtt.PrivateDataset(data_owner=self.data_party).load_X(file_x, header=0)
         log.info("finish sharing data .")
         column_total_num = shard_x.shape[1]
+        log.info(f"column_total_num = {column_total_num}.")
 
         X = tf.placeholder(tf.float64, [None, column_total_num])
         W = tf.Variable(tf.zeros([column_total_num, 1], dtype=tf.float64))
@@ -95,7 +119,7 @@ class PrivacyLRPredict(object):
             sess.run(init)
             log.info("start restore model.")
             if self.party_id == self.model_restore_party:
-                if os.path.exists(os.path.join(os.path.dirname(self.model_file), "checkpoint")):
+                if os.path.exists(os.path.join(self.model_path, "checkpoint")):
                     log.info(f"model restore from: {self.model_file}.")
                     saver.restore(sess, self.model_file)
                 else:
