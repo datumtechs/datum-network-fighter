@@ -66,6 +66,7 @@ class Task:
         current_task_pid = os.getpid()
         report_resource = threading.Thread(target=report_task_resource_usage, args=(current_task_pid, self.cfg['schedule_svc'], 
                     self.id, self.party_id, self.party_type, self.cfg['bind_ip'], self.cfg['port'], self.cfg['total_bandwidth'], 10))
+        report_resource.daemon = True
         report_resource.start()
         
         try:
@@ -73,7 +74,7 @@ class Task:
             self.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], "download contract success.")
         except Exception as e:
             self.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail. {str(e)}")
-            self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "service stop.")
+            self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
 
         self.build_env()
 
@@ -112,11 +113,11 @@ class Task:
                 ret = report_task_result_file_summary(self.cfg['schedule_svc'], file_summary)
                 log.info(f'finish report task result file summary. ')
             self.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], "contract execute success.")
-            self.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task finish.")
+            self.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task success.")
         except Exception as e:
             log.exception(repr(e))
             self.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed. {str(e)}")
-            self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "service stop.")
+            self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
         finally:
             log.info('task final clean')
             self.clean()

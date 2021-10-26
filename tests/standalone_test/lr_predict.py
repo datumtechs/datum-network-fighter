@@ -63,7 +63,7 @@ class PrivacyLRPredict(object):
         
         if self.input_file:
             self.input_file = self.input_file.strip()
-        if self.input_file:
+        if self.party_id in self.data_party:
             if os.path.exists(self.input_file):
                 input_columns = pd.read_csv(self.input_file, nrows=0)
                 input_columns = list(input_columns.columns)
