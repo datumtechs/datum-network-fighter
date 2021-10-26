@@ -13,23 +13,23 @@ from protos import common_pb2
 from protos import compute_svc_pb2, compute_svc_pb2_grpc
 from protos import data_svc_pb2, data_svc_pb2_grpc
 
-
 log = logging.getLogger(__name__)
+
 
 def get_sys_stat(cfg):
     stat = data_svc_pb2.GetStatusReply()
     stat.total_cpu = psutil.cpu_count()
     stat.used_cpu = math.ceil(stat.total_cpu * psutil.cpu_percent(0.1) / 100)
     stat.idle_cpu = max(stat.total_cpu - stat.used_cpu, 0)
-    
+
     stat.total_memory = psutil.virtual_memory().total
     stat.used_memory = psutil.virtual_memory().used
     stat.idle_memory = psutil.virtual_memory().free
-    
+
     stat.total_disk = psutil.disk_usage('/').total
     stat.used_disk = psutil.disk_usage('/').used
     stat.idle_disk = psutil.disk_usage('/').free
-    
+
     stat.total_bandwidth = cfg["total_bandwidth"]
     net_1 = psutil.net_io_counters()
     time.sleep(1)
@@ -48,7 +48,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
 
     def GetStatus(self, request, context):
         return get_sys_stat(self.task_manager.cfg)
-    
+
     def UploadData(self, request_it, context):
         print(type(request_it))
         folder = cfg['data_root']
@@ -132,9 +132,17 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                 m.update(req.content)
 
     def DownloadData(self, request, context):
+        tar_file_name = None
         try:
             folder = cfg['data_root']
-            path = os.path.join(folder, os.path.basename(request.file_path))
+            basename = os.path.basename(os.path.normpath(request.file_path))
+            path = os.path.join(folder, basename)
+            import tarfile
+            tar_file_name = path + '.tar.gz'
+            archive = tarfile.open(tar_file_name, 'w|gz')
+            archive.add(path, arcname=basename)
+            archive.close()
+            path = tar_file_name
             log.info(f'to download: {path}')
             if not os.path.exists(path):
                 yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
@@ -150,6 +158,12 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                 log.info('sending content done')
         except Exception as e:
             log.error(repr(e))
+        finally:
+            if tar_file_name:
+                try:
+                    os.remove(tar_file_name)
+                except:
+                    pass
 
     def SendSharesData(self, request, context):
         ans = data_svc_pb2.SendSharesDataReply(status=data_svc_pb2.TaskStatus.Cancelled)
