@@ -140,14 +140,14 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
 
             if 'compress' in request.options:
                 compress = request.options['compress'].strip().lower()
-                if compress == '.tar.gz':
+                if compress in ('.tar.gz', '.tgz', 'tgz', 'gztar', 'tarball', 'tar.gz'):
                     import tarfile
                     compress_file_name = path + '.tar.gz'
                     archive = tarfile.open(compress_file_name, 'w|gz')
                     archive.add(path, arcname=basename)
                     archive.close()
                     path = compress_file_name
-                elif compress == '.zip':
+                elif compress in ('.zip', 'zip'):
                     compress_file_name = path + '.zip'
                     if os.path.isdir(path):
                         import shutil
@@ -158,10 +158,12 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                             zipf.write(path, arcname=basename)
                     path = compress_file_name
                 else:
+                    log.error(f'unsupported compress type: {compress}')
                     yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
                     return
             else:
                 if os.path.isdir(path):
+                    log.error(f'this is a directory, set compress type please')
                     yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
                     return
                 else:
