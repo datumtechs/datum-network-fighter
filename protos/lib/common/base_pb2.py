@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z,github.com/RosettaFlow/Carrier-Go/lib/common',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15lib/common/base.proto\x12\x0c\x61pi.protobuf\"s\n\x0cOrganization\x12\x11\n\tnode_name\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x13\n\x0bidentity_id\x18\x03 \x01(\t\x12*\n\x06status\x18\x04 \x01(\x0e\x32\x1a.api.protobuf.CommonStatus\"]\n\x10TaskOrganization\x12\x10\n\x08party_id\x18\x01 \x01(\t\x12\x11\n\tnode_name\x18\x02 \x01(\t\x12\x0f\n\x07node_id\x18\x03 \x01(\t\x12\x13\n\x0bidentity_id\x18\x04 \x01(\t\"-\n\x0eSimpleResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t*F\n\x08UserType\x12\x10\n\x0cUser_Unknown\x10\x00\x12\x0c\n\x08User_ETH\x10\x01\x12\x0c\n\x08User_ATP\x10\x02\x12\x0c\n\x08User_LAT\x10\x03*S\n\nDataStatus\x12\x16\n\x12\x44\x61taStatus_Unknown\x10\x00\x12\x15\n\x11\x44\x61taStatus_Normal\x10\x01\x12\x16\n\x12\x44\x61taStatus_Deleted\x10\x02*]\n\x0c\x43ommonStatus\x12\x18\n\x14\x43ommonStatus_Unknown\x10\x00\x12\x17\n\x13\x43ommonStatus_Normal\x10\x01\x12\x1a\n\x16\x43ommonStatus_NonNormal\x10\x02*M\n\x13\x41uditMetadataOption\x12\x11\n\rAudit_Pending\x10\x00\x12\x10\n\x0c\x41udit_Passed\x10\x01\x12\x11\n\rAudit_Refused\x10\x02*8\n\x0eOriginFileType\x12\x14\n\x10\x46ileType_Unknown\x10\x00\x12\x10\n\x0c\x46ileType_CSV\x10\x01*|\n\rMetadataState\x12\x19\n\x15MetadataState_Unknown\x10\x00\x12\x19\n\x15MetadataState_Created\x10\x01\x12\x1a\n\x16MetadataState_Released\x10\x02\x12\x19\n\x15MetadataState_Revoked\x10\x03*I\n\x11MetadataUsageType\x12\x11\n\rUsage_Unknown\x10\x00\x12\x10\n\x0cUsage_Period\x10\x01\x12\x0f\n\x0bUsage_Times\x10\x02*\x88\x01\n\nPowerState\x12\x16\n\x12PowerState_Unknown\x10\x00\x12\x16\n\x12PowerState_Created\x10\x01\x12\x17\n\x13PowerState_Released\x10\x02\x12\x19\n\x15PowerState_Occupation\x10\x03\x12\x16\n\x12PowerState_Revoked\x10\x04*\x9e\x01\n\x08TaskRole\x12\x14\n\x10TaskRole_Unknown\x10\x00\x12\x13\n\x0fTaskRole_Sender\x10\x01\x12\x19\n\x15TaskRole_DataSupplier\x10\x02\x12\x1a\n\x16TaskRole_PowerSupplier\x10\x03\x12\x15\n\x11TaskRole_Receiver\x10\x04\x12\x19\n\x15TaskRole_AlgoSupplier\x10\x05*}\n\tTaskState\x12\x15\n\x11TaskState_Unknown\x10\x00\x12\x15\n\x11TaskState_Pending\x10\x01\x12\x15\n\x11TaskState_Running\x10\x02\x12\x14\n\x10TaskState_Failed\x10\x03\x12\x15\n\x11TaskState_Succeed\x10\x04*\x82\x01\n\x16MetadataAuthorityState\x12\x13\n\x0fMAState_Unknown\x10\x00\x12\x13\n\x0fMAState_Created\x10\x01\x12\x14\n\x10MAState_Released\x10\x02\x12\x13\n\x0fMAState_Revoked\x10\x03\x12\x13\n\x0fMAState_Invalid\x10\x04\x42.Z,github.com/RosettaFlow/Carrier-Go/lib/commonb\x06proto3'
+  serialized_pb=b'\n\x15lib/common/base.proto\x12\x0c\x61pi.protobuf\"s\n\x0cOrganization\x12\x11\n\tnode_name\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x13\n\x0bidentity_id\x18\x03 \x01(\t\x12*\n\x06status\x18\x04 \x01(\x0e\x32\x1a.api.protobuf.CommonStatus\"]\n\x10TaskOrganization\x12\x10\n\x08party_id\x18\x01 \x01(\t\x12\x11\n\tnode_name\x18\x02 \x01(\t\x12\x0f\n\x07node_id\x18\x03 \x01(\t\x12\x13\n\x0bidentity_id\x18\x04 \x01(\t\"-\n\x0eSimpleResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t*@\n\x08UserType\x12\x10\n\x0cUser_Unknown\x10\x00\x12\n\n\x06User_1\x10\x01\x12\n\n\x06User_2\x10\x02\x12\n\n\x06User_3\x10\x03*S\n\nDataStatus\x12\x16\n\x12\x44\x61taStatus_Unknown\x10\x00\x12\x15\n\x11\x44\x61taStatus_Normal\x10\x01\x12\x16\n\x12\x44\x61taStatus_Deleted\x10\x02*]\n\x0c\x43ommonStatus\x12\x18\n\x14\x43ommonStatus_Unknown\x10\x00\x12\x17\n\x13\x43ommonStatus_Normal\x10\x01\x12\x1a\n\x16\x43ommonStatus_NonNormal\x10\x02*M\n\x13\x41uditMetadataOption\x12\x11\n\rAudit_Pending\x10\x00\x12\x10\n\x0c\x41udit_Passed\x10\x01\x12\x11\n\rAudit_Refused\x10\x02*8\n\x0eOriginFileType\x12\x14\n\x10\x46ileType_Unknown\x10\x00\x12\x10\n\x0c\x46ileType_CSV\x10\x01*|\n\rMetadataState\x12\x19\n\x15MetadataState_Unknown\x10\x00\x12\x19\n\x15MetadataState_Created\x10\x01\x12\x1a\n\x16MetadataState_Released\x10\x02\x12\x19\n\x15MetadataState_Revoked\x10\x03*I\n\x11MetadataUsageType\x12\x11\n\rUsage_Unknown\x10\x00\x12\x10\n\x0cUsage_Period\x10\x01\x12\x0f\n\x0bUsage_Times\x10\x02*\x88\x01\n\nPowerState\x12\x16\n\x12PowerState_Unknown\x10\x00\x12\x16\n\x12PowerState_Created\x10\x01\x12\x17\n\x13PowerState_Released\x10\x02\x12\x19\n\x15PowerState_Occupation\x10\x03\x12\x16\n\x12PowerState_Revoked\x10\x04*\x9e\x01\n\x08TaskRole\x12\x14\n\x10TaskRole_Unknown\x10\x00\x12\x13\n\x0fTaskRole_Sender\x10\x01\x12\x19\n\x15TaskRole_DataSupplier\x10\x02\x12\x1a\n\x16TaskRole_PowerSupplier\x10\x03\x12\x15\n\x11TaskRole_Receiver\x10\x04\x12\x19\n\x15TaskRole_AlgoSupplier\x10\x05*}\n\tTaskState\x12\x15\n\x11TaskState_Unknown\x10\x00\x12\x15\n\x11TaskState_Pending\x10\x01\x12\x15\n\x11TaskState_Running\x10\x02\x12\x14\n\x10TaskState_Failed\x10\x03\x12\x15\n\x11TaskState_Succeed\x10\x04*\x82\x01\n\x16MetadataAuthorityState\x12\x13\n\x0fMAState_Unknown\x10\x00\x12\x13\n\x0fMAState_Created\x10\x01\x12\x14\n\x10MAState_Released\x10\x02\x12\x13\n\x0fMAState_Revoked\x10\x03\x12\x13\n\x0fMAState_Invalid\x10\x04\x42.Z,github.com/RosettaFlow/Carrier-Go/lib/commonb\x06proto3'
 )
 
 _USERTYPE = _descriptor.EnumDescriptor(
@@ -36,17 +36,17 @@ _USERTYPE = _descriptor.EnumDescriptor(
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='User_ETH', index=1, number=1,
+      name='User_1', index=1, number=1,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='User_ATP', index=2, number=2,
+      name='User_2', index=2, number=2,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='User_LAT', index=3, number=3,
+      name='User_3', index=3, number=3,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
@@ -54,7 +54,7 @@ _USERTYPE = _descriptor.EnumDescriptor(
   containing_type=None,
   serialized_options=None,
   serialized_start=298,
-  serialized_end=368,
+  serialized_end=362,
 )
 _sym_db.RegisterEnumDescriptor(_USERTYPE)
 
@@ -84,8 +84,8 @@ _DATASTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=370,
-  serialized_end=453,
+  serialized_start=364,
+  serialized_end=447,
 )
 _sym_db.RegisterEnumDescriptor(_DATASTATUS)
 
@@ -115,8 +115,8 @@ _COMMONSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=455,
-  serialized_end=548,
+  serialized_start=449,
+  serialized_end=542,
 )
 _sym_db.RegisterEnumDescriptor(_COMMONSTATUS)
 
@@ -146,8 +146,8 @@ _AUDITMETADATAOPTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=550,
-  serialized_end=627,
+  serialized_start=544,
+  serialized_end=621,
 )
 _sym_db.RegisterEnumDescriptor(_AUDITMETADATAOPTION)
 
@@ -172,8 +172,8 @@ _ORIGINFILETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=629,
-  serialized_end=685,
+  serialized_start=623,
+  serialized_end=679,
 )
 _sym_db.RegisterEnumDescriptor(_ORIGINFILETYPE)
 
@@ -208,8 +208,8 @@ _METADATASTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=687,
-  serialized_end=811,
+  serialized_start=681,
+  serialized_end=805,
 )
 _sym_db.RegisterEnumDescriptor(_METADATASTATE)
 
@@ -239,8 +239,8 @@ _METADATAUSAGETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=813,
-  serialized_end=886,
+  serialized_start=807,
+  serialized_end=880,
 )
 _sym_db.RegisterEnumDescriptor(_METADATAUSAGETYPE)
 
@@ -280,8 +280,8 @@ _POWERSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=889,
-  serialized_end=1025,
+  serialized_start=883,
+  serialized_end=1019,
 )
 _sym_db.RegisterEnumDescriptor(_POWERSTATE)
 
@@ -326,8 +326,8 @@ _TASKROLE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1028,
-  serialized_end=1186,
+  serialized_start=1022,
+  serialized_end=1180,
 )
 _sym_db.RegisterEnumDescriptor(_TASKROLE)
 
@@ -367,8 +367,8 @@ _TASKSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1188,
-  serialized_end=1313,
+  serialized_start=1182,
+  serialized_end=1307,
 )
 _sym_db.RegisterEnumDescriptor(_TASKSTATE)
 
@@ -408,16 +408,16 @@ _METADATAAUTHORITYSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1316,
-  serialized_end=1446,
+  serialized_start=1310,
+  serialized_end=1440,
 )
 _sym_db.RegisterEnumDescriptor(_METADATAAUTHORITYSTATE)
 
 MetadataAuthorityState = enum_type_wrapper.EnumTypeWrapper(_METADATAAUTHORITYSTATE)
 User_Unknown = 0
-User_ETH = 1
-User_ATP = 2
-User_LAT = 3
+User_1 = 1
+User_2 = 2
+User_3 = 3
 DataStatus_Unknown = 0
 DataStatus_Normal = 1
 DataStatus_Deleted = 2

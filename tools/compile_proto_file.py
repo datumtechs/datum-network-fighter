@@ -1,5 +1,5 @@
-import glob
 import os
+import re
 import sys
 
 sdk_path = sys.executable
@@ -30,11 +30,37 @@ for proto, file in protos_to_compile.items():
     print(cmd)
     os.system(cmd)
 
-include_path = os.path.join(proto_root_path, 'Carrier')
-ff = os.path.join(include_path, 'lib/types/*.proto')
-cmd = f'{base_cmd} -I{include_path} -I{proto_root_path} {ff}'
-os.system(cmd)
+pat = re.compile(r'^import\s+"(.+)";')
 
-ff = os.path.join(include_path, 'lib/api/*.proto')
-cmd = f'{base_cmd} -I{include_path} -I{proto_root_path} {ff}'
-os.system(cmd)
+
+def find_deps(proto, base_dir, depth=1):
+    file = os.path.join(base_dir, proto)
+    with open(file) as f:
+        lines = f.readlines()
+    deps = set()
+    for i in lines:
+        m = re.match(pat, i)
+        if m:
+            proto1 = m.group(1)
+            if proto1.startswith('google') or proto1.startswith('lib/common'):
+                continue
+            deps.add(proto1)
+    for proto1 in deps.copy():
+        its_deps = find_deps(proto1, base_dir, depth + 1)
+        deps.update(its_deps)
+    return deps
+
+
+include_path1 = os.path.join(proto_root_path, 'Carrier')
+include_path2 = os.path.join(include_path1, 'lib/types')
+include_path3 = os.path.join(include_path1, 'lib/api')
+
+ref_carrier_proto = 'lib/api/sys_rpc_api.proto'
+deps = find_deps(ref_carrier_proto, include_path1)
+deps.add(ref_carrier_proto)
+
+for proto in deps:
+    ff = os.path.join(include_path1, proto)
+    cmd = f'{base_cmd} -I{include_path1} -I{proto_root_path} {ff}'
+    print(cmd)
+    os.system(cmd)

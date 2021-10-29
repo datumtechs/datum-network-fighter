@@ -132,17 +132,41 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                 m.update(req.content)
 
     def DownloadData(self, request, context):
-        tar_file_name = None
+        compress_file_name = None
         try:
             folder = cfg['data_root']
             basename = os.path.basename(os.path.normpath(request.file_path))
             path = os.path.join(folder, basename)
-            import tarfile
-            tar_file_name = path + '.tar.gz'
-            archive = tarfile.open(tar_file_name, 'w|gz')
-            archive.add(path, arcname=basename)
-            archive.close()
-            path = tar_file_name
+
+            if 'compress' in request.options:
+                compress = request.options['compress'].strip().lower()
+                if compress == '.tar.gz':
+                    import tarfile
+                    compress_file_name = path + '.tar.gz'
+                    archive = tarfile.open(compress_file_name, 'w|gz')
+                    archive.add(path, arcname=basename)
+                    archive.close()
+                    path = compress_file_name
+                elif compress == '.zip':
+                    compress_file_name = path + '.zip'
+                    if os.path.isdir(path):
+                        import shutil
+                        shutil.make_archive(path, 'zip', root_dir=folder, base_dir=basename)
+                    else:
+                        from zipfile import ZipFile
+                        with ZipFile(compress_file_name, 'w') as zipf:
+                            zipf.write(path, arcname=basename)
+                    path = compress_file_name
+                else:
+                    yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
+                    return
+            else:
+                if os.path.isdir(path):
+                    yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
+                    return
+                else:
+                    pass  # keep origin file
+
             log.info(f'to download: {path}')
             if not os.path.exists(path):
                 yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
@@ -159,9 +183,9 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         except Exception as e:
             log.error(repr(e))
         finally:
-            if tar_file_name:
+            if compress_file_name:
                 try:
-                    os.remove(tar_file_name)
+                    os.remove(compress_file_name)
                 except:
                     pass
 
