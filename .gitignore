@@ -18,7 +18,7 @@ __pycache__/
 .DS_store
 
 # Do not include .py files compiled from protobuf specs.
-protos/*.py
+# protos/*.py
 !protos/__init__.py
 !protos/*_helper.py
 
