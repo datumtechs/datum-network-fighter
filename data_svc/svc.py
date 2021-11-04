@@ -227,4 +227,5 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
     def HandleCancelTask(self, request, context):
         log.info(f'{context.peer()} want to cancel task {request.task_id}')
         ok, msg = self.task_manager.cancel_task(request.task_id)
+        log.info(f'cancel task {ok}, {msg}')
         return common_pb2.TaskCancelReply(ok=ok, msg=msg)

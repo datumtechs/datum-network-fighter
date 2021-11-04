@@ -46,7 +46,7 @@ class TaskManager:
         if task_id not in self.procs:
             return False, f'process for task {task_id} not found'
         p = self.procs[task_id]
-        p.terminate()
+        p.kill()
         log.info(f'wait {task_id} terminate')
         p.join()
         msg = 'will soon' if p.is_alive() else 'succ'

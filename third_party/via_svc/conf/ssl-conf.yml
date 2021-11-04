@@ -19,19 +19,13 @@ conf:
     caCertFile: ../../certs/CA.crt
 
     # VIA server certs
-    viaSignCertFile: ../../certs/SS00.crt
-    viaSignKeyFile: ../../certs/SS00.key
-    viaEncryptCertFile: ../../certs/SE00.crt
-    viaEncryptKeyFile: ../../certs/SE00.key
+    viaSignCertFile: ../../certs/SS.crt
+    viaSignKeyFile: ../../certs/SS.key
+    viaEncryptCertFile: ../../certs/SE.crt
+    viaEncryptKeyFile: ../../certs/SE.key
 
     # io client certs, only valuable while mode=two_way
-    ioSignCertFile: ../../certs/CS01.crt
-    ioSignKeyFile: ../../certs/CS01.key
-    ioEncryptCertFile: ../../certs/CE01.crt
-    ioEncryptKeyFile: ../../certs/CE01.key
-
-
-
-
-
-
+    ioSignCertFile: ../../certs/CS.crt
+    ioSignKeyFile: ../../certs/CS.key
+    ioEncryptCertFile: ../../certs/CE.crt
+    ioEncryptKeyFile: ../../certs/CE.key
