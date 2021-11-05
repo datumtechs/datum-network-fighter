@@ -10,11 +10,11 @@ total_bandwidth: 20000000
 certs: 
   base_path: ../certs
   root_cert: CA.crt
-  server_sign_key: SS00.key
-  server_sign_cert: SS00.crt
-  server_enc_key: SE00.key
-  server_enc_cert: SE00.crt
-  client_sign_key: CS01.key
-  client_sign_cert: CS01.crt
-  client_enc_key: CE01.key
-  client_enc_cert: CE01.crt
+  server_sign_key: SS.key
+  server_sign_cert: SS.crt
+  server_enc_key: SE.key
+  server_enc_cert: SE.crt
+  client_sign_key: CS.key
+  client_sign_cert: CS.crt
+  client_enc_key: CE.key
+  client_enc_cert: CE.crt
