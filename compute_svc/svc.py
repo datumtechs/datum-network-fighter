@@ -1,27 +1,29 @@
-import time
-import math
 import logging
+import math
 import threading
+import time
+
 import psutil
+
 from protos import common_pb2, compute_svc_pb2, compute_svc_pb2_grpc
 
-
 log = logging.getLogger(__name__)
+
 
 def get_sys_stat(cfg):
     stat = compute_svc_pb2.GetStatusReply()
     stat.total_cpu = psutil.cpu_count()
     stat.used_cpu = math.ceil(stat.total_cpu * psutil.cpu_percent(0.1) / 100)
     stat.idle_cpu = max(stat.total_cpu - stat.used_cpu, 0)
-    
+
     stat.total_memory = psutil.virtual_memory().total
     stat.used_memory = psutil.virtual_memory().used
     stat.idle_memory = psutil.virtual_memory().free
-    
+
     stat.total_disk = psutil.disk_usage('/').total
     stat.used_disk = psutil.disk_usage('/').used
     stat.idle_disk = psutil.disk_usage('/').free
-    
+
     stat.total_bandwidth = cfg["total_bandwidth"]
     net_1 = psutil.net_io_counters()
     time.sleep(1)
@@ -31,6 +33,7 @@ def get_sys_stat(cfg):
     str_res = '{' + str(stat).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
     log.info(f"get sys stat: {str_res}")
     return stat
+
 
 class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
     def __init__(self, task_manager):
@@ -59,7 +62,8 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
         return common_pb2.TaskReadyGoReply(ok=ok, msg=msg)
 
     def HandleCancelTask(self, request, context):
-        log.info(f'{context.peer()} want to cancel task {request.task_id}')
-        ok, msg = self.task_manager.cancel_task(request.task_id)
+        task_name = f'{request.task_id[:15]}-{request.party_id}'
+        log.info(f'{context.peer()} want to cancel task {task_name}')
+        ok, msg = self.task_manager.cancel_task(request.task_id, request.party_id)
         log.info(f'cancel task {ok}, {msg}')
         return common_pb2.TaskCancelReply(ok=ok, msg=msg)

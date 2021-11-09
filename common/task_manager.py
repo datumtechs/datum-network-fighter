@@ -12,16 +12,18 @@ TPeer = namedtuple('TPeer', ['ip', 'port', 'party_id', 'name'])
 class TaskManager:
     def __init__(self, cfg):
         self.cfg = cfg
-        self.tasks = {}
-        self.procs = {}
+        self.tasks = {}  # (task_id, party_id) => task
+        self.procs = {}  # (task_id, party_id) => task
 
     def start(self, req):
         log.info(f"task Manager start: task: {req.task_id}, party_id: {req.party_id}")
         log.info(f"task request: {req}")
         task_id = req.task_id
-        # if task_id in self.tasks:
-        #     return False, f'task: {task_id} repetitive submit'
         party_id = req.party_id
+        uniq_task = (task_id, party_id)
+        task_name = f'{task_id[:15]}-{party_id}'
+        if uniq_task in self.tasks:
+            return False, f'task: {task_name} repetitive submit'
         contract_id = req.contract_id
         data_id = req.data_id
         env_id = req.env_id
@@ -32,32 +34,34 @@ class TaskManager:
         peers = tuple(TPeer(p.ip, p.port, p.party_id, p.name) for p in req.peers)
         task = Task(self.cfg, task_id, party_id, contract_id, data_id, env_id, peers,
                     contract_cfg, data_party, computation_party, result_party)
-        self.tasks[task_id] = task
-        log.info(f'new task: {task.id}, thread id: {threading.get_ident()}')
-        p = mp.Process(target=Task.run, args=(task,), name=f"{task_id[:15]}-{party_id}")
-        self.procs[task_id] = p
+        self.tasks[uniq_task] = task
+        log.info(f'new task: {task_name}, thread id: {threading.get_ident()}')
+        p = mp.Process(target=Task.run, args=(task,), name=task_name)
+        self.procs[uniq_task] = p
         p.start()
-        return True, f'submit task {task_id}'
+        return True, f'submit task {task_name}'
 
     def get_task(self, task_id):
-        return self.tasks.get(task_id, None)
+        raise NotImplementedError('deprecated, to remove')
 
-    def cancel_task(self, task_id):
-        if task_id not in self.procs:
-            return False, f'process for task {task_id} not found'
-        p = self.procs[task_id]
+    def cancel_task(self, task_id, party_id):
+        uniq_task = (task_id, party_id)
+        task_name = f'{task_id[:15]}-{party_id}'
+        if uniq_task not in self.procs:
+            return False, f'process for task {task_name} not found'
+        p = self.procs[uniq_task]
         p.kill()
-        log.info(f'wait {task_id} terminate')
+        log.info(f'wait {task_name} terminate')
         p.join()
         msg = 'will soon' if p.is_alive() else 'succ'
-        return True, f'cancel task {task_id} {msg}'
+        return True, f'cancel task {task_name} {msg}'
 
     def clean(self):
         exited = []
-        for task_id, p in self.procs.items():
+        for uniq_task, p in self.procs.items():
             if p.exitcode is not None:
-                exited.append(task_id)
+                exited.append(uniq_task)
         # log.info(f'detect {len(exited)} out of {len(self.procs)} tasks has terminated')
-        for task_id in exited:
-            self.tasks.pop(task_id, None)
-            self.procs.pop(task_id, None)
+        for uniq_task in exited:
+            self.tasks.pop(uniq_task, None)
+            self.procs.pop(uniq_task, None)

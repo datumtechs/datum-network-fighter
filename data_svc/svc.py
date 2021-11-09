@@ -1,11 +1,12 @@
 import hashlib
 import logging
+import math
 import os
 import threading
 import time
-import math
-import psutil
+
 import grpc
+import psutil
 
 from common.report_engine import report_upload_file_summary
 from config import cfg
@@ -225,7 +226,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         return common_pb2.TaskReadyGoReply(ok=ok, msg=msg)
 
     def HandleCancelTask(self, request, context):
-        log.info(f'{context.peer()} want to cancel task {request.task_id}')
-        ok, msg = self.task_manager.cancel_task(request.task_id)
+        task_name = f'{request.task_id[:15]}-{request.party_id}'
+        log.info(f'{context.peer()} want to cancel task {task_name}')
+        ok, msg = self.task_manager.cancel_task(request.task_id, request.party_id)
         log.info(f'cancel task {ok}, {msg}')
         return common_pb2.TaskCancelReply(ok=ok, msg=msg)
