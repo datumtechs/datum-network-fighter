@@ -36,7 +36,7 @@ class TaskManager:
                     contract_cfg, data_party, computation_party, result_party)
         self.tasks[uniq_task] = task
         log.info(f'new task: {task_name}, thread id: {threading.get_ident()}')
-        p = mp.Process(target=Task.run, args=(task,), name=task_name)
+        p = mp.Process(target=Task.run, args=(task,), name=task_name, daemon=True)
         self.procs[uniq_task] = p
         p.start()
         return True, f'submit task {task_name}'
