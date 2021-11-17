@@ -1,0 +1,14 @@
+ip: 
+  - 192.168.0.1
+  - 192.168.0.2
+  - 192.168.0.3
+data_svc_port: 55551
+compute_svc_port: 55552
+via_svc_port: 55553
+schedule_svc_port: 55554
+user: user1
+passwd: 'Abc@123!'
+svc_list:
+  - data_svc
+  - compute_svc
+  - tests/schedule_svc

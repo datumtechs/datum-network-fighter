@@ -37,7 +37,7 @@ armada-common/Fighter/google/
 compute_svc/C0DE_*.py
 compute_svc/start_compute_svc_group.sh
 console/algorithm*
-console/run_task*
+console/task_cfg*
 contract_work_dir
 results_root
 log/
@@ -47,3 +47,5 @@ build/
 dist/
 # *.whl
 *egg-info
+tests/cluster_test/noes_conf/*.ini
+tests/cluster_test/noes_conf/*.json

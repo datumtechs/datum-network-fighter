@@ -1,0 +1,11 @@
+prefix=/home/luodahui/.local/GMTASSL
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: OpenSSL-libtassl
+Description: Secure Sockets Layer and cryptography libraries
+Version: 1.1.1b
+Requires.private: libtacrypto
+Libs: -L${libdir} -lssl
+Cflags: -I${includedir}

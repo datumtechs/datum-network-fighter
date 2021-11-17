@@ -15,7 +15,7 @@
 
 ### 打python环境包
 
-* 如果需要，激活使用conda：`eval "$(conda shell.bash hook)"`
+* 如果需要，激活使用conda：`eval "$(~/miniconda3/bin/conda shell.bash hook)"`
 
 * 新建一个python(版本3.7)虚拟环境：`conda create -n env_py37 python=3.7`
 

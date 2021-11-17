@@ -2,7 +2,7 @@ file_system: local
 bind_ip: 192.168.16.151
 port: 50011
 chunk_size: 1024
-pass_via: yes
+pass_via: true
 via_svc: 192.168.16.151:50041
 thread_pool_size: 12
 data_root: ../data

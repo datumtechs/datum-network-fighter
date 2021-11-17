@@ -1,7 +1,7 @@
 bind_ip: 192.168.16.151
 port: 50021
 thread_pool_size: 12
-pass_via: yes
+pass_via: true
 via_svc: 192.168.16.151:50041
 code_root_dir: contract_work_dir
 results_root_dir: results_root

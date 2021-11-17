@@ -30,7 +30,7 @@ def parse_cfg(json_file):
 
 def pack_src():
     src_zip_name = 'fighter.tar.gz'
-    cmd = f'tar -czf {src_zip_name} common protos data_svc compute_svc third_party/via_svc tests console gateway'
+    cmd = f'tar -czPf {src_zip_name} common protos data_svc compute_svc third_party/via_svc tests console gateway'
     print(cmd)
     ret = os.system(cmd)
     succ = not bool(ret)
@@ -45,7 +45,7 @@ def tranfer_file(scp, a_file, to_dir):
 
 
 def unzip(ssh, a_file, to_dir):
-    _, _, stderr = ssh.exec_command(f'tar -xzf {a_file} -C {to_dir}')
+    _, _, stderr = ssh.exec_command(f'tar -xzPf {a_file} -C {to_dir} && rm -rf {a_file}')
     ret = stderr.read()
     ret = 'failed' if ret else 'succ'
     print(f'unzip {a_file} {ret}')
@@ -57,11 +57,12 @@ def update_svc_cfg(scp, remote_dir, cfg, svc_type):
                  'results_dir': 'results_root_dir', 'host': 'bind_ip'}
     cfg = {k: v for k, v in cfg.items() if k in key_align.keys()}
     cfg = {key_align[k]: v for k, v in cfg.items()}
-    if svc_type in ('data_svc', 'compute_svc'):
-        cfg_tmpl = f'{svc_type}/config.yaml'
-    else:
-        print(f'nothing to do for {svc_type}')
-        return
+    cfg_tmpl = f'{svc_type}/config.yaml'
+    # if svc_type in ('data_svc', 'compute_svc'):
+    #     cfg_tmpl = f'{svc_type}/config.yaml'
+    # else:
+    #     print(f'nothing to do for {svc_type}')
+    #     return
     new_cfg = load_cfg(cfg_tmpl)
     new_cfg.update(cfg)
     port = cfg['port']
@@ -187,7 +188,7 @@ def start_all(node_cfg):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('node_config', type=str)
-    parser.add_argument('--remote_dir', type=str, default='fighter')
+    parser.add_argument('--remote_dir', type=str, default='~/fighter')
     parser.add_argument('--py_env_zip', type=str)
     parser.add_argument('--src_zip', type=str)
     parser.add_argument('--start_all', action='store_true')
@@ -220,7 +221,7 @@ if __name__ == '__main__':
 
     if env_zip and env_zip.endswith('.tar.gz'):
         l = len('.tar.gz')
-        py_home = f'../{env_zip[:-l]}'
+        py_home = f'{remote_dir}/{env_zip[:-l]}'
     else:
         py_home = py_home.rstrip('/')
 
