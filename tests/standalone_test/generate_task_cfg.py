@@ -1,17 +1,20 @@
 import os
 import sys
 import json
-import copy
+import argparse
 import pandas as pd
-from common.utils import load_cfg
+
 
 scripts_path = os.path.split(os.path.realpath(__file__))[0]
-base_path = os.path.join(scripts_path, '../../..')
+base_path = os.path.join(scripts_path, '../..')
 def join_base_path(file_path):
     abs_path = os.path.join(base_path, file_path)
     return abs_path
 
-algo_type = sys.argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument('--algo_type', type=str, default='logistic_regression')
+args = parser.parse_args()
+algo_type = args.algo_type
 if algo_type == "logistic_regression":
     data_file_partyA = join_base_path("tests/test_data/binary_class/breast_cancel_partyA_min.csv")
     data_file_partyB = join_base_path("tests/test_data/binary_class/breast_cancel_partyB_min.csv")
@@ -19,8 +22,8 @@ if algo_type == "logistic_regression":
     label_column = "diagnosis"
     train_algorithm_file = join_base_path("algorithms/logistic_regression/logistic_reg_train.py")
     predict_algorithm_file = join_base_path("algorithms/logistic_regression/logistic_reg_predict.py")
-    train_cfg_file_name = join_base_path("console/task_cfg_lr_train_cluster.json")
-    predict_cfg_file_name = join_base_path("console/task_cfg_lr_predict_cluster.json")
+    train_cfg_file_name = join_base_path("console/task_cfg_lr_train.json")
+    predict_cfg_file_name = join_base_path("console/task_cfg_lr_predict.json")
     epochs = 10
     batch_size = 256
     learning_rate = 0.1
@@ -33,8 +36,8 @@ elif algo_type == "linear_regression":
     label_column = "price"
     train_algorithm_file = join_base_path("algorithms/linear_regression/linear_reg_train.py")
     predict_algorithm_file = join_base_path("algorithms/linear_regression/linear_reg_predict.py")
-    train_cfg_file_name = join_base_path("console/task_cfg_linr_train_cluster.json")
-    predict_cfg_file_name = join_base_path("console/task_cfg_linr_predict_cluster.json")
+    train_cfg_file_name = join_base_path("console/task_cfg_linr_train.json")
+    predict_cfg_file_name = join_base_path("console/task_cfg_linr_predict.json")
     epochs = 50
     batch_size = 256
     learning_rate = 0.1
@@ -50,7 +53,7 @@ print(f'data_file_partyB:{data_file_partyB}')
 print(f'key_column:{key_column}')
 print(f'label_column:{label_column}')
 
-cfg_template = join_base_path("console/run_task_cfg_template/task_cfg_template_cluster.json")
+cfg_template = join_base_path("console/run_task_cfg_template/task_cfg_template_local.json")
 with open(cfg_template, 'r') as f:
     cfg_dict = json.load(f)
 
@@ -61,30 +64,7 @@ cfg_dict["data_id"] = f"{algo_type}_data"
 cfg_dict["env_id"]  = f"test_environment"
 all_party_list = [party["NODE_ID"] for party in cfg_dict["peers"]]
 assert len(all_party_list) == len(cfg_dict["peers"]), "every party's NODE_ID must unique."
-node_cfg = load_cfg(os.path.join(scripts_path, "config.yaml"))
-peers = []
-for i,party_id in enumerate(cfg_dict["data_party"]):
-    one_node = {}
-    one_node["NODE_ID"] = party_id
-    one_node["ADDRESS"] = f'{node_cfg["ip"][i]}:{node_cfg["via_svc_port"]}'
-    one_node["INTERNAL"] = f'{node_cfg["ip"][i]}:{node_cfg["data_svc_port"]}'
-    peers.append(copy.deepcopy(one_node))
 
-for i,party_id in enumerate(cfg_dict["computation_party"]):
-    one_node = {}
-    one_node["NODE_ID"] = party_id
-    one_node["ADDRESS"] = f'{node_cfg["ip"][i]}:{node_cfg["via_svc_port"]}'
-    one_node["INTERNAL"] = f'{node_cfg["ip"][i]}:{node_cfg["compute_svc_port"]}'
-    peers.append(copy.deepcopy(one_node))
-
-for i,party_id in enumerate(cfg_dict["result_party"]):
-    one_node = {}
-    one_node["NODE_ID"] = party_id
-    one_node["ADDRESS"] = f'{node_cfg["ip"][i]}:{node_cfg["via_svc_port"]}'
-    one_node["INTERNAL"] = f'{node_cfg["ip"][i]}:{node_cfg["data_svc_port"]}'
-    peers.append(copy.deepcopy(one_node))
-
-cfg_dict["peers"] = peers
 
 '''
 train task config
