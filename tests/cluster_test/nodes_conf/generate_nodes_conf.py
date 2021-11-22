@@ -54,18 +54,22 @@ for host in ip:
     one_node["schedule_svc"] = f"{host}:{schedule_svc_port}"
     for svc_type in svc_list:
         one_node["svc_type"] = svc_type
+        port_list = []
         if svc_type == "data_svc":
-            one_node["rpc_port"] = data_svc_port
+            port_list = data_svc_port if isinstance(data_svc_port, list) else [data_svc_port]
         elif svc_type == "compute_svc":
-            one_node["rpc_port"] = compute_svc_port
+            port_list = compute_svc_port if isinstance(compute_svc_port, list) else [compute_svc_port]
         elif svc_type == "tests/schedule_svc":
-            one_node["rpc_port"] = schedule_svc_port
+            port_list = [schedule_svc_port]
         else:
             raise Exception("svc list only support data_svc,compute_svc,tests/schedule_svc.")
-        one_node["data_dir"] = f'../data{one_node["rpc_port"]}'
-        one_node["code_dir"] = f'../contracts{one_node["rpc_port"]}'
-        one_node["results_dir"] = f'../results{one_node["rpc_port"]}'
-        nodes_info.append(copy.deepcopy(one_node))
+
+        for port in port_list:
+            one_node["rpc_port"] = port
+            one_node["data_dir"] = f'../data{one_node["rpc_port"]}'
+            one_node["code_dir"] = f'../contracts{one_node["rpc_port"]}'
+            one_node["results_dir"] = f'../results{one_node["rpc_port"]}'
+            nodes_info.append(copy.deepcopy(one_node))
 
 with open("nodes_conf.json", 'w+') as f:
     json.dump(nodes_info, f, indent=4)
