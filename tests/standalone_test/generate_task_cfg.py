@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import copy
 import argparse
 import pandas as pd
 
@@ -16,10 +17,12 @@ parser.add_argument('--algo_type', type=str, default='logistic_regression')
 args = parser.parse_args()
 algo_type = args.algo_type
 if algo_type == "logistic_regression":
-    data_file_partyA = join_base_path("tests/test_data/binary_class/breast_cancel_partyA_min.csv")
-    data_file_partyB = join_base_path("tests/test_data/binary_class/breast_cancel_partyB_min.csv")
-    key_column = "id"
-    label_column = "diagnosis"
+    # data_file_partyA = join_base_path("tests/test_data/binary_class/breast_cancel_partyA_min.csv")
+    # data_file_partyB = join_base_path("tests/test_data/binary_class/breast_cancel_partyB_min.csv")
+    data_file_partyA = join_base_path("data/BankMarketing/train_data/bank_train_data_1w.csv")
+    data_file_partyB = join_base_path("data/BankMarketing/train_data/insurance_train_data_1w.csv")
+    key_column = "CLIENT_ID"
+    label_column = "Y"
     train_algorithm_file = join_base_path("algorithms/logistic_regression/logistic_reg_train.py")
     predict_algorithm_file = join_base_path("algorithms/logistic_regression/logistic_reg_predict.py")
     train_cfg_file_name = join_base_path("console/task_cfg_lr_train.json")
@@ -103,7 +106,7 @@ for party_id in all_party_list:
         party_info["data_party"]["key_column"] = key_column
         party_info["data_party"]["selected_columns"] = selected_columns
 
-    cfg_dict["each_party"].append(party_info)
+    cfg_dict["each_party"].append(copy.deepcopy(party_info))
         
 
 with open(train_cfg_file_name, 'w+') as f:

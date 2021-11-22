@@ -17,7 +17,7 @@ import channel_sdk
 np.set_printoptions(suppress=True)
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-rtt.set_backend_loglevel(5)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
+rtt.set_backend_loglevel(0)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
 log = logging.getLogger(__name__)
 
 class PrivacyLRTrain(object):
@@ -71,9 +71,9 @@ class PrivacyLRTrain(object):
 
     def check_parameters(self):
         log.info(f"check parameter start.")        
-        assert self.epochs > 0, "epochs must be greater 0"
-        assert self.batch_size > 0, "batch size must be greater 0"
-        assert self.learning_rate > 0, "learning rate must be greater 0"
+        assert isinstance(self.epochs, int) and self.epochs > 0, "epochs must be type(int) and greater 0"
+        assert isinstance(self.batch_size, int) and self.batch_size > 0, "batch_size must be type(int) and greater 0"
+        assert isinstance(self.learning_rate, float) and self.learning_rate > 0, "learning rate must be type(float) and greater 0"
         assert 0 < self.validation_set_rate < 1, "validattion set rate must be between (0,1)"
         assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
@@ -187,25 +187,26 @@ class PrivacyLRTrain(object):
         
         if (self.party_id in self.result_party) and self.use_validation_set:
             log.info("result_party evaluate model.")
-            from sklearn.metrics import roc_auc_score, roc_curve, f1_score, precision_score, recall_score, accuracy_score
-            Y_pred_prob = Y_pred.astype("float").reshape([-1, ])
+            Y_pred = Y_pred.astype("float").reshape([-1, ])
             Y_true = Y_actual.astype("float").reshape([-1, ])
-            auc_score = roc_auc_score(Y_true, Y_pred_prob)
-            log.info(f"AUC: {round(auc_score, 6)}")
-            Y_pred_class = (Y_pred_prob > self.predict_threshold).astype('int64')  # default threshold=0.5
-            accuracy = accuracy_score(Y_true, Y_pred_class)
-            log.info(f"ACCURACY: {round(accuracy, 6)}")
-            f1_score = f1_score(Y_true, Y_pred_class)
-            precision = precision_score(Y_true, Y_pred_class)
-            recall = recall_score(Y_true, Y_pred_class)
-            log.info("********************")
-            log.info(f"AUC: {round(auc_score, 6)}")
-            log.info(f"ACCURACY: {round(accuracy, 6)}")
-            log.info(f"F1_SCORE: {round(f1_score, 6)}")
-            log.info(f"PRECISION: {round(precision, 6)}")
-            log.info(f"RECALL: {round(recall, 6)}")
-            log.info("********************")
+            self.model_evaluation(Y_true, Y_pred)
         log.info("train finish.")
+    
+    def model_evaluation(self, Y_true, Y_pred):
+        from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_score, accuracy_score
+        auc_score = roc_auc_score(Y_true, Y_pred)
+        Y_pred_class = (Y_pred > self.predict_threshold).astype('int64')  # default threshold=0.5
+        accuracy = accuracy_score(Y_true, Y_pred_class)
+        f1_score = f1_score(Y_true, Y_pred_class)
+        precision = precision_score(Y_true, Y_pred_class)
+        recall = recall_score(Y_true, Y_pred_class)
+        log.info("********************")
+        log.info(f"AUC: {round(auc_score, 6)}")
+        log.info(f"ACCURACY: {round(accuracy, 6)}")
+        log.info(f"F1_SCORE: {round(f1_score, 6)}")
+        log.info(f"PRECISION: {round(precision, 6)}")
+        log.info(f"RECALL: {round(recall, 6)}")
+        log.info("********************")
     
     def create_set_channel(self):
         '''

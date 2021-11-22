@@ -71,9 +71,9 @@ class PrivacyLinearRegTrain(object):
 
     def check_parameters(self):
         log.info(f"check parameter start.")        
-        assert self.epochs > 0, "epochs must be greater 0"
-        assert self.batch_size > 0, "batch size must be greater 0"
-        assert self.learning_rate > 0, "learning rate must be greater 0"
+        assert isinstance(self.epochs, int) and self.epochs > 0, "epochs must be type(int) and greater 0"
+        assert isinstance(self.batch_size, int) and self.batch_size > 0, "batch_size must be type(int) and greater 0"
+        assert isinstance(self.learning_rate, float) and self.learning_rate > 0, "learning rate must be type(float) and greater 0"
         assert 0 < self.validation_set_rate < 1, "validattion set rate must be between (0,1)"
         assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
@@ -186,16 +186,23 @@ class PrivacyLinearRegTrain(object):
         
         if (self.party_id in self.result_party) and self.use_validation_set:
             log.info("result_party evaluate model.")
-            from sklearn.metrics import r2_score, mean_squared_error
             Y_pred = Y_pred.astype("float").reshape([-1, ])
             Y_true = Y_actual.astype("float").reshape([-1, ])
-            r2 = r2_score(Y_true, Y_pred)
-            rmse = np.sqrt(mean_squared_error(Y_true, Y_pred))
-            log.info("********************")
-            log.info(f"R Squared: {round(r2, 6)}")
-            log.info(f"RMSE: {round(rmse, 6)}")
-            log.info("********************")
+            self.model_evaluation(Y_true, Y_pred)
         log.info("train finish.")
+    
+    def model_evaluation(self, Y_true, Y_pred):
+        from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+        r2 = r2_score(Y_true, Y_pred)
+        rmse = mean_squared_error(Y_true, Y_pred, squared=False)
+        mse = mean_squared_error(Y_true, Y_pred, squared=True)
+        mae = mean_absolute_error(Y_true, Y_pred)
+        log.info("********************")
+        log.info(f"R Squared: {round(r2, 6)}")
+        log.info(f"RMSE: {round(rmse, 6)}")
+        log.info(f"MSE: {round(mse, 6)}")
+        log.info(f"MAE: {round(mae, 6)}")
+        log.info("********************")
     
     def create_set_channel(self):
         '''

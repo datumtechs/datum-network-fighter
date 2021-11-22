@@ -37,7 +37,6 @@ def serve():
     return server
 
 def client(cfg):
-    time.sleep(1)  # wait the data_svc/compute_svc set up.
     data_svc_address = '{}:{}'.format(cfg["bind_ip"], cfg["data_svc_port"])
     conn = grpc.insecure_channel(data_svc_address)
     client = data_svc_pb2_grpc.DataProviderStub(channel=conn)
@@ -68,7 +67,20 @@ def main():
         cfg['port'] = args.port
 
     server = serve()
-    client(cfg)
+    # wait the data_svc/compute_svc set up and connect success.
+    connect_succ = False
+    waiting_time_limit = 300
+    waiting_time = 0
+    start_time = time.time()
+    while (not connect_succ) and (waiting_time < waiting_time_limit):
+        try:
+            client(cfg)
+            connect_succ = True
+            log.info("connect to data_svc/compute_svc success.")
+        except grpc._channel._InactiveRpcError as e:
+            waiting_time = time.time() - start_time
+        except:
+            raise
     server.wait_for_termination()
     log.info('svc over')
 
