@@ -23,7 +23,7 @@
 
 * 安装tensorflow(版本1.14.0)：`pip install tensorflow==1.14.0`
 
-* 编译并安装*latticex.rosetta*：
+* 编译并安装 [*latticex.rosetta*](https://github.com/LatticeX-Foundation/Rosetta)：
 
   ```bash
   $ cd Rosetta
@@ -32,12 +32,16 @@
   $ pip install dist/latticex_rosetta-1.0.0-cp37-cp37m-linux_x86_64.whl
   ```
 
-* 编译并安装*channel_sdk*：
+* 编译并安装 [*channel_sdk*](https://github.com/Metisnetwork/Metis-Channel-sdk) 和 [*国密版 grpc*](https://github.com/part-c/grpc/tree/v2.0.0_gmssl/src/cpp)：
 
   ```bash
+  # 编译 third_party/protobuf
   $ cd channel-sdk
   $ ./build.sh clean
   $ ./build.sh compile
+  # 如果要国密版本，则需要先编译国密版grpc
+  ./build.sh compile --ssl-type=2 --python-version=3.7
+  
   $ pip install dist/channel_sdk-1.0.0-cp37-cp37m-linux_x86_64.whl
   ```
 
@@ -78,7 +82,7 @@
 
   * copy rosetta包 和 channel_sdk包到当前build context (在`fighter-py`)
 
-  * 编译好数据和计算服务包(在`fighter-py/dist`)
+  * 编译好数据和计算服务包 (`python -m build -w`，结果在`./dist`)
 
   * build
 

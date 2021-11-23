@@ -36,6 +36,7 @@ RUN cd /home && rm *.whl
 
 COPY data_svc/start_data_svc.sh /home
 COPY compute_svc/start_compute_svc.sh /home
-COPY via_svc/start_via_svc.sh /home
+COPY third_party/via_svc /home/via_svc
+COPY third_party/gmssl /home/gmssl
 
 WORKDIR /home
