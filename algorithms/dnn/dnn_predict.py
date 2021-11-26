@@ -45,8 +45,8 @@ class PrivacyDnnPredict(object):
                 "model_restore_party": "p3",
                 "model_path": "/absoulte_path/to/model_dir",
                 "algorithm_parameter": {
-                    "layer_units": [32, 1],
-                    "layer_activation": ["sigmoid", "sigmoid"],
+                    "layer_units": [32, 128, 32, 1],
+                    "layer_activation": ["sigmoid", "sigmoid", "sigmoid", "sigmoid"],
                     "use_intercept": true,
                     "predict_threshold": 0.5
                 }

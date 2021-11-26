@@ -121,14 +121,12 @@ for party_id in all_party_list:
     if party_id in cfg_dict["data_party"]:
         if party_id == label_owner:
             party_info["data_party"]["input_file"] = data_file_partyA
-            input_file = join_base_path(data_file_partyA, 
-                                        base_path=os.path.join(base_path, 'data_svc'))
+            input_file = join_base_path('data_svc/' + data_file_partyA)
             selected_columns = pd.read_csv(input_file, nrows=0).columns.tolist()
             selected_columns.remove(label_column)
         else:
             party_info["data_party"]["input_file"] = data_file_partyB
-            input_file = join_base_path(data_file_partyB, 
-                                        base_path=os.path.join(base_path, 'data_svc'))
+            input_file = join_base_path('data_svc/' + data_file_partyB)
             selected_columns = pd.read_csv(input_file, nrows=0).columns.tolist()
         selected_columns.remove(key_column)
         print(f'selected_columns:{selected_columns}')

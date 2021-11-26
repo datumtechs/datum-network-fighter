@@ -142,7 +142,7 @@ def kill_svc(ssh):
     print(pids)
     if pids:
         pids = ' '.join(pids)
-        cmd = f'kill {pids}'
+        cmd = f'kill -9 {pids}'
         print(cmd)
         ssh.exec_command(cmd)
 

@@ -48,10 +48,10 @@ class PrivacyDnnTrain(object):
                     "epochs": 10,
                     "batch_size": 256,
                     "learning_rate": 0.1,
-                    "layer_units": [32, 1],
-                    "layer_activation": ["sigmoid", "sigmoid"],
-                    "init_method": "random_normal",
-                    "use_intercept": true,
+                    "layer_units": [32, 128, 32, 1],     # hidden layer and output layer units
+                    "layer_activation": ["sigmoid", "sigmoid", "sigmoid", "sigmoid"],   # hidden layer and output layer activation
+                    "init_method": "random_normal",   # weight and bias init method
+                    "use_intercept": true,     # whether use bias
                     "optimizer": "sgd",
                     "use_validation_set": True,
                     "validation_set_rate": 0.2,
@@ -95,7 +95,7 @@ class PrivacyDnnTrain(object):
         self.layer_units = algorithm_parameter.get("layer_units", [32, 128, 32, 1])
         self.layer_activation = algorithm_parameter.get("layer_activation", ["sigmoid", "sigmoid", "sigmoid", "sigmoid"])
         self.init_method = algorithm_parameter.get("init_method", "random_normal")  # 'random_normal', 'random_uniform', 'zeros', 'ones'
-        self.use_intercept = algorithm_parameter.get("use_intercept", True)  # True: use b, False: not use b
+        self.use_intercept = algorithm_parameter.get("use_intercept", True)  # True: use bias, False: not use bias
         self.optimizer = algorithm_parameter.get("optimizer", "sgd")
         self.use_validation_set = algorithm_parameter.get("use_validation_set", True)
         self.validation_set_rate = algorithm_parameter.get("validation_set_rate", 0.2)
@@ -119,7 +119,7 @@ class PrivacyDnnTrain(object):
                 raise Exception(f'layer_activation can only be ""/"sigmoid"/"relu"/None, not {i}')
         if self.layer_activation[-1] == 'sigmoid':
             if self.layer_units[-1] != 1:
-                raise Exception(f"output layer activation is sigmoid, output layer units must be 1, not {self.layer_units[-1]}")
+                raise Exception(f"when output layer activation is sigmoid, output layer units must be 1, not {self.layer_units[-1]}")
         
         assert isinstance(self.init_method, str), "init_method must be type(str)"
         if self.init_method == 'random_normal':
@@ -131,7 +131,7 @@ class PrivacyDnnTrain(object):
         elif self.init_method == 'ones':
             self.init_method = tf.ones
         else:
-            raise Exception(f"init_method only can be random_normal/random_uniform/zeros/ones], not {self.init_method}")
+            raise Exception(f"init_method only can be random_normal/random_uniform/zeros/ones, not {self.init_method}")
         assert isinstance(self.optimizer, str), "optimizer must be type(str)"
         if self.optimizer == 'sgd':
             self.optimizer = tf.train.GradientDescentOptimizer

@@ -9,20 +9,17 @@ import logging
 import shutil
 import numpy as np
 import pandas as pd
-import tensorflow as tf
 import latticex.rosetta as rtt
 import channel_sdk
 
 
 np.set_printoptions(suppress=True)
-tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-rtt.set_backend_loglevel(5)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
+rtt.set_backend_loglevel(0)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
 log = logging.getLogger(__name__)
 
-class PrivacyLRPredict(object):
+class PrivacyXgbPredict(object):
     '''
-    Privacy logistic regression predict base on rosetta.
+    Privacy XGBoost predict base on rosetta.
     '''
 
     def __init__(self,
@@ -31,6 +28,31 @@ class PrivacyLRPredict(object):
                  data_party: list,
                  result_party: list,
                  results_dir: str):
+        '''
+        cfg_dict:
+        {
+            "party_id": "p1",
+            "data_party": {
+                "input_file": "path/to/file",
+                "key_column": "col1",
+                "selected_columns": ["col2", "col3"]
+            },
+            "dynamic_parameter": {
+                "model_restore_party": "p3",
+                "model_path": "/absoulte_path/to/model_dir",
+                "algorithm_parameter": {
+                    "num_trees": 3,
+                    "max_depth": 4,
+                    "num_bins": 5,
+                    "num_class": 2,
+                    "lambd": 1.0,
+                    "gamma": 0.0,
+                    "predict_threshold": 0.5
+                }
+            }
+
+        }
+        '''
         log.info(f"channel_config:{channel_config}")
         log.info(f"cfg_dict:{cfg_dict}")
         log.info(f"data_party:{data_party}, result_party:{result_party}, results_dir:{results_dir}")
@@ -50,12 +72,14 @@ class PrivacyLRPredict(object):
         dynamic_parameter = cfg_dict["dynamic_parameter"]
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
         self.model_path = dynamic_parameter.get("model_path")
-        self.predict_threshold = dynamic_parameter.get("predict_threshold", 0.5)
         algorithm_parameter = dynamic_parameter["algorithm_parameter"]
-        self.num_trees = algorithm_parameter.get("num_trees", 1)
+        self.num_trees = algorithm_parameter.get("num_trees", 3)
         self.max_depth = algorithm_parameter.get("max_depth", 4)
-        self.num_bins = algorithm_parameter.get("num_bins", 32)
+        self.num_bins = algorithm_parameter.get("num_bins", 5)
         self.num_class = algorithm_parameter.get("num_class", 2)
+        self.lambd = algorithm_parameter.get("lambd", 1.0)
+        self.gamma = algorithm_parameter.get("gamma", 0.0)
+        self.predict_threshold = algorithm_parameter.get("predict_threshold", 0.5)
         self.model_file = os.path.join(self.model_path, "model")        
         self.output_file = os.path.join(results_dir, "result")
         self.data_party.remove(self.model_restore_party)  # except restore party
@@ -67,7 +91,9 @@ class PrivacyLRPredict(object):
         assert isinstance(self.num_trees, int) and self.num_trees > 0, "num_trees must be type(int) and greater 0"
         assert isinstance(self.max_depth, int) and self.max_depth > 0, "max_depth must be type(int) and greater 0"
         assert isinstance(self.num_bins, int) and self.num_bins > 0, "num_bins must be type(int) and greater 0"
-        assert isinstance(self.num_class, int) and self.num_class > 1, "num_class must be type(int) and greater 1"      
+        assert isinstance(self.num_class, int) and self.num_class > 1, "num_class must be type(int) and greater 1"
+        assert isinstance(self.lambd, float) and self.lambd >= 0, "lambd must be type(float) and greater_equal 0"
+        assert isinstance(self.gamma, float), "gamma must be type(float)" 
         
         if self.input_file:
             self.input_file = self.input_file.strip()
@@ -92,7 +118,7 @@ class PrivacyLRPredict(object):
 
     def predict(self):
         '''
-        Logistic regression predict algorithm implementation function
+        predict algorithm implementation function
         '''
 
         log.info("extract feature or id.")
@@ -117,27 +143,25 @@ class PrivacyLRPredict(object):
         xgb = rtt.SecureXGBClassifier(max_depth=self.max_depth, 
                                       num_trees=self.num_trees, 
                                       num_class=self.num_class, 
-                                      num_bins=self.num_bins, 
-                                      learning_rate=0.002)
+                                      num_bins=self.num_bins,
+                                      lambd=self.lambd,
+                                      gamma=self.gamma,
+                                      epochs=10,
+                                      batch_size=256,
+                                      learning_rate=0.01)
         
         log.info("start restore model.")
         if self.party_id == self.model_restore_party:
-            if os.path.exists(os.path.join(self.model_path, "checkpoint")):
-                log.info(f"model restore from: {self.model_file}.")
-                xgb.LoadModel(self.model_file)
-            else:
-                raise Exception("model not found or model damaged")
+            log.info(f"model restore from: {self.model_file}.")
+            xgb.LoadModel(self.model_file)
         else:
             log.info("restore model...")
-            temp_file = os.path.join(self.get_temp_dir(), 'ckpt_temp_file')
-            with open(temp_file, "w") as f:
-                pass
-            xgb.LoadModel(temp_file)
+            xgb.LoadModel("")
         log.info("finish restore model.")
                 
         # predict
         predict_start_time = time.time()
-        rv_pred = xgb.Reveal(xgb.Predict(shard_x), ["P0"])
+        rv_pred = xgb.Reveal(xgb.Predict(shard_x), self.result_party)
         predict_use_time = round(time.time() - predict_start_time, 3)
         log.info(f"predict success. predict_use_time={predict_use_time}s")
         y_shape = rv_pred.shape
@@ -220,5 +244,5 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
     '''
     This is the entrance to this module
     '''
-    privacy_lr = PrivacyLRPredict(channel_config, cfg_dict, data_party, result_party, results_dir)
-    privacy_lr.predict()
+    privacy_xgb = PrivacyXgbPredict(channel_config, cfg_dict, data_party, result_party, results_dir)
+    privacy_xgb.predict()
