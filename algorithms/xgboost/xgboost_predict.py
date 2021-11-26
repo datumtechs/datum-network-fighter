@@ -14,7 +14,7 @@ import channel_sdk
 
 
 np.set_printoptions(suppress=True)
-rtt.set_backend_loglevel(0)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
+rtt.set_backend_loglevel(3)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
 log = logging.getLogger(__name__)
 
 class PrivacyXgbPredict(object):

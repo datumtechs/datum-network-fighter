@@ -17,35 +17,33 @@ parser.add_argument('--algo_type', type=str, default='logistic_regression')
 args = parser.parse_args()
 algo_type = args.algo_type
 if algo_type == "logistic_regression":
-    # data_file_partyA = join_base_path("tests/test_data/binary_class/breast_cancel_partyA_min.csv")
-    # data_file_partyB = join_base_path("tests/test_data/binary_class/breast_cancel_partyB_min.csv")
-    data_file_partyA = join_base_path("data/BankMarketing/train_data/bank_train_data_1w.csv")
-    data_file_partyB = join_base_path("data/BankMarketing/train_data/insurance_train_data_1w.csv")
-    key_column = "CLIENT_ID"
-    label_column = "Y"
-    train_algorithm_file = join_base_path("algorithms/logistic_regression/logistic_reg_train.py")
-    predict_algorithm_file = join_base_path("algorithms/logistic_regression/logistic_reg_predict.py")
+    data_file_partyA = "../tests/test_data/binary_class/breast_cancel_partyA_min.csv"
+    data_file_partyB = "../tests/test_data/binary_class/breast_cancel_partyB_min.csv"
+    key_column = "id"
+    label_column = "diagnosis"
+    train_algorithm_file = "../algorithms/logistic_regression/logistic_reg_train.py"
+    predict_algorithm_file = "../algorithms/logistic_regression/logistic_reg_predict.py"
     train_cfg_file_name = join_base_path("console/task_cfg_lr_train.json")
     predict_cfg_file_name = join_base_path("console/task_cfg_lr_predict.json")
     epochs = 10
     batch_size = 256
     learning_rate = 0.1
     model_restore_party = "p3"
-    model_path = join_base_path("data_svc/results_root/abc/p3")  # the path to model
+    model_path = "../data_svc/results_root/abc/p3"  # the path to model
 elif algo_type == "linear_regression":
-    data_file_partyA = join_base_path("tests/test_data/regression/CarPricing_partyA_min.csv")
-    data_file_partyB = join_base_path("tests/test_data/regression/CarPricing_partyB_min.csv")
+    data_file_partyA = "../tests/test_data/regression/CarPricing_partyA_min.csv"
+    data_file_partyB = "../tests/test_data/regression/CarPricing_partyB_min.csv"
     key_column = "Car_ID"
     label_column = "price"
-    train_algorithm_file = join_base_path("algorithms/linear_regression/linear_reg_train.py")
-    predict_algorithm_file = join_base_path("algorithms/linear_regression/linear_reg_predict.py")
+    train_algorithm_file = "../algorithms/linear_regression/linear_reg_train.py"
+    predict_algorithm_file = "../algorithms/linear_regression/linear_reg_predict.py"
     train_cfg_file_name = join_base_path("console/task_cfg_linr_train.json")
     predict_cfg_file_name = join_base_path("console/task_cfg_linr_predict.json")
     epochs = 50
     batch_size = 256
     learning_rate = 0.1
     model_restore_party = "p3"
-    model_path = join_base_path("data_svc/results_root/abc/p3")
+    model_path = "../data_svc/results_root/abc/p3"
 else:
     raise Exception("only support logistic_regression or linear_regression")
 
@@ -96,11 +94,13 @@ for party_id in all_party_list:
     if party_id in cfg_dict["data_party"]:
         if party_id == label_owner:
             party_info["data_party"]["input_file"] = data_file_partyA
-            selected_columns = pd.read_csv(party_info["data_party"]["input_file"], nrows=0).columns.tolist()
+            input_file = join_base_path('data_svc/' + data_file_partyA)
+            selected_columns = pd.read_csv(input_file, nrows=0).columns.tolist()
             selected_columns.remove(label_column)
         else:
             party_info["data_party"]["input_file"] = data_file_partyB
-            selected_columns = pd.read_csv(party_info["data_party"]["input_file"], nrows=0).columns.tolist()
+            input_file = join_base_path('data_svc/' + data_file_partyB)
+            selected_columns = pd.read_csv(input_file, nrows=0).columns.tolist()
         selected_columns.remove(key_column)
         print(f'selected_columns:{selected_columns}')
         party_info["data_party"]["key_column"] = key_column

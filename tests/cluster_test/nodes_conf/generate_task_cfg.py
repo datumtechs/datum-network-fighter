@@ -67,8 +67,13 @@ common config
 '''
 cfg_dict["data_id"] = f"{algo_type}_data"
 cfg_dict["env_id"]  = f"test_environment"
-all_party_list = [party["NODE_ID"] for party in cfg_dict["peers"]]
-assert len(all_party_list) == len(cfg_dict["peers"]), "every party's NODE_ID must unique."
+cfg_dict["data_party"] = ["p1", "p2"],
+cfg_dict["computation_party"] = ["p4", "p5", "p6"],
+cfg_dict["result_party"] = ["p3"],
+
+all_party_list = set(cfg_dict["data_party"] + cfg_dict["computation_party"] + cfg_dict["result_party"])
+assert len(all_party_list) == (len(cfg_dict["data_party"]) + len(cfg_dict["computation_party"]) + len(cfg_dict["result_party"])),\
+       "every party's NODE_ID must unique, can not be the same"
 node_cfg = load_cfg(os.path.join(scripts_path, "config.yaml"))
 peers = []
 for i,party_id in enumerate(cfg_dict["data_party"]):
