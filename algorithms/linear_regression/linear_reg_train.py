@@ -63,7 +63,6 @@ class PrivacyLinearRegTrain(object):
         self.learning_rate = algorithm_parameter.get("learning_rate", 0.001)
         self.use_validation_set = algorithm_parameter.get("use_validation_set", True)
         self.validation_set_rate = algorithm_parameter.get("validation_set_rate", 0.2)
-        self.predict_threshold = algorithm_parameter.get("predict_threshold", 0.5)
 
         self.output_file = os.path.join(results_dir, "model")
         
@@ -74,8 +73,8 @@ class PrivacyLinearRegTrain(object):
         assert isinstance(self.epochs, int) and self.epochs > 0, "epochs must be type(int) and greater 0"
         assert isinstance(self.batch_size, int) and self.batch_size > 0, "batch_size must be type(int) and greater 0"
         assert isinstance(self.learning_rate, float) and self.learning_rate > 0, "learning rate must be type(float) and greater 0"
+        assert isinstance(self.use_validation_set, bool), "use_validation_set must be type(bool), true or false"
         assert 0 < self.validation_set_rate < 1, "validattion set rate must be between (0,1)"
-        assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
         if self.input_file:
             self.input_file = self.input_file.strip()

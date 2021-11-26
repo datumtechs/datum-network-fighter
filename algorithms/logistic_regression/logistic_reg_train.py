@@ -74,6 +74,7 @@ class PrivacyLRTrain(object):
         assert isinstance(self.epochs, int) and self.epochs > 0, "epochs must be type(int) and greater 0"
         assert isinstance(self.batch_size, int) and self.batch_size > 0, "batch_size must be type(int) and greater 0"
         assert isinstance(self.learning_rate, float) and self.learning_rate > 0, "learning rate must be type(float) and greater 0"
+        assert isinstance(self.use_validation_set, bool), "use_validation_set must be type(bool), true or false"
         assert 0 < self.validation_set_rate < 1, "validattion set rate must be between (0,1)"
         assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         

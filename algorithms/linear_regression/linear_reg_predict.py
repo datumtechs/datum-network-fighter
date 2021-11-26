@@ -51,14 +51,12 @@ class PrivacyLinearRegPredict(object):
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
         self.model_path = dynamic_parameter.get("model_path")
         self.model_file = os.path.join(self.model_path, "model")
-        self.predict_threshold = dynamic_parameter.get("predict_threshold", 0.5)        
         self.output_file = os.path.join(results_dir, "result")
         self.data_party.remove(self.model_restore_party)  # except restore party
         self.check_parameters()
 
     def check_parameters(self):
         log.info(f"check parameter start.")        
-        assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
         if self.input_file:
             self.input_file = self.input_file.strip()
