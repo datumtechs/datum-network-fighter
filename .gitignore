@@ -36,7 +36,7 @@ armada-common/Fighter/google/
 */config_*.yaml
 compute_svc/C0DE_*.py
 compute_svc/start_compute_svc_group.sh
-data_svc/logs
+logs
 console/algorithm*
 console/task_cfg*
 contract_work_dir
@@ -53,3 +53,7 @@ dist/
 *egg-info
 tests/cluster_test/nodes_conf/*.ini
 tests/cluster_test/nodes_conf/*.json
+checkpoint
+certs/*.crt
+certs/*.key
+certs/*.pem
