@@ -15,7 +15,7 @@ CA_CURVE=SM2
 CERTS_DIR=${scripts_path}/../../certs
 KEYS_DIR=$CERTS_DIR
 COMBO_DIR=$CERTS_DIR
-rm -r $CERTS_DIR
+rm -rf $CERTS_DIR/*.crt $CERTS_DIR/*.key $CERTS_DIR/*.pem
 mkdir -p $CERTS_DIR
 mkdir -p $KEYS_DIR
 mkdir -p $COMBO_DIR
