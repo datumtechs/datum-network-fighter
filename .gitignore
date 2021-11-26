@@ -54,6 +54,5 @@ dist/
 tests/cluster_test/nodes_conf/*.ini
 tests/cluster_test/nodes_conf/*.json
 checkpoint
-certs/*.crt
-certs/*.key
-certs/*.pem
+certs/
+!certs/README.md
