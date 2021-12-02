@@ -112,8 +112,8 @@ class PrivacyXgbTrain(object):
         assert isinstance(self.max_depth, int) and self.max_depth > 0, "max_depth must be type(int) and greater 0"
         assert isinstance(self.num_bins, int) and self.num_bins > 0, "num_bins must be type(int) and greater 0"
         assert isinstance(self.num_class, int) and self.num_class > 1, "num_class must be type(int) and greater 1"
-        assert isinstance(self.lambd, float) and self.lambd >= 0, "lambd must be type(float) and greater_equal 0"
-        assert isinstance(self.gamma, float), "gamma must be type(float)"
+        assert isinstance(self.lambd, (float, int)) and self.lambd >= 0, "lambd must be type(float/int) and greater_equal 0"
+        assert isinstance(self.gamma, (float, int)), "gamma must be type(float/int)"
         assert 0 < self.validation_set_rate < 1, "validattion set rate must be between (0,1)"
         assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
