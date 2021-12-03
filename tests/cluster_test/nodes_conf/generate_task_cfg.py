@@ -11,7 +11,7 @@ sys.path.insert(0, base_path)
 from common.utils import load_cfg
 
 
-def join_base_path(file_path):
+def join_base_path(file_path, base_path=base_path):
     abs_path = os.path.join(base_path, file_path)
     return abs_path
 
@@ -19,13 +19,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--algo_type', type=str, default='logistic_regression')
 args = parser.parse_args()
 algo_type = args.algo_type
+# the relative path is based on data_svc or compute_svc directory
 if algo_type == "logistic_regression":
     data_file_partyA = "../tests/test_data/binary_class/breast_cancel_partyA_min.csv"
     data_file_partyB = "../tests/test_data/binary_class/breast_cancel_partyB_min.csv"
     key_column = "id"
     label_column = "diagnosis"
-    train_algorithm_file = join_base_path("algorithms/logistic_regression/logistic_reg_train.py")
-    predict_algorithm_file = join_base_path("algorithms/logistic_regression/logistic_reg_predict.py")
+    train_algorithm_file = "../algorithms/logistic_regression/logistic_reg_train.py"
+    predict_algorithm_file = "../algorithms/logistic_regression/logistic_reg_predict.py"
     train_cfg_file_name = join_base_path("console/task_cfg_lr_train_cluster.json")
     predict_cfg_file_name = join_base_path("console/task_cfg_lr_predict_cluster.json")
     epochs = 10
@@ -38,8 +39,8 @@ elif algo_type == "linear_regression":
     data_file_partyB = "../tests/test_data/regression/CarPricing_partyB_min.csv"
     key_column = "Car_ID"
     label_column = "price"
-    train_algorithm_file = join_base_path("algorithms/linear_regression/linear_reg_train.py")
-    predict_algorithm_file = join_base_path("algorithms/linear_regression/linear_reg_predict.py")
+    train_algorithm_file = "../algorithms/linear_regression/linear_reg_train.py"
+    predict_algorithm_file = "../algorithms/linear_regression/linear_reg_predict.py"
     train_cfg_file_name = join_base_path("console/task_cfg_linr_train_cluster.json")
     predict_cfg_file_name = join_base_path("console/task_cfg_linr_predict_cluster.json")
     epochs = 50
@@ -66,8 +67,13 @@ common config
 '''
 cfg_dict["data_id"] = f"{algo_type}_data"
 cfg_dict["env_id"]  = f"test_environment"
-all_party_list = [party["NODE_ID"] for party in cfg_dict["peers"]]
-assert len(all_party_list) == len(cfg_dict["peers"]), "every party's NODE_ID must unique."
+cfg_dict["data_party"] = ["p1", "p2"],
+cfg_dict["computation_party"] = ["p4", "p5", "p6"],
+cfg_dict["result_party"] = ["p3"],
+
+all_party_list = set(cfg_dict["data_party"] + cfg_dict["computation_party"] + cfg_dict["result_party"])
+assert len(all_party_list) == (len(cfg_dict["data_party"]) + len(cfg_dict["computation_party"]) + len(cfg_dict["result_party"])),\
+       "every party's NODE_ID must unique, can not be the same"
 node_cfg = load_cfg(os.path.join(scripts_path, "config.yaml"))
 peers = []
 for i,party_id in enumerate(cfg_dict["data_party"]):

@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import sys
 import time
 import math
 import queue
@@ -19,7 +20,7 @@ class ReportEngine(object):
         self.conn = grpc.insecure_channel(server_addr)
         self.__client = pb2_grpc.YarnServiceStub(channel=self.conn)
 
-    def report_task_event(self):
+    def report_task_event(self, event):
         """
         service YarnService {
             rpc ReportTaskEvent (ReportTaskEventRequest) returns (api.protobuf.SimpleResponse) {
@@ -41,23 +42,16 @@ class ReportEngine(object):
             uint64 create_at = 6;
         }
         """
-        try:
-            # get event
-            event = EVENT_QUEUE.get(block=True, timeout=1)
-            req = pb2.ReportTaskEventRequest()
-            req.task_event.type = event.type_
-            req.task_event.task_id = event.dict_["task_id"]
-            req.task_event.identity_id = event.dict_["identity_id"]
-            req.task_event.party_id = event.dict_["party_id"]
-            req.task_event.content = "{}:{}".format(event.dict_["party_id"], event.dict_["content"])
-            req.task_event.create_at = event.dict_["create_at"]
-            str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-            log.debug(str_req)
-            return self.__client.ReportTaskEvent(req)
-        except queue.Empty as e:
-            pass
-        except Exception as e:
-            log.exception(str(e))
+        req = pb2.ReportTaskEventRequest()
+        req.task_event.type = event.type_
+        req.task_event.task_id = event.dict_["task_id"]
+        req.task_event.identity_id = event.dict_["identity_id"]
+        req.task_event.party_id = event.dict_["party_id"]
+        req.task_event.content = "{}:{}".format(event.dict_["party_id"], event.dict_["content"])
+        req.task_event.create_at = event.dict_["create_at"]
+        str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+        log.debug(str_req)
+        return self.__client.ReportTaskEvent(req)
 
     def report_upload_file_summary(self, summary):
         """
@@ -76,17 +70,14 @@ class ReportEngine(object):
             string port = 4;
         }
         """
-        try:
-            req = pb2.ReportUpFileSummaryRequest()
-            req.origin_id = summary["origin_id"]
-            req.file_path = summary["file_path"]
-            req.ip = summary["ip"]
-            req.port = str(summary["port"])
-            str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-            log.debug(str_req)
-            return self.__client.ReportUpFileSummary(req)
-        except Exception as e:
-            log.exception(str(e))
+        req = pb2.ReportUpFileSummaryRequest()
+        req.origin_id = summary["origin_id"]
+        req.file_path = summary["file_path"]
+        req.ip = summary["ip"]
+        req.port = str(summary["port"])
+        str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+        log.debug(str_req)
+        return self.__client.ReportUpFileSummary(req)
 
     def report_task_result_file_summary(self, summary):
         """
@@ -106,18 +97,16 @@ class ReportEngine(object):
             string port = 5;
         }
         """
-        try:
-            req = pb2.ReportTaskResultFileSummaryRequest()
-            req.task_id = summary["task_id"]
-            req.origin_id = summary["origin_id"]
-            req.file_path = summary["file_path"]
-            req.ip = summary["ip"]
-            req.port = str(summary["port"])
-            str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-            log.debug(str_req)
-            return self.__client.ReportTaskResultFileSummary(req)
-        except Exception as e:
-            log.exception(str(e))
+        
+        req = pb2.ReportTaskResultFileSummaryRequest()
+        req.task_id = summary["task_id"]
+        req.origin_id = summary["origin_id"]
+        req.file_path = summary["file_path"]
+        req.ip = summary["ip"]
+        req.port = str(summary["port"])
+        str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+        log.debug(str_req)
+        return self.__client.ReportTaskResultFileSummary(req)
 
     def report_task_resource_usage(self, task_id, party_id, node_type, ip:str, port:str, resource_usage):
         """
@@ -162,56 +151,79 @@ class ReportEngine(object):
         else:
             raise Exception("node_type only support compute_svc/data_svc")
 
-        try:
-            req = pb2.ReportTaskResourceUsageRequest()
-            req.task_id = task_id
-            req.party_id = party_id
-            req.node_type = report_node_type
-            req.ip = ip 
-            req.port = str(port)
-            req.usage.total_mem = resource_usage["total_mem"]
-            req.usage.used_mem = resource_usage["used_mem"]
-            req.usage.total_processor = resource_usage["total_processor"]
-            req.usage.used_processor = resource_usage["used_processor"]
-            req.usage.total_bandwidth = resource_usage["total_bandwidth"]
-            req.usage.used_bandwidth = resource_usage["used_bandwidth"]
-            req.usage.total_disk = resource_usage["total_disk"]
-            req.usage.used_disk = resource_usage["used_disk"]
-            str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-            log.debug(str_req)
-            return self.__client.ReportTaskResourceUsage(req)
-        except Exception as e:
-            log.exception(str(e))
+        req = pb2.ReportTaskResourceUsageRequest()
+        req.task_id = task_id
+        req.party_id = party_id
+        req.node_type = report_node_type
+        req.ip = ip 
+        req.port = str(port)
+        req.usage.total_mem = resource_usage["total_mem"]
+        req.usage.used_mem = resource_usage["used_mem"]
+        req.usage.total_processor = resource_usage["total_processor"]
+        req.usage.used_processor = resource_usage["used_processor"]
+        req.usage.total_bandwidth = resource_usage["total_bandwidth"]
+        req.usage.used_bandwidth = resource_usage["used_bandwidth"]
+        req.usage.total_disk = resource_usage["total_disk"]
+        req.usage.used_disk = resource_usage["used_disk"]
+        str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+        log.debug(str_req)
+        return self.__client.ReportTaskResourceUsage(req)
         
     def close(self):
         self.conn.close()
 
 
 def report_task_event(server_addr: str, stop_event):
-    report_engine = ReportEngine(server_addr)
-    try:
-        while True:
-            report_engine.report_task_event()
-            if stop_event.is_set():
-                break
-    except Exception as e:
-        log.exception(f"report event error. {str(e)}")
-    finally:
-        report_engine.close()
-        log.info('report_engine closed')
+    get_new_event = True
+    while True:
+        try:
+            report_engine = ReportEngine(server_addr)
+            log.info(f"report engine connected to server.")
+            while True:
+                if get_new_event:
+                    new_event = EVENT_QUEUE.get(block=True)
+                report_engine.report_task_event(new_event)
+                get_new_event = True
+                if stop_event.is_set():
+                    log.info('report task event closed')
+                    sys.exit(0)
+        except grpc._channel._InactiveRpcError as e:
+            if 'new_event' in dir():
+                get_new_event = False
+            log.error("grpc._channel._InactiveRpcError")
+        except Exception as e:
+            raise
+
 
 
 def report_upload_file_summary(server_addr: str, summary: dict):
-    report_engine = ReportEngine(server_addr)
-    ret = report_engine.report_upload_file_summary(summary)
-    report_engine.close()
-    return ret
+    report_success = False
+    while (not report_success):
+        try:
+            report_engine = ReportEngine(server_addr)
+            ret = report_engine.report_upload_file_summary(summary)
+            report_engine.close()
+            report_success = True
+            return ret
+        except grpc._channel._InactiveRpcError as e:
+            log.error("grpc._channel._InactiveRpcError")
+        except:
+            raise
+    
 
 def report_task_result_file_summary(server_addr: str, summary: dict):
-    report_engine = ReportEngine(server_addr)
-    ret = report_engine.report_task_result_file_summary(summary)
-    report_engine.close()
-    return ret
+    report_success = False
+    while (not report_success):
+        try:
+            report_engine = ReportEngine(server_addr)
+            ret = report_engine.report_task_result_file_summary(summary)
+            report_engine.close()
+            report_success = True
+            return ret
+        except grpc._channel._InactiveRpcError as e:
+            log.error("grpc._channel._InactiveRpcError")
+        except:
+            raise
 
 def _get_resource_usage(task_pid, total_bandwidth):
     p = psutil.Process(task_pid)
@@ -230,14 +242,14 @@ def _get_resource_usage(task_pid, total_bandwidth):
     return resource_usage
 
 def report_task_resource_usage(task_pid, server_addr:str, task_id, party_id, node_type, ip, port:str, total_bandwidth, interval=10):
-    report_engine = ReportEngine(server_addr)
-    try:
-        while True:
-            resource_usage = _get_resource_usage(task_pid, total_bandwidth)
-            report_engine.report_task_resource_usage(task_id, party_id, node_type, ip, port, resource_usage)
-            time.sleep(interval)
-    except Exception as e:
-        log.exception(f"report resource usage error. {str(e)}")
-    finally:
-        report_engine.close()
-        log.info('report_engine closed')
+    while True:
+        try:
+            report_engine = ReportEngine(server_addr)
+            while True:
+                resource_usage = _get_resource_usage(task_pid, total_bandwidth)
+                report_engine.report_task_resource_usage(task_id, party_id, node_type, ip, port, resource_usage)
+                time.sleep(interval)
+        except grpc._channel._InactiveRpcError as e:
+            log.error("grpc._channel._InactiveRpcError")
+        except Exception as e:
+            raise

@@ -17,7 +17,7 @@ import channel_sdk
 np.set_printoptions(suppress=True)
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-rtt.set_backend_loglevel(5)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
+rtt.set_backend_loglevel(3)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
 log = logging.getLogger(__name__)
 
 class PrivacyLinearRegPredict(object):
@@ -51,14 +51,12 @@ class PrivacyLinearRegPredict(object):
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
         self.model_path = dynamic_parameter.get("model_path")
         self.model_file = os.path.join(self.model_path, "model")
-        self.predict_threshold = dynamic_parameter.get("predict_threshold", 0.5)        
         self.output_file = os.path.join(results_dir, "result")
         self.data_party.remove(self.model_restore_party)  # except restore party
         self.check_parameters()
 
     def check_parameters(self):
         log.info(f"check parameter start.")        
-        assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
         if self.input_file:
             self.input_file = self.input_file.strip()

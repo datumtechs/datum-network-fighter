@@ -12,3 +12,4 @@ scikit-learn==0.24.2
 paramiko==2.4.3
 scp==0.13.6
 shyaml==0.6.2
+matplotlib==3.5.0

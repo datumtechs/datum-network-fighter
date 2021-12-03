@@ -45,7 +45,7 @@ def tranfer_file(scp, a_file, to_dir):
 
 
 def unzip(ssh, a_file, to_dir):
-    _, _, stderr = ssh.exec_command(f'tar -xzPf {a_file} -C {to_dir} && rm -rf {a_file}')
+    _, _, stderr = ssh.exec_command(f'tar -xzPf {a_file} -C {to_dir}')
     ret = stderr.read()
     ret = 'failed' if ret else 'succ'
     print(f'unzip {a_file} {ret}')
@@ -139,10 +139,10 @@ def kill_svc(ssh):
             continue
         if fields[2] == '1':  # ppid
             pids.append(fields[1])
-
+    print(pids)
     if pids:
         pids = ' '.join(pids)
-        cmd = f'kill {pids}'
+        cmd = f'kill -9 {pids}'
         print(cmd)
         ssh.exec_command(cmd)
 

@@ -17,7 +17,7 @@ import channel_sdk
 np.set_printoptions(suppress=True)
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-rtt.set_backend_loglevel(5)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
+rtt.set_backend_loglevel(3)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
 log = logging.getLogger(__name__)
 
 class PrivacyLinearRegTrain(object):
@@ -63,7 +63,6 @@ class PrivacyLinearRegTrain(object):
         self.learning_rate = algorithm_parameter.get("learning_rate", 0.001)
         self.use_validation_set = algorithm_parameter.get("use_validation_set", True)
         self.validation_set_rate = algorithm_parameter.get("validation_set_rate", 0.2)
-        self.predict_threshold = algorithm_parameter.get("predict_threshold", 0.5)
 
         self.output_file = os.path.join(results_dir, "model")
         
@@ -71,11 +70,11 @@ class PrivacyLinearRegTrain(object):
 
     def check_parameters(self):
         log.info(f"check parameter start.")        
-        assert self.epochs > 0, "epochs must be greater 0"
-        assert self.batch_size > 0, "batch size must be greater 0"
-        assert self.learning_rate > 0, "learning rate must be greater 0"
+        assert isinstance(self.epochs, int) and self.epochs > 0, "epochs must be type(int) and greater 0"
+        assert isinstance(self.batch_size, int) and self.batch_size > 0, "batch_size must be type(int) and greater 0"
+        assert isinstance(self.learning_rate, float) and self.learning_rate > 0, "learning rate must be type(float) and greater 0"
+        assert isinstance(self.use_validation_set, bool), "use_validation_set must be type(bool), true or false"
         assert 0 < self.validation_set_rate < 1, "validattion set rate must be between (0,1)"
-        assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
         if self.input_file:
             self.input_file = self.input_file.strip()
@@ -186,16 +185,23 @@ class PrivacyLinearRegTrain(object):
         
         if (self.party_id in self.result_party) and self.use_validation_set:
             log.info("result_party evaluate model.")
-            from sklearn.metrics import r2_score, mean_squared_error
             Y_pred = Y_pred.astype("float").reshape([-1, ])
             Y_true = Y_actual.astype("float").reshape([-1, ])
-            r2 = r2_score(Y_true, Y_pred)
-            rmse = np.sqrt(mean_squared_error(Y_true, Y_pred))
-            log.info("********************")
-            log.info(f"R Squared: {round(r2, 6)}")
-            log.info(f"RMSE: {round(rmse, 6)}")
-            log.info("********************")
+            self.model_evaluation(Y_true, Y_pred)
         log.info("train finish.")
+    
+    def model_evaluation(self, Y_true, Y_pred):
+        from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+        r2 = r2_score(Y_true, Y_pred)
+        rmse = mean_squared_error(Y_true, Y_pred, squared=False)
+        mse = mean_squared_error(Y_true, Y_pred, squared=True)
+        mae = mean_absolute_error(Y_true, Y_pred)
+        log.info("********************")
+        log.info(f"R Squared: {round(r2, 6)}")
+        log.info(f"RMSE: {round(rmse, 6)}")
+        log.info(f"MSE: {round(mse, 6)}")
+        log.info(f"MAE: {round(mae, 6)}")
+        log.info("********************")
     
     def create_set_channel(self):
         '''
