@@ -138,8 +138,11 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             folder = cfg['data_root']
             if 'file_root_dir' in request.options and request.options['file_root_dir'] == 'result':
                 folder = cfg['results_root_dir']
-            basename = os.path.basename(os.path.normpath(request.file_path))
-            path = os.path.join(folder, basename)
+            norm_path = os.path.normpath(request.file_path)
+            dir_part = os.path.dirname(norm_path)
+            basename = os.path.basename(norm_path)
+            path = os.path.join(folder, dir_part, basename)
+            log.info(f'download {request.file_path} from {folder}, which in {path}')
 
             if 'compress' in request.options:
                 compress = request.options['compress'].strip().lower()
@@ -154,7 +157,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     compress_file_name = path + '.zip'
                     if os.path.isdir(path):
                         import shutil
-                        shutil.make_archive(path, 'zip', root_dir=folder, base_dir=basename)
+                        shutil.make_archive(path, 'zip', root_dir=os.path.join(folder, dir_part), base_dir=basename)
                     else:
                         from zipfile import ZipFile
                         with ZipFile(compress_file_name, 'w') as zipf:
