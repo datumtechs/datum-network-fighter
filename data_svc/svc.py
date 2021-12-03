@@ -136,6 +136,8 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         compress_file_name = None
         try:
             folder = cfg['data_root']
+            if 'file_root_dir' in request.options and request.options['file_root_dir'] == 'result':
+                folder = cfg['results_root_dir']
             basename = os.path.basename(os.path.normpath(request.file_path))
             path = os.path.join(folder, basename)
 
