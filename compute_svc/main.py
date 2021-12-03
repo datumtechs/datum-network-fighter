@@ -21,7 +21,7 @@ from common.utils import load_cfg
 from config import cfg
 from protos import compute_svc_pb2, compute_svc_pb2_grpc, via_svc_pb2
 from svc import ComputeProvider
-
+from consul_client.api import get_consul_client_obj
 
 logging.basicConfig(
     level=logging.INFO,
@@ -67,8 +67,17 @@ def main():
     if args.schedule_svc:
         cfg['schedule_svc'] = args.schedule_svc
 
+    consul_client_obj = get_consul_client_obj(cfg)
+    if not consul_client_obj:
+        log.info(f'get consul client obj fail,cfg is:{cfg}')
+        return
+
+    if not consul_client_obj.register(cfg):
+        log.info(f'compute svc register to consul fail,cfg is:{cfg}')
+        return
     event_stop = mp.Event()
     task_manager = TaskManager(cfg)
+    task_manager.consul_client = consul_client_obj
 
     def task_clean(task_manager, event_stop):
         while not event_stop.wait(60):
@@ -87,6 +96,7 @@ def main():
         all_rpcs_done_event = server.stop(5)
         all_rpcs_done_event.wait(5)
         event_stop.set()
+        consul_client_obj.stop()
         log.info("Shut down gracefully")
 
     signal(SIGTERM, handle_sigterm)

@@ -34,6 +34,7 @@ class TaskManager:
         peers = tuple(TPeer(p.ip, p.port, p.party_id, p.name) for p in req.peers)
         task = Task(self.cfg, task_id, party_id, contract_id, data_id, env_id, peers,
                     contract_cfg, data_party, computation_party, result_party)
+        task.consul_client = self.consul_client
         self.tasks[uniq_task] = task
         log.info(f'new task: {task_name}, thread id: {threading.get_ident()}')
         p = mp.Process(target=Task.run, args=(task,), name=task_name, daemon=True)
