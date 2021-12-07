@@ -91,11 +91,12 @@ def _upload_chunk(path):
 
 def download(args, stub):
     if not args or len(args) < 2:
-        print('Syntax: download data_id save_to compress')
+        print('Syntax: download data_id save_to compress root_dir')
         return
     data_id = args[0]
     save_to = args[1]
     compress = args[2] if len(args) > 2 else ''
+    root_dir = args[3] if len(args) > 3 else 'data'
     if os.path.exists(save_to):
         print('file existed')
         return
@@ -106,8 +107,8 @@ def download(args, stub):
 
     ok = False
     try:
-        options = {}
-        if compress:
+        options = {'file_root_dir': root_dir}
+        if compress and compress != '-':
             options['compress'] = compress
         response_it = stub.DownloadData(data_svc_pb2.DownloadRequest(file_path=data_id, options=options))
         for ans in response_it:

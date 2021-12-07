@@ -1,5 +1,5 @@
 ### 步骤
-0. ` git clone -b develop --recurse-submodules git@192.168.9.66:RosettaFlow/fighter-py.git && cd fighter-py`
+0. ` git clone -b develop --recurse-submodules https://github.com/Metisnetwork/Metis-Fighter.git && cd Metis-Fighter`
 1. 安装依赖：`pip install -r requirements.txt`
 2. 编译 gRPC 协议：`python tools/compile_proto_file.py`
 3. 测试：`cd tests && ./fast_check.sh`
@@ -35,12 +35,18 @@
 * 编译并安装 [*channel_sdk*](https://github.com/Metisnetwork/Metis-Channel-sdk) 和 [*国密版 grpc*](https://github.com/part-c/grpc/tree/v2.0.0_gmssl/src/cpp)：
 
   ```bash
-  # 编译 third_party/protobuf
+  $ git clone -b v2.0.0_gmssl https://github.com/part-c/grpc.git gm_grpc
+  $ cd gm_grpc
+  $ git submodule update --init
+  # 编译 gmssl grpc
+
   $ cd channel-sdk
+  # 编译 third_party/protobuf
+
   $ ./build.sh clean
   $ ./build.sh compile
   # 如果要国密版本，则需要先编译国密版grpc
-  ./build.sh compile --ssl-type=2 --python-version=3.7
+  ./build.sh compile --python-version=3.7 --ssl-type=2
   
   $ pip install dist/channel_sdk-1.0.0-cp37-cp37m-linux_x86_64.whl
   ```
