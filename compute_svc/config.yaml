@@ -7,6 +7,7 @@ code_root_dir: contract_work_dir
 results_root_dir: results_root
 schedule_svc: 192.168.16.151:51131
 total_bandwidth: 20000000
+channel_log_level: 2
 certs: 
   base_path: ../certs
   root_cert: CA.crt

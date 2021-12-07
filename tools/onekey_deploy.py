@@ -119,9 +119,9 @@ def start_svc(ssh, remote_dir, svc_type, cfg_file):
     print(stdout.read().decode())
     print(stderr.read().decode())
 
-def start_via_svc(ssh, remote_dir, port):
+def start_via_svc(ssh, remote_dir, port, use_ssl):
     print(f'start via')
-    _, stdout, stderr = ssh.exec_command(f'cd {remote_dir}/third_party/via_svc; ./start_svc.sh {port};')
+    _, stdout, stderr = ssh.exec_command(f'cd {remote_dir}/third_party/via_svc; ./start_svc.sh {port} {use_ssl};')
     print(stdout.read().decode())
     print(stderr.read().decode())
 
@@ -131,6 +131,7 @@ def kill_svc(ssh):
     lines = stdout.read().decode()
     print(lines)
     pids = []
+    child_pids = []
     for row in lines.split('\n'):
         if not row:
             continue
@@ -139,10 +140,18 @@ def kill_svc(ssh):
             continue
         if fields[2] == '1':  # ppid
             pids.append(fields[1])
-    print(pids)
+        else:
+            child_pids.append(fields[1])
+    print("pids:", pids)
     if pids:
         pids = ' '.join(pids)
         cmd = f'kill -9 {pids}'
+        print(cmd)
+        ssh.exec_command(cmd)
+    print("child_pids:", child_pids)
+    if child_pids:
+        child_pids = ' '.join(child_pids)
+        cmd = f'kill -9 {child_pids}'
         print(cmd)
         ssh.exec_command(cmd)
 
@@ -165,7 +174,7 @@ def kill_all(node_cfg):
                     kill_svc(ssh)
 
 
-def start_all(node_cfg):
+def start_all(node_cfg, use_ssl):
     node_cfg = parse_cfg(node_cfg)
     one_time_ops = {cfg['host']: False for cfg in node_cfg}
     for cfg in node_cfg:
@@ -178,7 +187,7 @@ def start_all(node_cfg):
                 if not one_time_ops[server]:
                     one_time_ops[server] = True
                     ip, port = cfg['via_svc'].split(':')
-                    start_via_svc(ssh, remote_dir, port)
+                    start_via_svc(ssh, remote_dir, port, use_ssl)
 
                 svc_type = cfg['svc_type']
                 rpc_port = cfg['rpc_port']
@@ -197,6 +206,7 @@ if __name__ == '__main__':
     parser.add_argument('--do_not_overwrite_config', action='store_true')
     parser.add_argument('--py_home', type=str, default='../python37')
     parser.add_argument('--certs_zip', type=str)
+    parser.add_argument('--use_ssl', type=int, default=0)  # 0: not use ssl, 1: use ssl
 
     args = parser.parse_args()
 
@@ -205,9 +215,10 @@ if __name__ == '__main__':
     env_zip = args.py_env_zip
     py_home = args.py_home
     certs_zip = args.certs_zip
+    use_ssl = args.use_ssl
 
     if args.start_all:
-        start_all(node_cfg)
+        start_all(node_cfg, use_ssl)
         sys.exit(0)
     if args.kill_all:
         kill_all(node_cfg)

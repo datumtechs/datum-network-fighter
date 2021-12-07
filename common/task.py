@@ -83,12 +83,9 @@ class Task:
         log.info(f'cwd: {os.getcwd()}, the dir: {the_dir}, parent dir: {pdir}')
 
         try:
-            pass_via = self.cfg['pass_via']
-            pproc_ip = self.cfg['bind_ip']
-            certs = self.cfg['certs']
             channel_config = get_channel_config(self.id, self.party_id, self.peers,
                             self.data_party, self.computation_party, self.result_party,
-                            pass_via, pproc_ip, certs, self.event_type)
+                            self.cfg, self.event_type)
          
             user_cfg = self.assemble_cfg()
             sys.path.insert(0, os.path.abspath(self._get_code_dir()))
