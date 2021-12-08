@@ -141,7 +141,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             norm_path = os.path.normpath(request.file_path)
             dir_part = os.path.dirname(norm_path)
             basename = os.path.basename(norm_path)
-            path = os.path.join(folder, dir_part, basename)
+            path = norm_path if os.path.isabs(norm_path) else os.path.join(folder, dir_part, basename)
             log.info(f'download {request.file_path} from {folder}, which in {path}')
 
             if 'compress' in request.options:
