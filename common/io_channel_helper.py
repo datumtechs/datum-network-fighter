@@ -10,11 +10,14 @@ import channel_sdk.grpc
 log = logging.getLogger(__name__)
 
 def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, 
-                         result_party, pass_via, certs, self_internal_addr):
+                         result_party, cfg, self_internal_addr):
+    pass_via = cfg['pass_via']
+    certs = cfg['certs']
+    channel_log_level = cfg.get('channel_log_level', 2)
     certs_base_path = certs.get('base_path', '')
     config_dict = {'TASK_ID': task_id,
                    'ROOT_CERT': os.path.join(certs_base_path, certs['root_cert']),
-                   'LOG_LEVEL': 0}
+                   'LOG_LEVEL': channel_log_level}
 
     list_node_info = []
     via_dict = {}
@@ -22,7 +25,8 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
         party_id = node_info.party_id
         addr = '{}:{}'.format(node_info.ip, node_info.port)
         if not pass_via:
-            addr = self_internal_addr
+            # if not use via, then internal_addr = via_addr. so via_addr must be unique
+            self_internal_addr = addr
         # via_name = 'VIA{}'.format(i + 1)
         # via_dict[via_name] = addr
         for k, v in via_dict.copy().items():
@@ -76,13 +80,14 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
 
 
 def get_channel_config(task_id, self_party_id, peers, data_party, compute_party, result_party, 
-                    pass_via, parent_proc_ip, certs, event_type):
+                    cfg, event_type):
+    parent_proc_ip = cfg['bind_ip']
     with get_free_loopback_tcp_port() as port:
         log.info(f'got a free port: {port}')
     self_internal_addr = f'{parent_proc_ip}:{port}'
     log.info(f'get a free port: {self_internal_addr}')
     config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, 
-                                       result_party, pass_via, certs, self_internal_addr)
+                                       result_party, cfg, self_internal_addr)
     channel_config = json.dumps(config_dict)
     # log.info(f'self_party_id: {self_party_id}, channel_config: {channel_config}')
     log.info("get channel config finish.")

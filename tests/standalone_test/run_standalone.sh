@@ -13,6 +13,7 @@ log_path=${scripts_path}"/log"
 base_dir=${scripts_path}"/../.."
 cfg=config.yaml
 ip=127.0.0.1
+use_ssl=1      # 0: not use ssl,  1: use ssl
 # if modify, must absolute path to python37
 python_command=python3
 
@@ -48,7 +49,12 @@ mkdir -p ${via_svc_log}
 for port in $(seq ${via_svc_base_port} $[${via_svc_base_port}+${via_svc_num}-1])
 do
     echo "start via_svc that use port ${port}"
-    nohup ./via-go -ssl ./conf/ssl-conf.yml -address 0.0.0.0:${port} > ${via_svc_log}/via_svc_${port}.log 2>&1 &
+    if [ $use_ssl -eq 1 ]
+    then
+        nohup ./via-go -ssl ./conf/ssl-conf.yml -address 0.0.0.0:${port} > ${via_svc_log}/via_svc_${port}.log 2>&1 &
+    else
+        nohup ./via-go-no_ssl -address 0.0.0.0:${port} > ${via_svc_log}/via_svc_${port}.log 2>&1 &
+    fi
 done
 
 
