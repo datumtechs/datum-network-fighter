@@ -22,5 +22,4 @@ cd $base_dir/console
 echo "start console that connect to data_svc which internal port ${data_svc_base_port}"
 echo "run task command:  comp_run_task <task_id> <task_cfg_file>"
 echo "for example: comp_run_task abc task_cfg_lr_train_cluster.json"
-sleep 20
 python3 main.py --config=$cfg --data_svc_ip=${ip} --data_svc_port=${data_svc_base_port}

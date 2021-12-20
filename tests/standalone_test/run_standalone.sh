@@ -13,7 +13,7 @@ log_path=${scripts_path}"/log"
 base_dir=${scripts_path}"/../.."
 cfg=config.yaml
 ip=127.0.0.1
-use_ssl=1      # 0: not use ssl,  1: use ssl
+use_ssl=0      # 0: not use ssl,  1: use ssl
 # if modify, must absolute path to python37
 python_command=python3
 

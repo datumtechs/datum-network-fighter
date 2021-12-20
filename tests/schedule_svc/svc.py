@@ -20,7 +20,7 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         event["party_id"] = request.task_event.party_id
         event["content"] = request.task_event.content
         event["create_at"] = request.task_event.create_at
-        log.info(f'get event: {event}')
+        log.info(f'get event finish: {event}')
         return base_pb2.SimpleResponse(status=0, msg="report event ok.")
         
 
@@ -40,7 +40,7 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         resource_usage["used_bandwidth"] = request.usage.used_bandwidth
         resource_usage["total_disk"] = request.usage.total_disk
         resource_usage["used_disk"] = request.usage.used_disk
-        log.info(f'get task resourece usage: {resource_usage}')
+        log.info(f'get task resourece usage finish: {resource_usage}')
         return base_pb2.SimpleResponse(status=0, msg="report resource ok.")
 
     def ReportUpFileSummary(self, request, context):
@@ -50,7 +50,7 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         summary["file_path"] = request.file_path
         summary["ip"] = request.ip
         summary["port"] = request.port
-        log.info(f'get up file summary: {summary}')
+        log.info(f'get up file summary finish: {summary}')
         return base_pb2.SimpleResponse(status=0, msg="report file summary ok.")
 
     def ReportTaskResultFileSummary(self, request, context):
@@ -61,6 +61,6 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         summary["file_path"] = request.file_path
         summary["ip"] = request.ip
         summary["port"] = request.port
-        log.info(f'get task result file summary: {summary}')
+        log.info(f'get task result file summary finish: {summary}')
         return base_pb2.SimpleResponse(status=0, msg="report task result file summary ok.")
 

@@ -1,13 +1,13 @@
 ip: 
-  - 192.168.10.157
-  - 192.168.10.158
-  - 192.168.10.159
+  - 192.168.0.1
+  - 192.168.0.2
+  - 192.168.0.3
 data_svc_port: 55551
 compute_svc_port: 55552
 via_svc_port: 55553
 schedule_svc_port: 55554
-user: user1
-passwd: 'Abc@123!'
+user: root
+passwd: '123456'
 svc_list:
   - data_svc
   - compute_svc

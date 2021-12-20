@@ -10,4 +10,4 @@ python3 generate_ssl_ini.py
 bash ../../../third_party/gmssl/gen_certs_gmssl.sh ${scripts_path}/nodes_conf/new_ssl.ini
 
 echo "***** 3. generate task config"
-python3 generate_task_cfg.py --algo_type=logistic_regression
+# python3 generate_task_cfg.py --algo_type=logistic_regression
