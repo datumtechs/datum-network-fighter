@@ -59,7 +59,7 @@ class Task:
         return self._party_id
 
     def run(self):
-        log.info(f'#################### New task start run, task_id: {self.id}, party_id: {self.party_id}')
+        log.info(f'New task start run, task_id: {self.id}, party_id: {self.party_id}')
         log.info(f'thread id: {threading.get_ident()}')
         log.info(f'run_cfg: {self.cfg}')
         self.fire_event(self.event_type["TASK_START"], "task start.")
@@ -73,7 +73,7 @@ class Task:
             self.download_algo()
             self.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], "download contract success.")
         except Exception as e:
-            self.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail. {str(e)}")
+            self.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail. {str(e)[:100]}")
             self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
 
         self.build_env()
@@ -93,10 +93,10 @@ class Task:
             module_name = os.path.splitext(code_path)[0]
             log.info(f'code path: {code_path}, module: {module_name}')
 
-            self.fire_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
             m = importlib.import_module(module_name)
             result_dir = self._get_result_dir()
             self._ensure_dir(result_dir)
+            self.fire_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
             m.main(channel_config, user_cfg, self.data_party, self.result_party, result_dir)
             log.info(f'run task done')
             if self.party_id in self.result_party:
@@ -107,13 +107,13 @@ class Task:
                 file_summary = {"task_id": self.id, "origin_id": data_id, "file_path": file_path,
                                 "ip": self.cfg["bind_ip"], "port": self.cfg["port"]}
                 log.info(f'start report task result file summary.')
-                ret = report_task_result_file_summary(self.cfg['schedule_svc'], file_summary)
+                report_task_result_file_summary(self.cfg['schedule_svc'], file_summary)
                 log.info(f'finish report task result file summary. ')
             self.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], "contract execute success.")
             self.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task success.")
         except Exception as e:
             log.exception(repr(e))
-            self.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed. {str(e)}")
+            self.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed. {str(e)[:100]}")
             self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
         finally:
             log.info('task final clean')

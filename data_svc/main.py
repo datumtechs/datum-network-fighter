@@ -19,7 +19,7 @@ from common.report_engine import report_task_event
 from common.task_manager import TaskManager
 from common.utils import load_cfg
 from config import cfg
-from protos import data_svc_pb2, data_svc_pb2_grpc, via_svc_pb2
+from protos import data_svc_pb2, data_svc_pb2_grpc
 from svc import DataProvider
 
 
@@ -52,7 +52,6 @@ def main():
     parser.add_argument('config', type=str, default='config.yaml')
     parser.add_argument('--bind_ip', type=str)
     parser.add_argument('--port', type=int)
-    parser.add_argument('--via_svc', type=str)
     parser.add_argument('--schedule_svc', type=str)
     args = parser.parse_args()
     cfg.update(load_cfg(args.config))
@@ -60,8 +59,6 @@ def main():
         cfg['bind_ip'] = args.bind_ip
     if args.port:
         cfg['port'] = args.port
-    if args.via_svc:
-        cfg['via_svc'] = args.via_svc
     if args.schedule_svc:
         cfg['schedule_svc'] = args.schedule_svc
     
@@ -77,7 +74,7 @@ def main():
 
     server = serve(task_manager)
 
-    report_process = mp.Process(target=report_task_event, args=(cfg['schedule_svc'], event_stop))
+    report_process = mp.Process(target=report_task_event, args=(cfg['schedule_svc'], event_stop), name='report_process')
     report_process.start()
 
     def handle_sigterm(*_):

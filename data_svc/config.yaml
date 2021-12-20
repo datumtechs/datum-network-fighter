@@ -1,9 +1,9 @@
 file_system: local
 bind_ip: 192.168.16.151
 port: 50011
+task_port_range: [31000, 31100]
 chunk_size: 1024
 pass_via: true
-via_svc: 192.168.16.151:50041
 thread_pool_size: 12
 data_root: ../data
 code_root_dir: ../contract_work_dir

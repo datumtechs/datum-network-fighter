@@ -3,7 +3,7 @@ import json
 import logging
 
 from common.consts import COMMON_EVENT
-from common.socket_utils import get_free_loopback_tcp_port
+from common.socket_utils import find_free_port_in_range
 import channel_sdk.grpc
 
 
@@ -16,7 +16,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
     channel_log_level = cfg.get('channel_log_level', 2)
     certs_base_path = certs.get('base_path', '')
     config_dict = {'TASK_ID': task_id,
-                   'ROOT_CERT': os.path.join(certs_base_path, certs['root_cert']),
+                   'ROOT_CERT': os.path.join(certs_base_path, certs.get('root_cert', '')),
                    'LOG_LEVEL': channel_log_level}
 
     list_node_info = []
@@ -39,10 +39,10 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
         # log.info(f"via_name: {via_name}")
         if self_party_id == party_id:
             internal_addr = self_internal_addr
-            server_sign_key = os.path.join(certs_base_path, certs['server_sign_key'])
-            server_sign_cert = os.path.join(certs_base_path, certs['server_sign_cert'])
-            server_enc_key = os.path.join(certs_base_path, certs['server_enc_key'])
-            server_enc_cert = os.path.join(certs_base_path, certs['server_enc_cert'])
+            server_sign_key = os.path.join(certs_base_path, certs.get('server_sign_key', ''))
+            server_sign_cert = os.path.join(certs_base_path, certs.get('server_sign_cert', ''))
+            server_enc_key = os.path.join(certs_base_path, certs.get('server_enc_key', ''))
+            server_enc_cert = os.path.join(certs_base_path, certs.get('server_enc_cert', ''))
         else:
             internal_addr = ''
             server_sign_key = ''
@@ -50,10 +50,10 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
             server_enc_key = ''
             server_enc_cert = ''
         # Clients of all parties must have certificates.
-        client_sign_key = os.path.join(certs_base_path, certs['client_sign_key'])
-        client_sign_cert = os.path.join(certs_base_path, certs['client_sign_cert'])
-        client_enc_key = os.path.join(certs_base_path, certs['client_enc_key'])
-        client_enc_cert = os.path.join(certs_base_path, certs['client_enc_cert'])
+        client_sign_key = os.path.join(certs_base_path, certs.get('client_sign_key', ''))
+        client_sign_cert = os.path.join(certs_base_path, certs.get('client_sign_cert', ''))
+        client_enc_key = os.path.join(certs_base_path, certs.get('client_enc_key', ''))
+        client_enc_cert = os.path.join(certs_base_path, certs.get('client_enc_cert', ''))
         one_node_info = dict(
             NODE_ID=party_id,
             NAME=node_info.name,
@@ -82,8 +82,8 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
 def get_channel_config(task_id, self_party_id, peers, data_party, compute_party, result_party, 
                     cfg, event_type):
     parent_proc_ip = cfg['bind_ip']
-    with get_free_loopback_tcp_port() as port:
-        log.info(f'got a free port: {port}')
+    task_port_range = cfg['task_port_range']
+    port = find_free_port_in_range(task_port_range)
     self_internal_addr = f'{parent_proc_ip}:{port}'
     log.info(f'get a free port: {self_internal_addr}')
     config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, 
