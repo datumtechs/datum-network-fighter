@@ -85,8 +85,8 @@ class TaskManager:
     def clean(self):
         exited = []
         for uniq_task, p in self.procs.items():
-            if p.exitcode is not None:
-                log.info(f"p.exitcode: {p.exitcode}, uniq_task: {uniq_task}")
+            if p._closed or (p.exitcode is not None):
+                # log.info(f"p.exitcode: {p.exitcode}, uniq_task: {uniq_task}")
                 exited.append(uniq_task)
         # log.info(f'detect {len(exited)} out of {len(self.procs)} tasks has terminated')
         for uniq_task in exited:
