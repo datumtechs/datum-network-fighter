@@ -73,7 +73,8 @@ class Task:
             self.download_algo()
             self.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], "download contract success.")
         except Exception as e:
-            self.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail. {str(e)[:100]}")
+            log.exception(repr(e))
+            self.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail.")
             self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
 
         self.build_env()
@@ -113,7 +114,7 @@ class Task:
             self.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task success.")
         except Exception as e:
             log.exception(repr(e))
-            self.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed. {str(e)[:100]}")
+            self.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed.")
             self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
         finally:
             log.info('task final clean')
