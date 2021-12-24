@@ -10,9 +10,9 @@ import psutil
 
 from common.report_engine import report_upload_file_summary
 from config import cfg
-from protos import common_pb2
-from protos import compute_svc_pb2, compute_svc_pb2_grpc
-from protos import data_svc_pb2, data_svc_pb2_grpc
+from lib import common_pb2
+from lib import compute_svc_pb2, compute_svc_pb2_grpc
+from lib import data_svc_pb2, data_svc_pb2_grpc
 
 log = logging.getLogger(__name__)
 

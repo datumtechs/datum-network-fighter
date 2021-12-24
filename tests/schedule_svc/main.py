@@ -9,12 +9,12 @@ import grpc
 from common.consts import GRPC_OPTIONS
 from common.utils import load_cfg
 from config import cfg
-from protos.lib.api import sys_rpc_api_pb2
-from protos.lib.api import sys_rpc_api_pb2_grpc
-from protos import compute_svc_pb2
-from protos import compute_svc_pb2_grpc
-from protos import data_svc_pb2
-from protos import data_svc_pb2_grpc
+from lib.api import sys_rpc_api_pb2
+from lib.api import sys_rpc_api_pb2_grpc
+from lib import compute_svc_pb2
+from lib import compute_svc_pb2_grpc
+from lib import data_svc_pb2
+from lib import data_svc_pb2_grpc
 from svc import YarnService
 from google.protobuf import empty_pb2
 

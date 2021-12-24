@@ -1,11 +1,12 @@
 import os
 import re
 import sys
+import shutil
 
 sdk_path = sys.executable
 proto_root_path = './armada-common'
 out_dir = './protos'
-
+v3 = True
 protos_to_compile = {'Fighter': '*.proto',
                      'google': 'api/*.proto',
                      'Carrier': 'lib/common/*.proto'}
@@ -35,7 +36,7 @@ pat = re.compile(r'^import\s+"(.+)";')
 
 def find_deps(proto, base_dir, depth=1):
     file = os.path.join(base_dir, proto)
-    with open(file) as f:
+    with open(file, encoding='utf8') as f:
         lines = f.readlines()
     deps = set()
     for i in lines:
@@ -64,3 +65,8 @@ for proto in deps:
     cmd = f'{base_cmd} -I{include_path1} -I{proto_root_path} {ff}'
     print(cmd)
     os.system(cmd)
+
+if v3:
+    shutil.rmtree('./lib')
+    shutil.copytree(f'{out_dir}/lib', './lib')
+    shutil.rmtree(out_dir)

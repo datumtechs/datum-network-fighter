@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import io_channel_pb2 as io__channel__pb2
+from lib import io_channel_pb2 as lib_dot_io__channel__pb2
 
 
 class IoChannelStub(object):
@@ -16,8 +16,8 @@ class IoChannelStub(object):
         """
         self.Send = channel.unary_unary(
                 '/io_channel.IoChannel/Send',
-                request_serializer=io__channel__pb2.SendRequest.SerializeToString,
-                response_deserializer=io__channel__pb2.RetCode.FromString,
+                request_serializer=lib_dot_io__channel__pb2.SendRequest.SerializeToString,
+                response_deserializer=lib_dot_io__channel__pb2.RetCode.FromString,
                 )
 
 
@@ -35,8 +35,8 @@ def add_IoChannelServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Send': grpc.unary_unary_rpc_method_handler(
                     servicer.Send,
-                    request_deserializer=io__channel__pb2.SendRequest.FromString,
-                    response_serializer=io__channel__pb2.RetCode.SerializeToString,
+                    request_deserializer=lib_dot_io__channel__pb2.SendRequest.FromString,
+                    response_serializer=lib_dot_io__channel__pb2.RetCode.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -60,7 +60,7 @@ class IoChannel(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/io_channel.IoChannel/Send',
-            io__channel__pb2.SendRequest.SerializeToString,
-            io__channel__pb2.RetCode.FromString,
+            lib_dot_io__channel__pb2.SendRequest.SerializeToString,
+            lib_dot_io__channel__pb2.RetCode.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

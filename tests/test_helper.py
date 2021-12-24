@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 from google.protobuf import empty_pb2
-from protos import common_pb2, compute_svc_pb2, data_svc_pb2
+from lib import common_pb2, compute_svc_pb2, data_svc_pb2
 
 
 def _upload_chunk(path):

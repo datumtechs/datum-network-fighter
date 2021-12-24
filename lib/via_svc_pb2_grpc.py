@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import via_svc_pb2 as via__svc__pb2
+from lib import via_svc_pb2 as lib_dot_via__svc__pb2
 
 
 class ViaProviderStub(object):
@@ -16,13 +16,13 @@ class ViaProviderStub(object):
         """
         self.Expose = channel.unary_unary(
                 '/viasvc.ViaProvider/Expose',
-                request_serializer=via__svc__pb2.ExposeReq.SerializeToString,
-                response_deserializer=via__svc__pb2.ExposeAns.FromString,
+                request_serializer=lib_dot_via__svc__pb2.ExposeReq.SerializeToString,
+                response_deserializer=lib_dot_via__svc__pb2.ExposeAns.FromString,
                 )
         self.Off = channel.unary_unary(
                 '/viasvc.ViaProvider/Off',
-                request_serializer=via__svc__pb2.ExposeReq.SerializeToString,
-                response_deserializer=via__svc__pb2.ExposeAns.FromString,
+                request_serializer=lib_dot_via__svc__pb2.ExposeReq.SerializeToString,
+                response_deserializer=lib_dot_via__svc__pb2.ExposeAns.FromString,
                 )
 
 
@@ -46,13 +46,13 @@ def add_ViaProviderServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Expose': grpc.unary_unary_rpc_method_handler(
                     servicer.Expose,
-                    request_deserializer=via__svc__pb2.ExposeReq.FromString,
-                    response_serializer=via__svc__pb2.ExposeAns.SerializeToString,
+                    request_deserializer=lib_dot_via__svc__pb2.ExposeReq.FromString,
+                    response_serializer=lib_dot_via__svc__pb2.ExposeAns.SerializeToString,
             ),
             'Off': grpc.unary_unary_rpc_method_handler(
                     servicer.Off,
-                    request_deserializer=via__svc__pb2.ExposeReq.FromString,
-                    response_serializer=via__svc__pb2.ExposeAns.SerializeToString,
+                    request_deserializer=lib_dot_via__svc__pb2.ExposeReq.FromString,
+                    response_serializer=lib_dot_via__svc__pb2.ExposeAns.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -76,8 +76,8 @@ class ViaProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/viasvc.ViaProvider/Expose',
-            via__svc__pb2.ExposeReq.SerializeToString,
-            via__svc__pb2.ExposeAns.FromString,
+            lib_dot_via__svc__pb2.ExposeReq.SerializeToString,
+            lib_dot_via__svc__pb2.ExposeAns.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -93,7 +93,7 @@ class ViaProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/viasvc.ViaProvider/Off',
-            via__svc__pb2.ExposeReq.SerializeToString,
-            via__svc__pb2.ExposeAns.FromString,
+            lib_dot_via__svc__pb2.ExposeReq.SerializeToString,
+            lib_dot_via__svc__pb2.ExposeAns.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -2,9 +2,9 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import common_pb2 as common__pb2
-import data_svc_pb2 as data__svc__pb2
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
+from lib import common_pb2 as lib_dot_common__pb2
+from lib import data_svc_pb2 as lib_dot_data__svc__pb2
 
 
 class DataProviderStub(object):
@@ -19,47 +19,47 @@ class DataProviderStub(object):
         self.GetStatus = channel.unary_unary(
                 '/datasvc.DataProvider/GetStatus',
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-                response_deserializer=data__svc__pb2.GetStatusReply.FromString,
+                response_deserializer=lib_dot_data__svc__pb2.GetStatusReply.FromString,
                 )
         self.ListData = channel.unary_unary(
                 '/datasvc.DataProvider/ListData',
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-                response_deserializer=data__svc__pb2.ListDataReply.FromString,
+                response_deserializer=lib_dot_data__svc__pb2.ListDataReply.FromString,
                 )
         self.UploadData = channel.stream_unary(
                 '/datasvc.DataProvider/UploadData',
-                request_serializer=data__svc__pb2.UploadRequest.SerializeToString,
-                response_deserializer=data__svc__pb2.UploadReply.FromString,
+                request_serializer=lib_dot_data__svc__pb2.UploadRequest.SerializeToString,
+                response_deserializer=lib_dot_data__svc__pb2.UploadReply.FromString,
                 )
         self.BatchUpload = channel.stream_stream(
                 '/datasvc.DataProvider/BatchUpload',
-                request_serializer=data__svc__pb2.UploadRequest.SerializeToString,
-                response_deserializer=data__svc__pb2.UploadReply.FromString,
+                request_serializer=lib_dot_data__svc__pb2.UploadRequest.SerializeToString,
+                response_deserializer=lib_dot_data__svc__pb2.UploadReply.FromString,
                 )
         self.DownloadData = channel.unary_stream(
                 '/datasvc.DataProvider/DownloadData',
-                request_serializer=data__svc__pb2.DownloadRequest.SerializeToString,
-                response_deserializer=data__svc__pb2.DownloadReply.FromString,
+                request_serializer=lib_dot_data__svc__pb2.DownloadRequest.SerializeToString,
+                response_deserializer=lib_dot_data__svc__pb2.DownloadReply.FromString,
                 )
         self.DeleteData = channel.unary_unary(
                 '/datasvc.DataProvider/DeleteData',
-                request_serializer=data__svc__pb2.DownloadRequest.SerializeToString,
-                response_deserializer=data__svc__pb2.UploadReply.FromString,
+                request_serializer=lib_dot_data__svc__pb2.DownloadRequest.SerializeToString,
+                response_deserializer=lib_dot_data__svc__pb2.UploadReply.FromString,
                 )
         self.SendSharesData = channel.unary_unary(
                 '/datasvc.DataProvider/SendSharesData',
-                request_serializer=data__svc__pb2.SendSharesDataRequest.SerializeToString,
-                response_deserializer=data__svc__pb2.SendSharesDataReply.FromString,
+                request_serializer=lib_dot_data__svc__pb2.SendSharesDataRequest.SerializeToString,
+                response_deserializer=lib_dot_data__svc__pb2.SendSharesDataReply.FromString,
                 )
         self.HandleTaskReadyGo = channel.unary_unary(
                 '/datasvc.DataProvider/HandleTaskReadyGo',
-                request_serializer=common__pb2.TaskReadyGoReq.SerializeToString,
-                response_deserializer=common__pb2.TaskReadyGoReply.FromString,
+                request_serializer=lib_dot_common__pb2.TaskReadyGoReq.SerializeToString,
+                response_deserializer=lib_dot_common__pb2.TaskReadyGoReply.FromString,
                 )
         self.HandleCancelTask = channel.unary_unary(
                 '/datasvc.DataProvider/HandleCancelTask',
-                request_serializer=common__pb2.TaskCancelReq.SerializeToString,
-                response_deserializer=common__pb2.TaskCancelReply.FromString,
+                request_serializer=lib_dot_common__pb2.TaskCancelReq.SerializeToString,
+                response_deserializer=lib_dot_common__pb2.TaskCancelReply.FromString,
                 )
 
 
@@ -126,47 +126,47 @@ def add_DataProviderServicer_to_server(servicer, server):
             'GetStatus': grpc.unary_unary_rpc_method_handler(
                     servicer.GetStatus,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-                    response_serializer=data__svc__pb2.GetStatusReply.SerializeToString,
+                    response_serializer=lib_dot_data__svc__pb2.GetStatusReply.SerializeToString,
             ),
             'ListData': grpc.unary_unary_rpc_method_handler(
                     servicer.ListData,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-                    response_serializer=data__svc__pb2.ListDataReply.SerializeToString,
+                    response_serializer=lib_dot_data__svc__pb2.ListDataReply.SerializeToString,
             ),
             'UploadData': grpc.stream_unary_rpc_method_handler(
                     servicer.UploadData,
-                    request_deserializer=data__svc__pb2.UploadRequest.FromString,
-                    response_serializer=data__svc__pb2.UploadReply.SerializeToString,
+                    request_deserializer=lib_dot_data__svc__pb2.UploadRequest.FromString,
+                    response_serializer=lib_dot_data__svc__pb2.UploadReply.SerializeToString,
             ),
             'BatchUpload': grpc.stream_stream_rpc_method_handler(
                     servicer.BatchUpload,
-                    request_deserializer=data__svc__pb2.UploadRequest.FromString,
-                    response_serializer=data__svc__pb2.UploadReply.SerializeToString,
+                    request_deserializer=lib_dot_data__svc__pb2.UploadRequest.FromString,
+                    response_serializer=lib_dot_data__svc__pb2.UploadReply.SerializeToString,
             ),
             'DownloadData': grpc.unary_stream_rpc_method_handler(
                     servicer.DownloadData,
-                    request_deserializer=data__svc__pb2.DownloadRequest.FromString,
-                    response_serializer=data__svc__pb2.DownloadReply.SerializeToString,
+                    request_deserializer=lib_dot_data__svc__pb2.DownloadRequest.FromString,
+                    response_serializer=lib_dot_data__svc__pb2.DownloadReply.SerializeToString,
             ),
             'DeleteData': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteData,
-                    request_deserializer=data__svc__pb2.DownloadRequest.FromString,
-                    response_serializer=data__svc__pb2.UploadReply.SerializeToString,
+                    request_deserializer=lib_dot_data__svc__pb2.DownloadRequest.FromString,
+                    response_serializer=lib_dot_data__svc__pb2.UploadReply.SerializeToString,
             ),
             'SendSharesData': grpc.unary_unary_rpc_method_handler(
                     servicer.SendSharesData,
-                    request_deserializer=data__svc__pb2.SendSharesDataRequest.FromString,
-                    response_serializer=data__svc__pb2.SendSharesDataReply.SerializeToString,
+                    request_deserializer=lib_dot_data__svc__pb2.SendSharesDataRequest.FromString,
+                    response_serializer=lib_dot_data__svc__pb2.SendSharesDataReply.SerializeToString,
             ),
             'HandleTaskReadyGo': grpc.unary_unary_rpc_method_handler(
                     servicer.HandleTaskReadyGo,
-                    request_deserializer=common__pb2.TaskReadyGoReq.FromString,
-                    response_serializer=common__pb2.TaskReadyGoReply.SerializeToString,
+                    request_deserializer=lib_dot_common__pb2.TaskReadyGoReq.FromString,
+                    response_serializer=lib_dot_common__pb2.TaskReadyGoReply.SerializeToString,
             ),
             'HandleCancelTask': grpc.unary_unary_rpc_method_handler(
                     servicer.HandleCancelTask,
-                    request_deserializer=common__pb2.TaskCancelReq.FromString,
-                    response_serializer=common__pb2.TaskCancelReply.SerializeToString,
+                    request_deserializer=lib_dot_common__pb2.TaskCancelReq.FromString,
+                    response_serializer=lib_dot_common__pb2.TaskCancelReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -191,7 +191,7 @@ class DataProvider(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/datasvc.DataProvider/GetStatus',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            data__svc__pb2.GetStatusReply.FromString,
+            lib_dot_data__svc__pb2.GetStatusReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -208,7 +208,7 @@ class DataProvider(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/datasvc.DataProvider/ListData',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            data__svc__pb2.ListDataReply.FromString,
+            lib_dot_data__svc__pb2.ListDataReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -224,8 +224,8 @@ class DataProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_unary(request_iterator, target, '/datasvc.DataProvider/UploadData',
-            data__svc__pb2.UploadRequest.SerializeToString,
-            data__svc__pb2.UploadReply.FromString,
+            lib_dot_data__svc__pb2.UploadRequest.SerializeToString,
+            lib_dot_data__svc__pb2.UploadReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -241,8 +241,8 @@ class DataProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/datasvc.DataProvider/BatchUpload',
-            data__svc__pb2.UploadRequest.SerializeToString,
-            data__svc__pb2.UploadReply.FromString,
+            lib_dot_data__svc__pb2.UploadRequest.SerializeToString,
+            lib_dot_data__svc__pb2.UploadReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -258,8 +258,8 @@ class DataProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_stream(request, target, '/datasvc.DataProvider/DownloadData',
-            data__svc__pb2.DownloadRequest.SerializeToString,
-            data__svc__pb2.DownloadReply.FromString,
+            lib_dot_data__svc__pb2.DownloadRequest.SerializeToString,
+            lib_dot_data__svc__pb2.DownloadReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -275,8 +275,8 @@ class DataProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/datasvc.DataProvider/DeleteData',
-            data__svc__pb2.DownloadRequest.SerializeToString,
-            data__svc__pb2.UploadReply.FromString,
+            lib_dot_data__svc__pb2.DownloadRequest.SerializeToString,
+            lib_dot_data__svc__pb2.UploadReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -292,8 +292,8 @@ class DataProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/datasvc.DataProvider/SendSharesData',
-            data__svc__pb2.SendSharesDataRequest.SerializeToString,
-            data__svc__pb2.SendSharesDataReply.FromString,
+            lib_dot_data__svc__pb2.SendSharesDataRequest.SerializeToString,
+            lib_dot_data__svc__pb2.SendSharesDataReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -309,8 +309,8 @@ class DataProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/datasvc.DataProvider/HandleTaskReadyGo',
-            common__pb2.TaskReadyGoReq.SerializeToString,
-            common__pb2.TaskReadyGoReply.FromString,
+            lib_dot_common__pb2.TaskReadyGoReq.SerializeToString,
+            lib_dot_common__pb2.TaskReadyGoReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -326,7 +326,7 @@ class DataProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/datasvc.DataProvider/HandleCancelTask',
-            common__pb2.TaskCancelReq.SerializeToString,
-            common__pb2.TaskCancelReply.FromString,
+            lib_dot_common__pb2.TaskCancelReq.SerializeToString,
+            lib_dot_common__pb2.TaskCancelReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

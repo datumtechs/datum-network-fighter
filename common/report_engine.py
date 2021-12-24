@@ -8,8 +8,8 @@ import logging
 import psutil
 import grpc
 from common.consts import EVENT_QUEUE
-from protos.lib.api import sys_rpc_api_pb2 as pb2
-from protos.lib.api import sys_rpc_api_pb2_grpc as pb2_grpc
+from lib.api import sys_rpc_api_pb2 as pb2
+from lib.api import sys_rpc_api_pb2_grpc as pb2_grpc
 
 
 log = logging.getLogger(__name__)

@@ -1,9 +1,9 @@
 
 import logging
-import os
 import unittest
 
 import grpc
+import config
 from common.socket_utils import get_free_loopback_tcp_port, is_port_in_use
 from google.protobuf import empty_pb2
 
@@ -30,7 +30,7 @@ class ComputeSvcTest(unittest.TestCase):
         self._server.stop(0)
 
     def test_start_svc(self):
-        from protos import compute_svc_pb2_grpc
+        from lib import compute_svc_pb2_grpc
         self.assertTrue(is_port_in_use(self._port))
         with grpc.insecure_channel(f'localhost:{self._port}') as channel:
             stub = compute_svc_pb2_grpc.ComputeProviderStub(channel)
@@ -50,7 +50,7 @@ class ComputeSvcRpcTest(unittest.TestCase):
         cfg['pass_via'] = False
         task_manager = TaskManager(cfg)
         self._server = serve(task_manager)
-        from protos import compute_svc_pb2_grpc
+        from lib import compute_svc_pb2_grpc
         self.channel = grpc.insecure_channel(f'localhost:{port}')
         self.comp_stub = compute_svc_pb2_grpc.ComputeProviderStub(self.channel)
 

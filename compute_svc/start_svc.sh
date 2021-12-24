@@ -6,4 +6,4 @@ fi
 
 cfg=$1
 log=${cfg/yaml/log}
-PYTHONPATH="..:../protos/:../common" nohup python -u main.py $cfg >$log 2>&1 &
+nohup python -u main.py $cfg >$log 2>&1 &

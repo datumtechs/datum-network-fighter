@@ -15,7 +15,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
     certs = cfg['certs']
     channel_log_level = cfg.get('channel_log_level', 2)
     certs_base_path = certs.get('base_path', '')
-    config_dict = {'TASK_ID': task_id,
+    config_dict = {'TASK_ID': tas_id,
                    'ROOT_CERT': os.path.join(certs_base_path, certs.get('root_cert', '')),
                    'LOG_LEVEL': channel_log_level}
 

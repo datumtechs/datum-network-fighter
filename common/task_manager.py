@@ -3,7 +3,7 @@ import multiprocessing as mp
 import threading
 from collections import namedtuple
 
-from .task import Task
+from common.task import Task
 
 log = logging.getLogger(__name__)
 TPeer = namedtuple('TPeer', ['ip', 'port', 'party_id', 'name'])

@@ -10,11 +10,11 @@ from google.protobuf import empty_pb2
 from prompt_toolkit import prompt
 
 from common.utils import load_cfg
-from protos import common_pb2
-from protos import compute_svc_pb2, compute_svc_pb2_grpc
-from protos import data_svc_pb2, data_svc_pb2_grpc
-from protos import io_channel_pb2_grpc
-from protos import via_svc_pb2
+from lib import common_pb2
+from lib import compute_svc_pb2, compute_svc_pb2_grpc
+from lib import data_svc_pb2, data_svc_pb2_grpc
+from lib import io_channel_pb2_grpc
+from lib import via_svc_pb2
 
 cfg = {}
 task_id = None

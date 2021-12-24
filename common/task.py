@@ -3,7 +3,6 @@ import sys
 import time
 import logging
 import threading
-import multiprocessing as mp
 import hashlib
 import importlib
 import warnings
@@ -13,7 +12,7 @@ import functools
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
 from common.report_engine import report_task_resource_usage, report_task_result_file_summary
-from io_channel_helper import get_channel_config
+from common.io_channel_helper import get_channel_config
 
 
 log = logging.getLogger(__name__)

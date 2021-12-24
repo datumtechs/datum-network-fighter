@@ -1,25 +1,18 @@
 import logging
 import multiprocessing as mp
-import os
 import sys
+import grpc
 import threading
 from concurrent import futures
 from signal import signal, SIGTERM
 
-import grpc
 from grpc_reflection.v1alpha import reflection
-
-cur_dir = os.path.abspath(os.path.dirname(__file__))
-par_dir = os.path.abspath(os.path.join(cur_dir, os.pardir))
-sys.path.insert(0, par_dir)
-sys.path.insert(0, os.path.join(par_dir, 'protos'))
-sys.path.insert(0, cur_dir)
+from config import cfg
 from common.consts import GRPC_OPTIONS
 from common.report_engine import report_task_event
 from common.task_manager import TaskManager
 from common.utils import load_cfg
-from config import cfg
-from protos import data_svc_pb2, data_svc_pb2_grpc
+from lib import data_svc_pb2, data_svc_pb2_grpc
 from svc import DataProvider
 from consul_client.api import get_consul_client_obj
 

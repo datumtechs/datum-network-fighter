@@ -1,8 +1,8 @@
 import logging
-from protos.lib.api import sys_rpc_api_pb2
-from protos.lib.api import sys_rpc_api_pb2_grpc
-from protos.lib.common import base_pb2
-from protos.lib.common import base_pb2_grpc
+from lib.api import sys_rpc_api_pb2
+from lib.api import sys_rpc_api_pb2_grpc
+from lib.common import base_pb2
+from lib.common import base_pb2_grpc
 
 
 log = logging.getLogger(__name__)

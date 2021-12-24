@@ -5,9 +5,9 @@ import pandas as pd
 import configparser
 import time
 from google.protobuf import empty_pb2
-from protos import compute_svc_pb2, compute_svc_pb2_grpc
-from protos import data_svc_pb2, data_svc_pb2_grpc
-from protos import common_pb2
+from lib import compute_svc_pb2, compute_svc_pb2_grpc
+from lib import data_svc_pb2, data_svc_pb2_grpc
+from lib import common_pb2
 from test_helper import *
 
 config = configparser.ConfigParser()

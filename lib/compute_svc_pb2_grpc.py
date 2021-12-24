@@ -2,9 +2,9 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-import common_pb2 as common__pb2
-import compute_svc_pb2 as compute__svc__pb2
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
+from lib import common_pb2 as lib_dot_common__pb2
+from lib import compute_svc_pb2 as lib_dot_compute__svc__pb2
 
 
 class ComputeProviderStub(object):
@@ -19,27 +19,27 @@ class ComputeProviderStub(object):
         self.GetStatus = channel.unary_unary(
                 '/computesvc.ComputeProvider/GetStatus',
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-                response_deserializer=compute__svc__pb2.GetStatusReply.FromString,
+                response_deserializer=lib_dot_compute__svc__pb2.GetStatusReply.FromString,
                 )
         self.GetTaskDetails = channel.unary_unary(
                 '/computesvc.ComputeProvider/GetTaskDetails',
-                request_serializer=compute__svc__pb2.GetTaskDetailsReq.SerializeToString,
-                response_deserializer=compute__svc__pb2.GetTaskDetailsReply.FromString,
+                request_serializer=lib_dot_compute__svc__pb2.GetTaskDetailsReq.SerializeToString,
+                response_deserializer=lib_dot_compute__svc__pb2.GetTaskDetailsReply.FromString,
                 )
         self.UploadShard = channel.stream_unary(
                 '/computesvc.ComputeProvider/UploadShard',
-                request_serializer=compute__svc__pb2.UploadShardReq.SerializeToString,
-                response_deserializer=compute__svc__pb2.UploadShardReply.FromString,
+                request_serializer=lib_dot_compute__svc__pb2.UploadShardReq.SerializeToString,
+                response_deserializer=lib_dot_compute__svc__pb2.UploadShardReply.FromString,
                 )
         self.HandleTaskReadyGo = channel.unary_unary(
                 '/computesvc.ComputeProvider/HandleTaskReadyGo',
-                request_serializer=common__pb2.TaskReadyGoReq.SerializeToString,
-                response_deserializer=common__pb2.TaskReadyGoReply.FromString,
+                request_serializer=lib_dot_common__pb2.TaskReadyGoReq.SerializeToString,
+                response_deserializer=lib_dot_common__pb2.TaskReadyGoReply.FromString,
                 )
         self.HandleCancelTask = channel.unary_unary(
                 '/computesvc.ComputeProvider/HandleCancelTask',
-                request_serializer=common__pb2.TaskCancelReq.SerializeToString,
-                response_deserializer=common__pb2.TaskCancelReply.FromString,
+                request_serializer=lib_dot_common__pb2.TaskCancelReq.SerializeToString,
+                response_deserializer=lib_dot_common__pb2.TaskCancelReply.FromString,
                 )
 
 
@@ -82,27 +82,27 @@ def add_ComputeProviderServicer_to_server(servicer, server):
             'GetStatus': grpc.unary_unary_rpc_method_handler(
                     servicer.GetStatus,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-                    response_serializer=compute__svc__pb2.GetStatusReply.SerializeToString,
+                    response_serializer=lib_dot_compute__svc__pb2.GetStatusReply.SerializeToString,
             ),
             'GetTaskDetails': grpc.unary_unary_rpc_method_handler(
                     servicer.GetTaskDetails,
-                    request_deserializer=compute__svc__pb2.GetTaskDetailsReq.FromString,
-                    response_serializer=compute__svc__pb2.GetTaskDetailsReply.SerializeToString,
+                    request_deserializer=lib_dot_compute__svc__pb2.GetTaskDetailsReq.FromString,
+                    response_serializer=lib_dot_compute__svc__pb2.GetTaskDetailsReply.SerializeToString,
             ),
             'UploadShard': grpc.stream_unary_rpc_method_handler(
                     servicer.UploadShard,
-                    request_deserializer=compute__svc__pb2.UploadShardReq.FromString,
-                    response_serializer=compute__svc__pb2.UploadShardReply.SerializeToString,
+                    request_deserializer=lib_dot_compute__svc__pb2.UploadShardReq.FromString,
+                    response_serializer=lib_dot_compute__svc__pb2.UploadShardReply.SerializeToString,
             ),
             'HandleTaskReadyGo': grpc.unary_unary_rpc_method_handler(
                     servicer.HandleTaskReadyGo,
-                    request_deserializer=common__pb2.TaskReadyGoReq.FromString,
-                    response_serializer=common__pb2.TaskReadyGoReply.SerializeToString,
+                    request_deserializer=lib_dot_common__pb2.TaskReadyGoReq.FromString,
+                    response_serializer=lib_dot_common__pb2.TaskReadyGoReply.SerializeToString,
             ),
             'HandleCancelTask': grpc.unary_unary_rpc_method_handler(
                     servicer.HandleCancelTask,
-                    request_deserializer=common__pb2.TaskCancelReq.FromString,
-                    response_serializer=common__pb2.TaskCancelReply.SerializeToString,
+                    request_deserializer=lib_dot_common__pb2.TaskCancelReq.FromString,
+                    response_serializer=lib_dot_common__pb2.TaskCancelReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -127,7 +127,7 @@ class ComputeProvider(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/computesvc.ComputeProvider/GetStatus',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-            compute__svc__pb2.GetStatusReply.FromString,
+            lib_dot_compute__svc__pb2.GetStatusReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -143,8 +143,8 @@ class ComputeProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/computesvc.ComputeProvider/GetTaskDetails',
-            compute__svc__pb2.GetTaskDetailsReq.SerializeToString,
-            compute__svc__pb2.GetTaskDetailsReply.FromString,
+            lib_dot_compute__svc__pb2.GetTaskDetailsReq.SerializeToString,
+            lib_dot_compute__svc__pb2.GetTaskDetailsReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -160,8 +160,8 @@ class ComputeProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_unary(request_iterator, target, '/computesvc.ComputeProvider/UploadShard',
-            compute__svc__pb2.UploadShardReq.SerializeToString,
-            compute__svc__pb2.UploadShardReply.FromString,
+            lib_dot_compute__svc__pb2.UploadShardReq.SerializeToString,
+            lib_dot_compute__svc__pb2.UploadShardReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -177,8 +177,8 @@ class ComputeProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/computesvc.ComputeProvider/HandleTaskReadyGo',
-            common__pb2.TaskReadyGoReq.SerializeToString,
-            common__pb2.TaskReadyGoReply.FromString,
+            lib_dot_common__pb2.TaskReadyGoReq.SerializeToString,
+            lib_dot_common__pb2.TaskReadyGoReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -194,7 +194,7 @@ class ComputeProvider(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/computesvc.ComputeProvider/HandleCancelTask',
-            common__pb2.TaskCancelReq.SerializeToString,
-            common__pb2.TaskCancelReply.FromString,
+            lib_dot_common__pb2.TaskCancelReq.SerializeToString,
+            lib_dot_common__pb2.TaskCancelReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -1,11 +1,11 @@
 import logging
-import os
 import tempfile
 import time
 import unittest
 from unittest.mock import patch,MagicMock
 
 import grpc
+import config
 from common.socket_utils import get_free_loopback_tcp_port, is_port_in_use
 from google.protobuf import empty_pb2
 
@@ -31,7 +31,7 @@ class DataSvcTest(unittest.TestCase):
         self._server.stop(0)
 
     def test_start_svc(self):
-        from protos import data_svc_pb2_grpc
+        from lib import data_svc_pb2_grpc
         port = self._cfg['port']
         self.assertTrue(is_port_in_use(port))
         with grpc.insecure_channel(f'localhost:{port}') as channel:
@@ -51,7 +51,7 @@ class DataSvcRpcTest(unittest.TestCase):
         cfg['pass_via'] = False
         task_manager = TaskManager(cfg)
         self._server = serve(task_manager)
-        from protos import data_svc_pb2_grpc
+        from lib import data_svc_pb2_grpc
         self.channel = grpc.insecure_channel(f'localhost:{port}')
         self.data_stub = data_svc_pb2_grpc.DataProviderStub(self.channel)
         self.data_root_dir = cfg['data_root']
