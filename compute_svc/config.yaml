@@ -5,7 +5,6 @@ thread_pool_size: 12
 pass_via: true
 code_root_dir: contract_work_dir
 results_root_dir: results_root
-schedule_svc: 192.168.16.151:51131
 total_bandwidth: 20000000
 channel_log_level: 2
 certs: 
@@ -19,3 +18,10 @@ certs:
   client_sign_cert: CS.crt
   client_enc_key: CE.key
   client_enc_cert: CE.crt
+consul:
+  service_ip: 10.1.1.10
+  service_port: 8500
+  name: dataNode
+  tag: data
+  interval: 3s
+  deregister: 3s
