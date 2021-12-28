@@ -7,7 +7,7 @@ sdk_path = sys.executable
 proto_root_path = './armada-common'
 out_dir = './protos'
 v3 = True
-protos_to_compile = {'Fighter': '*.proto',
+protos_to_compile = {'Fighter': 'lib/*.proto',
                      'google': 'api/*.proto',
                      'Carrier': 'lib/common/*.proto'}
 
@@ -69,4 +69,5 @@ for proto in deps:
 if v3:
     shutil.rmtree('./lib')
     shutil.copytree(f'{out_dir}/lib', './lib')
+    shutil.copytree(f'{out_dir}/google', './lib/google')
     shutil.rmtree(out_dir)

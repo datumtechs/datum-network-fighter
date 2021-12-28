@@ -7,9 +7,8 @@ import time
 
 import grpc
 import psutil
-
-from common.report_engine import report_upload_file_summary
 from config import cfg
+from common.report_engine import report_upload_file_summary
 from lib import common_pb2
 from lib import compute_svc_pb2, compute_svc_pb2_grpc
 from lib import data_svc_pb2, data_svc_pb2_grpc

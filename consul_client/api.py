@@ -97,7 +97,7 @@ class ConsulApi(object):
         if not service_id:
             service_id = self.service_id
         result = self.query_service_info_by_filter(f'ID=="{service_id}"')
-        if len(result) != 0:
+        if result:
             return self.c.agent.service.deregister(service_id)
 
 
