@@ -13,3 +13,4 @@ paramiko==2.4.3
 scp==0.13.6
 shyaml==0.6.2
 matplotlib==3.5.0
+python-consul2==0.1.5

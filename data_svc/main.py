@@ -87,7 +87,8 @@ def main():
         all_rpcs_done_event = server.stop(5)
         all_rpcs_done_event.wait(5)
         event_stop.set()
-        consul_client_obj.stop()
+        result = consul_client_obj.stop()
+        log.info(f'consul_client_obj.stop result:{result}')
         log.info("Shut down gracefully")
 
     signal(SIGTERM, handle_sigterm)

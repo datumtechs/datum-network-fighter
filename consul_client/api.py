@@ -40,15 +40,15 @@ class ConsulApi(object):
                                  path='/v1/agent/services',
                                  params=[('filter', filter_str)],
                                  headers=self.headers())
+        if result is None:
+            return False, None
         if len(result) > 1:
-            print(f'The number of query results is greater than one, and the query condition is {filter_str}')
-            return None
+            return False, f'The number of query results is greater than one, and the query condition is {filter_str}'
         if len(result) == 0:
-            print(f'According to the query conditions, {filter_str} is useless to query relevant information.')
-            return None
+            return False, f'According to the query conditions, {filter_str} is useless to query relevant information.'
         # result, *_ = list(result.values())
         # return f'{result["Address"]}:{result["Port"]}'
-        return result
+        return True, result
 
     def get_via_external_connection(self):
         result = self.c.http.get(consul.base.CB.json(),
@@ -96,9 +96,13 @@ class ConsulApi(object):
     def stop(self, service_id=None):
         if not service_id:
             service_id = self.service_id
-        result = self.query_service_info_by_filter(f'ID=="{service_id}"')
+        result, info = self.query_service_info_by_filter(f'ID=="{service_id}"')
         if result:
-            return self.c.agent.service.deregister(service_id)
+            if self.c.agent.service.deregister(service_id):
+                return f"stop {self.service_id} fail!"
+            else:
+                return f"stop {self.service_id} successful!"
+        return info
 
 
 def get_consul_client_obj(cfg_info):
