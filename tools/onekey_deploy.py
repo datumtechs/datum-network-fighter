@@ -52,7 +52,7 @@ def unzip(ssh, a_file, to_dir):
 
 
 def update_svc_cfg(scp, remote_dir, cfg, svc_type):
-    key_align = {'rpc_port': 'port', 'via_svc': 'via_svc', 'schedule_svc': 'schedule_svc',
+    key_align = {'rpc_port': 'port', 'via_svc': 'via_svc',
                  'pass_via': 'pass_via', 'data_dir': 'data_root', 'code_dir': 'code_root_dir',
                  'results_dir': 'results_root_dir', 'host': 'bind_ip'}
     cfg = {k: v for k, v in cfg.items() if k in key_align.keys()}

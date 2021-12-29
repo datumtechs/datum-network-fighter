@@ -32,6 +32,7 @@ output/
 private_data/
 *.so
 venv/
+armada-common/
 armada-common/Fighter/google/
 */config_*.yaml
 compute_svc/C0DE_*.py

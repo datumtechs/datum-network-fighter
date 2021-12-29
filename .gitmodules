@@ -1,4 +1,4 @@
 [submodule "armada-common"]
 	path = armada-common
 	url = https://github.com/Metisnetwork/Metis-Armada-Common.git
-	branch = v2.0
+	branch = v3.0

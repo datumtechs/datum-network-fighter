@@ -1,5 +1,6 @@
 bind_ip: 192.168.16.151
 port: 50021
+task_port_range: [31000, 31100]
 file_system: local
 chunk_size: 1024
 pass_via: true
@@ -22,7 +23,7 @@ certs:
 consul:
   service_ip: 10.1.1.10
   service_port: 8500
-  name: dataNode
+  name: dataService
   tag: data
   interval: 3s
   deregister: 3s

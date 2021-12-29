@@ -9,7 +9,7 @@ import channel_sdk.grpc
 
 log = logging.getLogger(__name__)
 
-def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, 
+def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party,
                          result_party, cfg, self_internal_addr):
     pass_via = cfg['pass_via']
     certs = cfg['certs']
@@ -66,7 +66,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
             CLIENT_SIGN_KEY=client_sign_key,
             CLIENT_SIGN_CERT=client_sign_cert,
             CLIENT_ENC_KEY=client_enc_key,
-            CLIENT_ENC_CERT=client_enc_cert   
+            CLIENT_ENC_CERT=client_enc_cert
         )
         list_node_info.append(one_node_info)
 
@@ -79,14 +79,14 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
     return config_dict
 
 
-def get_channel_config(task_id, self_party_id, peers, data_party, compute_party, result_party, 
+def get_channel_config(task_id, self_party_id, peers, data_party, compute_party, result_party,
                     cfg, event_type):
     parent_proc_ip = cfg['bind_ip']
     task_port_range = cfg['task_port_range']
     port = find_free_port_in_range(task_port_range)
     self_internal_addr = f'{parent_proc_ip}:{port}'
     log.info(f'get a free port: {self_internal_addr}')
-    config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party, 
+    config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party,
                                        result_party, cfg, self_internal_addr)
     channel_config = json.dumps(config_dict)
     # log.info(f'self_party_id: {self_party_id}, channel_config: {channel_config}')

@@ -56,10 +56,14 @@ class TaskManager:
         data_party = tuple(req.data_party)
         computation_party = tuple(req.computation_party)
         result_party = tuple(req.result_party)
+        duration = req.duration
+        limit_memory = req.memory
+        limit_cpu  = req.processor
+        limit_bandwidth = req.bandwidth
+        
         peers = tuple(TPeer(p.ip, p.port, p.party_id, p.name) for p in req.peers)
-        task = Task(self.cfg, task_id, party_id, contract_id, data_id, env_id, peers,
-                    contract_cfg, data_party, computation_party, result_party)
-        task.consul_client = self.consul_client
+        task = Task(self.cfg, task_id, party_id, contract_id, data_id, env_id, peers, contract_cfg,
+                    data_party, computation_party, result_party, duration, limit_memory, limit_cpu)
         self.tasks[uniq_task] = task
         log.info(f'new task: {task_name}, thread id: {threading.get_ident()}')
         p = mp.Process(target=Task.run, args=(task,), name=task_name, daemon=True)
@@ -76,11 +80,14 @@ class TaskManager:
         if uniq_task not in self.procs:
             return False, f'process for task {task_name} not found'
         p = self.procs[uniq_task]
-        p.kill()
-        log.info(f'wait {task_name} terminate')
-        p.join()
-        msg = 'will soon' if p.is_alive() else 'succ'
-        p.close()
+        if p.is_alive():
+            p.kill()
+            log.info(f'wait {task_name} terminate')
+            p.join()
+            msg = 'will soon' if p.is_alive() else 'succ'
+            p.close()
+        else:
+            msg = 'succ'
         return True, f'cancel task {task_name} {msg}'
 
     def clean(self):

@@ -6,7 +6,7 @@ via_svc_num=${via_svc_num}
 schedule_svc_num=$[${data_svc_num} + ${compute_svc_num}]
 schedule_port=${schedule_svc_base_port}
 
-export PYTHONPATH=$PYTHONPATH:..:../protos:../common
+export PYTHONPATH=$PYTHONPATH:..:../lib:../common
 mkdir -p log
 scripts_path=$(cd $(dirname $0); pwd)
 log_path=${scripts_path}"/log"
@@ -14,6 +14,7 @@ base_dir=${scripts_path}"/../.."
 cfg=config.yaml
 ip=127.0.0.1
 use_ssl=0      # 0: not use ssl,  1: use ssl
+use_consul=0   # 0: not use consul, 1: use consul
 # if modify, must absolute path to python37
 python_command=python3
 
@@ -25,7 +26,7 @@ mkdir -p ${data_svc_log}
 for port in $(seq ${data_svc_base_port} $[${data_svc_base_port}+${data_svc_num}-1])
 do 
     echo "start data_svc that use port ${port}"
-    nohup $python_command main.py $cfg --bind_ip=${ip} --port=${port} --schedule_svc=${ip}:${schedule_port} > ${data_svc_log}/data_svc_${port}.log 2>&1 &
+    nohup $python_command main.py $cfg --bind_ip=${ip} --port=${port} --schedule_svc=${ip}:${schedule_port} --use_consul=${use_consul} > ${data_svc_log}/data_svc_${port}.log 2>&1 &
     schedule_port=$[${schedule_port}+1]
 done
 
@@ -37,7 +38,7 @@ mkdir -p ${compute_svc_log}
 for port in $(seq ${compute_svc_base_port} $[${compute_svc_base_port}+${compute_svc_num}-1])
 do 
     echo "start compute_svc that use port ${port}"
-    nohup $python_command main.py $cfg --bind_ip=${ip} --port=${port} --schedule_svc=${ip}:${schedule_port} > ${compute_svc_log}/compute_svc_${port}.log 2>&1 &
+    nohup $python_command main.py $cfg --bind_ip=${ip} --port=${port} --schedule_svc=${ip}:${schedule_port} --use_consul=${use_consul} > ${compute_svc_log}/compute_svc_${port}.log 2>&1 &
     schedule_port=$[${schedule_port}+1]
 done
 

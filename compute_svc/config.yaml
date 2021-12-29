@@ -21,7 +21,7 @@ certs:
 consul:
   service_ip: 10.1.1.10
   service_port: 8500
-  name: dataNode
-  tag: data
+  name: jobService
+  tag: job
   interval: 3s
   deregister: 3s

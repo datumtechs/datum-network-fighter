@@ -64,10 +64,10 @@ def _dump_yaml_to_remote(dict_, target):
 
 def update_svc_cfg(scp, remote_dir, cfg, svc_type):
     # json_key: cfg_file_key
-    key_align = {'internal_host': 'bind_ip', 'rpc_port': 'port', 
-                 'task_port_range': 'task_port_range', 'pass_via': 'pass_via', 
+    key_align = {'internal_host': 'bind_ip', 'rpc_port': 'port',
+                 'task_port_range': 'task_port_range', 'pass_via': 'pass_via',
                  'data_dir': 'data_root', 'code_dir': 'code_root_dir',
-                 'results_dir': 'results_root_dir', 'schedule_svc': 'schedule_svc'}
+                 'results_dir': 'results_root_dir'}
     cfg = {k: v for k, v in cfg.items() if k in key_align.keys()}
     cfg = {key_align[k]: v for k, v in cfg.items()}
     cfg_tmpl = f'{svc_type}/config.yaml'
@@ -224,7 +224,6 @@ if __name__ == '__main__':
     certs_zip = args.certs_zip
     use_ssl = args.use_ssl
 
-    
     if args.clean_all:
         clean_all_directory(node_cfg)
         kill_all(node_cfg)

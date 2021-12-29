@@ -11,15 +11,15 @@ import functools
 
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
-from common.report_engine import report_task_resource_usage, report_task_result_file_summary
+from common.report_engine import report_task_resource_usage, report_task_result, monitor_resource_usage
 from common.io_channel_helper import get_channel_config
 
 
 log = logging.getLogger(__name__)
 
 class Task:
-    def __init__(self, cfg, task_id, party_id, contract_id, data_id, env_id, peers,
-                 contract_cfg, data_party, computation_party, result_party):
+    def __init__(self, cfg, task_id, party_id, contract_id, data_id, env_id, peers, contract_cfg,
+                 data_party, computation_party, result_party, duration, limit_memory, limit_cpu):
         log.info(f'thread id: {threading.get_ident()}')
         self.cfg = cfg
         self.id_ = task_id
@@ -37,6 +37,9 @@ class Task:
         self.data_party = data_party
         self.computation_party = computation_party
         self.result_party = result_party
+        self.limit_time = duration/1000  # s
+        self.limit_memory = limit_memory
+        self.limit_cpu = limit_cpu
 
         if self._party_id in (self.data_party + self.result_party):
             self.event_type = DATA_EVENT
@@ -47,6 +50,7 @@ class Task:
         else:
             self.event_type = None
         
+        self.create_event = functools.partial(event_engine.create_event, task_id=self.id, party_id=self.party_id)
         self.fire_event = functools.partial(event_engine.fire_event, task_id=self.id, party_id=self.party_id)
 
     @property
@@ -67,12 +71,18 @@ class Task:
                     self.id, self.party_id, self.party_type, self.cfg['bind_ip'], self.cfg['port'], self.cfg['total_bandwidth'], 10))
         report_resource.daemon = True
         report_resource.start()
+
+        monitor_resource = threading.Thread(target=monitor_resource_usage, args=(current_task_pid, self.limit_time,
+                    self.limit_memory, self.limit_cpu, self.cfg['schedule_svc'], self.create_event, self.event_type))
+        monitor_resource.daemon = True
+        monitor_resource.start()
         
         try:
             self.download_algo()
             self.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], "download contract success.")
         except Exception as e:
-            self.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail. {str(e)[:100]}")
+            log.exception(repr(e))
+            self.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail.")
             self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
 
         self.build_env()
@@ -106,13 +116,13 @@ class Task:
                 file_summary = {"task_id": self.id, "origin_id": data_id, "file_path": file_path,
                                 "ip": self.cfg["bind_ip"], "port": self.cfg["port"]}
                 log.info(f'start report task result file summary.')
-                report_task_result_file_summary(self.cfg['schedule_svc'], file_summary)
+                report_task_result(self.cfg['schedule_svc'], 'result_file', file_summary)
                 log.info(f'finish report task result file summary. ')
             self.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], "contract execute success.")
             self.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task success.")
         except Exception as e:
             log.exception(repr(e))
-            self.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed. {str(e)[:100]}")
+            self.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed.")
             self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
         finally:
             log.info('task final clean')

@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os
+import sys
 import time
 
 import grpc
@@ -9,6 +10,8 @@ import pandas as pd
 from google.protobuf import empty_pb2
 from prompt_toolkit import prompt
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
 from common.utils import load_cfg
 from lib import common_pb2
 from lib import compute_svc_pb2, compute_svc_pb2_grpc
@@ -40,7 +43,7 @@ def upload(args, stub):
     response = stub.UploadData(_upload_chunk(path))
     cost = time.time() - start
     size = os.stat(path).st_size
-    print('got data_id: {}, bytes: {}, time cost: {}, speed: {}'
+    print('got data_id: {}, bytes: {}, time cost: {}s, speed: {}'
           .format(response.data_id, size, cost, size / cost))
 
 
@@ -57,37 +60,52 @@ def upload_dir(args, stub):
             file = os.path.join(dir_, f)
             if os.path.isfile(file):
                 print(f'upload: {file}')
-                for i in _upload_chunk(file):
-                    yield i
-
-    response_it = stub.BatchUpload(files(path))
-    for ans in response_it:
-        print("received: " + ans.data_id)
+                start = time.time()
+                response = stub.UploadData(_upload_chunk(file))
+                cost = time.time() - start
+                size = os.stat(path).st_size
+                print('got data_id: {}, bytes: {}, time cost: {}, speed: {}'
+                    .format(response.data_id, size, cost, size / cost))
+    files(path)
 
 
 def _upload_chunk(path):
-    print('start sending content')
-    with open(path, 'rb') as content_file:
-        chunk_size = 1024
-        chunk = content_file.read(chunk_size)
-        while chunk:
-            yield data_svc_pb2.UploadRequest(content=chunk)
-            chunk = content_file.read(chunk_size)
-    print('sending content done')
-
+    '''
+    message UploadRequest {
+        string file_name = 1;
+        bytes content = 2;
+        string file_type = 3;
+        string description = 4;
+        repeated string columns = 5;
+        repeated string col_dtypes = 6;
+        repeated string keywords = 7;
+    }
+    '''
+    print(f'file path: {path}')
+    assert os.path.exists(path), f'file not exists: {path}'
     df = pd.read_csv(path)
-    meta = data_svc_pb2.FileInfo()
-    meta.file_name = os.path.basename(path)
-    meta.file_type = os.path.splitext(path)[1]
+    file_name = os.path.basename(path)
+    file_type = os.path.splitext(path)[1]
     cols, dtypes = [], []
     for c, t in df.dtypes.items():
         cols.append(c)
         dtypes.append(t)
-    meta.columns.extend(cols)
-    meta.col_dtypes.extend(str(dtypes))
-    yield data_svc_pb2.UploadRequest(meta=meta)
-    print('send meta data done.')
+    print('cols:', cols)
 
+    print('start sending content')
+    with open(path, 'rb') as file:
+        chunk_size = 1024
+        chunk = file.read(chunk_size)
+        while chunk:
+            yield data_svc_pb2.UploadRequest(file_name=file_name,
+                                             content=chunk,
+                                             file_type=file_type,
+                                             description='',
+                                             columns=cols,
+                                             col_dtypes=[''],
+                                             keywords=[''])
+            chunk = file.read(chunk_size)
+    print('sending content done')
 
 def download(args, stub):
     if not args or len(args) < 2:
@@ -203,6 +221,11 @@ def comp_run_task(args, stub):
     req.data_party.extend(data_parties)
     req.computation_party.extend(compute_parties)
     req.result_party.extend(result_parties)
+    req.duration = run_task_cfg.get('duration', 300*1000)  # ms
+    req.memory = run_task_cfg.get('memory', 2*1024*1024*1024) # Byte
+    req.processor = run_task_cfg.get('processor', 4)   # number
+    req.bandwidth = run_task_cfg.get('bandwidth', 20*1000)  # bps
+
     each_party = {d['party_id']: d for d in run_task_cfg['each_party']}
 
     peers = {}

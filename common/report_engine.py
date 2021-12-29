@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import os
 import sys
 import time
 import math
@@ -7,7 +8,7 @@ import queue
 import logging
 import psutil
 import grpc
-from common.consts import EVENT_QUEUE
+from common.consts import EVENT_QUEUE, COMMON_EVENT
 from lib.api import sys_rpc_api_pb2 as pb2
 from lib.api import sys_rpc_api_pb2_grpc as pb2_grpc
 
@@ -21,6 +22,7 @@ CLIENT_OPTIONS = [('grpc.enable_retries', 0),
 class ReportEngine(object):
 
     def __init__(self, server_addr: str):
+        assert server_addr, f'server_addr={server_addr} can not be empty.'
         self.conn = grpc.insecure_channel(server_addr)
         self.__client = pb2_grpc.YarnServiceStub(channel=self.conn)
 
@@ -197,7 +199,9 @@ def report_task_event(server_addr: str, stop_event):
             if 'new_event' in dir():
                 get_new_event = False
             try_cnt = try_cnt + 1
-            if (try_cnt < try_max_times):
+            if try_cnt == 1:
+                continue
+            elif (try_cnt < try_max_times):
                 time.sleep(0.5)
             elif (try_cnt == try_max_times):
                 log.info("waiting grpc server set up...")
@@ -207,35 +211,21 @@ def report_task_event(server_addr: str, stop_event):
         except Exception as e:
             raise
 
-
-def report_upload_file_summary(server_addr: str, summary: dict):
+def report_task_result(server_addr: str, report_type: str, content: dict):
     report_success = False
     try_max_times = 20
     try_cnt = 0
     while (not report_success):
         try:
             report_engine = ReportEngine(server_addr)
-            ret = report_engine.report_upload_file_summary(summary)
-            report_engine.close()
-            report_success = True
-            return ret
-        except grpc._channel._InactiveRpcError as e:
-            try_cnt = try_cnt + 1
-            if (try_cnt >= try_max_times):
-                raise
-            time.sleep(0.5)
-        except:
-            raise
-    
-
-def report_task_result_file_summary(server_addr: str, summary: dict):
-    report_success = False
-    try_max_times = 20
-    try_cnt = 0
-    while (not report_success):
-        try:
-            report_engine = ReportEngine(server_addr)
-            ret = report_engine.report_task_result_file_summary(summary)
+            if report_type == 'upload_file':
+                ret = report_engine.report_upload_file_summary(content)
+            elif report_type == 'result_file':
+                ret = report_engine.report_task_result_file_summary(content)
+            elif report_type == 'last_event':
+                ret = report_engine.report_task_event(content)
+            else:
+                raise ValueError(f'no report_type {report_type}')
             report_engine.close()
             report_success = True
             return ret
@@ -281,3 +271,41 @@ def report_task_resource_usage(task_pid, server_addr:str, task_id, party_id, nod
             time.sleep(0.5)
         except Exception as e:
             raise
+
+def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, server_addr, create_event, event_type):
+    log.info('monitor_resource_usage start.')
+    start_time = time.time()
+    p = psutil.Process(task_pid)
+    total_cpu_num = psutil.cpu_count()
+    memory_list, cpu_list= [], []
+    list_len = 20
+    while True:
+        use_time = time.time() - start_time
+        used_memory = p.memory_info().rss
+        used_processor = math.ceil(total_cpu_num * p.cpu_percent() / 100)
+        memory_list.insert(0, used_memory)
+        cpu_list.insert(0, used_processor)
+        try:
+            assert use_time <= limit_time, f"task used time:{round(use_time, 2)} exceeds the limit({limit_time}s)."
+            if len(memory_list) >= list_len:
+                memory_list = memory_list[:list_len]
+                avg_used_memory = sum(memory_list) / len(memory_list)
+                if limit_memory and (avg_used_memory > limit_memory):
+                    log.error(f"memory_list: {memory_list}")
+                    raise Exception(f"memory used({round(avg_used_memory, 2)}) exceeds the limit({limit_memory}B).")
+            if len(cpu_list) >= list_len:
+                cpu_list = cpu_list[:list_len]
+                avg_used_cpu = sum(cpu_list) / len(cpu_list)
+                if limit_cpu and (avg_used_cpu > limit_cpu):
+                    log.error(f"cpu_list: {cpu_list}")
+                    raise Exception(f"cpu used({round(avg_used_cpu, 2)}) exceeds the limit({limit_cpu}).")
+            time.sleep(1)
+        except Exception as e:
+            log.exception(str(e))
+            event = create_event(event_type["RESOURCE_LIMIT_FAILED"], str(e)[:80])
+            report_task_result(server_addr, 'last_event', event)
+            event = create_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
+            report_task_result(server_addr, 'last_event', event)
+            # ensure the event report, then kill process
+            p.kill()
+            p.wait()

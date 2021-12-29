@@ -18,6 +18,14 @@ class EventEngine(object):
     def __init__(self):
         self.__queue = EVENT_QUEUE
 
+    def create_event(self, event_type:str, content:str, task_id:str, party_id:str, identity_id=""):
+        event = Event(event_type)
+        create_at = int(time.time() * 1000)  # in ms
+        info = dict(task_id=task_id, party_id=party_id, content=content,
+                identity_id=identity_id, create_at=create_at)
+        event.dict_.update(info)
+        return event
+
     def fire_event(self, event_type:str, content:str, task_id:str, party_id:str, identity_id=""):
         '''
         Generate events and push them to the queue
@@ -30,12 +38,7 @@ class EventEngine(object):
             identity_id: The identity of the node that generated the event, 
                          the format is 'did:pid:0xeeeeff...efaab'
         '''
-
-        event = Event(event_type)
-        create_at = int(time.time() * 1000)  # in ms
-        info = dict(task_id=task_id, party_id=party_id, content=content, 
-                    identity_id=identity_id, create_at=create_at)
-        event.dict_.update(info)
+        event = self.create_event(event_type, content, task_id, party_id, identity_id)
         self.put_event(event)
 
     def put_event(self, event: Event) -> None:
