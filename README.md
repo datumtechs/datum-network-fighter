@@ -87,7 +87,9 @@
 * 做镜像
 
   * copy rosetta包 和 channel_sdk包到当前build context (在`fighter-py`)
-
+  
+  * 执行下一步之前检查如果提示no module build，请执行python -m pip install build -i https://pypi.douban.com/simple/
+  
   * 编译好数据和计算服务包 (`python -m build -w`，结果在`./dist`)
 
   * build

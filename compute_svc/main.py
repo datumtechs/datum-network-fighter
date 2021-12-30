@@ -7,13 +7,19 @@ from concurrent import futures
 from signal import signal, SIGTERM
 
 from grpc_reflection.v1alpha import reflection
-from config import cfg
+try:
+    from config import cfg
+except:
+    from metis.data_svc.config import cfg
+try:
+    from svc import DataProvider
+except:
+    from metis.data_svc.svc import DataProvider
 from common.consts import GRPC_OPTIONS
 from common.report_engine import report_task_event
 from common.task_manager import TaskManager
 from common.utils import load_cfg
 from lib import compute_svc_pb2, compute_svc_pb2_grpc
-from svc import ComputeProvider
 from consul_client.api import get_consul_client_obj
 
 logging.basicConfig(
