@@ -12,18 +12,17 @@ try:
 except:
     from metis.data_svc.config import cfg
 try:
-    from svc import DataProvider
+    from compute_svc.svc import ComputeProvider
 except:
-    from metis.data_svc.svc import DataProvider
-from config import cfg
+    from metis.data_svc.svc import ComputeProvider
 from common.consts import GRPC_OPTIONS
 from common.report_engine import report_task_event
 from common.task_manager import TaskManager
 from common.utils import load_cfg, get_schedule_svc
 from lib import compute_svc_pb2, compute_svc_pb2_grpc
-from compute_svc.svc import ComputeProvider
 from consul_client.api import get_consul_client_obj
 from consul_client.health import health_grpc_check
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -101,7 +100,8 @@ def main():
         all_rpcs_done_event = server.stop(5)
         all_rpcs_done_event.wait(5)
         event_stop.set()
-        consul_client_obj.stop()
+        if args.use_consul:
+            consul_client_obj.stop()
         log.info("Shut down gracefully")
 
     signal(SIGTERM, handle_sigterm)
