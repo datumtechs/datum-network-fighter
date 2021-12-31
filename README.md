@@ -1,3 +1,6 @@
+### 注意
+如果没有修改系统python的软链接的情况下，则需要你在执行以下操作中指定所需python3.7版本的绝对路径，例如：
+/usb/bin/python3.7 -m pip list
 ### 步骤
 0. ` git clone -b develop --recurse-submodules https://github.com/Metisnetwork/Metis-Fighter.git && cd Metis-Fighter`
 1. 安装依赖：`pip install -r requirements.txt`
@@ -87,7 +90,9 @@
 * 做镜像
 
   * copy rosetta包 和 channel_sdk包到当前build context (在`fighter-py`)
-
+  
+  * 执行下一步之前检查如果提示no module build，请执行python -m pip install build -i https://pypi.douban.com/simple/
+  
   * 编译好数据和计算服务包 (`python -m build -w`，结果在`./dist`)
 
   * build
@@ -138,4 +143,14 @@
     
     ```
 
-    
+
+## v3
+
+- 1.一键部署启动命令
+
+  ~~~
+  source start_v3_service.sh config.cfg service_type requirements.txt
+  ~~~
+
+  - config.cfg是数据或者计算服务的配置文件
+  - service_type为data即为数据服务，为compute即为计算服务，需要安装的python 三方模块requirements.txt，例如channel-sdk、rosetta等

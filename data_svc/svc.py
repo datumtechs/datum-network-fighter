@@ -7,7 +7,10 @@ import time
 
 import grpc
 import psutil
-
+try:
+    from config import cfg
+except:
+    from metis.data_svc.config import cfg
 from common.report_engine import report_task_result
 from config import cfg
 from lib import common_pb2

@@ -1,6 +1,7 @@
 import yaml
 import time
 import logging
+from grpc import _common
 
 
 log = logging.getLogger(__name__)
@@ -38,3 +39,7 @@ def process_recv_address(cfg, pipe):
     while True:
         cfg['schedule_svc'] = pipe.recv()
         time.sleep(3)
+
+def check_grpc_channel_state(channel, try_to_connect=True):
+    result = channel._channel.check_connectivity_state(try_to_connect)
+    return _common.CYGRPC_CONNECTIVITY_STATE_TO_CHANNEL_CONNECTIVITY[result]

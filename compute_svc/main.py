@@ -7,6 +7,14 @@ from concurrent import futures
 from signal import signal, SIGTERM, SIGKILL
 
 from grpc_reflection.v1alpha import reflection
+try:
+    from config import cfg
+except:
+    from metis.data_svc.config import cfg
+try:
+    from svc import DataProvider
+except:
+    from metis.data_svc.svc import DataProvider
 from config import cfg
 from common.consts import GRPC_OPTIONS
 from common.report_engine import report_task_event
