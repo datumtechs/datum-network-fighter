@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10lib/common.proto\x12\x06\x63ommon\"\xb2\x02\n\x0eTaskReadyGoReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x13\n\x0b\x63ontract_id\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x03 \x01(\t\x12\x10\n\x08party_id\x18\x04 \x01(\t\x12\x0e\n\x06\x65nv_id\x18\x05 \x01(\t\x12*\n\x05peers\x18\x06 \x03(\x0b\x32\x1b.common.TaskReadyGoReq.Peer\x12\x14\n\x0c\x63ontract_cfg\x18\x07 \x01(\t\x12\x12\n\ndata_party\x18\x08 \x03(\t\x12\x19\n\x11\x63omputation_party\x18\t \x03(\t\x12\x14\n\x0cresult_party\x18\n \x03(\t\x1a@\n\x04Peer\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x12\x10\n\x08party_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\"+\n\x10TaskReadyGoReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\" \n\rTaskCancelReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"*\n\x0fTaskCancelReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\tb\x06proto3'
+  serialized_pb=b'\n\x10lib/common.proto\x12\x06\x63ommon\"\xfa\x02\n\x0eTaskReadyGoReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x13\n\x0b\x63ontract_id\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x03 \x01(\t\x12\x10\n\x08party_id\x18\x04 \x01(\t\x12\x0e\n\x06\x65nv_id\x18\x05 \x01(\t\x12*\n\x05peers\x18\x06 \x03(\x0b\x32\x1b.common.TaskReadyGoReq.Peer\x12\x14\n\x0c\x63ontract_cfg\x18\x07 \x01(\t\x12\x12\n\ndata_party\x18\x08 \x03(\t\x12\x19\n\x11\x63omputation_party\x18\t \x03(\t\x12\x14\n\x0cresult_party\x18\n \x03(\t\x12\x10\n\x08\x64uration\x18\x0b \x01(\x04\x12\x0e\n\x06memory\x18\x0c \x01(\x04\x12\x11\n\tprocessor\x18\r \x01(\r\x12\x11\n\tbandwidth\x18\x0e \x01(\x04\x1a@\n\x04Peer\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x12\x10\n\x08party_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\"+\n\x10TaskReadyGoReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"2\n\rTaskCancelReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\"*\n\x0fTaskCancelReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\tb\x06proto3'
 )
 
 
@@ -73,8 +73,8 @@ _TASKREADYGOREQ_PEER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=271,
-  serialized_end=335,
+  serialized_start=343,
+  serialized_end=407,
 )
 
 _TASKREADYGOREQ = _descriptor.Descriptor(
@@ -155,6 +155,34 @@ _TASKREADYGOREQ = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='duration', full_name='common.TaskReadyGoReq.duration', index=10,
+      number=11, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='memory', full_name='common.TaskReadyGoReq.memory', index=11,
+      number=12, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='processor', full_name='common.TaskReadyGoReq.processor', index=12,
+      number=13, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='bandwidth', full_name='common.TaskReadyGoReq.bandwidth', index=13,
+      number=14, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -168,7 +196,7 @@ _TASKREADYGOREQ = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=29,
-  serialized_end=335,
+  serialized_end=407,
 )
 
 
@@ -206,8 +234,8 @@ _TASKREADYGOREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=337,
-  serialized_end=380,
+  serialized_start=409,
+  serialized_end=452,
 )
 
 
@@ -226,6 +254,13 @@ _TASKCANCELREQ = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='party_id', full_name='common.TaskCancelReq.party_id', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -238,8 +273,8 @@ _TASKCANCELREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=382,
-  serialized_end=414,
+  serialized_start=454,
+  serialized_end=504,
 )
 
 
@@ -277,8 +312,8 @@ _TASKCANCELREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=416,
-  serialized_end=458,
+  serialized_start=506,
+  serialized_end=548,
 )
 
 _TASKREADYGOREQ_PEER.containing_type = _TASKREADYGOREQ

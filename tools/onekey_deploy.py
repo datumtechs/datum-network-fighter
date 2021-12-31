@@ -145,13 +145,13 @@ def kill_svc(ssh):
     print("pids:", pids)
     if pids:
         pids = ' '.join(pids)
-        cmd = f'kill -9 {pids}'
+        cmd = f'kill {pids}'
         print(cmd)
         ssh.exec_command(cmd)
     print("child_pids:", child_pids)
     if child_pids:
         child_pids = ' '.join(child_pids)
-        cmd = f'kill -9 {child_pids}'
+        cmd = f'kill {child_pids}'
         print(cmd)
         ssh.exec_command(cmd)
 

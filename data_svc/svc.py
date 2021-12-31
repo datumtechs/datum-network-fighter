@@ -7,8 +7,9 @@ import time
 
 import grpc
 import psutil
+
+from common.report_engine import report_task_result
 from config import cfg
-from common.report_engine import report_upload_file_summary
 from lib import common_pb2
 from lib import compute_svc_pb2, compute_svc_pb2_grpc
 from lib import data_svc_pb2, data_svc_pb2_grpc
@@ -44,92 +45,69 @@ def get_sys_stat(cfg):
 class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
     def __init__(self, task_manager):
         self.task_manager = task_manager
-        print(f'cur thread id: {threading.get_ident()}')
+        log.info(f'cur thread id: {threading.get_ident()}')
 
     def GetStatus(self, request, context):
         return get_sys_stat(self.task_manager.cfg)
 
     def UploadData(self, request_it, context):
-        print(type(request_it))
+        '''
+        message UploadRequest {
+            string file_name = 1;
+            bytes content = 2;
+            string file_type = 3;
+            string description = 4;
+            repeated string columns = 5;
+            repeated string col_dtypes = 6;
+            repeated string keywords = 7;
+        }
+        '''
+        log.info(type(request_it))
         folder = cfg['data_root']
         folder = os.path.abspath(folder)
         now = time.strftime("%Y%m%d-%H%M%S")
         if not os.path.exists(folder):
             os.makedirs(folder)
         path = os.path.join(folder, now)
-        print(f'save to {path}')
+        log.info(f'save to {path}')
         m = hashlib.sha256()
         with open(path, 'w') as fp:
             pass
         f = open(path, 'r+b')
-
         try:
             for req in request_it:
-                if req.WhichOneof('data') == 'meta':
-                    file = req.meta.file_name
-                    cols = req.meta.columns
-                    print(file, len(cols), ','.join(cols))
+                f.write(req.content)
+                m.update(req.content)
+                file = req.file_name
+                cols = req.columns
 
-                    stem, ext = os.path.splitext(os.path.basename(file))
-                    new_name = f'{stem}_{now}{ext}'
-                    m.update(new_name.encode())
-                    full_new_name = os.path.join(folder, new_name)
-                    print(full_new_name)
-                    os.rename(path, full_new_name)
-                    data_id = m.hexdigest()
-                    result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=full_new_name)
-                    file_summary = {"origin_id": data_id, "file_path": full_new_name, "ip": cfg["bind_ip"],
-                                    "port": cfg["port"]}
-                    ret = report_upload_file_summary(cfg['schedule_svc'], file_summary)
-                    log.info(ret)
-                    if ret and ret.status == 0:
-                        return result
-                    else:
-                        return data_svc_pb2.UploadReply(ok=False)
-                else:
-                    f.write(req.content)
-                    m.update(req.content)
+            log.info(f"origin filename: {file}, len(columns): {len(cols)}, columns:{','.join(cols)}")
+            stem, ext = os.path.splitext(os.path.basename(file))
+            new_name = f'{stem}_{now}{ext}'
+            m.update(new_name.encode())
+            full_new_name = os.path.join(folder, new_name)
+            log.info(f'full_new_name: {full_new_name}')
+            os.rename(path, full_new_name)
+            data_id = m.hexdigest()
+            file_summary = {"origin_id": data_id, "file_path": full_new_name, "ip": cfg["bind_ip"],
+                            "port": cfg["port"]}
+            ret = report_task_result(cfg['schedule_svc'], 'upload_file', file_summary)
+            log.info(f'report_upload_file_summary return: {ret}')
+            if ret and ret.status == 0:
+                result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=full_new_name)
+            else:
+                result = data_svc_pb2.UploadReply(ok=False)
+            return result
         except Exception as e:
             log.error(repr(e))
+            result = data_svc_pb2.UploadReply(ok=False)
+            return result
         finally:
             if f:
                 f.close()
 
     def BatchUpload(self, request_it, context):
-        print(context.peer(), f'cur thread id: {threading.get_ident()}')
-        folder = cfg['data_root']
-
-        state = 0
-        for i, req in enumerate(request_it):
-            if state == 0:
-                now = time.strftime("%Y%m%d-%H%M%S")
-                path = os.path.join(folder, now)
-                print(f'save to {path}')
-                m = hashlib.sha256()
-                with open(path, 'w') as fp:
-                    pass
-                f = open(path, 'r+b')
-                state = 1
-
-            if req.WhichOneof('data') == 'meta':
-                file = req.meta.file_name
-                cols = req.meta.columns
-                print(file, len(cols), ','.join(cols))
-
-                stem, ext = os.path.splitext(os.path.basename(file))
-                new_name = f'{stem}_{now}{ext}'
-                full_name = os.path.join(folder, new_name)
-                print(full_name)
-                os.rename(path, full_name)
-                data_id = m.hexdigest()
-                state = 0
-                if f:
-                    f.close()
-                result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=full_name)
-                yield result
-            else:
-                f.write(req.content)
-                m.update(req.content)
+        raise NotImplementedError('deprecated, to remove')
 
     def DownloadData(self, request, context):
         compress_file_name = None
@@ -201,15 +179,15 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         return ans
 
     def _send_dat(self, dat, to):
-        print(f'async send data(size: {dat.size}) to {to}')
+        log.info(f'async send data(size: {dat.size}) to {to}')
         with grpc.insecure_channel(to) as channel:
             stub = compute_svc_pb2_grpc.ComputeProviderStub(channel)
             req = compute_svc_pb2.UploadShardReq(task_id='0xC0DE01', data_id='0xDA7A1234')
             response = stub.UploadShard(req)
-            print(response.ok)
+            log.info(response.ok)
 
     def ListData(self, request, context):
-        print(context.peer())
+        log.info(context.peer())
         ans = data_svc_pb2.ListDataReply()
         folder = cfg['data_root']
         if not os.path.exists(folder):
@@ -218,7 +196,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
         for f in files:
             path = os.path.join(folder, f)
             sz = os.path.getsize(path)
-            print(f'{f}: {sz}')
+            log.info(f'{f}: {sz}')
             row = ans.data.add()
             row.file_name = f
             row.size = sz

@@ -3,3 +3,10 @@ port: 50401
 thread_pool_size: 12
 data_svc_port: 50101
 compute_svc_port: 50201
+consul:
+  service_ip: 192.168.16.151
+  service_port: 8500
+  name: carrierService
+  tag: carrier
+  interval: 3s
+  deregister: 3s

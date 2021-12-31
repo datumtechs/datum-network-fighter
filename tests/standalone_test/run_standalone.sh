@@ -14,7 +14,7 @@ base_dir=${scripts_path}"/../.."
 cfg=config.yaml
 ip=127.0.0.1
 use_ssl=0      # 0: not use ssl,  1: use ssl
-use_consul=0   # 0: not use consul, 1: use consul
+use_consul=1   # 0: not use consul, 1: use consul
 # if modify, must absolute path to python37
 python_command=python3
 
@@ -27,7 +27,10 @@ for port in $(seq ${data_svc_base_port} $[${data_svc_base_port}+${data_svc_num}-
 do 
     echo "start data_svc that use port ${port}"
     nohup $python_command main.py $cfg --bind_ip=${ip} --port=${port} --schedule_svc=${ip}:${schedule_port} --use_consul=${use_consul} > ${data_svc_log}/data_svc_${port}.log 2>&1 &
-    schedule_port=$[${schedule_port}+1]
+    if [ $use_consul -eq 0 ]
+    then
+        schedule_port=$[${schedule_port}+1]
+    fi
 done
 
 
@@ -39,7 +42,10 @@ for port in $(seq ${compute_svc_base_port} $[${compute_svc_base_port}+${compute_
 do 
     echo "start compute_svc that use port ${port}"
     nohup $python_command main.py $cfg --bind_ip=${ip} --port=${port} --schedule_svc=${ip}:${schedule_port} --use_consul=${use_consul} > ${compute_svc_log}/compute_svc_${port}.log 2>&1 &
-    schedule_port=$[${schedule_port}+1]
+    if [ $use_consul -eq 0 ]
+    then
+        schedule_port=$[${schedule_port}+1]
+    fi
 done
 
 
@@ -63,11 +69,16 @@ done
 cd $base_dir/tests/schedule_svc
 schedule_svc_log=${log_path}"/schedule_svc"
 mkdir -p ${schedule_svc_log}
-for port in $(seq ${schedule_svc_base_port} $[${schedule_svc_base_port}+${schedule_svc_num}-1])
-do
-    echo "start schedule_svc that use port ${port}"
-    PYTHONPATH="../..:../../protos/:../../common" nohup $python_command main.py $cfg --bind_ip=${ip} --port=${port} > ${schedule_svc_log}/schedule_svc_${port}.log 2>&1 &
-done
+if [ $use_consul -eq 0 ]
+then
+    for port in $(seq ${schedule_svc_base_port} $[${schedule_svc_base_port}+${schedule_svc_num}-1])
+    do
+        echo "start schedule_svc that use port ${port}"
+        PYTHONPATH="../..:../../lib/:../../common" nohup $python_command main.py $cfg --bind_ip=${ip} --port=${port} --use_consul=${use_consul} > ${schedule_svc_log}/schedule_svc_${port}.log 2>&1 &
+    done
+else
+    PYTHONPATH="../..:../../lib/:../../common" nohup $python_command main.py $cfg --bind_ip=${ip} --port=${schedule_port} --use_consul=${use_consul} > ${schedule_svc_log}/schedule_svc_${schedule_port}.log 2>&1 &
+fi
 
 
 ############## console #############

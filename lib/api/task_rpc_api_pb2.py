@@ -25,7 +25,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z)github.com/RosettaFlow/Carrier-Go/lib/api',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1alib/api/task_rpc_api.proto\x12\x06rpcapi\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\x1a\x18lib/types/taskdata.proto\x1a\x1clib/types/resourcedata.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x9f\x04\n\x0eTaskDetailShow\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\x0c\n\x04user\x18\x03 \x01(\t\x12)\n\tuser_type\x18\x04 \x01(\x0e\x32\x16.api.protobuf.UserType\x12.\n\x06sender\x18\x05 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x35\n\ralgo_supplier\x18\x06 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x34\n\x0e\x64\x61ta_suppliers\x18\x07 \x03(\x0b\x32\x1c.rpcapi.TaskDataSupplierShow\x12\x36\n\x0fpower_suppliers\x18\x08 \x03(\x0b\x32\x1d.rpcapi.TaskPowerSupplierShow\x12\x31\n\treceivers\x18\t \x03(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x11\n\tcreate_at\x18\n \x01(\x04\x12\x10\n\x08start_at\x18\x0b \x01(\x04\x12\x0e\n\x06\x65nd_at\x18\x0c \x01(\x04\x12&\n\x05state\x18\r \x01(\x0e\x32\x17.api.protobuf.TaskState\x12=\n\x0eoperation_cost\x18\x0e \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12\x0c\n\x04\x64\x65sc\x18\x0f \x01(\t\"x\n\x14TaskDataSupplierShow\x12\x34\n\x0corganization\x18\x01 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x13\n\x0bmetadata_id\x18\x02 \x01(\t\x12\x15\n\rmetadata_name\x18\x03 \x01(\t\"\x7f\n\x15TaskPowerSupplierShow\x12\x34\n\x0corganization\x18\x01 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x30\n\npower_info\x18\x02 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\"\x8f\x01\n\rTaskEventShow\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x0f\n\x07task_id\x18\x02 \x01(\t\x12)\n\x05owner\x18\x03 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12\x10\n\x08party_id\x18\x04 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x05 \x01(\t\x12\x11\n\tcreate_at\x18\x06 \x01(\x04\"D\n\x15GetTaskDetailResponse\x12+\n\x0binformation\x18\x01 \x01(\x0b\x32\x16.rpcapi.TaskDetailShow\"j\n\x19GetTaskDetailListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x30\n\ttask_list\x18\x03 \x03(\x0b\x32\x1d.rpcapi.GetTaskDetailResponse\"*\n\x17GetTaskEventListRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"4\n GetTaskEventListByTaskIdsRequest\x12\x10\n\x08task_ids\x18\x01 \x03(\t\"g\n\x18GetTaskEventListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12.\n\x0ftask_event_list\x18\x03 \x03(\x0b\x32\x15.rpcapi.TaskEventShow\"\x90\x04\n\x19PublishTaskDeclareRequest\x12\x11\n\ttask_name\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12)\n\tuser_type\x18\x03 \x01(\x0e\x32\x16.api.protobuf.UserType\x12.\n\x06sender\x18\x04 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x35\n\ralgo_supplier\x18\x05 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x37\n\x0e\x64\x61ta_suppliers\x18\x06 \x03(\x0b\x32\x1f.rpcapi.TaskDataSupplierDeclare\x12\x17\n\x0fpower_party_ids\x18\x07 \x03(\t\x12\x31\n\treceivers\x18\x08 \x03(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12=\n\x0eoperation_cost\x18\t \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12\x1f\n\x17\x63\x61lculate_contract_code\x18\n \x01(\t\x12 \n\x18\x64\x61ta_split_contract_code\x18\x0b \x01(\t\x12\x1d\n\x15\x63ontract_extra_params\x18\x0c \x01(\t\x12\x0c\n\x04sign\x18\r \x01(\x0c\x12\x0c\n\x04\x64\x65sc\x18\x0e \x01(\t\"\x83\x01\n\x17TaskDataSupplierDeclare\x12\x34\n\x0corganization\x18\x01 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x32\n\rmetadata_info\x18\x02 \x01(\x0b\x32\x1b.rpcapi.TaskMetadataDeclare\"X\n\x13TaskMetadataDeclare\x12\x13\n\x0bmetadata_id\x18\x01 \x01(\t\x12\x12\n\nkey_column\x18\x02 \x01(\r\x12\x18\n\x10selected_columns\x18\x03 \x03(\r\"J\n\x1aPublishTaskDeclareResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x0f\n\x07task_id\x18\x03 \x01(\t\"n\n\x14TerminateTaskRequest\x12\x0c\n\x04user\x18\x01 \x01(\t\x12)\n\tuser_type\x18\x02 \x01(\x0e\x32\x16.api.protobuf.UserType\x12\x0f\n\x07task_id\x18\x03 \x01(\t\x12\x0c\n\x04sign\x18\x0c \x01(\x0c\x32\x8b\x05\n\x0bTaskService\x12m\n\x11GetTaskDetailList\x12\x16.google.protobuf.Empty\x1a!.rpcapi.GetTaskDetailListResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/carrier/v1/task/list\x12|\n\x10GetTaskEventList\x12\x1f.rpcapi.GetTaskEventListRequest\x1a .rpcapi.GetTaskEventListResponse\"%\x82\xd3\xe4\x93\x02\x1f\"\x1a/carrier/v1/task/eventList:\x01*\x12\x97\x01\n\x19GetTaskEventListByTaskIds\x12(.rpcapi.GetTaskEventListByTaskIdsRequest\x1a .rpcapi.GetTaskEventListResponse\".\x82\xd3\xe4\x93\x02(\"#/carrier/v1/task/eventListByTaskIds:\x01*\x12\x80\x01\n\x12PublishTaskDeclare\x12!.rpcapi.PublishTaskDeclareRequest\x1a\".rpcapi.PublishTaskDeclareResponse\"#\x82\xd3\xe4\x93\x02\x1d\"\x18/carrier/v1/task/publish:\x01*\x12r\n\rTerminateTask\x12\x1c.rpcapi.TerminateTaskRequest\x1a\x1c.api.protobuf.SimpleResponse\"%\x82\xd3\xe4\x93\x02\x1f\"\x1a/carrier/v1/task/terminate:\x01*B+Z)github.com/RosettaFlow/Carrier-Go/lib/apib\x06proto3'
+  serialized_pb=b'\n\x1alib/api/task_rpc_api.proto\x12\x06rpcapi\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\x1a\x18lib/types/taskdata.proto\x1a\x1clib/types/resourcedata.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xb2\x04\n\x0eTaskDetailShow\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\x0c\n\x04user\x18\x03 \x01(\t\x12)\n\tuser_type\x18\x04 \x01(\x0e\x32\x16.api.protobuf.UserType\x12.\n\x06sender\x18\x05 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x35\n\ralgo_supplier\x18\x06 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x34\n\x0e\x64\x61ta_suppliers\x18\x07 \x03(\x0b\x32\x1c.rpcapi.TaskDataSupplierShow\x12\x36\n\x0fpower_suppliers\x18\x08 \x03(\x0b\x32\x1d.rpcapi.TaskPowerSupplierShow\x12\x31\n\treceivers\x18\t \x03(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x11\n\tcreate_at\x18\n \x01(\x04\x12\x10\n\x08start_at\x18\x0b \x01(\x04\x12\x0e\n\x06\x65nd_at\x18\x0c \x01(\x04\x12&\n\x05state\x18\r \x01(\x0e\x32\x17.api.protobuf.TaskState\x12=\n\x0eoperation_cost\x18\x0e \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12\x0c\n\x04\x64\x65sc\x18\x0f \x01(\t\x12\x11\n\tupdate_at\x18\x10 \x01(\x04\"x\n\x14TaskDataSupplierShow\x12\x34\n\x0corganization\x18\x01 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x13\n\x0bmetadata_id\x18\x02 \x01(\t\x12\x15\n\rmetadata_name\x18\x03 \x01(\t\"\x7f\n\x15TaskPowerSupplierShow\x12\x34\n\x0corganization\x18\x01 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x30\n\npower_info\x18\x02 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\"\x8f\x01\n\rTaskEventShow\x12\x0c\n\x04type\x18\x01 \x01(\t\x12\x0f\n\x07task_id\x18\x02 \x01(\t\x12)\n\x05owner\x18\x03 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12\x10\n\x08party_id\x18\x04 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x05 \x01(\t\x12\x11\n\tcreate_at\x18\x06 \x01(\x04\"D\n\x15GetTaskDetailResponse\x12+\n\x0binformation\x18\x01 \x01(\x0b\x32\x16.rpcapi.TaskDetailShow\"C\n\x18GetTaskDetailListRequest\x12\x14\n\x0clast_updated\x18\x01 \x01(\x04\x12\x11\n\tpage_size\x18\x02 \x01(\x04\"5\n!GetTaskDetailListByTaskIdsRequest\x12\x10\n\x08task_ids\x18\x01 \x03(\t\"j\n\x19GetTaskDetailListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x30\n\ttask_list\x18\x03 \x03(\x0b\x32\x1d.rpcapi.GetTaskDetailResponse\"*\n\x17GetTaskEventListRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"4\n GetTaskEventListByTaskIdsRequest\x12\x10\n\x08task_ids\x18\x01 \x03(\t\"g\n\x18GetTaskEventListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12.\n\x0ftask_event_list\x18\x03 \x03(\x0b\x32\x15.rpcapi.TaskEventShow\"\x90\x04\n\x19PublishTaskDeclareRequest\x12\x11\n\ttask_name\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12)\n\tuser_type\x18\x03 \x01(\x0e\x32\x16.api.protobuf.UserType\x12.\n\x06sender\x18\x04 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x35\n\ralgo_supplier\x18\x05 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x37\n\x0e\x64\x61ta_suppliers\x18\x06 \x03(\x0b\x32\x1f.rpcapi.TaskDataSupplierDeclare\x12\x17\n\x0fpower_party_ids\x18\x07 \x03(\t\x12\x31\n\treceivers\x18\x08 \x03(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12=\n\x0eoperation_cost\x18\t \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12\x1f\n\x17\x63\x61lculate_contract_code\x18\n \x01(\t\x12 \n\x18\x64\x61ta_split_contract_code\x18\x0b \x01(\t\x12\x1d\n\x15\x63ontract_extra_params\x18\x0c \x01(\t\x12\x0c\n\x04sign\x18\r \x01(\x0c\x12\x0c\n\x04\x64\x65sc\x18\x0e \x01(\t\"\x83\x01\n\x17TaskDataSupplierDeclare\x12\x34\n\x0corganization\x18\x01 \x01(\x0b\x32\x1e.api.protobuf.TaskOrganization\x12\x32\n\rmetadata_info\x18\x02 \x01(\x0b\x32\x1b.rpcapi.TaskMetadataDeclare\"X\n\x13TaskMetadataDeclare\x12\x13\n\x0bmetadata_id\x18\x01 \x01(\t\x12\x12\n\nkey_column\x18\x02 \x01(\r\x12\x18\n\x10selected_columns\x18\x03 \x03(\r\"J\n\x1aPublishTaskDeclareResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x0f\n\x07task_id\x18\x03 \x01(\t\"n\n\x14TerminateTaskRequest\x12\x0c\n\x04user\x18\x01 \x01(\t\x12)\n\tuser_type\x18\x02 \x01(\x0e\x32\x16.api.protobuf.UserType\x12\x0f\n\x07task_id\x18\x03 \x01(\t\x12\x0c\n\x04sign\x18\x0c \x01(\x0c\x32\xaa\x06\n\x0bTaskService\x12w\n\x11GetTaskDetailList\x12 .rpcapi.GetTaskDetailListRequest\x1a!.rpcapi.GetTaskDetailListResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/carrier/v1/task/list\x12\x92\x01\n\x1aGetTaskDetailListByTaskIds\x12).rpcapi.GetTaskDetailListByTaskIdsRequest\x1a!.rpcapi.GetTaskDetailListResponse\"&\x82\xd3\xe4\x93\x02 \x12\x1e/carrier/v1/task/listByTaskIds\x12|\n\x10GetTaskEventList\x12\x1f.rpcapi.GetTaskEventListRequest\x1a .rpcapi.GetTaskEventListResponse\"%\x82\xd3\xe4\x93\x02\x1f\"\x1a/carrier/v1/task/eventList:\x01*\x12\x97\x01\n\x19GetTaskEventListByTaskIds\x12(.rpcapi.GetTaskEventListByTaskIdsRequest\x1a .rpcapi.GetTaskEventListResponse\".\x82\xd3\xe4\x93\x02(\"#/carrier/v1/task/eventListByTaskIds:\x01*\x12\x80\x01\n\x12PublishTaskDeclare\x12!.rpcapi.PublishTaskDeclareRequest\x1a\".rpcapi.PublishTaskDeclareResponse\"#\x82\xd3\xe4\x93\x02\x1d\"\x18/carrier/v1/task/publish:\x01*\x12r\n\rTerminateTask\x12\x1c.rpcapi.TerminateTaskRequest\x1a\x1c.api.protobuf.SimpleResponse\"%\x82\xd3\xe4\x93\x02\x1f\"\x1a/carrier/v1/task/terminate:\x01*B+Z)github.com/RosettaFlow/Carrier-Go/lib/apib\x06proto3'
   ,
   dependencies=[lib_dot_common_dot_base__pb2.DESCRIPTOR,lib_dot_common_dot_data__pb2.DESCRIPTOR,lib_dot_types_dot_taskdata__pb2.DESCRIPTOR,lib_dot_types_dot_resourcedata__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
@@ -145,6 +145,13 @@ _TASKDETAILSHOW = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='update_at', full_name='rpcapi.TaskDetailShow.update_at', index=15,
+      number=16, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -158,7 +165,7 @@ _TASKDETAILSHOW = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=200,
-  serialized_end=743,
+  serialized_end=762,
 )
 
 
@@ -203,8 +210,8 @@ _TASKDATASUPPLIERSHOW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=745,
-  serialized_end=865,
+  serialized_start=764,
+  serialized_end=884,
 )
 
 
@@ -242,8 +249,8 @@ _TASKPOWERSUPPLIERSHOW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=867,
-  serialized_end=994,
+  serialized_start=886,
+  serialized_end=1013,
 )
 
 
@@ -309,8 +316,8 @@ _TASKEVENTSHOW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=997,
-  serialized_end=1140,
+  serialized_start=1016,
+  serialized_end=1159,
 )
 
 
@@ -341,8 +348,79 @@ _GETTASKDETAILRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1142,
-  serialized_end=1210,
+  serialized_start=1161,
+  serialized_end=1229,
+)
+
+
+_GETTASKDETAILLISTREQUEST = _descriptor.Descriptor(
+  name='GetTaskDetailListRequest',
+  full_name='rpcapi.GetTaskDetailListRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='last_updated', full_name='rpcapi.GetTaskDetailListRequest.last_updated', index=0,
+      number=1, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='page_size', full_name='rpcapi.GetTaskDetailListRequest.page_size', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1231,
+  serialized_end=1298,
+)
+
+
+_GETTASKDETAILLISTBYTASKIDSREQUEST = _descriptor.Descriptor(
+  name='GetTaskDetailListByTaskIdsRequest',
+  full_name='rpcapi.GetTaskDetailListByTaskIdsRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='task_ids', full_name='rpcapi.GetTaskDetailListByTaskIdsRequest.task_ids', index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1300,
+  serialized_end=1353,
 )
 
 
@@ -387,8 +465,8 @@ _GETTASKDETAILLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1212,
-  serialized_end=1318,
+  serialized_start=1355,
+  serialized_end=1461,
 )
 
 
@@ -419,8 +497,8 @@ _GETTASKEVENTLISTREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1320,
-  serialized_end=1362,
+  serialized_start=1463,
+  serialized_end=1505,
 )
 
 
@@ -451,8 +529,8 @@ _GETTASKEVENTLISTBYTASKIDSREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1364,
-  serialized_end=1416,
+  serialized_start=1507,
+  serialized_end=1559,
 )
 
 
@@ -497,8 +575,8 @@ _GETTASKEVENTLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1418,
-  serialized_end=1521,
+  serialized_start=1561,
+  serialized_end=1664,
 )
 
 
@@ -620,8 +698,8 @@ _PUBLISHTASKDECLAREREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1524,
-  serialized_end=2052,
+  serialized_start=1667,
+  serialized_end=2195,
 )
 
 
@@ -659,8 +737,8 @@ _TASKDATASUPPLIERDECLARE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2055,
-  serialized_end=2186,
+  serialized_start=2198,
+  serialized_end=2329,
 )
 
 
@@ -705,8 +783,8 @@ _TASKMETADATADECLARE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2188,
-  serialized_end=2276,
+  serialized_start=2331,
+  serialized_end=2419,
 )
 
 
@@ -751,8 +829,8 @@ _PUBLISHTASKDECLARERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2278,
-  serialized_end=2352,
+  serialized_start=2421,
+  serialized_end=2495,
 )
 
 
@@ -804,8 +882,8 @@ _TERMINATETASKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2354,
-  serialized_end=2464,
+  serialized_start=2497,
+  serialized_end=2607,
 )
 
 _TASKDETAILSHOW.fields_by_name['user_type'].enum_type = lib_dot_common_dot_base__pb2._USERTYPE
@@ -837,6 +915,8 @@ DESCRIPTOR.message_types_by_name['TaskDataSupplierShow'] = _TASKDATASUPPLIERSHOW
 DESCRIPTOR.message_types_by_name['TaskPowerSupplierShow'] = _TASKPOWERSUPPLIERSHOW
 DESCRIPTOR.message_types_by_name['TaskEventShow'] = _TASKEVENTSHOW
 DESCRIPTOR.message_types_by_name['GetTaskDetailResponse'] = _GETTASKDETAILRESPONSE
+DESCRIPTOR.message_types_by_name['GetTaskDetailListRequest'] = _GETTASKDETAILLISTREQUEST
+DESCRIPTOR.message_types_by_name['GetTaskDetailListByTaskIdsRequest'] = _GETTASKDETAILLISTBYTASKIDSREQUEST
 DESCRIPTOR.message_types_by_name['GetTaskDetailListResponse'] = _GETTASKDETAILLISTRESPONSE
 DESCRIPTOR.message_types_by_name['GetTaskEventListRequest'] = _GETTASKEVENTLISTREQUEST
 DESCRIPTOR.message_types_by_name['GetTaskEventListByTaskIdsRequest'] = _GETTASKEVENTLISTBYTASKIDSREQUEST
@@ -882,6 +962,20 @@ GetTaskDetailResponse = _reflection.GeneratedProtocolMessageType('GetTaskDetailR
   # @@protoc_insertion_point(class_scope:rpcapi.GetTaskDetailResponse)
   })
 _sym_db.RegisterMessage(GetTaskDetailResponse)
+
+GetTaskDetailListRequest = _reflection.GeneratedProtocolMessageType('GetTaskDetailListRequest', (_message.Message,), {
+  'DESCRIPTOR' : _GETTASKDETAILLISTREQUEST,
+  '__module__' : 'lib.api.task_rpc_api_pb2'
+  # @@protoc_insertion_point(class_scope:rpcapi.GetTaskDetailListRequest)
+  })
+_sym_db.RegisterMessage(GetTaskDetailListRequest)
+
+GetTaskDetailListByTaskIdsRequest = _reflection.GeneratedProtocolMessageType('GetTaskDetailListByTaskIdsRequest', (_message.Message,), {
+  'DESCRIPTOR' : _GETTASKDETAILLISTBYTASKIDSREQUEST,
+  '__module__' : 'lib.api.task_rpc_api_pb2'
+  # @@protoc_insertion_point(class_scope:rpcapi.GetTaskDetailListByTaskIdsRequest)
+  })
+_sym_db.RegisterMessage(GetTaskDetailListByTaskIdsRequest)
 
 GetTaskDetailListResponse = _reflection.GeneratedProtocolMessageType('GetTaskDetailListResponse', (_message.Message,), {
   'DESCRIPTOR' : _GETTASKDETAILLISTRESPONSE,
@@ -956,23 +1050,33 @@ _TASKSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=2467,
-  serialized_end=3118,
+  serialized_start=2610,
+  serialized_end=3420,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetTaskDetailList',
     full_name='rpcapi.TaskService.GetTaskDetailList',
     index=0,
     containing_service=None,
-    input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
+    input_type=_GETTASKDETAILLISTREQUEST,
     output_type=_GETTASKDETAILLISTRESPONSE,
     serialized_options=b'\202\323\344\223\002\027\022\025/carrier/v1/task/list',
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
+    name='GetTaskDetailListByTaskIds',
+    full_name='rpcapi.TaskService.GetTaskDetailListByTaskIds',
+    index=1,
+    containing_service=None,
+    input_type=_GETTASKDETAILLISTBYTASKIDSREQUEST,
+    output_type=_GETTASKDETAILLISTRESPONSE,
+    serialized_options=b'\202\323\344\223\002 \022\036/carrier/v1/task/listByTaskIds',
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
     name='GetTaskEventList',
     full_name='rpcapi.TaskService.GetTaskEventList',
-    index=1,
+    index=2,
     containing_service=None,
     input_type=_GETTASKEVENTLISTREQUEST,
     output_type=_GETTASKEVENTLISTRESPONSE,
@@ -982,7 +1086,7 @@ _TASKSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='GetTaskEventListByTaskIds',
     full_name='rpcapi.TaskService.GetTaskEventListByTaskIds',
-    index=2,
+    index=3,
     containing_service=None,
     input_type=_GETTASKEVENTLISTBYTASKIDSREQUEST,
     output_type=_GETTASKEVENTLISTRESPONSE,
@@ -992,7 +1096,7 @@ _TASKSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='PublishTaskDeclare',
     full_name='rpcapi.TaskService.PublishTaskDeclare',
-    index=3,
+    index=4,
     containing_service=None,
     input_type=_PUBLISHTASKDECLAREREQUEST,
     output_type=_PUBLISHTASKDECLARERESPONSE,
@@ -1002,7 +1106,7 @@ _TASKSERVICE = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='TerminateTask',
     full_name='rpcapi.TaskService.TerminateTask',
-    index=4,
+    index=5,
     containing_service=None,
     input_type=_TERMINATETASKREQUEST,
     output_type=lib_dot_common_dot_base__pb2._SIMPLERESPONSE,

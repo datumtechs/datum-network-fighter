@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z+github.com/RosettaFlow/Carrier-Go/lib/types',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1clib/types/identitydata.proto\x12\x05types\x1a\x15lib/common/base.proto\"\xc5\x01\n\nIdentityPB\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x11\n\tnode_name\x18\x03 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x04 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x05 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12*\n\x06status\x18\x06 \x01(\x0e\x32\x1a.api.protobuf.CommonStatus\x12\x12\n\ncredential\x18\x07 \x01(\tB-Z+github.com/RosettaFlow/Carrier-Go/lib/typesb\x06proto3'
+  serialized_pb=b'\n\x1clib/types/identitydata.proto\x12\x05types\x1a\x15lib/common/base.proto\"\xfc\x01\n\nIdentityPB\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x11\n\tnode_name\x18\x03 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x04 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x05 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12*\n\x06status\x18\x06 \x01(\x0e\x32\x1a.api.protobuf.CommonStatus\x12\x12\n\ncredential\x18\x07 \x01(\t\x12\x11\n\tupdate_at\x18\x08 \x01(\x04\x12\x11\n\timage_url\x18\t \x01(\t\x12\x0f\n\x07\x64\x65tails\x18\n \x01(\tB-Z+github.com/RosettaFlow/Carrier-Go/lib/typesb\x06proto3'
   ,
   dependencies=[lib_dot_common_dot_base__pb2.DESCRIPTOR,])
 
@@ -84,6 +84,27 @@ _IDENTITYPB = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='update_at', full_name='types.IdentityPB.update_at', index=7,
+      number=8, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='image_url', full_name='types.IdentityPB.image_url', index=8,
+      number=9, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='details', full_name='types.IdentityPB.details', index=9,
+      number=10, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -97,7 +118,7 @@ _IDENTITYPB = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=63,
-  serialized_end=260,
+  serialized_end=315,
 )
 
 _IDENTITYPB.fields_by_name['data_status'].enum_type = lib_dot_common_dot_base__pb2._DATASTATUS

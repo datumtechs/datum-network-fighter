@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z\023../gateway/data_svc',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x12lib/data_svc.proto\x12\x07\x64\x61tasvc\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x10lib/common.proto\"\x8c\x01\n\x0f\x44ownloadRequest\x12\x11\n\tfile_path\x18\x01 \x01(\t\x12\x36\n\x07options\x18\x02 \x03(\x0b\x32%.datasvc.DownloadRequest.OptionsEntry\x1a.\n\x0cOptionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"Q\n\rDownloadReply\x12%\n\x06status\x18\x01 \x01(\x0e\x32\x13.datasvc.TaskStatusH\x00\x12\x11\n\x07\x63ontent\x18\x02 \x01(\x0cH\x00\x42\x06\n\x04\x64\x61ta\"|\n\x08\x46ileInfo\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x11\n\tfile_type\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0f\n\x07\x63olumns\x18\x04 \x03(\t\x12\x12\n\ncol_dtypes\x18\x05 \x03(\t\x12\x10\n\x08keywords\x18\x06 \x03(\t\"M\n\rUploadRequest\x12!\n\x04meta\x18\x01 \x01(\x0b\x32\x11.datasvc.FileInfoH\x00\x12\x11\n\x07\x63ontent\x18\x02 \x01(\x0cH\x00\x42\x06\n\x04\x64\x61ta\"=\n\x0bUploadReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\"\x80\x01\n\rListDataReply\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.datasvc.ListDataReply.Row\x1a\x45\n\x03Row\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x0c\n\x04info\x18\x02 \x01(\t\x12\x11\n\tfile_name\x18\x03 \x01(\t\x12\x0c\n\x04size\x18\x04 \x01(\x05\"|\n\x12GetDataDetailReply\x12\x0e\n\x06n_rows\x18\x01 \x01(\x05\x12/\n\x05items\x18\x02 \x03(\x0b\x32 .datasvc.GetDataDetailReply.Item\x1a%\n\x04Item\x12\x0e\n\x06\x63olumn\x18\x01 \x01(\t\x12\r\n\x05\x64type\x18\x02 \x01(\t\"\x8a\x02\n\x0eGetStatusReply\x12\x11\n\ttotal_cpu\x18\x01 \x01(\r\x12\x10\n\x08used_cpu\x18\x02 \x01(\r\x12\x10\n\x08idle_cpu\x18\x03 \x01(\r\x12\x14\n\x0ctotal_memory\x18\x04 \x01(\x04\x12\x13\n\x0bused_memory\x18\x05 \x01(\x04\x12\x13\n\x0bidle_memory\x18\x06 \x01(\x04\x12\x12\n\ntotal_disk\x18\x07 \x01(\x04\x12\x11\n\tused_disk\x18\x08 \x01(\x04\x12\x11\n\tidle_disk\x18\t \x01(\x04\x12\x17\n\x0ftotal_bandwidth\x18\n \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x0b \x01(\x04\x12\x16\n\x0eidle_bandwidth\x18\x0c \x01(\x04\";\n\x15SendSharesDataRequest\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x11\n\treceivers\x18\x02 \x03(\t\":\n\x13SendSharesDataReply\x12#\n\x06status\x18\x01 \x01(\x0e\x32\x13.datasvc.TaskStatus*@\n\nTaskStatus\x12\t\n\x05Start\x10\x00\x12\x0c\n\x08\x46inished\x10\x01\x12\r\n\tCancelled\x10\x02\x12\n\n\x06\x46\x61iled\x10\x03\x32\xba\x06\n\x0c\x44\x61taProvider\x12U\n\tGetStatus\x12\x16.google.protobuf.Empty\x1a\x17.datasvc.GetStatusReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/data/getStatus\x12R\n\x08ListData\x12\x16.google.protobuf.Empty\x1a\x16.datasvc.ListDataReply\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/data/listData\x12Y\n\nUploadData\x12\x16.datasvc.UploadRequest\x1a\x14.datasvc.UploadReply\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x10/data/uploadData:\x01*(\x01\x12]\n\x0b\x42\x61tchUpload\x12\x16.datasvc.UploadRequest\x1a\x14.datasvc.UploadReply\"\x1c\x82\xd3\xe4\x93\x02\x16\"\x11/data/batchUpload:\x01*(\x01\x30\x01\x12\x61\n\x0c\x44ownloadData\x12\x18.datasvc.DownloadRequest\x1a\x16.datasvc.DownloadReply\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x12/data/downLoadData:\x01*0\x01\x12>\n\nDeleteData\x12\x18.datasvc.DownloadRequest\x1a\x14.datasvc.UploadReply\"\x00\x12P\n\x0eSendSharesData\x12\x1e.datasvc.SendSharesDataRequest\x1a\x1c.datasvc.SendSharesDataReply\"\x00\x12i\n\x11HandleTaskReadyGo\x12\x16.common.TaskReadyGoReq\x1a\x18.common.TaskReadyGoReply\"\"\x82\xd3\xe4\x93\x02\x1c\"\x17/data/handleTaskReadyGo:\x01*\x12\x65\n\x10HandleCancelTask\x12\x15.common.TaskCancelReq\x1a\x17.common.TaskCancelReply\"!\x82\xd3\xe4\x93\x02\x1b\"\x16/data/handleCancelTask:\x01*B\x15Z\x13../gateway/data_svcb\x06proto3'
+  serialized_pb=b'\n\x12lib/data_svc.proto\x12\x07\x64\x61tasvc\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x10lib/common.proto\"\x8c\x01\n\x0f\x44ownloadRequest\x12\x11\n\tfile_path\x18\x01 \x01(\t\x12\x36\n\x07options\x18\x02 \x03(\x0b\x32%.datasvc.DownloadRequest.OptionsEntry\x1a.\n\x0cOptionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"Q\n\rDownloadReply\x12%\n\x06status\x18\x01 \x01(\x0e\x32\x13.datasvc.TaskStatusH\x00\x12\x11\n\x07\x63ontent\x18\x02 \x01(\x0cH\x00\x42\x06\n\x04\x64\x61ta\"|\n\x08\x46ileInfo\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x11\n\tfile_type\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0f\n\x07\x63olumns\x18\x04 \x03(\t\x12\x12\n\ncol_dtypes\x18\x05 \x03(\t\x12\x10\n\x08keywords\x18\x06 \x03(\t\"\x92\x01\n\rUploadRequest\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\x0c\x12\x11\n\tfile_type\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x0f\n\x07\x63olumns\x18\x05 \x03(\t\x12\x12\n\ncol_dtypes\x18\x06 \x03(\t\x12\x10\n\x08keywords\x18\x07 \x03(\t\"=\n\x0bUploadReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\"\x80\x01\n\rListDataReply\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.datasvc.ListDataReply.Row\x1a\x45\n\x03Row\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x0c\n\x04info\x18\x02 \x01(\t\x12\x11\n\tfile_name\x18\x03 \x01(\t\x12\x0c\n\x04size\x18\x04 \x01(\x05\"|\n\x12GetDataDetailReply\x12\x0e\n\x06n_rows\x18\x01 \x01(\x05\x12/\n\x05items\x18\x02 \x03(\x0b\x32 .datasvc.GetDataDetailReply.Item\x1a%\n\x04Item\x12\x0e\n\x06\x63olumn\x18\x01 \x01(\t\x12\r\n\x05\x64type\x18\x02 \x01(\t\"\x8a\x02\n\x0eGetStatusReply\x12\x11\n\ttotal_cpu\x18\x01 \x01(\r\x12\x10\n\x08used_cpu\x18\x02 \x01(\r\x12\x10\n\x08idle_cpu\x18\x03 \x01(\r\x12\x14\n\x0ctotal_memory\x18\x04 \x01(\x04\x12\x13\n\x0bused_memory\x18\x05 \x01(\x04\x12\x13\n\x0bidle_memory\x18\x06 \x01(\x04\x12\x12\n\ntotal_disk\x18\x07 \x01(\x04\x12\x11\n\tused_disk\x18\x08 \x01(\x04\x12\x11\n\tidle_disk\x18\t \x01(\x04\x12\x17\n\x0ftotal_bandwidth\x18\n \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x0b \x01(\x04\x12\x16\n\x0eidle_bandwidth\x18\x0c \x01(\x04\";\n\x15SendSharesDataRequest\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x11\n\treceivers\x18\x02 \x03(\t\":\n\x13SendSharesDataReply\x12#\n\x06status\x18\x01 \x01(\x0e\x32\x13.datasvc.TaskStatus*@\n\nTaskStatus\x12\t\n\x05Start\x10\x00\x12\x0c\n\x08\x46inished\x10\x01\x12\r\n\tCancelled\x10\x02\x12\n\n\x06\x46\x61iled\x10\x03\x32\xba\x06\n\x0c\x44\x61taProvider\x12U\n\tGetStatus\x12\x16.google.protobuf.Empty\x1a\x17.datasvc.GetStatusReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/data/getStatus\x12R\n\x08ListData\x12\x16.google.protobuf.Empty\x1a\x16.datasvc.ListDataReply\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/data/listData\x12Y\n\nUploadData\x12\x16.datasvc.UploadRequest\x1a\x14.datasvc.UploadReply\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x10/data/uploadData:\x01*(\x01\x12]\n\x0b\x42\x61tchUpload\x12\x16.datasvc.UploadRequest\x1a\x14.datasvc.UploadReply\"\x1c\x82\xd3\xe4\x93\x02\x16\"\x11/data/batchUpload:\x01*(\x01\x30\x01\x12\x61\n\x0c\x44ownloadData\x12\x18.datasvc.DownloadRequest\x1a\x16.datasvc.DownloadReply\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x12/data/downLoadData:\x01*0\x01\x12>\n\nDeleteData\x12\x18.datasvc.DownloadRequest\x1a\x14.datasvc.UploadReply\"\x00\x12P\n\x0eSendSharesData\x12\x1e.datasvc.SendSharesDataRequest\x1a\x1c.datasvc.SendSharesDataReply\"\x00\x12i\n\x11HandleTaskReadyGo\x12\x16.common.TaskReadyGoReq\x1a\x18.common.TaskReadyGoReply\"\"\x82\xd3\xe4\x93\x02\x1c\"\x17/data/handleTaskReadyGo:\x01*\x12\x65\n\x10HandleCancelTask\x12\x15.common.TaskCancelReq\x1a\x17.common.TaskCancelReply\"!\x82\xd3\xe4\x93\x02\x1b\"\x16/data/handleCancelTask:\x01*B\x15Z\x13../gateway/data_svcb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,lib_dot_common__pb2.DESCRIPTOR,])
 
@@ -57,8 +57,8 @@ _TASKSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1249,
-  serialized_end=1313,
+  serialized_start=1319,
+  serialized_end=1383,
 )
 _sym_db.RegisterEnumDescriptor(_TASKSTATUS)
 
@@ -267,9 +267,9 @@ _UPLOADREQUEST = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='meta', full_name='datasvc.UploadRequest.meta', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      name='file_name', full_name='datasvc.UploadRequest.file_name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -277,6 +277,41 @@ _UPLOADREQUEST = _descriptor.Descriptor(
       name='content', full_name='datasvc.UploadRequest.content', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='file_type', full_name='datasvc.UploadRequest.file_type', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='description', full_name='datasvc.UploadRequest.description', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='columns', full_name='datasvc.UploadRequest.columns', index=4,
+      number=5, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='col_dtypes', full_name='datasvc.UploadRequest.col_dtypes', index=5,
+      number=6, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='keywords', full_name='datasvc.UploadRequest.keywords', index=6,
+      number=7, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -291,14 +326,9 @@ _UPLOADREQUEST = _descriptor.Descriptor(
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
-    _descriptor.OneofDescriptor(
-      name='data', full_name='datasvc.UploadRequest.data',
-      index=0, containing_type=None,
-      create_key=_descriptor._internal_create_key,
-    fields=[]),
   ],
-  serialized_start=460,
-  serialized_end=537,
+  serialized_start=461,
+  serialized_end=607,
 )
 
 
@@ -343,8 +373,8 @@ _UPLOADREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=539,
-  serialized_end=600,
+  serialized_start=609,
+  serialized_end=670,
 )
 
 
@@ -396,8 +426,8 @@ _LISTDATAREPLY_ROW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=662,
-  serialized_end=731,
+  serialized_start=732,
+  serialized_end=801,
 )
 
 _LISTDATAREPLY = _descriptor.Descriptor(
@@ -427,8 +457,8 @@ _LISTDATAREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=603,
-  serialized_end=731,
+  serialized_start=673,
+  serialized_end=801,
 )
 
 
@@ -466,8 +496,8 @@ _GETDATADETAILREPLY_ITEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=820,
-  serialized_end=857,
+  serialized_start=890,
+  serialized_end=927,
 )
 
 _GETDATADETAILREPLY = _descriptor.Descriptor(
@@ -504,8 +534,8 @@ _GETDATADETAILREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=733,
-  serialized_end=857,
+  serialized_start=803,
+  serialized_end=927,
 )
 
 
@@ -613,8 +643,8 @@ _GETSTATUSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=860,
-  serialized_end=1126,
+  serialized_start=930,
+  serialized_end=1196,
 )
 
 
@@ -652,8 +682,8 @@ _SENDSHARESDATAREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1128,
-  serialized_end=1187,
+  serialized_start=1198,
+  serialized_end=1257,
 )
 
 
@@ -684,8 +714,8 @@ _SENDSHARESDATAREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1189,
-  serialized_end=1247,
+  serialized_start=1259,
+  serialized_end=1317,
 )
 
 _DOWNLOADREQUEST_OPTIONSENTRY.containing_type = _DOWNLOADREQUEST
@@ -697,13 +727,6 @@ _DOWNLOADREPLY.fields_by_name['status'].containing_oneof = _DOWNLOADREPLY.oneofs
 _DOWNLOADREPLY.oneofs_by_name['data'].fields.append(
   _DOWNLOADREPLY.fields_by_name['content'])
 _DOWNLOADREPLY.fields_by_name['content'].containing_oneof = _DOWNLOADREPLY.oneofs_by_name['data']
-_UPLOADREQUEST.fields_by_name['meta'].message_type = _FILEINFO
-_UPLOADREQUEST.oneofs_by_name['data'].fields.append(
-  _UPLOADREQUEST.fields_by_name['meta'])
-_UPLOADREQUEST.fields_by_name['meta'].containing_oneof = _UPLOADREQUEST.oneofs_by_name['data']
-_UPLOADREQUEST.oneofs_by_name['data'].fields.append(
-  _UPLOADREQUEST.fields_by_name['content'])
-_UPLOADREQUEST.fields_by_name['content'].containing_oneof = _UPLOADREQUEST.oneofs_by_name['data']
 _LISTDATAREPLY_ROW.containing_type = _LISTDATAREPLY
 _LISTDATAREPLY.fields_by_name['data'].message_type = _LISTDATAREPLY_ROW
 _GETDATADETAILREPLY_ITEM.containing_type = _GETDATADETAILREPLY
@@ -827,8 +850,8 @@ _DATAPROVIDER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1316,
-  serialized_end=2142,
+  serialized_start=1386,
+  serialized_end=2212,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetStatus',

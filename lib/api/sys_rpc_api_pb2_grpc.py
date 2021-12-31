@@ -32,14 +32,9 @@ class YarnServiceStub(object):
                 request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.SetSeedNodeRequest.SerializeToString,
                 response_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.SetSeedNodeResponse.FromString,
                 )
-        self.UpdateSeedNode = channel.unary_unary(
-                '/rpcapi.YarnService/UpdateSeedNode',
-                request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.UpdateSeedNodeRequest.SerializeToString,
-                response_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.SetSeedNodeResponse.FromString,
-                )
         self.DeleteSeedNode = channel.unary_unary(
                 '/rpcapi.YarnService/DeleteSeedNode',
-                request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.DeleteRegisteredNodeRequest.SerializeToString,
+                request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.DeleteSeedNodeRequest.SerializeToString,
                 response_deserializer=lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
                 )
         self.GetSeedNodeList = channel.unary_unary(
@@ -151,13 +146,6 @@ class YarnServiceServicer(object):
     def SetSeedNode(self, request, context):
         """about seed
         新增种子节点信息
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def UpdateSeedNode(self, request, context):
-        """修改种子节点信息
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -310,14 +298,9 @@ def add_YarnServiceServicer_to_server(servicer, server):
                     request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.SetSeedNodeRequest.FromString,
                     response_serializer=lib_dot_api_dot_sys__rpc__api__pb2.SetSeedNodeResponse.SerializeToString,
             ),
-            'UpdateSeedNode': grpc.unary_unary_rpc_method_handler(
-                    servicer.UpdateSeedNode,
-                    request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.UpdateSeedNodeRequest.FromString,
-                    response_serializer=lib_dot_api_dot_sys__rpc__api__pb2.SetSeedNodeResponse.SerializeToString,
-            ),
             'DeleteSeedNode': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteSeedNode,
-                    request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.DeleteRegisteredNodeRequest.FromString,
+                    request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.DeleteSeedNodeRequest.FromString,
                     response_serializer=lib_dot_common_dot_base__pb2.SimpleResponse.SerializeToString,
             ),
             'GetSeedNodeList': grpc.unary_unary_rpc_method_handler(
@@ -468,23 +451,6 @@ class YarnService(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def UpdateSeedNode(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/UpdateSeedNode',
-            lib_dot_api_dot_sys__rpc__api__pb2.UpdateSeedNodeRequest.SerializeToString,
-            lib_dot_api_dot_sys__rpc__api__pb2.SetSeedNodeResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
     def DeleteSeedNode(request,
             target,
             options=(),
@@ -496,7 +462,7 @@ class YarnService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/DeleteSeedNode',
-            lib_dot_api_dot_sys__rpc__api__pb2.DeleteRegisteredNodeRequest.SerializeToString,
+            lib_dot_api_dot_sys__rpc__api__pb2.DeleteSeedNodeRequest.SerializeToString,
             lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

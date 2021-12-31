@@ -15,6 +15,7 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
     def ReportTaskEvent(self, request, context):
         log.info(f'get event start.')
         event = {}
+        event["type"] = request.task_event.type
         event["task_id"] = request.task_event.task_id
         event["identity_id"] = request.task_event.identity_id
         event["party_id"] = request.task_event.party_id

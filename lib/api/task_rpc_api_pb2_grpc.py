@@ -2,7 +2,6 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from lib.api import task_rpc_api_pb2 as lib_dot_api_dot_task__rpc__api__pb2
 from lib.common import base_pb2 as lib_dot_common_dot_base__pb2
 
@@ -19,7 +18,12 @@ class TaskServiceStub(object):
         """
         self.GetTaskDetailList = channel.unary_unary(
                 '/rpcapi.TaskService/GetTaskDetailList',
-                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                request_serializer=lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListRequest.SerializeToString,
+                response_deserializer=lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListResponse.FromString,
+                )
+        self.GetTaskDetailListByTaskIds = channel.unary_unary(
+                '/rpcapi.TaskService/GetTaskDetailListByTaskIds',
+                request_serializer=lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListByTaskIdsRequest.SerializeToString,
                 response_deserializer=lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListResponse.FromString,
                 )
         self.GetTaskEventList = channel.unary_unary(
@@ -50,6 +54,13 @@ class TaskServiceServicer(object):
 
     def GetTaskDetailList(self, request, context):
         """查看本组织参与过的全部任务详情列表
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetTaskDetailListByTaskIds(self, request, context):
+        """查看本组织参与过的全部任务详情列表 (v3.0)
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -88,7 +99,12 @@ def add_TaskServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetTaskDetailList': grpc.unary_unary_rpc_method_handler(
                     servicer.GetTaskDetailList,
-                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    request_deserializer=lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListRequest.FromString,
+                    response_serializer=lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListResponse.SerializeToString,
+            ),
+            'GetTaskDetailListByTaskIds': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetTaskDetailListByTaskIds,
+                    request_deserializer=lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListByTaskIdsRequest.FromString,
                     response_serializer=lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListResponse.SerializeToString,
             ),
             'GetTaskEventList': grpc.unary_unary_rpc_method_handler(
@@ -134,7 +150,24 @@ class TaskService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.TaskService/GetTaskDetailList',
-            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListRequest.SerializeToString,
+            lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetTaskDetailListByTaskIds(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/rpcapi.TaskService/GetTaskDetailListByTaskIds',
+            lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListByTaskIdsRequest.SerializeToString,
             lib_dot_api_dot_task__rpc__api__pb2.GetTaskDetailListResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

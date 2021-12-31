@@ -10,7 +10,7 @@ do
     if [[ -n $(lsof -i:$port | awk '{print $2}' | grep -v PID) ]]
     then
         echo "kill data_svc process that use port ${port}"
-        lsof -i:$port | awk '{print $2}' | grep -v PID | xargs kill -9
+        lsof -i:$port | awk '{print $2}' | grep -v PID | xargs kill
     fi
 done
 
@@ -21,7 +21,7 @@ do
     if [[ -n $(lsof -i:$port | awk '{print $2}' | grep -v PID) ]]
     then
         echo "kill compute_svc process that use port ${port}"
-        lsof -i:$port | awk '{print $2}' | grep -v PID | xargs kill -9
+        lsof -i:$port | awk '{print $2}' | grep -v PID | xargs kill
     fi
 done
 
@@ -32,7 +32,7 @@ do
     if [[ -n $(lsof -i:$port | awk '{print $2}' | grep -v PID) ]]
     then
         echo "kill via_svc process that use port ${port}"
-        lsof -i:$port | awk '{print $2}' | grep -v PID | xargs kill -9
+        lsof -i:$port | awk '{print $2}' | grep -v PID | xargs kill
     fi
 done
 
@@ -43,7 +43,7 @@ do
     if [[ -n $(lsof -i:$port | awk '{print $2}' | grep -v PID) ]]
     then
         echo "kill schedule_svc process that use port ${port}"
-        lsof -i:$port | awk '{print $2}' | grep -v PID | xargs kill -9
+        lsof -i:$port | awk '{print $2}' | grep -v PID | xargs kill
     fi
 done
 

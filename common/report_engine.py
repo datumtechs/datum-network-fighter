@@ -2,6 +2,7 @@
 
 import os
 import sys
+import threading
 import time
 import math
 import queue
@@ -9,6 +10,7 @@ import logging
 import psutil
 import grpc
 from common.consts import EVENT_QUEUE, COMMON_EVENT
+from common.utils import process_recv_address
 from lib.api import sys_rpc_api_pb2 as pb2
 from lib.api import sys_rpc_api_pb2_grpc as pb2_grpc
 
@@ -22,7 +24,7 @@ CLIENT_OPTIONS = [('grpc.enable_retries', 0),
 class ReportEngine(object):
 
     def __init__(self, server_addr: str):
-        assert server_addr, f'server_addr={server_addr} can not be empty.'
+        log.info(f'server_addr: {server_addr}')
         self.conn = grpc.insecure_channel(server_addr)
         self.__client = pb2_grpc.YarnServiceStub(channel=self.conn)
 
@@ -179,13 +181,20 @@ class ReportEngine(object):
         self.conn.close()
 
 
-def report_task_event(server_addr: str, stop_event):
+def report_task_event(cfg, stop_event, pipe=None):
+    if pipe:
+        t_address = threading.Thread(target=process_recv_address, args=(cfg, pipe))
+        t_address.start()
     get_new_event = True
     try_max_times = 20
     try_cnt = 0
     while True:
         try:
-            report_engine = ReportEngine(server_addr)
+            schedule_svc = cfg['schedule_svc']
+            if not schedule_svc:
+                time.sleep(3)
+                continue
+            report_engine = ReportEngine(schedule_svc)
             while True:
                 if get_new_event:
                     new_event = EVENT_QUEUE.get(block=True)
@@ -280,19 +289,24 @@ def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, server
     memory_list, cpu_list= [], []
     list_len = 20
     while True:
-        use_time = time.time() - start_time
-        used_memory = p.memory_info().rss
-        used_processor = math.ceil(total_cpu_num * p.cpu_percent() / 100)
-        memory_list.insert(0, used_memory)
-        cpu_list.insert(0, used_processor)
         try:
+            # time limit
+            use_time = time.time() - start_time
             assert use_time <= limit_time, f"task used time:{round(use_time, 2)} exceeds the limit({limit_time}s)."
+            
+            # memory limit
+            used_memory = p.memory_info().rss
+            memory_list.insert(0, used_memory)
             if len(memory_list) >= list_len:
                 memory_list = memory_list[:list_len]
                 avg_used_memory = sum(memory_list) / len(memory_list)
                 if limit_memory and (avg_used_memory > limit_memory):
                     log.error(f"memory_list: {memory_list}")
                     raise Exception(f"memory used({round(avg_used_memory, 2)}) exceeds the limit({limit_memory}B).")
+
+            # cpu limit
+            used_processor = round(total_cpu_num * p.cpu_percent() / 100)
+            cpu_list.insert(0, used_processor)
             if len(cpu_list) >= list_len:
                 cpu_list = cpu_list[:list_len]
                 avg_used_cpu = sum(cpu_list) / len(cpu_list)

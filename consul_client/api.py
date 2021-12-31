@@ -40,12 +40,10 @@ class ConsulApi(object):
                                  path='/v1/agent/services',
                                  params=[('filter', filter_str)],
                                  headers=self.headers())
-        if result is None:
+        if not result:
             return False, None
         if len(result) > 1:
             return False, f'The number of query results is greater than one, and the query condition is {filter_str}'
-        if len(result) == 0:
-            return False, f'According to the query conditions, {filter_str} is useless to query relevant information.'
         # result, *_ = list(result.values())
         # return f'{result["Address"]}:{result["Port"]}'
         return True, result
@@ -68,7 +66,7 @@ class ConsulApi(object):
                 raise Exception(f'IP address {ip} is illegal')
             if not 1024 < port <= 65535:
                 raise Exception(f'PORT {port} illegal,port 1024~65535')
-            if name not in ['dataService', 'jobService']:
+            if name not in ['dataService', 'jobService', 'carrierService']:
                 raise Exception(f'Found the wrong service type {name}, which can only be data or compute')
             return ip, port, name, tag, interval, deregister
         except Exception as e:
@@ -77,6 +75,7 @@ class ConsulApi(object):
     def register(self, cfg):
         self.cfg = cfg
         ip, port, name, tag, interval, deregister = self.check_service_config()
+        print(ip, port, name, tag, interval, deregister)
         check = consul.Check().grpc(
             grpc=f'{ip}:{port}/{name}',
             interval=interval,
@@ -88,7 +87,7 @@ class ConsulApi(object):
             'service_id': self.service_id,
             'address': ip,
             'tags': [tag],
-            'port': port,
+            'port': int(port),
             'check': check
         }
         return self.c.agent.service.register(**params)
@@ -107,10 +106,10 @@ class ConsulApi(object):
 
 def get_consul_client_obj(cfg_info):
     if cfg_info.get('consul', None) is None:
-        return
+        raise Exception('consul is None')
     service_ip = cfg_info['consul'].get('service_ip', None)
-    if service_ip:
-        return
+    if not service_ip:
+        raise Exception('service_ip is None')
     service_port = cfg_info['consul'].get('service_port', None)
     if service_port:
         obj = ConsulApi(host=service_ip, port=service_port)

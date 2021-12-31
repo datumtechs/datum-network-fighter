@@ -221,10 +221,10 @@ def comp_run_task(args, stub):
     req.data_party.extend(data_parties)
     req.computation_party.extend(compute_parties)
     req.result_party.extend(result_parties)
-    req.duration = run_task_cfg.get('duration', 300*1000)  # ms
-    req.memory = run_task_cfg.get('memory', 2*1024*1024*1024) # Byte
-    req.processor = run_task_cfg.get('processor', 4)   # number
-    req.bandwidth = run_task_cfg.get('bandwidth', 20*1000)  # bps
+    req.duration = run_task_cfg.get('duration', 24*60*60*1000)  # ms
+    req.memory = run_task_cfg.get('memory', 256*1024*1024*1024) # Byte
+    req.processor = run_task_cfg.get('processor', 32)   # number
+    req.bandwidth = run_task_cfg.get('bandwidth', 100*1000)  # bps
 
     each_party = {d['party_id']: d for d in run_task_cfg['each_party']}
 

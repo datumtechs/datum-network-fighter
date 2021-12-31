@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z,github.com/RosettaFlow/Carrier-Go/lib/common',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15lib/common/base.proto\x12\x0c\x61pi.protobuf\"s\n\x0cOrganization\x12\x11\n\tnode_name\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x13\n\x0bidentity_id\x18\x03 \x01(\t\x12*\n\x06status\x18\x04 \x01(\x0e\x32\x1a.api.protobuf.CommonStatus\"]\n\x10TaskOrganization\x12\x10\n\x08party_id\x18\x01 \x01(\t\x12\x11\n\tnode_name\x18\x02 \x01(\t\x12\x0f\n\x07node_id\x18\x03 \x01(\t\x12\x13\n\x0bidentity_id\x18\x04 \x01(\t\"-\n\x0eSimpleResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t*@\n\x08UserType\x12\x10\n\x0cUser_Unknown\x10\x00\x12\n\n\x06User_1\x10\x01\x12\n\n\x06User_2\x10\x02\x12\n\n\x06User_3\x10\x03*S\n\nDataStatus\x12\x16\n\x12\x44\x61taStatus_Unknown\x10\x00\x12\x15\n\x11\x44\x61taStatus_Normal\x10\x01\x12\x16\n\x12\x44\x61taStatus_Deleted\x10\x02*]\n\x0c\x43ommonStatus\x12\x18\n\x14\x43ommonStatus_Unknown\x10\x00\x12\x17\n\x13\x43ommonStatus_Normal\x10\x01\x12\x1a\n\x16\x43ommonStatus_NonNormal\x10\x02*M\n\x13\x41uditMetadataOption\x12\x11\n\rAudit_Pending\x10\x00\x12\x10\n\x0c\x41udit_Passed\x10\x01\x12\x11\n\rAudit_Refused\x10\x02*8\n\x0eOriginFileType\x12\x14\n\x10\x46ileType_Unknown\x10\x00\x12\x10\n\x0c\x46ileType_CSV\x10\x01*|\n\rMetadataState\x12\x19\n\x15MetadataState_Unknown\x10\x00\x12\x19\n\x15MetadataState_Created\x10\x01\x12\x1a\n\x16MetadataState_Released\x10\x02\x12\x19\n\x15MetadataState_Revoked\x10\x03*I\n\x11MetadataUsageType\x12\x11\n\rUsage_Unknown\x10\x00\x12\x10\n\x0cUsage_Period\x10\x01\x12\x0f\n\x0bUsage_Times\x10\x02*\x88\x01\n\nPowerState\x12\x16\n\x12PowerState_Unknown\x10\x00\x12\x16\n\x12PowerState_Created\x10\x01\x12\x17\n\x13PowerState_Released\x10\x02\x12\x19\n\x15PowerState_Occupation\x10\x03\x12\x16\n\x12PowerState_Revoked\x10\x04*\x9e\x01\n\x08TaskRole\x12\x14\n\x10TaskRole_Unknown\x10\x00\x12\x13\n\x0fTaskRole_Sender\x10\x01\x12\x19\n\x15TaskRole_DataSupplier\x10\x02\x12\x1a\n\x16TaskRole_PowerSupplier\x10\x03\x12\x15\n\x11TaskRole_Receiver\x10\x04\x12\x19\n\x15TaskRole_AlgoSupplier\x10\x05*}\n\tTaskState\x12\x15\n\x11TaskState_Unknown\x10\x00\x12\x15\n\x11TaskState_Pending\x10\x01\x12\x15\n\x11TaskState_Running\x10\x02\x12\x14\n\x10TaskState_Failed\x10\x03\x12\x15\n\x11TaskState_Succeed\x10\x04*\x82\x01\n\x16MetadataAuthorityState\x12\x13\n\x0fMAState_Unknown\x10\x00\x12\x13\n\x0fMAState_Created\x10\x01\x12\x14\n\x10MAState_Released\x10\x02\x12\x13\n\x0fMAState_Revoked\x10\x03\x12\x13\n\x0fMAState_Invalid\x10\x04\x42.Z,github.com/RosettaFlow/Carrier-Go/lib/commonb\x06proto3'
+  serialized_pb=b'\n\x15lib/common/base.proto\x12\x0c\x61pi.protobuf\"\xaa\x01\n\x0cOrganization\x12\x11\n\tnode_name\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x13\n\x0bidentity_id\x18\x03 \x01(\t\x12*\n\x06status\x18\x04 \x01(\x0e\x32\x1a.api.protobuf.CommonStatus\x12\x11\n\tupdate_at\x18\x05 \x01(\x04\x12\x11\n\timage_url\x18\x06 \x01(\t\x12\x0f\n\x07\x64\x65tails\x18\x07 \x01(\t\"]\n\x10TaskOrganization\x12\x10\n\x08party_id\x18\x01 \x01(\t\x12\x11\n\tnode_name\x18\x02 \x01(\t\x12\x0f\n\x07node_id\x18\x03 \x01(\t\x12\x13\n\x0bidentity_id\x18\x04 \x01(\t\"-\n\x0eSimpleResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t*@\n\x08UserType\x12\x10\n\x0cUser_Unknown\x10\x00\x12\n\n\x06User_1\x10\x01\x12\n\n\x06User_2\x10\x02\x12\n\n\x06User_3\x10\x03*S\n\nDataStatus\x12\x16\n\x12\x44\x61taStatus_Unknown\x10\x00\x12\x15\n\x11\x44\x61taStatus_Normal\x10\x01\x12\x16\n\x12\x44\x61taStatus_Deleted\x10\x02*]\n\x0c\x43ommonStatus\x12\x18\n\x14\x43ommonStatus_Unknown\x10\x00\x12\x17\n\x13\x43ommonStatus_Normal\x10\x01\x12\x1a\n\x16\x43ommonStatus_NonNormal\x10\x02*M\n\x13\x41uditMetadataOption\x12\x11\n\rAudit_Pending\x10\x00\x12\x10\n\x0c\x41udit_Passed\x10\x01\x12\x11\n\rAudit_Refused\x10\x02*8\n\x0eOriginFileType\x12\x14\n\x10\x46ileType_Unknown\x10\x00\x12\x10\n\x0c\x46ileType_CSV\x10\x01*|\n\rMetadataState\x12\x19\n\x15MetadataState_Unknown\x10\x00\x12\x19\n\x15MetadataState_Created\x10\x01\x12\x1a\n\x16MetadataState_Released\x10\x02\x12\x19\n\x15MetadataState_Revoked\x10\x03*I\n\x11MetadataUsageType\x12\x11\n\rUsage_Unknown\x10\x00\x12\x10\n\x0cUsage_Period\x10\x01\x12\x0f\n\x0bUsage_Times\x10\x02*\x88\x01\n\nPowerState\x12\x16\n\x12PowerState_Unknown\x10\x00\x12\x16\n\x12PowerState_Created\x10\x01\x12\x17\n\x13PowerState_Released\x10\x02\x12\x19\n\x15PowerState_Occupation\x10\x03\x12\x16\n\x12PowerState_Revoked\x10\x04*\x9e\x01\n\x08TaskRole\x12\x14\n\x10TaskRole_Unknown\x10\x00\x12\x13\n\x0fTaskRole_Sender\x10\x01\x12\x19\n\x15TaskRole_DataSupplier\x10\x02\x12\x1a\n\x16TaskRole_PowerSupplier\x10\x03\x12\x15\n\x11TaskRole_Receiver\x10\x04\x12\x19\n\x15TaskRole_AlgoSupplier\x10\x05*}\n\tTaskState\x12\x15\n\x11TaskState_Unknown\x10\x00\x12\x15\n\x11TaskState_Pending\x10\x01\x12\x15\n\x11TaskState_Running\x10\x02\x12\x14\n\x10TaskState_Failed\x10\x03\x12\x15\n\x11TaskState_Succeed\x10\x04*\x82\x01\n\x16MetadataAuthorityState\x12\x13\n\x0fMAState_Unknown\x10\x00\x12\x13\n\x0fMAState_Created\x10\x01\x12\x14\n\x10MAState_Released\x10\x02\x12\x13\n\x0fMAState_Revoked\x10\x03\x12\x13\n\x0fMAState_Invalid\x10\x04\x42.Z,github.com/RosettaFlow/Carrier-Go/lib/commonb\x06proto3'
 )
 
 _USERTYPE = _descriptor.EnumDescriptor(
@@ -53,8 +53,8 @@ _USERTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=298,
-  serialized_end=362,
+  serialized_start=354,
+  serialized_end=418,
 )
 _sym_db.RegisterEnumDescriptor(_USERTYPE)
 
@@ -84,8 +84,8 @@ _DATASTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=364,
-  serialized_end=447,
+  serialized_start=420,
+  serialized_end=503,
 )
 _sym_db.RegisterEnumDescriptor(_DATASTATUS)
 
@@ -115,8 +115,8 @@ _COMMONSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=449,
-  serialized_end=542,
+  serialized_start=505,
+  serialized_end=598,
 )
 _sym_db.RegisterEnumDescriptor(_COMMONSTATUS)
 
@@ -146,8 +146,8 @@ _AUDITMETADATAOPTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=544,
-  serialized_end=621,
+  serialized_start=600,
+  serialized_end=677,
 )
 _sym_db.RegisterEnumDescriptor(_AUDITMETADATAOPTION)
 
@@ -172,8 +172,8 @@ _ORIGINFILETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=623,
-  serialized_end=679,
+  serialized_start=679,
+  serialized_end=735,
 )
 _sym_db.RegisterEnumDescriptor(_ORIGINFILETYPE)
 
@@ -208,8 +208,8 @@ _METADATASTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=681,
-  serialized_end=805,
+  serialized_start=737,
+  serialized_end=861,
 )
 _sym_db.RegisterEnumDescriptor(_METADATASTATE)
 
@@ -239,8 +239,8 @@ _METADATAUSAGETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=807,
-  serialized_end=880,
+  serialized_start=863,
+  serialized_end=936,
 )
 _sym_db.RegisterEnumDescriptor(_METADATAUSAGETYPE)
 
@@ -280,8 +280,8 @@ _POWERSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=883,
-  serialized_end=1019,
+  serialized_start=939,
+  serialized_end=1075,
 )
 _sym_db.RegisterEnumDescriptor(_POWERSTATE)
 
@@ -326,8 +326,8 @@ _TASKROLE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1022,
-  serialized_end=1180,
+  serialized_start=1078,
+  serialized_end=1236,
 )
 _sym_db.RegisterEnumDescriptor(_TASKROLE)
 
@@ -367,8 +367,8 @@ _TASKSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1182,
-  serialized_end=1307,
+  serialized_start=1238,
+  serialized_end=1363,
 )
 _sym_db.RegisterEnumDescriptor(_TASKSTATE)
 
@@ -408,8 +408,8 @@ _METADATAAUTHORITYSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1310,
-  serialized_end=1440,
+  serialized_start=1366,
+  serialized_end=1496,
 )
 _sym_db.RegisterEnumDescriptor(_METADATAAUTHORITYSTATE)
 
@@ -496,6 +496,27 @@ _ORGANIZATION = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='update_at', full_name='api.protobuf.Organization.update_at', index=4,
+      number=5, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='image_url', full_name='api.protobuf.Organization.image_url', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='details', full_name='api.protobuf.Organization.details', index=6,
+      number=7, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -508,8 +529,8 @@ _ORGANIZATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=39,
-  serialized_end=154,
+  serialized_start=40,
+  serialized_end=210,
 )
 
 
@@ -561,8 +582,8 @@ _TASKORGANIZATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=156,
-  serialized_end=249,
+  serialized_start=212,
+  serialized_end=305,
 )
 
 
@@ -600,8 +621,8 @@ _SIMPLERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=251,
-  serialized_end=296,
+  serialized_start=307,
+  serialized_end=352,
 )
 
 _ORGANIZATION.fields_by_name['status'].enum_type = _COMMONSTATUS

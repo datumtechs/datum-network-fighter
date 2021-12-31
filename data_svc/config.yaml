@@ -21,7 +21,7 @@ certs:
   client_enc_key: CE.key
   client_enc_cert: CE.crt
 consul:
-  service_ip: 10.1.1.10
+  service_ip: 192.168.16.151
   service_port: 8500
   name: dataService
   tag: data

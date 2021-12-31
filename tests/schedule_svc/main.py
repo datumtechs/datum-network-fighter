@@ -8,6 +8,8 @@ import grpc
 
 from common.consts import GRPC_OPTIONS
 from common.utils import load_cfg
+from consul_client.api import get_consul_client_obj
+from consul_client.health import health_grpc_check
 from config import cfg
 from lib.api import sys_rpc_api_pb2
 from lib.api import sys_rpc_api_pb2_grpc
@@ -30,6 +32,7 @@ def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']), options=GRPC_OPTIONS)
     svc_provider = YarnService()
     sys_rpc_api_pb2_grpc.add_YarnServiceServicer_to_server(svc_provider, server)
+    health_grpc_check.add_service(server, 'jobNode')
     bind_port = cfg['port']
     server.add_insecure_port('[::]:%s' % bind_port)
     server.start()
@@ -59,12 +62,19 @@ def main():
     parser.add_argument('config', type=str, default='config.yaml')
     parser.add_argument('--bind_ip', type=str)
     parser.add_argument('--port', type=int)
+    parser.add_argument('--use_consul', type=int, default=1) # 1: use consul, 0: not use consul
     args = parser.parse_args()
     cfg.update(load_cfg(args.config))
     if args.bind_ip:
         cfg['bind_ip'] = args.bind_ip
     if args.port:
         cfg['port'] = args.port
+    log.info(f"cfg: {cfg}")
+    if args.use_consul:
+        log.info('get consul client obj.')
+        consul_client_obj = get_consul_client_obj(cfg)
+        assert consul_client_obj, f'get consul client obj fail, cfg is:{cfg}'
+        assert consul_client_obj.register(cfg), f'schedule svc register to consul fail, cfg is:{cfg}'
 
     server = serve()
     # wait the data_svc/compute_svc set up and connect success.

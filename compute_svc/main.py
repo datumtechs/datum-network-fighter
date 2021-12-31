@@ -4,17 +4,18 @@ import sys
 import threading
 import grpc
 from concurrent import futures
-from signal import signal, SIGTERM
+from signal import signal, SIGTERM, SIGKILL
 
 from grpc_reflection.v1alpha import reflection
 from config import cfg
 from common.consts import GRPC_OPTIONS
 from common.report_engine import report_task_event
 from common.task_manager import TaskManager
-from common.utils import load_cfg
+from common.utils import load_cfg, get_schedule_svc
 from lib import compute_svc_pb2, compute_svc_pb2_grpc
-from svc import ComputeProvider
+from compute_svc.svc import ComputeProvider
 from consul_client.api import get_consul_client_obj
+from consul_client.health import health_grpc_check
 
 logging.basicConfig(
     level=logging.INFO,
@@ -28,6 +29,7 @@ def serve(task_manager):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=cfg['thread_pool_size']), options=GRPC_OPTIONS)
     svc_provider = ComputeProvider(task_manager)
     compute_svc_pb2_grpc.add_ComputeProviderServicer_to_server(svc_provider, server)
+    health_grpc_check.add_service(server, 'jobNode')
     SERVICE_NAMES = (
         compute_svc_pb2.DESCRIPTOR.services_by_name['ComputeProvider'].full_name,
     )
@@ -48,27 +50,29 @@ def main():
     parser.add_argument('--bind_ip', type=str)
     parser.add_argument('--port', type=int)
     parser.add_argument('--schedule_svc', type=str)
+    parser.add_argument('--use_consul', type=int, default=1) # 1: use consul, 0: not use consul
     args = parser.parse_args()
     cfg.update(load_cfg(args.config))
+    cfg['schedule_svc'] = ''
     if args.bind_ip:
         cfg['bind_ip'] = args.bind_ip
     if args.port:
         cfg['port'] = args.port
-    if args.schedule_svc:
+
+    if args.use_consul:
+        consul_client_obj = get_consul_client_obj(cfg)
+        assert consul_client_obj, f'get consul client obj fail, cfg is:{cfg}'
+        assert consul_client_obj.register(cfg), f'compute svc register to consul fail, cfg is:{cfg}'
+
+        pipe = mp.Pipe()
+        get_schedule = threading.Thread(target=get_schedule_svc, args=(cfg, consul_client_obj, pipe[1]))
+        get_schedule.daemon = True
+        get_schedule.start()
+    else:
         cfg['schedule_svc'] = args.schedule_svc
 
-    consul_client_obj = get_consul_client_obj(cfg)
-    if not consul_client_obj:
-        log.info(f'get consul client obj fail,cfg is:{cfg}')
-        return
-
-    if not consul_client_obj.register(cfg):
-        log.info(f'compute svc register to consul fail,cfg is:{cfg}')
-        return
-    event_stop = mp.Event()
     task_manager = TaskManager(cfg)
-    task_manager.consul_client = consul_client_obj
-
+    event_stop = mp.Event()
     def task_clean(task_manager, event_stop):
         while not event_stop.wait(60):
             task_manager.clean()
@@ -78,7 +82,10 @@ def main():
 
     server = serve(task_manager)
 
-    report_process = mp.Process(target=report_task_event, args=(cfg['schedule_svc'], event_stop), name='report_process')
+    if args.use_consul:
+        report_process = mp.Process(target=report_task_event, args=(cfg, event_stop, pipe[0]), name='report_process')
+    else:
+        report_process = mp.Process(target=report_task_event, args=(cfg, event_stop), name='report_process')
     report_process.start()
 
     def handle_sigterm(*_):
@@ -86,8 +93,7 @@ def main():
         all_rpcs_done_event = server.stop(5)
         all_rpcs_done_event.wait(5)
         event_stop.set()
-        result = consul_client_obj.stop()
-        log.info(f'consul_client_obj.stop result:{result}')
+        consul_client_obj.stop()
         log.info("Shut down gracefully")
 
     signal(SIGTERM, handle_sigterm)
