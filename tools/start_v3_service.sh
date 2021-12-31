@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # shellcheck disable=SC2006
 check_conda=`which conda`
 echo "check conda result are: $check_conda"
@@ -53,7 +53,8 @@ fi
 echo The path of the final python interpreter is "$python_interpreter"
 
 if [ "$3" != "" ];then
-  $python_interpreter -m pip install -r "$3" -i https://pypi.douban.com/simple/
+  echo whl path is "$3"
+  $python_interpreter -m pip install "$3"*.whl
 fi
 
 
