@@ -1,4 +1,4 @@
-bind_ip: 192.168.16.151
+bind_ip: 127.0.0.1
 port: 50021
 task_port_range: [41000, 41100]
 thread_pool_size: 12
@@ -19,7 +19,7 @@ certs:
   client_enc_key: CE.key
   client_enc_cert: CE.crt
 consul:
-  service_ip: 192.168.16.151
+  service_ip: 127.0.0.1
   service_port: 8500
   name: jobService
   tag: job

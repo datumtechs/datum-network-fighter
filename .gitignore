@@ -57,3 +57,7 @@ tests/cluster_test/nodes_conf/*.json
 checkpoint
 certs/
 !certs/README.md
+
+third_party/consul_server/*
+!third_party/consul_server/download_consul.sh
+!third_party/consul_server/run_consul.sh
