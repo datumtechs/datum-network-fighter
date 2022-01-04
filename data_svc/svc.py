@@ -12,7 +12,10 @@ try:
 except:
     from metis.data_svc.config import cfg
 from common.report_engine import report_task_result
-from config import cfg
+try:
+    from config import cfg
+except:
+    from metis.data_svc.config import cfg
 from lib import common_pb2
 from lib import compute_svc_pb2, compute_svc_pb2_grpc
 from lib import data_svc_pb2, data_svc_pb2_grpc
