@@ -18,6 +18,13 @@ use_consul=1   # 0: not use consul, 1: use consul
 # if modify, must absolute path to python37
 python_command=python3
 
+############## data_svc #############
+if [ $use_consul -ne 0 ]
+then
+    cd $base_dir/third_party/consul_server
+    bash run_consul.sh ${ip}
+    sleep 5
+fi
 
 ############## data_svc #############
 cd $base_dir/data_svc
@@ -74,10 +81,10 @@ then
     for port in $(seq ${schedule_svc_base_port} $[${schedule_svc_base_port}+${schedule_svc_num}-1])
     do
         echo "start schedule_svc that use port ${port}"
-        PYTHONPATH="../..:../../lib/:../../common" nohup $python_command main.py $cfg --bind_ip=${ip} --port=${port} --use_consul=${use_consul} > ${schedule_svc_log}/schedule_svc_${port}.log 2>&1 &
+        nohup $python_command main.py $cfg --bind_ip=${ip} --port=${port} --use_consul=${use_consul} > ${schedule_svc_log}/schedule_svc_${port}.log 2>&1 &
     done
 else
-    PYTHONPATH="../..:../../lib/:../../common" nohup $python_command main.py $cfg --bind_ip=${ip} --port=${schedule_port} --use_consul=${use_consul} > ${schedule_svc_log}/schedule_svc_${schedule_port}.log 2>&1 &
+    nohup $python_command main.py $cfg --bind_ip=${ip} --port=${schedule_port} --use_consul=${use_consul} > ${schedule_svc_log}/schedule_svc_${schedule_port}.log 2>&1 &
 fi
 
 

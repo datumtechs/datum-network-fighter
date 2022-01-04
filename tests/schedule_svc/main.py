@@ -6,18 +6,18 @@ import time
 from concurrent import futures
 import grpc
 
+from config import cfg
 from common.consts import GRPC_OPTIONS
 from common.utils import load_cfg
 from consul_client.api import get_consul_client_obj
 from consul_client.health import health_grpc_check
-from config import cfg
 from lib.api import sys_rpc_api_pb2
 from lib.api import sys_rpc_api_pb2_grpc
 from lib import compute_svc_pb2
 from lib import compute_svc_pb2_grpc
 from lib import data_svc_pb2
 from lib import data_svc_pb2_grpc
-from svc import YarnService
+from tests.schedule_svc.svc import YarnService
 from google.protobuf import empty_pb2
 
 
