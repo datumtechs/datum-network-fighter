@@ -9,11 +9,11 @@ from signal import signal, SIGTERM, SIGKILL
 from grpc_reflection.v1alpha import reflection
 try:
     from config import cfg
-except:
+except ImportError:
     from metis.data_svc.config import cfg
 try:
     from data_svc.svc import DataProvider
-except:
+except ImportError:
     from metis.data_svc.svc import DataProvider
 from common.consts import GRPC_OPTIONS
 from common.report_engine import report_task_event
