@@ -11,7 +11,7 @@ import functools
 
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
-from common.report_engine import report_task_resource_usage, report_task_result, monitor_resource_usage
+from common.report_engine import  report_task_result, monitor_resource_usage
 from common.io_channel_helper import get_channel_config
 
 
@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 class Task:
     def __init__(self, cfg, task_id, party_id, contract_id, data_id, env_id, peers, contract_cfg,
-                 data_party, computation_party, result_party, duration, limit_memory, limit_cpu):
+                 data_party, computation_party, result_party, duration, limit_memory, limit_cpu,limit_bandwidth):
         log.info(f'thread id: {threading.get_ident()}')
         self.cfg = cfg
         self.id_ = task_id
@@ -40,6 +40,7 @@ class Task:
         self.limit_time = duration/1000  # s
         self.limit_memory = limit_memory
         self.limit_cpu = limit_cpu
+        self.limit_bandwidth = limit_bandwidth
 
         if self._party_id in (self.data_party + self.result_party):
             self.event_type = DATA_EVENT
@@ -67,13 +68,10 @@ class Task:
         log.info(f'run_cfg: {self.cfg}')
         self.fire_event(self.event_type["TASK_START"], "task start.")
         current_task_pid = os.getpid()
-        report_resource = threading.Thread(target=report_task_resource_usage, args=(current_task_pid, self.cfg['schedule_svc'], 
-                    self.id, self.party_id, self.party_type, self.cfg['bind_ip'], self.cfg['port'], self.cfg['total_bandwidth'], 10))
-        report_resource.daemon = True
-        report_resource.start()
 
         monitor_resource = threading.Thread(target=monitor_resource_usage, args=(current_task_pid, self.limit_time,
-                    self.limit_memory, self.limit_cpu, self.cfg['schedule_svc'], self.create_event, self.event_type))
+                    self.limit_memory, self.limit_cpu, self.limit_bandwidth,self.cfg['schedule_svc'], self.create_event, self.event_type,
+                    self.id, self.party_id, self.party_type, self.cfg['bind_ip'], self.cfg['port'], self.cfg['total_bandwidth']))
         monitor_resource.daemon = True
         monitor_resource.start()
         

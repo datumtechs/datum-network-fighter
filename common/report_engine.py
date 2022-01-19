@@ -14,12 +14,12 @@ from common.utils import process_recv_address
 from lib.api import sys_rpc_api_pb2 as pb2
 from lib.api import sys_rpc_api_pb2_grpc as pb2_grpc
 
-
 log = logging.getLogger(__name__)
 CLIENT_OPTIONS = [('grpc.enable_retries', 0),
-                ('grpc.keepalive_time_ms', 60000),
-                ('grpc.keepalive_timeout_ms', 20000)
-                ]
+                  ('grpc.keepalive_time_ms', 60000),
+                  ('grpc.keepalive_timeout_ms', 20000)
+                  ]
+
 
 class ReportEngine(object):
 
@@ -105,7 +105,7 @@ class ReportEngine(object):
             string port = 5;
         }
         """
-        
+
         req = pb2.ReportTaskResultFileSummaryRequest()
         req.task_id = summary["task_id"]
         req.origin_id = summary["origin_id"]
@@ -116,7 +116,7 @@ class ReportEngine(object):
         log.info(str_req)
         return self.__client.ReportTaskResultFileSummary(req, timeout=10)
 
-    def report_task_resource_usage(self, task_id, party_id, node_type, ip:str, port:str, resource_usage):
+    def report_task_resource_usage(self, task_id, party_id, node_type, ip: str, port: str, resource_usage):
         """
         service YarnService {
             rpc ReportTaskResourceUsage (ReportTaskResourceUsageRequest) returns (api.protobuf.SimpleResponse) {
@@ -163,7 +163,7 @@ class ReportEngine(object):
         req.task_id = task_id
         req.party_id = party_id
         req.node_type = report_node_type
-        req.ip = ip 
+        req.ip = ip
         req.port = str(port)
         req.usage.total_mem = resource_usage["total_mem"]
         req.usage.used_mem = resource_usage["used_mem"]
@@ -173,10 +173,10 @@ class ReportEngine(object):
         req.usage.used_bandwidth = resource_usage["used_bandwidth"]
         req.usage.total_disk = resource_usage["total_disk"]
         req.usage.used_disk = resource_usage["used_disk"]
-        str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+        str_req = 'report_task_resource_usage: {' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
         log.debug(str_req)
         return self.__client.ReportTaskResourceUsage(req)
-        
+
     def close(self):
         self.conn.close()
 
@@ -220,11 +220,12 @@ def report_task_event(cfg, stop_event, pipe=None):
         except Exception as e:
             raise
 
-def report_task_result(server_addr: str, report_type: str, content: dict):
+
+def report_task_result(server_addr: str, report_type: str, content: dict, *args):
     report_success = False
     try_max_times = 20
     try_cnt = 0
-    while (not report_success):
+    while not report_success:
         try:
             report_engine = ReportEngine(server_addr)
             if report_type == 'upload_file':
@@ -233,6 +234,8 @@ def report_task_result(server_addr: str, report_type: str, content: dict):
                 ret = report_engine.report_task_result_file_summary(content)
             elif report_type == 'last_event':
                 ret = report_engine.report_task_event(content)
+            elif report_type == 'resource_usage':
+                ret = report_engine.report_task_resource_usage(*args, content)
             else:
                 raise ValueError(f'no report_type {report_type}')
             report_engine.close()
@@ -246,76 +249,82 @@ def report_task_result(server_addr: str, report_type: str, content: dict):
         except:
             raise
 
-def _get_resource_usage(task_pid, total_bandwidth):
-    p = psutil.Process(task_pid)
-    resource_usage = {}
-    resource_usage["total_mem"] = psutil.virtual_memory().total
-    resource_usage["used_mem"] = p.memory_info().rss
-    resource_usage["total_processor"] = psutil.cpu_count()
-    resource_usage["used_processor"] = math.ceil(psutil.cpu_count() * p.cpu_percent() / 100)
-    resource_usage["total_bandwidth"] = total_bandwidth
-    net_1 = psutil.net_io_counters()
-    time.sleep(1)
-    net_2 = psutil.net_io_counters()
-    resource_usage["used_bandwidth"] = (net_2.bytes_sent - net_1.bytes_sent) + (net_2.bytes_recv - net_1.bytes_recv)
-    resource_usage["total_disk"] = psutil.disk_usage('/').total
-    resource_usage["used_disk"] = psutil.disk_usage('/').used
-    return resource_usage
 
-def report_task_resource_usage(task_pid, server_addr:str, task_id, party_id, node_type, ip, port:str, total_bandwidth, interval=10):
-    try_max_times = 20
-    try_cnt = 0
-    while True:
-        try:
-            report_engine = ReportEngine(server_addr)
-            while True:
-                resource_usage = _get_resource_usage(task_pid, total_bandwidth)
-                report_engine.report_task_resource_usage(task_id, party_id, node_type, ip, port, resource_usage)
-                time.sleep(interval)
-                try_cnt = 0
-        except grpc._channel._InactiveRpcError as e:
-            try_cnt = try_cnt + 1
-            if (try_cnt >= try_max_times):
-                raise
-            time.sleep(0.5)
-        except Exception as e:
-            raise
+def resource_info(avg_used_memory, avg_used_cpu, total_bandwidth, avg_used_bandwidth):
+    return {"total_mem": psutil.virtual_memory().total,
+            "used_mem": avg_used_memory,
+            "total_processor": psutil.cpu_count(),
+            "used_processor": math.ceil(avg_used_cpu),
+            "total_bandwidth": total_bandwidth,
+            "used_bandwidth": avg_used_bandwidth,
+            "total_disk": psutil.disk_usage('/').total,
+            "used_disk": psutil.disk_usage('/').used}
 
-def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, server_addr, create_event, event_type):
-    log.info('monitor_resource_usage start.')
+
+def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, limit_bandwidth, server_addr, create_event,
+                           event_type, task_id, party_id, node_type, ip, port, total_bandwidth, interval=5):
+    log.info(f'monitor_resource_usage start. params is task_pid:{task_pid},limit_time:{limit_time},limit_memory:{limit_memory},limit_cpu:{limit_cpu},limit_bandwidth:{limit_bandwidth},interval:{interval}')
     start_time = time.time()
     p = psutil.Process(task_pid)
     total_cpu_num = psutil.cpu_count()
-    memory_list, cpu_list= [], []
-    list_len = 20
+    memory_list, cpu_list, bandwidth_list = [], [], []
+
+    # prevent warning
+    count = 0
+    avg_used_memory = 0
+    avg_used_cpu = 0
+    avg_used_bandwidth = 0
+
     while True:
         try:
             # time limit
             use_time = time.time() - start_time
-            assert use_time <= limit_time, f"task used time:{round(use_time, 2)} exceeds the limit({limit_time}s)."
-            
+            assert use_time <= limit_time, f"task used time:{round(use_time, 2)}s, exceeds the limit({limit_time}s)."
+
             # memory limit
             used_memory = p.memory_info().rss
-            memory_list.insert(0, used_memory)
-            if len(memory_list) >= list_len:
-                memory_list = memory_list[:list_len]
-                avg_used_memory = sum(memory_list) / len(memory_list)
-                if limit_memory and (avg_used_memory > limit_memory):
-                    log.error(f"memory_list: {memory_list}")
-                    raise Exception(f"memory used({round(avg_used_memory, 2)}) exceeds the limit({limit_memory}B).")
+            # memory_list.insert(0, used_memory)
+            memory_list.append(used_memory)
+
+            avg_used_memory = sum(memory_list) / len(memory_list)
+            if limit_memory and (avg_used_memory > limit_memory):
+                log.error(f"memory_list: {memory_list}")
+                raise Exception(f"memory used({round(avg_used_memory, 2)}B) exceeds the limit({limit_memory}B).")
 
             # cpu limit
             used_processor = round(total_cpu_num * p.cpu_percent() / 100)
-            cpu_list.insert(0, used_processor)
-            if len(cpu_list) >= list_len:
-                cpu_list = cpu_list[:list_len]
-                avg_used_cpu = sum(cpu_list) / len(cpu_list)
-                if limit_cpu and (avg_used_cpu > limit_cpu):
-                    log.error(f"cpu_list: {cpu_list}")
-                    raise Exception(f"cpu used({round(avg_used_cpu, 2)}) exceeds the limit({limit_cpu}).")
+            # cpu_list.insert(0, used_processor)
+            cpu_list.append(used_processor)
+            avg_used_cpu = sum(cpu_list) / len(cpu_list)
+            if limit_cpu and (avg_used_cpu > limit_cpu):
+                log.error(f"cpu_list: {cpu_list}")
+                raise Exception(f"cpu used({round(avg_used_cpu, 2)}) exceeds the limit({limit_cpu}).")
+
+            # bandwidth statistics
+            net_1 = psutil.net_io_counters()
             time.sleep(1)
+            net_2 = psutil.net_io_counters()
+            bandwidth_list.append((net_2.bytes_sent - net_1.bytes_sent) + (net_2.bytes_recv - net_1.bytes_recv))
+
+            # bandwidth limit
+            avg_used_bandwidth = sum(bandwidth_list) / len(bandwidth_list)
+            if limit_bandwidth and (avg_used_bandwidth > limit_bandwidth):
+                log.error(f"bandwidth_list: {bandwidth_list}")
+                raise Exception(
+                    f"bandwidth used({round(avg_used_bandwidth, 2)}) bps,exceeds the limit({limit_bandwidth}) bps.")
+            count += 1
+            if count == interval:
+                count = 0
+                resource_usage = resource_info(avg_used_memory, avg_used_cpu, total_bandwidth, avg_used_bandwidth)
+                report_task_result(server_addr, 'resource_usage', resource_usage, task_id, party_id, node_type, ip,
+                                   port)
         except Exception as e:
             log.exception(str(e))
+
+            resource_usage = resource_info(avg_used_memory, avg_used_cpu, total_bandwidth, avg_used_bandwidth)
+            log.warning(f"resource_usage come from exception:{resource_usage}")
+            report_task_result(server_addr, 'resource_usage', resource_usage, task_id, party_id, node_type, ip, port)
+
             event = create_event(event_type["RESOURCE_LIMIT_FAILED"], str(e)[:80])
             report_task_result(server_addr, 'last_event', event)
             event = create_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")

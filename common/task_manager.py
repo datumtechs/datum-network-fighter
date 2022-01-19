@@ -63,7 +63,7 @@ class TaskManager:
         
         peers = tuple(TPeer(p.ip, p.port, p.party_id, p.name) for p in req.peers)
         task = Task(self.cfg, task_id, party_id, contract_id, data_id, env_id, peers, contract_cfg,
-                    data_party, computation_party, result_party, duration, limit_memory, limit_cpu)
+                    data_party, computation_party, result_party, duration, limit_memory, limit_cpu,limit_bandwidth)
         self.tasks[uniq_task] = task
         log.info(f'new task: {task_name}, thread id: {threading.get_ident()}')
         p = mp.Process(target=Task.run, args=(task,), name=task_name, daemon=True)
@@ -80,12 +80,14 @@ class TaskManager:
         if uniq_task not in self.procs:
             return False, f'process for task {task_name} not found'
         p = self.procs[uniq_task]
-        if p.is_alive():
+        if (not p._closed) and p.is_alive():
             p.kill()
             log.info(f'wait {task_name} terminate')
             p.join()
             msg = 'will soon' if p.is_alive() else 'succ'
             p.close()
+            self.tasks.pop(uniq_task, None)
+            self.procs.pop(uniq_task, None)
         else:
             msg = 'succ'
         return True, f'cancel task {task_name} {msg}'
