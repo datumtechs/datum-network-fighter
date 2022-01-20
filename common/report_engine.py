@@ -252,11 +252,11 @@ def report_task_result(server_addr: str, report_type: str, content: dict, *args)
 
 def resource_info(avg_used_memory, avg_used_cpu, total_bandwidth, avg_used_bandwidth):
     return {"total_mem": psutil.virtual_memory().total,
-            "used_mem": avg_used_memory,
+            "used_mem": math.ceil(avg_used_memory),
             "total_processor": psutil.cpu_count(),
             "used_processor": math.ceil(avg_used_cpu),
             "total_bandwidth": total_bandwidth,
-            "used_bandwidth": avg_used_bandwidth,
+            "used_bandwidth": math.ceil(avg_used_bandwidth),
             "total_disk": psutil.disk_usage('/').total,
             "used_disk": psutil.disk_usage('/').used}
 
@@ -275,6 +275,7 @@ def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, limit_
     avg_used_cpu = 0
     avg_used_bandwidth = 0
 
+    first = True
     while True:
         try:
             # time limit
@@ -313,6 +314,12 @@ def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, limit_
                 raise Exception(
                     f"bandwidth used({round(avg_used_bandwidth, 2)}) bps,exceeds the limit({limit_bandwidth}) bps.")
             count += 1
+            if first:
+                first = False
+                resource_usage = resource_info(avg_used_memory, avg_used_cpu, total_bandwidth, avg_used_bandwidth)
+                log.info(f'first report resource usage info is: {resource_usage}')
+                report_task_result(server_addr, 'resource_usage', resource_usage, task_id, party_id, node_type, ip,
+                                   port)
             if count == interval:
                 count = 0
                 resource_usage = resource_info(avg_used_memory, avg_used_cpu, total_bandwidth, avg_used_bandwidth)
