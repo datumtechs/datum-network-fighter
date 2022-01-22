@@ -6,18 +6,22 @@ if [ "$1" = "" ]; then
 fi
 
 cfg=$1
-log_dir=$HOME/$2/yaml
+log_dir=$HOME/$2/log
 if [ ! -e "$log_dir" ];then
     # shellcheck disable=SC2086
     mkdir -p $log_dir
 fi
 
-if [ "$2" = "data" ];then
+flagData="data"
+flagCompute="compute"
+isData=$(echo "$2" | grep "${flagData}")
+isCompute=$(echo "$2" | grep "${flagCompute}")
+if [[ "$isData" != "" ]];then
   echo start data services
   $python_interpreter -u -m metis.data_svc.main "$cfg" >> "$log_dir"/data.log 2>&1
 fi
 
-if [ "$2" = "compute" ];then
+if [[ "$isCompute" != "" ]];then
   echo start compute services
   $python_interpreter -u -m metis.compute_svc.main "$cfg" >> "$log_dir"/compute.log 2>&1
 fi
