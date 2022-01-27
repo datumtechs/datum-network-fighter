@@ -174,7 +174,7 @@ class ReportEngine(object):
         req.usage.total_disk = resource_usage["total_disk"]
         req.usage.used_disk = resource_usage["used_disk"]
         str_req = 'report_task_resource_usage: {' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-        log.debug(str_req)
+        log.info(str_req)
         return self.__client.ReportTaskResourceUsage(req)
 
     def close(self):
@@ -297,9 +297,9 @@ def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, limit_
             # cpu_list.insert(0, used_processor)
             cpu_list.append(used_processor)
             avg_used_cpu = sum(cpu_list) / len(cpu_list)
-            if limit_cpu and (avg_used_cpu > limit_cpu):
-                log.error(f"cpu_list: {cpu_list}")
-                raise Exception(f"cpu used({round(avg_used_cpu, 2)}) exceeds the limit({limit_cpu}).")
+            # if limit_cpu and (avg_used_cpu > limit_cpu):
+            #     log.error(f"cpu_list: {cpu_list}")
+            #     raise Exception(f"cpu used({round(avg_used_cpu, 2)}) exceeds the limit({limit_cpu}).")
 
             # bandwidth statistics
             net_1 = psutil.net_io_counters()
@@ -316,18 +316,20 @@ def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, limit_
             count += 1
             if first:
                 first = False
+                avg_used_cpu = limit_cpu
                 resource_usage = resource_info(avg_used_memory, avg_used_cpu, total_bandwidth, avg_used_bandwidth)
                 log.info(f'first report resource usage info is: {resource_usage}')
                 report_task_result(server_addr, 'resource_usage', resource_usage, task_id, party_id, node_type, ip,
                                    port)
             if count == interval:
                 count = 0
+                avg_used_cpu = limit_cpu
                 resource_usage = resource_info(avg_used_memory, avg_used_cpu, total_bandwidth, avg_used_bandwidth)
                 report_task_result(server_addr, 'resource_usage', resource_usage, task_id, party_id, node_type, ip,
                                    port)
         except Exception as e:
             log.exception(str(e))
-
+            avg_used_cpu = limit_cpu
             resource_usage = resource_info(avg_used_memory, avg_used_cpu, total_bandwidth, avg_used_bandwidth)
             log.warning(f"resource_usage come from exception:{resource_usage}")
             report_task_result(server_addr, 'resource_usage', resource_usage, task_id, party_id, node_type, ip, port)
