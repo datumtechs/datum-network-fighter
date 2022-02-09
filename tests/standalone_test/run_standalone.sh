@@ -18,7 +18,7 @@ use_consul=1   # 0: not use consul, 1: use consul
 # if modify, must absolute path to python37
 python_command=python3
 
-############## data_svc #############
+############## consul_svc #############
 if [ $use_consul -ne 0 ]
 then
     cd $base_dir/third_party/consul_server

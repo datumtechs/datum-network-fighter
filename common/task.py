@@ -11,7 +11,7 @@ import functools
 
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
-from common.report_engine import  report_task_result, monitor_resource_usage
+from common.report_engine import  report_task_result, monitor_resource_usage, report_task_event, ReportEngine
 from common.io_channel_helper import get_channel_config
 
 
@@ -66,7 +66,9 @@ class Task:
         log.info(f'New task start run, task_id: {self.id}, party_id: {self.party_id}')
         log.info(f'thread id: {threading.get_ident()}')
         log.info(f'run_cfg: {self.cfg}')
-        self.fire_event(self.event_type["TASK_START"], "task start.")
+        report_engine = ReportEngine(self.cfg['schedule_svc'])
+        report_event = functools.partial(report_task_event, report_engine, self.create_event)
+        report_event(self.event_type["TASK_START"], "task start.")
         current_task_pid = os.getpid()
 
         monitor_resource = threading.Thread(target=monitor_resource_usage, args=(current_task_pid, self.limit_time,
@@ -77,11 +79,11 @@ class Task:
         
         try:
             self.download_algo()
-            self.fire_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], "download contract success.")
+            report_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], "download contract success.")
         except Exception as e:
             log.exception(repr(e))
-            self.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail.")
-            self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
+            report_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail.")
+            report_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
 
         self.build_env()
 
@@ -103,7 +105,7 @@ class Task:
             m = importlib.import_module(module_name)
             result_dir = self._get_result_dir()
             self._ensure_dir(result_dir)
-            self.fire_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
+            report_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
             m.main(channel_config, user_cfg, self.data_party, self.result_party, result_dir)
             log.info(f'run task done')
             if self.party_id in self.result_party:
@@ -116,12 +118,12 @@ class Task:
                 log.info(f'start report task result file summary.')
                 report_task_result(self.cfg['schedule_svc'], 'result_file', file_summary)
                 log.info(f'finish report task result file summary. ')
-            self.fire_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], "contract execute success.")
-            self.fire_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task success.")
+            report_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], "contract execute success.")
+            report_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task success.")
         except Exception as e:
             log.exception(repr(e))
-            self.fire_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed.")
-            self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
+            report_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed.")
+            report_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
         finally:
             log.info('task final clean')
             self.clean()

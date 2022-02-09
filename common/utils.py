@@ -28,7 +28,7 @@ def get_schedule_svc(cfg, consul_client, pipe):
             if cfg['schedule_svc'] != schedule_svc:
                 log.info(f'get new schedule svc: {schedule_svc}')
                 cfg['schedule_svc'] = schedule_svc
-                pipe.send(schedule_svc)
+                # pipe.send(schedule_svc)
         elif not result:
             pass
         else:

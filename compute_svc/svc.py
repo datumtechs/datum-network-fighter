@@ -31,7 +31,7 @@ def get_sys_stat(cfg):
     stat.used_bandwidth = (net_2.bytes_sent - net_1.bytes_sent) + (net_2.bytes_recv - net_1.bytes_recv)
     stat.idle_bandwidth = max(stat.total_bandwidth - stat.used_bandwidth, 0)
     str_res = '{' + str(stat).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-    log.info(f"get sys stat: {str_res}")
+    log.debug(f"get sys stat: {str_res}")
     return stat
 
 

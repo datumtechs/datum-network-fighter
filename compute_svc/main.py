@@ -89,11 +89,11 @@ def main():
 
     server = serve(task_manager)
 
-    if args.use_consul:
-        report_process = mp.Process(target=report_task_event, args=(cfg, event_stop, pipe[0]), name='report_process')
-    else:
-        report_process = mp.Process(target=report_task_event, args=(cfg, event_stop), name='report_process')
-    report_process.start()
+    # if args.use_consul:
+    #     report_process = mp.Process(target=report_task_event, args=(cfg, event_stop, pipe[0]), name='report_process')
+    # else:
+    #     report_process = mp.Process(target=report_task_event, args=(cfg, event_stop), name='report_process')
+    # report_process.start()
 
     def handle_sigterm(*_):
         log.info("Received shutdown signal")
@@ -108,7 +108,7 @@ def main():
 
     t_task_clean.join()
     server.wait_for_termination()
-    report_process.join()
+    # report_process.join()
     log.info('svc over')
 
 

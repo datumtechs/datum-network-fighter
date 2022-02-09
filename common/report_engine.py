@@ -181,45 +181,48 @@ class ReportEngine(object):
         self.conn.close()
 
 
-def report_task_event(cfg, stop_event, pipe=None):
-    if pipe:
-        t_address = threading.Thread(target=process_recv_address, args=(cfg, pipe))
-        t_address.start()
-    get_new_event = True
-    try_max_times = 20
-    try_cnt = 0
-    while True:
-        try:
-            schedule_svc = cfg['schedule_svc']
-            if not schedule_svc:
-                time.sleep(3)
-                continue
-            report_engine = ReportEngine(schedule_svc)
-            while True:
-                if get_new_event:
-                    new_event = EVENT_QUEUE.get(block=True)
-                report_engine.report_task_event(new_event)
-                get_new_event = True
-                if stop_event.is_set():
-                    log.info('report task event closed')
-                    sys.exit(0)
-                try_cnt = 0
-        except grpc._channel._InactiveRpcError as e:
-            if 'new_event' in dir():
-                get_new_event = False
-            try_cnt = try_cnt + 1
-            if try_cnt == 1:
-                continue
-            elif (try_cnt < try_max_times):
-                time.sleep(0.5)
-            elif (try_cnt == try_max_times):
-                log.info("waiting grpc server set up...")
-                time.sleep(30)
-            else:
-                time.sleep(30)
-        except Exception as e:
-            raise
+# def report_task_event(cfg, stop_event, pipe=None):
+#     if pipe:
+#         t_address = threading.Thread(target=process_recv_address, args=(cfg, pipe))
+#         t_address.start()
+#     get_new_event = True
+#     try_max_times = 20
+#     try_cnt = 0
+#     while True:
+#         try:
+#             schedule_svc = cfg['schedule_svc']
+#             if not schedule_svc:
+#                 time.sleep(3)
+#                 continue
+#             report_engine = ReportEngine(schedule_svc)
+#             while True:
+#                 if get_new_event:
+#                     new_event = EVENT_QUEUE.get(block=True)
+#                 report_engine.report_task_event(new_event)
+#                 get_new_event = True
+#                 if stop_event.is_set():
+#                     log.info('report task event closed')
+#                     sys.exit(0)
+#                 try_cnt = 0
+#         except grpc._channel._InactiveRpcError as e:
+#             if 'new_event' in dir():
+#                 get_new_event = False
+#             try_cnt = try_cnt + 1
+#             if try_cnt == 1:
+#                 continue
+#             elif (try_cnt < try_max_times):
+#                 time.sleep(0.5)
+#             elif (try_cnt == try_max_times):
+#                 log.info("waiting grpc server set up...")
+#                 time.sleep(30)
+#             else:
+#                 time.sleep(30)
+#         except Exception as e:
+#             raise
 
+def report_task_event(report_engine, create_event, event_type, content):
+    event = create_event(event_type, content)
+    report_engine.report_task_event(event)
 
 def report_task_result(server_addr: str, report_type: str, content: dict, *args):
     report_success = False
