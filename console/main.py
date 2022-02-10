@@ -360,5 +360,5 @@ if __name__ == '__main__':
         directions[cmd](user_input[1:], stub)
 
     stubs.clear()
-    for ch in channels:
+    for _, ch in channels.items():
         ch.close()
