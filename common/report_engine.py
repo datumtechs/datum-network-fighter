@@ -220,9 +220,24 @@ class ReportEngine(object):
 #         except Exception as e:
 #             raise
 
-def report_task_event(report_engine, create_event, event_type, content):
-    event = create_event(event_type, content)
-    report_engine.report_task_event(event)
+def report_task_event(server_addr, create_event, event_type, content):
+    report_success = False
+    try_max_times = 20
+    try_cnt = 0
+    while not report_success:
+        try:
+            report_engine = ReportEngine(server_addr)
+            event = create_event(event_type, content)
+            report_engine.report_task_event(event)
+            report_engine.close()
+            report_success = True
+        except grpc._channel._InactiveRpcError as e:
+            try_cnt = try_cnt + 1
+            if (try_cnt >= try_max_times):
+                raise
+            time.sleep(0.5)
+        except:
+            raise
 
 def report_task_result(server_addr: str, report_type: str, content: dict, *args):
     report_success = False

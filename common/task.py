@@ -11,7 +11,7 @@ import functools
 
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
-from common.report_engine import  report_task_result, monitor_resource_usage, report_task_event, ReportEngine
+from common.report_engine import  report_task_result, monitor_resource_usage, report_task_event
 from common.io_channel_helper import get_channel_config
 
 
@@ -66,8 +66,7 @@ class Task:
         log.info(f'New task start run, task_id: {self.id}, party_id: {self.party_id}')
         log.info(f'thread id: {threading.get_ident()}')
         log.info(f'run_cfg: {self.cfg}')
-        report_engine = ReportEngine(self.cfg['schedule_svc'])
-        report_event = functools.partial(report_task_event, report_engine, self.create_event)
+        report_event = functools.partial(report_task_event, self.cfg['schedule_svc'], self.create_event)
         report_event(self.event_type["TASK_START"], "task start.")
         current_task_pid = os.getpid()
 
