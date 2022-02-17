@@ -6,7 +6,10 @@ if [ "$1" = "" ]; then
 fi
 
 cfg=$1
-log_dir=$HOME/$2/log
+# shellcheck disable=SC2206
+deploy_dir=(${0//$2/ })
+# shellcheck disable=SC2128
+log_dir=$deploy_dir$2/log
 if [ ! -e "$log_dir" ];then
     # shellcheck disable=SC2086
     mkdir -p $log_dir
