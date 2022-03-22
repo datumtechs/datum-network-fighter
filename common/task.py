@@ -121,7 +121,7 @@ class Task:
             report_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task success.")
         except Exception as e:
             log.exception(repr(e))
-            report_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed.")
+            report_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed.error:{str(e)[:900]}")
             report_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
         finally:
             log.info('task final clean')
