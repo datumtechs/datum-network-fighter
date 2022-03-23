@@ -48,9 +48,9 @@ class ConsulApi(object):
         # return f'{result["Address"]}:{result["Port"]}'
         return True, result
 
-    def get_via_external_connection(self):
+    def get_kv(self, flag):
         result = self.c.http.get(consul.base.CB.json(),
-                                 path='/v1/kv/metis/via_ip_port',
+                                 path=f'/v1/kv/{flag}',
                                  headers=self.headers())
         connection, *_ = result
         return base64.b64decode(connection["Value"]).decode()

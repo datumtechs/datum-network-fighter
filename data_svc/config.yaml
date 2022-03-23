@@ -1,25 +1,22 @@
 bind_ip: 127.0.0.1
 port: 50021
+ice_grid: 127.0.0.1:55559 # Use this parameter when not using consul
 task_port_range: [31000, 31100]
 file_system: local
 chunk_size: 1024
-pass_via: true
+pass_ice: true
 thread_pool_size: 12
 data_root: ../data
 code_root_dir: ../contract_work_dir
 results_root_dir: results_root
 total_bandwidth: 20000000
-certs: 
-  base_path: ../certs
-  root_cert: CA.crt
-  server_sign_key: SS.key
-  server_sign_cert: SS.crt
-  server_enc_key: SE.key
-  server_enc_cert: SE.crt
-  client_sign_key: CS.key
-  client_sign_cert: CS.crt
-  client_enc_key: CE.key
-  client_enc_cert: CE.crt
+certs:
+  base_path: ""
+  root_cert: ""
+  cert_dir: ""
+  server_cert: SS.key
+  client_cert: CC.key
+  password: 123456
 consul:
   service_ip: 127.0.0.1
   service_port: 8500

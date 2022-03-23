@@ -3,8 +3,10 @@ import time
 import logging
 from grpc import _common
 
-
 log = logging.getLogger(__name__)
+GateWayConsulServiceAddressKey = "metis/icegrid_ip_port"
+ViaNodeConsulServiceExternalAddressKey = "metis/via_ip_port"
+
 
 def load_cfg(file):
     with open(file) as f:
@@ -22,6 +24,12 @@ def dump_yaml(data, file_handle):
 def get_schedule_svc(cfg, consul_client, pipe):
     while True:
         flag, result = consul_client.query_service_info_by_filter('carrier in Tags')
+        kv = consul_client.get_kv(GateWayConsulServiceAddressKey)
+        if (kv is None) or len(kv) == 0:
+            log.info(f'get_kv result kv is:{kv}')
+            cfg['ice_grid'] = ''
+        else:
+            cfg['ice_grid'] = kv.replace(' ', '').replace('_', ':')
         if flag:
             result, *_ = list(result.values())
             schedule_svc = f'{result["Address"]}:{result["Port"]}'
@@ -35,10 +43,12 @@ def get_schedule_svc(cfg, consul_client, pipe):
             raise Exception(result)
         time.sleep(3)
 
+
 def process_recv_address(cfg, pipe):
     while True:
         cfg['schedule_svc'] = pipe.recv()
         time.sleep(3)
+
 
 def check_grpc_channel_state(channel, try_to_connect=True):
     result = channel._channel.check_connectivity_state(try_to_connect)
