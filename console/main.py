@@ -239,14 +239,17 @@ def comp_run_task(args, stub):
         p.party_id = party
         p.name = party
         peers[party] = peer_cfg['INTERNAL']
-    _mock_schedule_dispatch_task(peers, req, compute_parties, each_party, run_task_cfg['dynamic_parameter'])
+    _mock_schedule_dispatch_task(peers, req, data_parties, compute_parties, each_party, run_task_cfg['dynamic_parameter'])
 
 
-def _mock_schedule_dispatch_task(peers, req, compute_parties, each_party, dynamic_parameter):
+def _mock_schedule_dispatch_task(peers, req, data_parties, compute_parties, each_party, dynamic_parameter):
     print("peers:", peers)
     for party, addr in peers.items():
         ch = grpc.insecure_channel(addr)
         svc_type = via_svc_pb2.COMPUTE_SVC if party in compute_parties else via_svc_pb2.DATA_SVC
+        if party in data_parties:
+            svc_type = via_svc_pb2.DATA_SVC
+        print("svc_type:", svc_type)
         stub = svc_stub[svc_type](ch)
         req.party_id = party
         contract_cfg = {'dynamic_parameter': dynamic_parameter}
