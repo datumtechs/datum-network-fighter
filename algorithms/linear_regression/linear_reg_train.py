@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import latticex.rosetta as rtt
-import channel_sdk
+import channel_sdk.pyio as io
 
 
 np.set_printoptions(suppress=True)
@@ -31,6 +31,30 @@ class PrivacyLinearRegTrain(object):
                  data_party: list,
                  result_party: list,
                  results_dir: str):
+        '''
+        cfg_dict:
+        {
+            "party_id": "p1",
+            "data_party": {
+                "input_file": "path/to/file",
+                "key_column": "col1",
+                "selected_columns": ["col2", "col3"],
+                "use_psi": True,
+                "psi_result_file": "path/to/file"
+            },
+            "dynamic_parameter": {
+                "label_owner": "p1",
+                "label_column": "Y",
+                "algorithm_parameter": {
+                    "epochs": 10,
+                    "batch_size": 256,
+                    "learning_rate": 0.1,
+                    "use_validation_set": true,
+                    "validation_set_rate": 0.2
+                }
+            }
+        }
+        '''
         log.info(f"channel_config:{channel_config}")
         log.info(f"cfg_dict:{cfg_dict}")
         log.info(f"data_party:{data_party}, result_party:{result_party}, results_dir:{results_dir}")
@@ -43,10 +67,13 @@ class PrivacyLinearRegTrain(object):
         self.channel_config = channel_config
         self.data_party = list(data_party)
         self.result_party = list(result_party)
+        self.results_dir = results_dir
         self.party_id = cfg_dict["party_id"]
         self.input_file = cfg_dict["data_party"].get("input_file")
         self.key_column = cfg_dict["data_party"].get("key_column")
         self.selected_columns = cfg_dict["data_party"].get("selected_columns")
+        self.use_psi = cfg_dict["data_party"].get("use_psi", True)
+        self.psi_result_file = cfg_dict["data_party"].get("psi_result_file")
 
         dynamic_parameter = cfg_dict["dynamic_parameter"]
         self.label_owner = dynamic_parameter.get("label_owner")
@@ -76,20 +103,32 @@ class PrivacyLinearRegTrain(object):
         assert isinstance(self.use_validation_set, bool), "use_validation_set must be type(bool), true or false"
         assert 0 < self.validation_set_rate < 1, "validattion set rate must be between (0,1)"
         
-        if self.input_file:
-            self.input_file = self.input_file.strip()
         if self.party_id in self.data_party:
+            assert isinstance(self.use_psi, bool), "use_psi must be type(bool), true or false"
+            if self.use_psi:
+                assert isinstance(self.psi_result_file, str), "psi_result_file must be type(string)" 
+                self.psi_result_file = self.psi_result_file.strip()
+                if os.path.exists(self.psi_result_file):
+                    file_suffix = os.path.splitext(self.psi_result_file)[-1]
+                    assert file_suffix == ".csv", f"psi_result_file must csv file, not {file_suffix}"
+                else:
+                    raise Exception(f"psi_result_file is not exist. psi_result_file={self.psi_result_file}")
+            
+            assert isinstance(self.input_file, str), "input_file must be type(string)"
+            assert isinstance(self.key_column, str), "key_column must be type(string)"
+            assert isinstance(self.selected_columns, list), "selected_columns must be type(list)" 
+            self.input_file = self.input_file.strip()
             if os.path.exists(self.input_file):
+                file_suffix = os.path.splitext(self.input_file)[-1]
+                assert file_suffix == ".csv", f"input_file must csv file, not {file_suffix}"
                 input_columns = pd.read_csv(self.input_file, nrows=0)
                 input_columns = list(input_columns.columns)
-                if self.key_column:
-                    assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
-                if self.selected_columns:
-                    error_col = []
-                    for col in self.selected_columns:
-                        if col not in input_columns:
-                            error_col.append(col)   
-                    assert not error_col, f"selected_columns:{error_col} not in input_file"
+                assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
+                error_col = []
+                for col in self.selected_columns:
+                    if col not in input_columns:
+                        error_col.append(col)   
+                assert not error_col, f"selected_columns:{error_col} not in input_file"
                 if self.label_column:
                     assert self.label_column in input_columns, f"label_column:{self.label_column} not in input_file"
             else:
@@ -196,18 +235,30 @@ class PrivacyLinearRegTrain(object):
         rmse = mean_squared_error(Y_true, Y_pred, squared=False)
         mse = mean_squared_error(Y_true, Y_pred, squared=True)
         mae = mean_absolute_error(Y_true, Y_pred)
+        r2 = round(r2, 6)
+        rmse = round(rmse, 6)
+        mse = round(mse, 6)
+        mae = round(mae, 6)
+        evaluation_result = {
+            "R2-score": r2,
+            "RMSE": rmse,
+            "MSE": mse,
+            "MAE": mae
+        }
         log.info("********************")
-        log.info(f"R Squared: {round(r2, 6)}")
-        log.info(f"RMSE: {round(rmse, 6)}")
-        log.info(f"MSE: {round(mse, 6)}")
-        log.info(f"MAE: {round(mae, 6)}")
+        log.info(f"evaluation_result = {evaluation_result}")
         log.info("********************")
+        log.info("evaluation result write to file.")
+        result_file = os.path.join(self.results_dir, "evaluation_result.json")
+        with open(result_file, "w") as f:
+            json.dump(evaluation_result, f, indent=4)
+        log.info("evaluation success.")
     
     def create_set_channel(self):
         '''
         create and set channel.
         '''
-        io_channel = channel_sdk.grpc.APIManager()
+        io_channel = io.APIManager()
         log.info("start create channel")
         channel = io_channel.create_channel(self.party_id, self.channel_config)
         log.info("start set channel")
@@ -226,13 +277,18 @@ class PrivacyLinearRegTrain(object):
         temp_dir = self.get_temp_dir()
         if self.party_id in self.data_party:
             if self.input_file:
+                usecols = [self.key_column] + self.selected_columns
                 if with_label:
-                    usecols = self.selected_columns + [self.label_column]
-                else:
-                    usecols = self.selected_columns
+                    usecols += [self.label_column]
                 
                 input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str")
                 input_data = input_data[usecols]
+                assert input_data.shape[0] > 0, 'input file is no data.'
+                if self.use_psi:
+                    psi_result = pd.read_csv(self.psi_result_file, dtype="str")
+                    psi_result.name = self.key_column
+                    input_data = pd.merge(psi_result, input_data, on=self.key_column, how='inner')
+                    assert input_data.shape[0] > 0, 'input data is empty. bacause no intersection with psi result.'
                 # only if self.validation_set_rate==0, split_point==input_data.shape[0]
                 split_point = int(input_data.shape[0] * (1 - self.validation_set_rate))
                 assert split_point > 0, f"train set is empty, because validation_set_rate:{self.validation_set_rate} is too big"
@@ -248,9 +304,8 @@ class PrivacyLinearRegTrain(object):
                         val_y_data = y_data.iloc[split_point:]
                         val_y = os.path.join(temp_dir, f"val_y_{self.party_id}.csv")
                         val_y_data.to_csv(val_y, header=True, index=False)
-                    del input_data[self.label_column]
                 
-                x_data = input_data
+                x_data = input_data[self.selected_columns]
                 train_x = os.path.join(temp_dir, f"train_x_{self.party_id}.csv")
                 x_data.iloc[:split_point].to_csv(train_x, header=True, index=False)
                 if self.use_validation_set:
@@ -294,5 +349,7 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
     '''
     This is the entrance to this module
     '''
+    log.info("start main function.")
     privacy_linear_reg = PrivacyLinearRegTrain(channel_config, cfg_dict, data_party, result_party, results_dir)
     privacy_linear_reg.train()
+    log.info("finish main function.")

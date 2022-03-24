@@ -10,7 +10,7 @@ import shutil
 import numpy as np
 import pandas as pd
 import latticex.rosetta as rtt
-import channel_sdk
+import channel_sdk.pyio as io
 
 
 np.set_printoptions(suppress=True)
@@ -35,15 +35,17 @@ class PrivacyXgbPredict(object):
             "data_party": {
                 "input_file": "path/to/file",
                 "key_column": "col1",
-                "selected_columns": ["col2", "col3"]
+                "selected_columns": ["col2", "col3"],
+                "use_psi": True,
+                "psi_result_file": "path/to/file"
             },
             "dynamic_parameter": {
                 "model_restore_party": "p3",
                 "model_path": "/absoulte_path/to/model_dir",
                 "algorithm_parameter": {
-                    "num_trees": 3,
-                    "max_depth": 4,
-                    "num_bins": 5,
+                    "num_trees": 1,
+                    "max_depth": 3,
+                    "num_bins": 4,
                     "num_class": 2,
                     "lambd": 1.0,
                     "gamma": 0.0,
@@ -69,18 +71,20 @@ class PrivacyXgbPredict(object):
         self.input_file = cfg_dict["data_party"].get("input_file")
         self.key_column = cfg_dict["data_party"].get("key_column")
         self.selected_columns = cfg_dict["data_party"].get("selected_columns")
+        self.use_psi = cfg_dict["data_party"].get("use_psi", True)
+        self.psi_result_file = cfg_dict["data_party"].get("psi_result_file")
+
         dynamic_parameter = cfg_dict["dynamic_parameter"]
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
         self.model_path = dynamic_parameter.get("model_path")
         algorithm_parameter = dynamic_parameter["algorithm_parameter"]
-        self.num_trees = algorithm_parameter.get("num_trees", 3)
-        self.max_depth = algorithm_parameter.get("max_depth", 4)
-        self.num_bins = algorithm_parameter.get("num_bins", 5)
+        self.num_trees = algorithm_parameter.get("num_trees", 1)
+        self.max_depth = algorithm_parameter.get("max_depth", 3)
+        self.num_bins = algorithm_parameter.get("num_bins", 4)
         self.num_class = algorithm_parameter.get("num_class", 2)
         self.lambd = algorithm_parameter.get("lambd", 1.0)
         self.gamma = algorithm_parameter.get("gamma", 0.0)
-        self.predict_threshold = algorithm_parameter.get("predict_threshold", 0.5)
-        self.model_file = os.path.join(self.model_path, "model")        
+        self.predict_threshold = algorithm_parameter.get("predict_threshold", 0.5)        
         self.output_file = os.path.join(results_dir, "result")
         self.data_party.remove(self.model_restore_party)  # except restore party
         self.check_parameters()
@@ -95,24 +99,39 @@ class PrivacyXgbPredict(object):
         assert isinstance(self.lambd, (float, int)) and self.lambd >= 0, "lambd must be type(float/int) and greater_equal 0"
         assert isinstance(self.gamma, (float, int)), "gamma must be type(float/int)" 
         
-        if self.input_file:
-            self.input_file = self.input_file.strip()
         if self.party_id in self.data_party:
+            assert isinstance(self.use_psi, bool), "use_psi must be type(bool), true or false"
+            if self.use_psi:
+                assert isinstance(self.psi_result_file, str), "psi_result_file must be type(string)" 
+                self.psi_result_file = self.psi_result_file.strip()
+                if os.path.exists(self.psi_result_file):
+                    file_suffix = os.path.splitext(self.psi_result_file)[-1]
+                    assert file_suffix == ".csv", f"psi_result_file must csv file, not {file_suffix}"
+                else:
+                    raise Exception(f"psi_result_file is not exist. psi_result_file={self.psi_result_file}")
+            
+            assert isinstance(self.input_file, str), "input_file must be type(string)"
+            assert isinstance(self.key_column, str), "key_column must be type(string)"
+            assert isinstance(self.selected_columns, list), "selected_columns must be type(list)" 
+            self.input_file = self.input_file.strip()
             if os.path.exists(self.input_file):
+                file_suffix = os.path.splitext(self.input_file)[-1]
+                assert file_suffix == ".csv", f"input_file must csv file, not {file_suffix}"
                 input_columns = pd.read_csv(self.input_file, nrows=0)
                 input_columns = list(input_columns.columns)
-                if self.key_column:
-                    assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
-                if self.selected_columns:
-                    error_col = []
-                    for col in self.selected_columns:
-                        if col not in input_columns:
-                            error_col.append(col)   
-                    assert not error_col, f"selected_columns:{error_col} not in input_file"
+                assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
+                error_col = []
+                for col in self.selected_columns:
+                    if col not in input_columns:
+                        error_col.append(col)   
+                assert not error_col, f"selected_columns:{error_col} not in input_file"
             else:
                 raise Exception(f"input_file is not exist. input_file={self.input_file}")
         if self.party_id == self.model_restore_party:
             assert os.path.exists(self.model_path), f"model path not found. model_path={self.model_path}"
+            self.model_path = os.path.abspath(self.model_path)
+            self.model_file = os.path.join(self.model_path, "model")
+            assert os.path.exists(self.model_file), f"model file not found. model_file={self.model_file}"
         log.info(f"check parameter finish.")
        
 
@@ -194,7 +213,7 @@ class PrivacyXgbPredict(object):
         '''
         create and set channel.
         '''
-        io_channel = channel_sdk.grpc.APIManager()
+        io_channel = io.APIManager()
         log.info("start create channel")
         channel = io_channel.create_channel(self.party_id, self.channel_config)
         log.info("start set channel")
@@ -213,6 +232,12 @@ class PrivacyXgbPredict(object):
                 usecols = [self.key_column] + self.selected_columns
                 input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str")
                 input_data = input_data[usecols]
+                assert input_data.shape[0] > 0, 'input file is no data.'
+                if self.use_psi:
+                    psi_result = pd.read_csv(self.psi_result_file, dtype="str")
+                    psi_result.name = self.key_column
+                    input_data = pd.merge(psi_result, input_data, on=self.key_column, how='inner')
+                    assert input_data.shape[0] > 0, 'input data is empty. bacause no intersection with psi result.'
                 id_col = input_data[self.key_column]
                 file_x = os.path.join(temp_dir, f"file_x_{self.party_id}.csv")
                 x_data = input_data.drop(labels=self.key_column, axis=1)
@@ -244,5 +269,7 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
     '''
     This is the entrance to this module
     '''
+    log.info("start main function.")
     privacy_xgb = PrivacyXgbPredict(channel_config, cfg_dict, data_party, result_party, results_dir)
     privacy_xgb.predict()
+    log.info("finish main function.")
