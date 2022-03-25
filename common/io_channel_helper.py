@@ -60,7 +60,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
             CERT_DIR=os.path.join(certs_base_path, certs.get('cert_dir', '')),
             SERVER_CERT=os.path.join(certs_base_path, certs.get('server_cert', '')),
             CLIENT_CERT=os.path.join(certs_base_path, certs.get('client_cert', '')),
-            PASSWORD=os.path.join(certs_base_path, certs.get('password', ''))
+            PASSWORD=str(certs.get('password', ''))
         )
         list_node_info.append(one_node_info)
 

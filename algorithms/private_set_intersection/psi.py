@@ -156,7 +156,7 @@ class PrivateSetIntersection(object):
         '''
         if self.party_id in self.result_party:
             log.info(f"result party performs post-processing on the result.")
-            key_col_name = "INTERSECTION"
+            key_col_name = self.key_column
             if os.path.exists(file_name):
                 psi_result = pd.read_csv(file_name, header=None)
                 psi_result = pd.DataFrame(psi_result.values, columns=[key_col_name])
