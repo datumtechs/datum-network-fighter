@@ -51,7 +51,7 @@ class PrivacyLRPredict(object):
                 "input_file": "path/to/file",
                 "key_column": "col1",
                 "selected_columns": ["col2", "col3"],
-                "use_psi": True,
+                "use_psi": true,
                 "psi_result_file": "path/to/file"
             },
             "dynamic_parameter": {

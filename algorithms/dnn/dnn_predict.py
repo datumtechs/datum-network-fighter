@@ -51,7 +51,9 @@ class PrivacyDnnPredict(object):
             "data_party": {
                 "input_file": "path/to/file",
                 "key_column": "col1",
-                "selected_columns": ["col2", "col3"]
+                "selected_columns": ["col2", "col3"],
+                "use_psi": true,
+                "psi_result_file": "path/to/file"
             },
             "dynamic_parameter": {
                 "model_restore_party": "p3",

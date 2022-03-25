@@ -38,6 +38,19 @@ class PrivateSetIntersection(object):
                  data_party: list,
                  result_party: list,
                  results_dir: str):
+        '''
+        cfg_dict:
+        {
+            "party_id": "p1",
+            "data_party": {
+                "input_file": "path/to/file",
+                "key_column": "col1"
+            },
+            "dynamic_parameter": {
+                "psi_type": "T_V1_Basic_GLS254"
+            }
+        }
+        '''
         log.info(f"channel_config:{channel_config}, cfg_dict:{cfg_dict}, data_party:{data_party}, "
                  f"result_party:{result_party}, results_dir:{results_dir}")
         assert isinstance(channel_config, str), "type of channel_config must be string"
