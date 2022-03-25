@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import latticex.rosetta as rtt
-import channel_sdk
+import channel_sdk.pyio as io
 
 
 np.set_printoptions(suppress=True)
@@ -31,6 +31,24 @@ class PrivacyLRPredict(object):
                  data_party: list,
                  result_party: list,
                  results_dir: str):
+        '''
+        cfg_dict:
+        {
+            "party_id": "p1",
+            "data_party": {
+                "input_file": "path/to/file",
+                "key_column": "col1",
+                "selected_columns": ["col2", "col3"],
+                "use_psi": True,
+                "psi_result_file": "path/to/file"
+            },
+            "dynamic_parameter": {
+                "model_restore_party": "p3",
+                "model_path": "path/to/model",
+                "predict_threshold": 0.5
+            }
+        }
+        '''
         log.info(f"channel_config:{channel_config}")
         log.info(f"cfg_dict:{cfg_dict}")
         log.info(f"data_party:{data_party}, result_party:{result_party}, results_dir:{results_dir}")
@@ -47,6 +65,9 @@ class PrivacyLRPredict(object):
         self.input_file = cfg_dict["data_party"].get("input_file")
         self.key_column = cfg_dict["data_party"].get("key_column")
         self.selected_columns = cfg_dict["data_party"].get("selected_columns")
+        self.use_psi = cfg_dict["data_party"].get("use_psi", True)
+        self.psi_result_file = cfg_dict["data_party"].get("psi_result_file")
+
         dynamic_parameter = cfg_dict["dynamic_parameter"]
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
         self.model_path = dynamic_parameter.get("model_path")
@@ -60,20 +81,32 @@ class PrivacyLRPredict(object):
         log.info(f"check parameter start.")        
         assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
-        if self.input_file:
-            self.input_file = self.input_file.strip()
         if self.party_id in self.data_party:
+            assert isinstance(self.use_psi, bool), "use_psi must be type(bool), true or false"
+            if self.use_psi:
+                assert isinstance(self.psi_result_file, str), "psi_result_file must be type(string)" 
+                self.psi_result_file = self.psi_result_file.strip()
+                if os.path.exists(self.psi_result_file):
+                    file_suffix = os.path.splitext(self.psi_result_file)[-1]
+                    assert file_suffix == ".csv", f"psi_result_file must csv file, not {file_suffix}"
+                else:
+                    raise Exception(f"psi_result_file is not exist. psi_result_file={self.psi_result_file}")
+            
+            assert isinstance(self.input_file, str), "input_file must be type(string)"
+            assert isinstance(self.key_column, str), "key_column must be type(string)"
+            assert isinstance(self.selected_columns, list), "selected_columns must be type(list)" 
+            self.input_file = self.input_file.strip()
             if os.path.exists(self.input_file):
+                file_suffix = os.path.splitext(self.input_file)[-1]
+                assert file_suffix == ".csv", f"input_file must csv file, not {file_suffix}"
                 input_columns = pd.read_csv(self.input_file, nrows=0)
                 input_columns = list(input_columns.columns)
-                if self.key_column:
-                    assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
-                if self.selected_columns:
-                    error_col = []
-                    for col in self.selected_columns:
-                        if col not in input_columns:
-                            error_col.append(col)   
-                    assert not error_col, f"selected_columns:{error_col} not in input_file"
+                assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
+                error_col = []
+                for col in self.selected_columns:
+                    if col not in input_columns:
+                        error_col.append(col)   
+                assert not error_col, f"selected_columns:{error_col} not in input_file"
             else:
                 raise Exception(f"input_file is not exist. input_file={self.input_file}")
         if self.party_id == self.model_restore_party:
@@ -158,7 +191,7 @@ class PrivacyLRPredict(object):
         '''
         create and set channel.
         '''
-        io_channel = channel_sdk.grpc.APIManager()
+        io_channel = io.APIManager()
         log.info("start create channel")
         channel = io_channel.create_channel(self.party_id, self.channel_config)
         log.info("start set channel")
@@ -177,6 +210,13 @@ class PrivacyLRPredict(object):
                 usecols = [self.key_column] + self.selected_columns
                 input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str")
                 input_data = input_data[usecols]
+                assert input_data.shape[0] > 0, 'input file is no data.'
+                if self.use_psi:
+                    psi_result = pd.read_csv(self.psi_result_file, dtype="str")
+                    psi_result.name = self.key_column
+                    input_data = pd.merge(psi_result, input_data, on=self.key_column, how='inner')
+                    assert input_data.shape[0] > 0, 'input data is empty. bacause no intersection with psi result.'
+
                 id_col = input_data[self.key_column]
                 file_x = os.path.join(temp_dir, f"file_x_{self.party_id}.csv")
                 x_data = input_data.drop(labels=self.key_column, axis=1)
@@ -208,5 +248,7 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
     '''
     This is the entrance to this module
     '''
+    log.info("start main function.")
     privacy_lr = PrivacyLRPredict(channel_config, cfg_dict, data_party, result_party, results_dir)
     privacy_lr.predict()
+    log.info("finish main function.")
