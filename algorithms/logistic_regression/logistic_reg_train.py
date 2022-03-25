@@ -18,7 +18,19 @@ np.set_printoptions(suppress=True)
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 rtt.set_backend_loglevel(3)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+class LogWithStage():
+    def __init__(self):
+        self.run_stage = 'init log.'
+    
+    def info(self, content):
+        self.run_stage = content
+        logger.info(content)
+    
+    def debug(self, content):
+        logger.debug(content)
+
+log = LogWithStage()
 
 class PrivacyLRTrain(object):
     '''
@@ -131,8 +143,10 @@ class PrivacyLRTrain(object):
                     if col not in input_columns:
                         error_col.append(col)   
                 assert not error_col, f"selected_columns:{error_col} not in input_file"
+                assert self.key_column not in self.selected_columns, f"key_column:{self.key_column} can not in selected_columns"
                 if self.label_column:
                     assert self.label_column in input_columns, f"label_column:{self.label_column} not in input_file"
+                    assert self.label_column not in self.selected_columns, f"label_column:{self.label_column} can not in selected_columns"
             else:
                 raise Exception(f"input_file is not exist. input_file={self.input_file}")
         log.info(f"check parameter finish.")
@@ -168,7 +182,7 @@ class PrivacyLRTrain(object):
 
         if self.party_id not in self.data_party:  
             # mean the compute party and result party
-            log.info("compute start.")
+            log.info("start build the model structure.")
             X = tf.placeholder(tf.float64, [None, column_total_num])
             Y = tf.placeholder(tf.float64, [None, 1])
             W = tf.Variable(tf.zeros([column_total_num, 1], dtype=tf.float64))
@@ -185,6 +199,7 @@ class PrivacyLRTrain(object):
             reveal_Y = rtt.SecureReveal(pred_Y)
             actual_Y = tf.placeholder(tf.float64, [None, 1])
             reveal_Y_actual = rtt.SecureReveal(actual_Y)
+            log.info("finish build the model structure.")
 
             with tf.Session() as sess:
                 log.info("session init.")
@@ -230,18 +245,24 @@ class PrivacyLRTrain(object):
             Y_pred = Y_pred.astype("float").reshape([-1, ])
             Y_true = Y_actual.astype("float").reshape([-1, ])
             self.model_evaluation(Y_true, Y_pred)
-        log.info("train finish.")
+        log.info("train success all.")
     
     def model_evaluation(self, Y_true, Y_pred):
         '''
         only support binary class
         '''
+        log.info("start model evaluation.")
         from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_score, accuracy_score
+        log.info("start evaluate auc score.")
         auc_score = roc_auc_score(Y_true, Y_pred)
         Y_pred_class = (Y_pred > self.predict_threshold).astype('int64')  # default threshold=0.5
+        log.info("start evaluate accuracy score.")
         accuracy = accuracy_score(Y_true, Y_pred_class)
+        log.info("start evaluate f1_score.")
         f1_score = f1_score(Y_true, Y_pred_class)
+        log.info("start evaluate precision score.")
         precision = precision_score(Y_true, Y_pred_class)
+        log.info("start evaluate recall score.")
         recall = recall_score(Y_true, Y_pred_class)
         auc_score = round(auc_score, 6)
         accuracy = round(accuracy, 6)
@@ -255,9 +276,7 @@ class PrivacyLRTrain(object):
             "precision": precision,
             "recall": recall
         }
-        log.info("********************")
         log.info(f"evaluation_result = {evaluation_result}")
-        log.info("********************")
         log.info("evaluation result write to file.")
         result_file = os.path.join(self.results_dir, "evaluation_result.json")
         with open(result_file, "w") as f:
@@ -269,9 +288,9 @@ class PrivacyLRTrain(object):
         create and set channel.
         '''
         io_channel = io.APIManager()
-        log.info("start create channel")
+        log.info("start create channel.")
         channel = io_channel.create_channel(self.party_id, self.channel_config)
-        log.info("start set channel")
+        log.info("start set channel.")
         rtt.set_channel("", channel)
         log.info("set channel success.")
     
@@ -286,49 +305,47 @@ class PrivacyLRTrain(object):
         val_y = ""
         temp_dir = self.get_temp_dir()
         if self.party_id in self.data_party:
-            if self.input_file:
-                usecols = [self.key_column] + self.selected_columns
-                if with_label:
-                    usecols += [self.label_column]
-                
-                input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str") # usecols not ensure the order of columns
-                input_data = input_data[usecols]  # use for ensure the order of columns
-                assert input_data.shape[0] > 0, 'input file is no data.'
-                if self.use_psi:
-                    psi_result = pd.read_csv(self.psi_result_file, dtype="str")
-                    psi_result.name = self.key_column
-                    input_data = pd.merge(psi_result, input_data, on=self.key_column, how='inner')
-                    assert input_data.shape[0] > 0, 'input data is empty. bacause no intersection with psi result.'
-                # only if self.validation_set_rate==0, split_point==input_data.shape[0]
-                split_point = int(input_data.shape[0] * (1 - self.validation_set_rate))
-                assert split_point > 0, f"train set is empty, because validation_set_rate:{self.validation_set_rate} is too big"
-                
-                if with_label:
-                    y_data = input_data[self.label_column]
-                    train_y_data = y_data.iloc[:split_point]
-                    train_class_num = train_y_data.unique().shape[0]
-                    assert train_class_num == 2, f"train set must be 2 class, not {train_class_num} class."
-                    train_y = os.path.join(temp_dir, f"train_y_{self.party_id}.csv")
-                    train_y_data.to_csv(train_y, header=True, index=False)
-                    if self.use_validation_set:
-                        assert split_point < input_data.shape[0], \
-                            f"validation set is empty, because validation_set_rate:{self.validation_set_rate} is too small"
-                        val_y_data = y_data.iloc[split_point:]
-                        val_class_num = val_y_data.unique().shape[0]
-                        assert val_class_num == 2, f"validation set must be 2 class, not {val_class_num} class."
-                        val_y = os.path.join(temp_dir, f"val_y_{self.party_id}.csv")
-                        val_y_data.to_csv(val_y, header=True, index=False)
-                
-                x_data = input_data[self.selected_columns]
-                train_x = os.path.join(temp_dir, f"train_x_{self.party_id}.csv")
-                x_data.iloc[:split_point].to_csv(train_x, header=True, index=False)
+            usecols = [self.key_column] + self.selected_columns
+            if with_label:
+                usecols += [self.label_column]
+            
+            input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str") # usecols not ensure the order of columns
+            input_data = input_data[usecols]  # use for ensure the order of columns
+            assert input_data.shape[0] > 0, 'input file is no data.'
+            if self.use_psi:
+                psi_result = pd.read_csv(self.psi_result_file, dtype="str")
+                psi_result.name = self.key_column
+                input_data = pd.merge(psi_result, input_data, on=self.key_column, how='inner')
+                assert input_data.shape[0] > 0, 'input data is empty. because no intersection with psi result.'
+            # only if self.validation_set_rate==0, split_point==input_data.shape[0]
+            split_point = int(input_data.shape[0] * (1 - self.validation_set_rate))
+            assert split_point > 0, f"train set is empty, because validation_set_rate:{self.validation_set_rate} is too big"
+            
+            if with_label:
+                y_data = input_data[self.label_column]
+                train_y_data = y_data.iloc[:split_point]
+                train_class_num = train_y_data.unique().shape[0]
+                assert train_class_num == 2, f"train set must be 2 class, not {train_class_num} class."
+                train_y = os.path.join(temp_dir, f"train_y_{self.party_id}.csv")
+                train_y_data.to_csv(train_y, header=True, index=False)
                 if self.use_validation_set:
                     assert split_point < input_data.shape[0], \
-                            f"validation set is empty, because validation_set_rate:{self.validation_set_rate} is too small."
-                    val_x = os.path.join(temp_dir, f"val_x_{self.party_id}.csv")
-                    x_data.iloc[split_point:].to_csv(val_x, header=True, index=False)
-            else:
-                raise Exception(f"data_node {self.party_id} not have data. input_file:{self.input_file}")
+                        f"validation set is empty, because validation_set_rate:{self.validation_set_rate} is too small"
+                    val_y_data = y_data.iloc[split_point:]
+                    val_class_num = val_y_data.unique().shape[0]
+                    assert val_class_num == 2, f"validation set must be 2 class, not {val_class_num} class."
+                    val_y = os.path.join(temp_dir, f"val_y_{self.party_id}.csv")
+                    val_y_data.to_csv(val_y, header=True, index=False)
+            
+            x_data = input_data[self.selected_columns]
+            train_x = os.path.join(temp_dir, f"train_x_{self.party_id}.csv")
+            x_data.iloc[:split_point].to_csv(train_x, header=True, index=False)
+            if self.use_validation_set:
+                assert split_point < input_data.shape[0], \
+                        f"validation set is empty, because validation_set_rate:{self.validation_set_rate} is too small."
+                val_x = os.path.join(temp_dir, f"val_x_{self.party_id}.csv")
+                x_data.iloc[split_point:].to_csv(val_x, header=True, index=False)
+
         return train_x, train_y, val_x, val_y
     
     def get_temp_dir(self):
@@ -364,6 +381,9 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
     This is the entrance to this module
     '''
     log.info("start main function.")
-    privacy_lr = PrivacyLRTrain(channel_config, cfg_dict, data_party, result_party, results_dir)
-    privacy_lr.train()
+    try:
+        privacy_lr = PrivacyLRTrain(channel_config, cfg_dict, data_party, result_party, results_dir)
+        privacy_lr.train()
+    except Exception as e:
+        raise Exception(f"<RUN_STAGE>: {log.run_stage} <ERROR>: {str(e)}")
     log.info("finish main function.")

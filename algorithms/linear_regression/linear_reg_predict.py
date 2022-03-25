@@ -18,7 +18,19 @@ np.set_printoptions(suppress=True)
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 rtt.set_backend_loglevel(3)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+class LogWithStage():
+    def __init__(self):
+        self.run_stage = 'init log.'
+    
+    def info(self, content):
+        self.run_stage = content
+        logger.info(content)
+    
+    def debug(self, content):
+        logger.debug(content)
+
+log = LogWithStage()
 
 class PrivacyLinearRegPredict(object):
     '''
@@ -104,6 +116,7 @@ class PrivacyLinearRegPredict(object):
                     if col not in input_columns:
                         error_col.append(col)   
                 assert not error_col, f"selected_columns:{error_col} not in input_file"
+                assert self.key_column not in self.selected_columns, f"key_column:{self.key_column} can not in selected_columns"
             else:
                 raise Exception(f"input_file is not exist. input_file={self.input_file}")
         if self.party_id == self.model_restore_party:
@@ -167,7 +180,7 @@ class PrivacyLinearRegPredict(object):
             Y_pred = sess.run(reveal_Y, feed_dict={X: shard_x})
             log.debug(f"Y_pred:\n {Y_pred[:10]}")
             predict_use_time = round(time.time() - predict_start_time, 3)
-            log.info(f"predict success. predict_use_time={predict_use_time}s")
+            log.info(f"predict finish. predict_use_time={predict_use_time}s")
         rtt.deactivate()
         log.info("rtt deactivate finish.")
         
@@ -179,16 +192,16 @@ class PrivacyLinearRegPredict(object):
             Y_result.to_csv(output_file_predict_prob, header=True, index=False)
         log.info("start remove temp dir.")
         self.remove_temp_dir()
-        log.info("predict finish.")
+        log.info("predict success all.")
 
     def create_set_channel(self):
         '''
         create and set channel.
         '''
         io_channel = io.APIManager()
-        log.info("start create channel")
+        log.info("start create channel.")
         channel = io_channel.create_channel(self.party_id, self.channel_config)
-        log.info("start set channel")
+        log.info("start set channel.")
         rtt.set_channel("", channel)
         log.info("set channel success.")
         
@@ -200,23 +213,21 @@ class PrivacyLinearRegPredict(object):
         id_col = None
         temp_dir = self.get_temp_dir()
         if self.party_id in self.data_party:
-            if self.input_file:
-                usecols = [self.key_column] + self.selected_columns
-                input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str")
-                input_data = input_data[usecols]
-                assert input_data.shape[0] > 0, 'input file is no data.'
-                if self.use_psi:
-                    psi_result = pd.read_csv(self.psi_result_file, dtype="str")
-                    psi_result.name = self.key_column
-                    input_data = pd.merge(psi_result, input_data, on=self.key_column, how='inner')
-                    assert input_data.shape[0] > 0, 'input data is empty. bacause no intersection with psi result.'
+            usecols = [self.key_column] + self.selected_columns
+            input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str")
+            input_data = input_data[usecols]
+            assert input_data.shape[0] > 0, 'input file is no data.'
+            if self.use_psi:
+                psi_result = pd.read_csv(self.psi_result_file, dtype="str")
+                psi_result.name = self.key_column
+                input_data = pd.merge(psi_result, input_data, on=self.key_column, how='inner')
+                assert input_data.shape[0] > 0, 'input data is empty. because no intersection with psi result.'
 
-                id_col = input_data[self.key_column]
-                file_x = os.path.join(temp_dir, f"file_x_{self.party_id}.csv")
-                x_data = input_data.drop(labels=self.key_column, axis=1)
-                x_data.to_csv(file_x, header=True, index=False)
-            else:
-                raise Exception(f"data_party:{self.party_id} not have data. input_file:{self.input_file}")
+            id_col = input_data[self.key_column]
+            file_x = os.path.join(temp_dir, f"file_x_{self.party_id}.csv")
+            x_data = input_data.drop(labels=self.key_column, axis=1)
+            x_data.to_csv(file_x, header=True, index=False)
+
         return file_x, id_col
     
     def get_temp_dir(self):
@@ -243,6 +254,9 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
     This is the entrance to this module
     '''
     log.info("start main function.")
-    privacy_linear_reg = PrivacyLinearRegPredict(channel_config, cfg_dict, data_party, result_party, results_dir)
-    privacy_linear_reg.predict()
+    try:
+        privacy_linear_reg = PrivacyLinearRegPredict(channel_config, cfg_dict, data_party, result_party, results_dir)
+        privacy_linear_reg.predict()
+    except Exception as e:
+        raise Exception(f"<RUN_STAGE>: {log.run_stage} <ERROR>: {str(e)}")
     log.info("finish main function.")

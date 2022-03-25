@@ -13,7 +13,19 @@ import latticex.psi as psi
 import channel_sdk.pyio as io
 
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+class LogWithStage():
+    def __init__(self):
+        self.run_stage = 'init log.'
+    
+    def info(self, content):
+        self.run_stage = content
+        logger.info(content)
+    
+    def debug(self, content):
+        logger.debug(content)
+
+log = LogWithStage()
 
 class PrivateSetIntersection(object):
     '''
@@ -216,6 +228,9 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
     This is the entrance to this module
     '''
     log.info("start main function.")
-    psi = PrivateSetIntersection(channel_config, cfg_dict, data_party, result_party, results_dir)
-    psi.run()
+    try:
+        psi = PrivateSetIntersection(channel_config, cfg_dict, data_party, result_party, results_dir)
+        psi.run()
+    except Exception as e:
+        raise Exception(f"<RUN_STAGE>: {log.run_stage} <ERROR>: {str(e)}")
     log.info("finish main function.")
