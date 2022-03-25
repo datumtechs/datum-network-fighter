@@ -13,7 +13,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
                          result_party, cfg, current_server_ip):
     pass_ice = cfg['pass_ice']
     ice_grid = cfg['ice_grid']
-    grid_ip, grid_port = ice_grid.replace(' ', '').splie(':')
+    grid_ip, grid_port = ice_grid.replace(' ', '').split(':')
     certs = cfg['certs']
     channel_log_level = cfg.get('channel_log_level', 2)
     certs_base_path = certs.get('base_path', '')
