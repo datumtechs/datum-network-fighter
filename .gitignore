@@ -46,7 +46,7 @@ log/
 *.log
 *.csv
 *.tar.gz
-nodes_conf_example_*.json
+nodes_conf_*.json
 !*_min.csv
 build/
 dist/

@@ -10,6 +10,7 @@ warnings.filterwarnings('ignore', message=r'Passing', category=FutureWarning)
 import functools
 
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
+from common.utils import decompose
 from common.event_engine import event_engine
 from common.report_engine import  report_task_result, monitor_resource_usage
 from common.io_channel_helper import get_channel_config
@@ -26,6 +27,7 @@ class Task:
         self.name = None
         self._party_id = party_id
         self.contract_id = contract_id
+        self._main_file = None
         self.data_id = data_id
         self.env_id = env_id
         self.progress = None
@@ -96,7 +98,7 @@ class Task:
          
             user_cfg = self.assemble_cfg()
             sys.path.insert(0, os.path.abspath(self._get_code_dir()))
-            code_path = self._get_code_file_name()
+            code_path = self.main_file
             module_name = os.path.splitext(code_path)[0]
             log.info(f'code path: {code_path}, module: {module_name}')
 
@@ -136,12 +138,9 @@ class Task:
 
     def download_algo(self):
         dir_ = self._get_code_dir()
-        self._ensure_dir(dir_)
-        code_path = os.path.join(dir_, self._get_code_file_name())
-        log.info(f'code save to: {code_path}')
-        with open(code_path, 'w') as f:
-            f.write(self.contract_id)  # the contract_id is code itself at now
-            f.write('\n')
+        log.info(f'code save to: {dir_}')
+        files = decompose(self.contract_id, dir_)  # the contract_id is code itself at now, may include more than one file
+        self.main_file = files[0]
 
     def build_env(self):
         log.info(f'build env {self.env_id}')
@@ -162,10 +161,13 @@ class Task:
         if not os.path.exists(dir_):
             os.makedirs(dir_, exist_ok=True)
 
-    def _get_code_file_name(self):
-        # name = hashlib.sha1(self.contract_id.encode()).hexdigest()[:6]
-        # return f'C0DE_{name}.py'
-        return 'main.py'
+    @property
+    def main_file(self):
+        return self._main_file
+
+    @main_file.setter
+    def main_file(self, value):
+        self._main_file = value
 
     def _get_code_cfg_file_name(self):
         return 'config.json'
