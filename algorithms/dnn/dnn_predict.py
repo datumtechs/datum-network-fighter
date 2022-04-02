@@ -335,10 +335,10 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
     '''
     This is the entrance to this module
     '''
-    log.info("start main function.")
+    log.info("start main function. dnn predict.")
     try:
         privacy_dnn = PrivacyDnnPredict(channel_config, cfg_dict, data_party, result_party, results_dir)
         privacy_dnn.predict()
     except Exception as e:
-        raise Exception(f"<RUN_STAGE>: {log.run_stage} <ERROR>: {str(e)}")
-    log.info("finish main function.")
+        raise Exception(f"<ALGO>: dnn_predict. <RUN_STAGE>: {log.run_stage} <ERROR>: {str(e)}")
+    log.info("finish main function. dnn predict.")
