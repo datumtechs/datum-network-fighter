@@ -309,16 +309,18 @@ class PrivacyDnnTrain(object):
             # delete the model in the compute party.
             self.remove_output_dir()
         
+        evaluation_result = ""
         if self.party_id in self.result_party:
             log.info(f"result_party evaluation the model.")
             if self.use_validation_set:
                 log.info("result_party evaluate model.")
                 Y_pred = Y_pred.astype("float").reshape([-1, ])
                 Y_true = Y_actual.astype("float").reshape([-1, ])
-                self.model_evaluation(Y_true, Y_pred, output_layer_activation)
+                evaluation_result = self.model_evaluation(Y_true, Y_pred, output_layer_activation)
             # self.show_train_history(loss_history_train, loss_history_val, self.epochs)
             # log.info(f"result_party show train history finish.")
         log.info("train success all.")
+        return evaluation_result
     
     def layer(self, input_tensor, input_dim, output_dim, activation, layer_name='Dense'):
         with tf.name_scope(layer_name):
@@ -397,11 +399,9 @@ class PrivacyDnnTrain(object):
         else:
             raise Exception('output layer not support {output_layer_activation} activation.')
         log.info(f"evaluation_result = {evaluation_result}")
-        log.info("evaluation result write to file.")
-        result_file = os.path.join(self.results_dir, "evaluation_result.json")
-        with open(result_file, "w") as f:
-            json.dump(evaluation_result, f, indent=4)
+        evaluation_result = json.dumps(evaluation_result)
         log.info("evaluation success.")
+        return evaluation_result
     
     def show_train_history(self, train_history, val_history, epochs, name='loss'):
         log.info("start show_train_history")

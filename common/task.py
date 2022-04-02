@@ -105,7 +105,9 @@ class Task:
             result_dir = self._get_result_dir()
             self._ensure_dir(result_dir)
             report_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
-            m.main(channel_config, user_cfg, self.data_party, self.result_party, result_dir)
+            extra = m.main(channel_config, user_cfg, self.data_party, self.result_party, result_dir)
+            if not extra:
+                extra = ""
             log.info(f'run task done')
             if self.party_id in self.result_party:
                 file_path = result_dir
@@ -113,7 +115,7 @@ class Task:
                 m.update(file_path.encode())
                 data_id = m.hexdigest()
                 file_summary = {"task_id": self.id, "origin_id": data_id, "file_path": file_path,
-                                "ip": self.cfg["bind_ip"], "port": self.cfg["port"]}
+                                "ip": self.cfg["bind_ip"], "port": self.cfg["port"], "extra": extra}
                 log.info(f'start report task result file summary.')
                 report_task_result(self.cfg['schedule_svc'], 'result_file', file_summary)
                 log.info(f'finish report task result file summary. ')

@@ -247,7 +247,9 @@ class PrivacyXgbTrain(object):
             log.info("result_party evaluate model.")
             Y_pred = np.squeeze(Y_pred.astype("float"))
             Y_true = np.squeeze(Y_actual.astype("float"))
-            self.model_evaluation(Y_true, Y_pred)
+            evaluation_result = self.model_evaluation(Y_true, Y_pred)
+        else:
+            evaluation_result = ""
         
         log.info("remove temp dir.")
         if self.party_id in (self.data_party + self.result_party):
@@ -257,6 +259,7 @@ class PrivacyXgbTrain(object):
             # delete the model in the compute party.
             self.remove_output_dir()
         log.info("train success all.")
+        return evaluation_result
     
     def model_evaluation(self, Y_true, Y_pred):
         from sklearn.metrics import roc_auc_score, roc_curve, f1_score, precision_score, recall_score, accuracy_score
@@ -286,11 +289,9 @@ class PrivacyXgbTrain(object):
             "recall": recall
         }
         log.info(f"evaluation_result = {evaluation_result}")
-        log.info("evaluation result write to file.")
-        result_file = os.path.join(self.results_dir, "evaluation_result.json")
-        with open(result_file, "w") as f:
-            json.dump(evaluation_result, f, indent=4)
+        evaluation_result = json.dumps(evaluation_result)
         log.info("evaluation success.")
+        return evaluation_result
     
     def create_set_channel(self):
         '''

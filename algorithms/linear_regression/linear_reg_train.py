@@ -240,8 +240,11 @@ class PrivacyLinearRegTrain(object):
             log.info("result_party evaluate model.")
             Y_pred = Y_pred.astype("float").reshape([-1, ])
             Y_true = Y_actual.astype("float").reshape([-1, ])
-            self.model_evaluation(Y_true, Y_pred)
+            evaluation_result = self.model_evaluation(Y_true, Y_pred)
+        else:
+            evaluation_result = ""
         log.info("train success all.")
+        return evaluation_result
     
     def model_evaluation(self, Y_true, Y_pred):
         from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
@@ -260,11 +263,9 @@ class PrivacyLinearRegTrain(object):
             "MAE": mae
         }
         log.info(f"evaluation_result = {evaluation_result}")
-        log.info("evaluation result write to file.")
-        result_file = os.path.join(self.results_dir, "evaluation_result.json")
-        with open(result_file, "w") as f:
-            json.dump(evaluation_result, f, indent=4)
+        evaluation_result = json.dumps(evaluation_result)
         log.info("evaluation success.")
+        return evaluation_result
     
     def create_set_channel(self):
         '''

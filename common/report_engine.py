@@ -103,6 +103,7 @@ class ReportEngine(object):
             string file_path = 3;
             string ip = 4;
             string port = 5;
+            string extra = 6;
         }
         """
 
@@ -112,6 +113,7 @@ class ReportEngine(object):
         req.file_path = summary["file_path"]
         req.ip = summary["ip"]
         req.port = str(summary["port"])
+        req.extra = str(summary["extra"])
         str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
         log.info(str_req)
         return self.__client.ReportTaskResultFileSummary(req, timeout=10)
