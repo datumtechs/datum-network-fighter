@@ -227,6 +227,9 @@ def report_task_result(server_addr: str, report_type: str, content: dict, *args)
     try_cnt = 0
     while not report_success:
         try:
+            if not server_addr:
+                time.sleep(3)
+                continue
             report_engine = ReportEngine(server_addr)
             if report_type == 'upload_file':
                 ret = report_engine.report_upload_file_summary(content)

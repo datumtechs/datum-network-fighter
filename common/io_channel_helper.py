@@ -3,8 +3,7 @@ import json
 import logging
 
 from common.consts import COMMON_EVENT
-from common.socket_utils import find_free_port_in_range
-import channel_sdk.grpc
+from common.socket_utils import find_free_port_in_range, get_a_fixed_port
 
 
 log = logging.getLogger(__name__)
@@ -12,10 +11,12 @@ log = logging.getLogger(__name__)
 def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party,
                          result_party, cfg, self_internal_addr):
     pass_via = cfg['pass_via']
+    use_fixed_task_port = cfg.get('use_fixed_task_port', False)
     certs = cfg['certs']
     channel_log_level = cfg.get('channel_log_level', 2)
     certs_base_path = certs.get('base_path', '')
     config_dict = {'TASK_ID': task_id,
+                   'CONNECT_TIMEOUT': 15.0,
                    'ROOT_CERT': os.path.join(certs_base_path, certs.get('root_cert', '')),
                    'LOG_LEVEL': channel_log_level}
 
@@ -23,7 +24,8 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
     via_dict = {}
     for i, node_info in enumerate(peers):
         party_id = node_info.party_id
-        addr = '{}:{}'.format(node_info.ip, node_info.port)
+        port = get_a_fixed_port(task_id, party_id) if use_fixed_task_port else node_info.port
+        addr = '{}:{}'.format(node_info.ip, port)
         if not pass_via:
             # if not use via, then internal_addr = via_addr. so via_addr must be unique
             self_internal_addr = addr
@@ -37,8 +39,8 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
             via_name = 'VIA{}'.format(i + 1)
             via_dict[via_name] = addr
         # log.info(f"via_name: {via_name}")
-        if self_party_id == party_id:
-            internal_addr = self_internal_addr
+        if self_party_id == party_id or use_fixed_task_port:
+            internal_addr = addr
             server_sign_key = os.path.join(certs_base_path, certs.get('server_sign_key', ''))
             server_sign_cert = os.path.join(certs_base_path, certs.get('server_sign_cert', ''))
             server_enc_key = os.path.join(certs_base_path, certs.get('server_enc_key', ''))
@@ -83,7 +85,8 @@ def get_channel_config(task_id, self_party_id, peers, data_party, compute_party,
                     cfg, event_type):
     parent_proc_ip = cfg['bind_ip']
     task_port_range = cfg['task_port_range']
-    port = find_free_port_in_range(task_port_range)
+    use_fixed_task_port = cfg.get('use_fixed_task_port', False)
+    port = get_a_fixed_port(task_id, self_party_id) if use_fixed_task_port else find_free_port_in_range(task_port_range)
     self_internal_addr = f'{parent_proc_ip}:{port}'
     log.info(f'get a free port: {self_internal_addr}')
     config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party,

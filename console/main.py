@@ -12,7 +12,7 @@ from prompt_toolkit import prompt
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
-from common.utils import load_cfg
+from common.utils import load_cfg, compose
 from lib import common_pb2
 from lib import compute_svc_pb2, compute_svc_pb2_grpc
 from lib import data_svc_pb2, data_svc_pb2_grpc
@@ -199,6 +199,7 @@ def comp_upload_shard(args, stub):
 def comp_run_task(args, stub):
     task_id = args[0]
     run_task_cfg_file = args[1]
+    main_file = args[2] if len(args) > 2 else ''
 
     req = common_pb2.TaskReadyGoReq()
     req.task_id = task_id
@@ -207,9 +208,17 @@ def comp_run_task(args, stub):
         print('run_task_cfg keys:\n', run_task_cfg)
 
     contract_file = run_task_cfg['contract_id']
-    with open(contract_file) as load_f:
-        contract = load_f.read()
-        print('contract:\n', contract[:100])
+    if os.path.isdir(contract_file):
+        assert main_file, 'main_file is empty'
+        files = os.listdir(contract_file)
+        main_idx = files.index(main_file) if main_file in files else 0
+        files[0], files[main_idx] = files[main_idx], files[0]
+        files = [os.path.join(contract_file, f) for f in files]
+        contract = compose(files, contract_file)
+    else:
+        with open(contract_file) as load_f:
+            contract = load_f.read()
+    print('contract:\n', contract[:100])
 
     req.contract_id = contract
     req.data_id = run_task_cfg['data_id']
@@ -224,7 +233,7 @@ def comp_run_task(args, stub):
     req.duration = run_task_cfg.get('duration', 24*60*60*1000)  # ms
     req.memory = run_task_cfg.get('memory', 256*1024*1024*1024) # Byte
     req.processor = run_task_cfg.get('processor', 32)   # number
-    req.bandwidth = run_task_cfg.get('bandwidth', 100*1000)  # bps
+    req.bandwidth = run_task_cfg.get('bandwidth', 1000*1000)  # bps
 
     each_party = {d['party_id']: d for d in run_task_cfg['each_party']}
 

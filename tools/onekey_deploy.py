@@ -30,7 +30,7 @@ def parse_cfg(json_file):
 
 def pack_src():
     src_zip_name = 'fighter.tar.gz'
-    cmd = f'tar -czPf {src_zip_name} common protos data_svc compute_svc third_party/via_svc tests console gateway'
+    cmd = f'tar -czPf {src_zip_name} common protos data_svc compute_svc consul_client third_party/via_svc tests console gateway'
     print(cmd)
     ret = os.system(cmd)
     succ = not bool(ret)
@@ -127,7 +127,7 @@ def start_via_svc(ssh, remote_dir, port, use_ssl):
 
 def kill_svc(ssh):
     print(f'kill all svc')
-    _, stdout, _ = ssh.exec_command(r'ps -ef | grep "[p]ython -u main.py config.*.yaml"')
+    _, stdout, _ = ssh.exec_command(r'ps -ef | grep "[p]ython -u main.py.* config.*.yaml"')
     lines = stdout.read().decode()
     print(lines)
     pids = []
@@ -142,18 +142,11 @@ def kill_svc(ssh):
             pids.append(fields[1])
         else:
             child_pids.append(fields[1])
-    print("pids:", pids)
-    if pids:
-        pids = ' '.join(pids)
-        cmd = f'kill {pids}'
-        print(cmd)
-        ssh.exec_command(cmd)
-    print("child_pids:", child_pids)
-    if child_pids:
-        child_pids = ' '.join(child_pids)
-        cmd = f'kill {child_pids}'
-        print(cmd)
-        ssh.exec_command(cmd)
+    
+    all_pids = ' '.join(pids + child_pids)
+    cmd = f'kill {all_pids}'
+    print(cmd)
+    ssh.exec_command(cmd)
 
     cmd = 'pkill via-go'
     print(cmd)
