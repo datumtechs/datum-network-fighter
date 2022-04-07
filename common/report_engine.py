@@ -73,16 +73,18 @@ class ReportEngine(object):
         }
         message ReportUpFileSummaryRequest {
             string origin_id = 1;
-            string file_path = 2;
+            string data_path = 2;
             string ip = 3;
             string port = 4;
+            string data_hash = 5;
         }
         """
         req = pb2.ReportUpFileSummaryRequest()
         req.origin_id = summary["origin_id"]
-        req.file_path = summary["file_path"]
+        req.data_path = summary["data_path"]
         req.ip = summary["ip"]
         req.port = str(summary["port"])
+        req.data_hash = summary["data_hash"]
         str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
         log.info(str_req)
         return self.__client.ReportUpFileSummary(req)
@@ -100,7 +102,7 @@ class ReportEngine(object):
         message ReportTaskResultFileSummaryRequest {
             string task_id = 1;
             string origin_id = 2;
-            string file_path = 3;
+            string data_path = 3;
             string ip = 4;
             string port = 5;
             string extra = 6;
@@ -110,7 +112,7 @@ class ReportEngine(object):
         req = pb2.ReportTaskResultFileSummaryRequest()
         req.task_id = summary["task_id"]
         req.origin_id = summary["origin_id"]
-        req.file_path = summary["file_path"]
+        req.data_path = summary["data_path"]
         req.ip = summary["ip"]
         req.port = str(summary["port"])
         req.extra = str(summary["extra"])

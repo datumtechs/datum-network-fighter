@@ -84,19 +84,20 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                 cols = req.columns
 
             log.info(f"origin filename: {file}, len(columns): {len(cols)}, columns:{','.join(cols)}")
+            data_hash = m.hexdigest()
             stem, ext = os.path.splitext(os.path.basename(file))
             new_name = f'{stem}_{now}{ext}'
             m.update(new_name.encode())
             full_new_name = os.path.join(folder, new_name)
             log.info(f'full_new_name: {full_new_name}')
             os.rename(path, full_new_name)
-            data_id = m.hexdigest()
-            file_summary = {"origin_id": data_id, "file_path": full_new_name, "ip": cfg["bind_ip"],
-                            "port": cfg["port"]}
+            origin_id = m.hexdigest()
+            file_summary = {"origin_id": origin_id, "data_path": full_new_name, "ip": cfg["bind_ip"],
+                            "port": cfg["port"], "data_hash": data_hash}
             ret = report_task_result(cfg['schedule_svc'], 'upload_file', file_summary)
             log.info(f'report_upload_file_summary return: {ret}')
             if ret and ret.status == 0:
-                result = data_svc_pb2.UploadReply(ok=True, data_id=data_id, file_path=full_new_name)
+                result = data_svc_pb2.UploadReply(ok=True, data_id=origin_id, file_path=full_new_name)
             else:
                 result = data_svc_pb2.UploadReply(ok=False)
             return result

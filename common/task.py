@@ -110,11 +110,11 @@ class Task:
                 extra = ""
             log.info(f'run task done')
             if self.party_id in self.result_party:
-                file_path = result_dir
+                data_path = result_dir
                 m = hashlib.sha256()
-                m.update(file_path.encode())
-                data_id = m.hexdigest()
-                file_summary = {"task_id": self.id, "origin_id": data_id, "file_path": file_path,
+                m.update(data_path.encode())
+                origin_id = m.hexdigest()
+                file_summary = {"task_id": self.id, "origin_id": origin_id, "data_path": data_path,
                                 "ip": self.cfg["bind_ip"], "port": self.cfg["port"], "extra": extra}
                 log.info(f'start report task result file summary.')
                 report_task_result(self.cfg['schedule_svc'], 'result_file', file_summary)
