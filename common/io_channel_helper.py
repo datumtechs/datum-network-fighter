@@ -4,7 +4,7 @@ import logging
 
 from common.consts import COMMON_EVENT
 from common.socket_utils import find_free_port_in_range
-import channel_sdk.pyio
+
 
 log = logging.getLogger(__name__)
 

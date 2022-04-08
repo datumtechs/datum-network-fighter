@@ -11,8 +11,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-from lib.common import base_pb2 as lib_dot_common_dot_base__pb2
-from lib.common import data_pb2 as lib_dot_common_dot_data__pb2
+from lib.types import base_pb2 as lib_dot_types_dot_base__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -21,9 +20,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z+github.com/RosettaFlow/Carrier-Go/lib/types',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1clib/types/resourcedata.proto\x12\x05types\x1a\x15lib/common/base.proto\x1a\x15lib/common/data.proto\"\x83\x03\n\nResourcePB\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x11\n\tnode_name\x18\x03 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x04 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x05 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12\'\n\x05state\x18\x06 \x01(\x0e\x32\x18.api.protobuf.PowerState\x12\x11\n\ttotal_mem\x18\x07 \x01(\x04\x12\x10\n\x08used_mem\x18\x08 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\t \x01(\r\x12\x16\n\x0eused_processor\x18\n \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x0b \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x0c \x01(\x04\x12\x12\n\ntotal_disk\x18\r \x01(\x04\x12\x11\n\tused_disk\x18\x0e \x01(\x04\x12\x12\n\npublish_at\x18\x10 \x01(\x04\x12\x11\n\tupdate_at\x18\x11 \x01(\x04\"\xf6\x02\n\x0fLocalResourcePB\x12\x13\n\x0bidentity_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x11\n\tnode_name\x18\x03 \x01(\t\x12\x13\n\x0bjob_node_id\x18\x04 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x05 \x01(\t\x12-\n\x0b\x64\x61ta_status\x18\x06 \x01(\x0e\x32\x18.api.protobuf.DataStatus\x12\'\n\x05state\x18\x07 \x01(\x0e\x32\x18.api.protobuf.PowerState\x12\x11\n\ttotal_mem\x18\x08 \x01(\x04\x12\x10\n\x08used_mem\x18\t \x01(\x04\x12\x17\n\x0ftotal_processor\x18\n \x01(\r\x12\x16\n\x0eused_processor\x18\x0b \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x0c \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\r \x01(\x04\x12\x12\n\ntotal_disk\x18\x0e \x01(\x04\x12\x11\n\tused_disk\x18\x0f \x01(\x04\"\x8d\x01\n\x05Power\x12\x13\n\x0bjob_node_id\x18\x01 \x01(\t\x12\x10\n\x08power_id\x18\x02 \x01(\t\x12\x34\n\x0eusage_overview\x18\x03 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12\'\n\x05state\x18\x04 \x01(\x0e\x32\x18.api.protobuf.PowerState\"\xec\x01\n\x10PowerUsageDetail\x12\x31\n\x0binformation\x18\x01 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12\x18\n\x10total_task_count\x18\x02 \x01(\r\x12\x1a\n\x12\x63urrent_task_count\x18\x03 \x01(\r\x12\x1f\n\x05tasks\x18\x04 \x03(\x0b\x32\x10.types.PowerTask\x12\'\n\x05state\x18\x05 \x01(\x0e\x32\x18.api.protobuf.PowerState\x12\x12\n\npublish_at\x18\x06 \x01(\x04\x12\x11\n\tupdate_at\x18\x07 \x01(\x04\"\xc8\x02\n\tPowerTask\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12)\n\x05owner\x18\x03 \x01(\x0b\x32\x1a.api.protobuf.Organization\x12,\n\x08partners\x18\x04 \x03(\x0b\x32\x1a.api.protobuf.Organization\x12-\n\treceivers\x18\x05 \x03(\x0b\x32\x1a.api.protobuf.Organization\x12=\n\x0eoperation_cost\x18\x06 \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12>\n\x0foperation_spend\x18\x07 \x01(\x0b\x32%.api.protobuf.TaskResourceCostDeclare\x12\x10\n\x08\x63reateAt\x18\x08 \x01(\x04\"\xc5\x01\n\x15ResourceUsageOverview\x12\x11\n\ttotal_mem\x18\x01 \x01(\x04\x12\x10\n\x08used_mem\x18\x02 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x03 \x01(\r\x12\x16\n\x0eused_processor\x18\x04 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x05 \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x06 \x01(\x04\x12\x12\n\ntotal_disk\x18\x07 \x01(\x04\x12\x11\n\tused_disk\x18\x08 \x01(\x04\x42-Z+github.com/RosettaFlow/Carrier-Go/lib/typesb\x06proto3'
+  serialized_pb=b'\n\x1clib/types/resourcedata.proto\x12\x05types\x1a\x14lib/types/base.proto\"\xef\x02\n\nResourcePB\x12\"\n\x05owner\x18\x01 \x01(\x0b\x32\x13.types.Organization\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\t\x12&\n\x0b\x64\x61ta_status\x18\x03 \x01(\x0e\x32\x11.types.DataStatus\x12 \n\x05state\x18\x04 \x01(\x0e\x32\x11.types.PowerState\x12\x11\n\ttotal_mem\x18\x05 \x01(\x04\x12\x10\n\x08used_mem\x18\x06 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x07 \x01(\r\x12\x16\n\x0eused_processor\x18\x08 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\t \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\n \x01(\x04\x12\x12\n\ntotal_disk\x18\x0b \x01(\x04\x12\x11\n\tused_disk\x18\x0c \x01(\x04\x12\x12\n\npublish_at\x18\r \x01(\x04\x12\x11\n\tupdate_at\x18\x0e \x01(\x04\x12\r\n\x05nonce\x18\x0f \x01(\x04\"\xfa\x02\n\x0fLocalResourcePB\x12\"\n\x05owner\x18\x01 \x01(\x0b\x32\x13.types.Organization\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\t\x12&\n\x0b\x64\x61ta_status\x18\x03 \x01(\x0e\x32\x11.types.DataStatus\x12 \n\x05state\x18\x04 \x01(\x0e\x32\x11.types.PowerState\x12\x11\n\ttotal_mem\x18\x05 \x01(\x04\x12\x10\n\x08used_mem\x18\x06 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x07 \x01(\r\x12\x16\n\x0eused_processor\x18\x08 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\t \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\n \x01(\x04\x12\x12\n\ntotal_disk\x18\x0b \x01(\x04\x12\x11\n\tused_disk\x18\x0c \x01(\x04\x12\x12\n\npublish_at\x18\r \x01(\x04\x12\x11\n\tupdate_at\x18\x0e \x01(\x04\x12\x13\n\x0bjob_node_id\x18\x0f \x01(\t\"\x95\x01\n\x05Power\x12\x13\n\x0bjob_node_id\x18\x01 \x01(\t\x12\x10\n\x08power_id\x18\x02 \x01(\t\x12\x34\n\x0eusage_overview\x18\x03 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12 \n\x05state\x18\x04 \x01(\x0e\x32\x11.types.PowerState\x12\r\n\x05nonce\x18\x05 \x01(\x04\"\xf4\x01\n\x10PowerUsageDetail\x12\x31\n\x0binformation\x18\x01 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12\x18\n\x10total_task_count\x18\x02 \x01(\r\x12\x1a\n\x12\x63urrent_task_count\x18\x03 \x01(\r\x12\x1f\n\x05tasks\x18\x04 \x03(\x0b\x32\x10.types.PowerTask\x12 \n\x05state\x18\x05 \x01(\x0e\x32\x11.types.PowerState\x12\x12\n\npublish_at\x18\x06 \x01(\x04\x12\x11\n\tupdate_at\x18\x07 \x01(\x04\x12\r\n\x05nonce\x18\x08 \x01(\x04\"\xa5\x02\n\tPowerTask\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\"\n\x05owner\x18\x03 \x01(\x0b\x32\x13.types.Organization\x12%\n\x08partners\x18\x04 \x03(\x0b\x32\x13.types.Organization\x12&\n\treceivers\x18\x05 \x03(\x0b\x32\x13.types.Organization\x12\x36\n\x0eoperation_cost\x18\x06 \x01(\x0b\x32\x1e.types.TaskResourceCostDeclare\x12\x37\n\x0foperation_spend\x18\x07 \x01(\x0b\x32\x1e.types.TaskResourceCostDeclare\x12\x10\n\x08\x63reateAt\x18\x08 \x01(\x04\"\xc5\x01\n\x15ResourceUsageOverview\x12\x11\n\ttotal_mem\x18\x01 \x01(\x04\x12\x10\n\x08used_mem\x18\x02 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x03 \x01(\r\x12\x16\n\x0eused_processor\x18\x04 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x05 \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x06 \x01(\x04\x12\x12\n\ntotal_disk\x18\x07 \x01(\x04\x12\x11\n\tused_disk\x18\x08 \x01(\x04\x42-Z+github.com/RosettaFlow/Carrier-Go/lib/typesb\x06proto3'
   ,
-  dependencies=[lib_dot_common_dot_base__pb2.DESCRIPTOR,lib_dot_common_dot_data__pb2.DESCRIPTOR,])
+  dependencies=[lib_dot_types_dot_base__pb2.DESCRIPTOR,])
 
 
 
@@ -37,242 +36,105 @@ _RESOURCEPB = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='identity_id', full_name='types.ResourcePB.identity_id', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='owner', full_name='types.ResourcePB.owner', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='node_id', full_name='types.ResourcePB.node_id', index=1,
+      name='data_id', full_name='types.ResourcePB.data_id', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='node_name', full_name='types.ResourcePB.node_name', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='data_id', full_name='types.ResourcePB.data_id', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='data_status', full_name='types.ResourcePB.data_status', index=4,
-      number=5, type=14, cpp_type=8, label=1,
+      name='data_status', full_name='types.ResourcePB.data_status', index=2,
+      number=3, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='state', full_name='types.ResourcePB.state', index=5,
-      number=6, type=14, cpp_type=8, label=1,
+      name='state', full_name='types.ResourcePB.state', index=3,
+      number=4, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_mem', full_name='types.ResourcePB.total_mem', index=6,
-      number=7, type=4, cpp_type=4, label=1,
+      name='total_mem', full_name='types.ResourcePB.total_mem', index=4,
+      number=5, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_mem', full_name='types.ResourcePB.used_mem', index=7,
-      number=8, type=4, cpp_type=4, label=1,
+      name='used_mem', full_name='types.ResourcePB.used_mem', index=5,
+      number=6, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_processor', full_name='types.ResourcePB.total_processor', index=8,
-      number=9, type=13, cpp_type=3, label=1,
+      name='total_processor', full_name='types.ResourcePB.total_processor', index=6,
+      number=7, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_processor', full_name='types.ResourcePB.used_processor', index=9,
-      number=10, type=13, cpp_type=3, label=1,
+      name='used_processor', full_name='types.ResourcePB.used_processor', index=7,
+      number=8, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_bandwidth', full_name='types.ResourcePB.total_bandwidth', index=10,
-      number=11, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='used_bandwidth', full_name='types.ResourcePB.used_bandwidth', index=11,
-      number=12, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='total_disk', full_name='types.ResourcePB.total_disk', index=12,
-      number=13, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='used_disk', full_name='types.ResourcePB.used_disk', index=13,
-      number=14, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='publish_at', full_name='types.ResourcePB.publish_at', index=14,
-      number=16, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='update_at', full_name='types.ResourcePB.update_at', index=15,
-      number=17, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=86,
-  serialized_end=473,
-)
-
-
-_LOCALRESOURCEPB = _descriptor.Descriptor(
-  name='LocalResourcePB',
-  full_name='types.LocalResourcePB',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='identity_id', full_name='types.LocalResourcePB.identity_id', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='node_id', full_name='types.LocalResourcePB.node_id', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='node_name', full_name='types.LocalResourcePB.node_name', index=2,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='job_node_id', full_name='types.LocalResourcePB.job_node_id', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='data_id', full_name='types.LocalResourcePB.data_id', index=4,
-      number=5, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='data_status', full_name='types.LocalResourcePB.data_status', index=5,
-      number=6, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='state', full_name='types.LocalResourcePB.state', index=6,
-      number=7, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='total_mem', full_name='types.LocalResourcePB.total_mem', index=7,
-      number=8, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='used_mem', full_name='types.LocalResourcePB.used_mem', index=8,
+      name='total_bandwidth', full_name='types.ResourcePB.total_bandwidth', index=8,
       number=9, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_processor', full_name='types.LocalResourcePB.total_processor', index=9,
-      number=10, type=13, cpp_type=3, label=1,
+      name='used_bandwidth', full_name='types.ResourcePB.used_bandwidth', index=9,
+      number=10, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_processor', full_name='types.LocalResourcePB.used_processor', index=10,
-      number=11, type=13, cpp_type=3, label=1,
+      name='total_disk', full_name='types.ResourcePB.total_disk', index=10,
+      number=11, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_bandwidth', full_name='types.LocalResourcePB.total_bandwidth', index=11,
+      name='used_disk', full_name='types.ResourcePB.used_disk', index=11,
       number=12, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_bandwidth', full_name='types.LocalResourcePB.used_bandwidth', index=12,
+      name='publish_at', full_name='types.ResourcePB.publish_at', index=12,
       number=13, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_disk', full_name='types.LocalResourcePB.total_disk', index=13,
+      name='update_at', full_name='types.ResourcePB.update_at', index=13,
       number=14, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_disk', full_name='types.LocalResourcePB.used_disk', index=14,
+      name='nonce', full_name='types.ResourcePB.nonce', index=14,
       number=15, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -290,8 +152,138 @@ _LOCALRESOURCEPB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=476,
-  serialized_end=850,
+  serialized_start=62,
+  serialized_end=429,
+)
+
+
+_LOCALRESOURCEPB = _descriptor.Descriptor(
+  name='LocalResourcePB',
+  full_name='types.LocalResourcePB',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='owner', full_name='types.LocalResourcePB.owner', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='data_id', full_name='types.LocalResourcePB.data_id', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='data_status', full_name='types.LocalResourcePB.data_status', index=2,
+      number=3, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='state', full_name='types.LocalResourcePB.state', index=3,
+      number=4, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='total_mem', full_name='types.LocalResourcePB.total_mem', index=4,
+      number=5, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='used_mem', full_name='types.LocalResourcePB.used_mem', index=5,
+      number=6, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='total_processor', full_name='types.LocalResourcePB.total_processor', index=6,
+      number=7, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='used_processor', full_name='types.LocalResourcePB.used_processor', index=7,
+      number=8, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='total_bandwidth', full_name='types.LocalResourcePB.total_bandwidth', index=8,
+      number=9, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='used_bandwidth', full_name='types.LocalResourcePB.used_bandwidth', index=9,
+      number=10, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='total_disk', full_name='types.LocalResourcePB.total_disk', index=10,
+      number=11, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='used_disk', full_name='types.LocalResourcePB.used_disk', index=11,
+      number=12, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='publish_at', full_name='types.LocalResourcePB.publish_at', index=12,
+      number=13, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='update_at', full_name='types.LocalResourcePB.update_at', index=13,
+      number=14, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='job_node_id', full_name='types.LocalResourcePB.job_node_id', index=14,
+      number=15, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=432,
+  serialized_end=810,
 )
 
 
@@ -331,6 +323,13 @@ _POWER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='nonce', full_name='types.Power.nonce', index=4,
+      number=5, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -343,8 +342,8 @@ _POWER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=853,
-  serialized_end=994,
+  serialized_start=813,
+  serialized_end=962,
 )
 
 
@@ -405,6 +404,13 @@ _POWERUSAGEDETAIL = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='nonce', full_name='types.PowerUsageDetail.nonce', index=7,
+      number=8, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -417,8 +423,8 @@ _POWERUSAGEDETAIL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=997,
-  serialized_end=1233,
+  serialized_start=965,
+  serialized_end=1209,
 )
 
 
@@ -498,8 +504,8 @@ _POWERTASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1236,
-  serialized_end=1564,
+  serialized_start=1212,
+  serialized_end=1505,
 )
 
 
@@ -579,24 +585,26 @@ _RESOURCEUSAGEOVERVIEW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1567,
-  serialized_end=1764,
+  serialized_start=1508,
+  serialized_end=1705,
 )
 
-_RESOURCEPB.fields_by_name['data_status'].enum_type = lib_dot_common_dot_base__pb2._DATASTATUS
-_RESOURCEPB.fields_by_name['state'].enum_type = lib_dot_common_dot_base__pb2._POWERSTATE
-_LOCALRESOURCEPB.fields_by_name['data_status'].enum_type = lib_dot_common_dot_base__pb2._DATASTATUS
-_LOCALRESOURCEPB.fields_by_name['state'].enum_type = lib_dot_common_dot_base__pb2._POWERSTATE
+_RESOURCEPB.fields_by_name['owner'].message_type = lib_dot_types_dot_base__pb2._ORGANIZATION
+_RESOURCEPB.fields_by_name['data_status'].enum_type = lib_dot_types_dot_base__pb2._DATASTATUS
+_RESOURCEPB.fields_by_name['state'].enum_type = lib_dot_types_dot_base__pb2._POWERSTATE
+_LOCALRESOURCEPB.fields_by_name['owner'].message_type = lib_dot_types_dot_base__pb2._ORGANIZATION
+_LOCALRESOURCEPB.fields_by_name['data_status'].enum_type = lib_dot_types_dot_base__pb2._DATASTATUS
+_LOCALRESOURCEPB.fields_by_name['state'].enum_type = lib_dot_types_dot_base__pb2._POWERSTATE
 _POWER.fields_by_name['usage_overview'].message_type = _RESOURCEUSAGEOVERVIEW
-_POWER.fields_by_name['state'].enum_type = lib_dot_common_dot_base__pb2._POWERSTATE
+_POWER.fields_by_name['state'].enum_type = lib_dot_types_dot_base__pb2._POWERSTATE
 _POWERUSAGEDETAIL.fields_by_name['information'].message_type = _RESOURCEUSAGEOVERVIEW
 _POWERUSAGEDETAIL.fields_by_name['tasks'].message_type = _POWERTASK
-_POWERUSAGEDETAIL.fields_by_name['state'].enum_type = lib_dot_common_dot_base__pb2._POWERSTATE
-_POWERTASK.fields_by_name['owner'].message_type = lib_dot_common_dot_base__pb2._ORGANIZATION
-_POWERTASK.fields_by_name['partners'].message_type = lib_dot_common_dot_base__pb2._ORGANIZATION
-_POWERTASK.fields_by_name['receivers'].message_type = lib_dot_common_dot_base__pb2._ORGANIZATION
-_POWERTASK.fields_by_name['operation_cost'].message_type = lib_dot_common_dot_data__pb2._TASKRESOURCECOSTDECLARE
-_POWERTASK.fields_by_name['operation_spend'].message_type = lib_dot_common_dot_data__pb2._TASKRESOURCECOSTDECLARE
+_POWERUSAGEDETAIL.fields_by_name['state'].enum_type = lib_dot_types_dot_base__pb2._POWERSTATE
+_POWERTASK.fields_by_name['owner'].message_type = lib_dot_types_dot_base__pb2._ORGANIZATION
+_POWERTASK.fields_by_name['partners'].message_type = lib_dot_types_dot_base__pb2._ORGANIZATION
+_POWERTASK.fields_by_name['receivers'].message_type = lib_dot_types_dot_base__pb2._ORGANIZATION
+_POWERTASK.fields_by_name['operation_cost'].message_type = lib_dot_types_dot_base__pb2._TASKRESOURCECOSTDECLARE
+_POWERTASK.fields_by_name['operation_spend'].message_type = lib_dot_types_dot_base__pb2._TASKRESOURCECOSTDECLARE
 DESCRIPTOR.message_types_by_name['ResourcePB'] = _RESOURCEPB
 DESCRIPTOR.message_types_by_name['LocalResourcePB'] = _LOCALRESOURCEPB
 DESCRIPTOR.message_types_by_name['Power'] = _POWER

@@ -4,7 +4,7 @@ import grpc
 
 from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 from lib.api import sys_rpc_api_pb2 as lib_dot_api_dot_sys__rpc__api__pb2
-from lib.common import base_pb2 as lib_dot_common_dot_base__pb2
+from lib.types import base_pb2 as lib_dot_types_dot_base__pb2
 
 
 class YarnServiceStub(object):
@@ -22,11 +22,6 @@ class YarnServiceStub(object):
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.GetNodeInfoResponse.FromString,
                 )
-        self.GetRegisteredPeers = channel.unary_unary(
-                '/rpcapi.YarnService/GetRegisteredPeers',
-                request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.GetRegisteredPeersRequest.SerializeToString,
-                response_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.GetRegisteredPeersResponse.FromString,
-                )
         self.SetSeedNode = channel.unary_unary(
                 '/rpcapi.YarnService/SetSeedNode',
                 request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.SetSeedNodeRequest.SerializeToString,
@@ -35,7 +30,7 @@ class YarnServiceStub(object):
         self.DeleteSeedNode = channel.unary_unary(
                 '/rpcapi.YarnService/DeleteSeedNode',
                 request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.DeleteSeedNodeRequest.SerializeToString,
-                response_deserializer=lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+                response_deserializer=lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
                 )
         self.GetSeedNodeList = channel.unary_unary(
                 '/rpcapi.YarnService/GetSeedNodeList',
@@ -55,7 +50,7 @@ class YarnServiceStub(object):
         self.DeleteDataNode = channel.unary_unary(
                 '/rpcapi.YarnService/DeleteDataNode',
                 request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.DeleteRegisteredNodeRequest.SerializeToString,
-                response_deserializer=lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+                response_deserializer=lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
                 )
         self.GetDataNodeList = channel.unary_unary(
                 '/rpcapi.YarnService/GetDataNodeList',
@@ -75,7 +70,7 @@ class YarnServiceStub(object):
         self.DeleteJobNode = channel.unary_unary(
                 '/rpcapi.YarnService/DeleteJobNode',
                 request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.DeleteRegisteredNodeRequest.SerializeToString,
-                response_deserializer=lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+                response_deserializer=lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
                 )
         self.GetJobNodeList = channel.unary_unary(
                 '/rpcapi.YarnService/GetJobNodeList',
@@ -85,22 +80,22 @@ class YarnServiceStub(object):
         self.ReportTaskEvent = channel.unary_unary(
                 '/rpcapi.YarnService/ReportTaskEvent',
                 request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.ReportTaskEventRequest.SerializeToString,
-                response_deserializer=lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+                response_deserializer=lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
                 )
         self.ReportTaskResourceUsage = channel.unary_unary(
                 '/rpcapi.YarnService/ReportTaskResourceUsage',
                 request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.ReportTaskResourceUsageRequest.SerializeToString,
-                response_deserializer=lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+                response_deserializer=lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
                 )
         self.ReportUpFileSummary = channel.unary_unary(
                 '/rpcapi.YarnService/ReportUpFileSummary',
                 request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.ReportUpFileSummaryRequest.SerializeToString,
-                response_deserializer=lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+                response_deserializer=lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
                 )
         self.ReportTaskResultFileSummary = channel.unary_unary(
                 '/rpcapi.YarnService/ReportTaskResultFileSummary',
                 request_serializer=lib_dot_api_dot_sys__rpc__api__pb2.ReportTaskResultFileSummaryRequest.SerializeToString,
-                response_deserializer=lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+                response_deserializer=lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
                 )
         self.QueryAvailableDataNode = channel.unary_unary(
                 '/rpcapi.YarnService/QueryAvailableDataNode',
@@ -122,6 +117,11 @@ class YarnServiceStub(object):
                 request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.GetTaskResultFileSummaryListResponse.FromString,
                 )
+        self.GenerateObServerProxyWalletAddress = channel.unary_unary(
+                '/rpcapi.YarnService/GenerateObServerProxyWalletAddress',
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+                response_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.GenerateObServerProxyWalletAddressResponse.FromString,
+                )
 
 
 class YarnServiceServicer(object):
@@ -131,13 +131,6 @@ class YarnServiceServicer(object):
     def GetNodeInfo(self, request, context):
         """Getter YarnNode ...
         查看自身调度服务信息
-        """
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetRegisteredPeers(self, request, context):
-        """查看自身调度服务的 peer注册信息
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -280,6 +273,13 @@ class YarnServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GenerateObServerProxyWalletAddress(self, request, context):
+        """v 0.4.0 生成当前组织内置系统钱包地址 (见证人代理钱包, 全局只有一个)
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_YarnServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -287,11 +287,6 @@ def add_YarnServiceServicer_to_server(servicer, server):
                     servicer.GetNodeInfo,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                     response_serializer=lib_dot_api_dot_sys__rpc__api__pb2.GetNodeInfoResponse.SerializeToString,
-            ),
-            'GetRegisteredPeers': grpc.unary_unary_rpc_method_handler(
-                    servicer.GetRegisteredPeers,
-                    request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.GetRegisteredPeersRequest.FromString,
-                    response_serializer=lib_dot_api_dot_sys__rpc__api__pb2.GetRegisteredPeersResponse.SerializeToString,
             ),
             'SetSeedNode': grpc.unary_unary_rpc_method_handler(
                     servicer.SetSeedNode,
@@ -301,7 +296,7 @@ def add_YarnServiceServicer_to_server(servicer, server):
             'DeleteSeedNode': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteSeedNode,
                     request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.DeleteSeedNodeRequest.FromString,
-                    response_serializer=lib_dot_common_dot_base__pb2.SimpleResponse.SerializeToString,
+                    response_serializer=lib_dot_types_dot_base__pb2.SimpleResponse.SerializeToString,
             ),
             'GetSeedNodeList': grpc.unary_unary_rpc_method_handler(
                     servicer.GetSeedNodeList,
@@ -321,7 +316,7 @@ def add_YarnServiceServicer_to_server(servicer, server):
             'DeleteDataNode': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteDataNode,
                     request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.DeleteRegisteredNodeRequest.FromString,
-                    response_serializer=lib_dot_common_dot_base__pb2.SimpleResponse.SerializeToString,
+                    response_serializer=lib_dot_types_dot_base__pb2.SimpleResponse.SerializeToString,
             ),
             'GetDataNodeList': grpc.unary_unary_rpc_method_handler(
                     servicer.GetDataNodeList,
@@ -341,7 +336,7 @@ def add_YarnServiceServicer_to_server(servicer, server):
             'DeleteJobNode': grpc.unary_unary_rpc_method_handler(
                     servicer.DeleteJobNode,
                     request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.DeleteRegisteredNodeRequest.FromString,
-                    response_serializer=lib_dot_common_dot_base__pb2.SimpleResponse.SerializeToString,
+                    response_serializer=lib_dot_types_dot_base__pb2.SimpleResponse.SerializeToString,
             ),
             'GetJobNodeList': grpc.unary_unary_rpc_method_handler(
                     servicer.GetJobNodeList,
@@ -351,22 +346,22 @@ def add_YarnServiceServicer_to_server(servicer, server):
             'ReportTaskEvent': grpc.unary_unary_rpc_method_handler(
                     servicer.ReportTaskEvent,
                     request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.ReportTaskEventRequest.FromString,
-                    response_serializer=lib_dot_common_dot_base__pb2.SimpleResponse.SerializeToString,
+                    response_serializer=lib_dot_types_dot_base__pb2.SimpleResponse.SerializeToString,
             ),
             'ReportTaskResourceUsage': grpc.unary_unary_rpc_method_handler(
                     servicer.ReportTaskResourceUsage,
                     request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.ReportTaskResourceUsageRequest.FromString,
-                    response_serializer=lib_dot_common_dot_base__pb2.SimpleResponse.SerializeToString,
+                    response_serializer=lib_dot_types_dot_base__pb2.SimpleResponse.SerializeToString,
             ),
             'ReportUpFileSummary': grpc.unary_unary_rpc_method_handler(
                     servicer.ReportUpFileSummary,
                     request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.ReportUpFileSummaryRequest.FromString,
-                    response_serializer=lib_dot_common_dot_base__pb2.SimpleResponse.SerializeToString,
+                    response_serializer=lib_dot_types_dot_base__pb2.SimpleResponse.SerializeToString,
             ),
             'ReportTaskResultFileSummary': grpc.unary_unary_rpc_method_handler(
                     servicer.ReportTaskResultFileSummary,
                     request_deserializer=lib_dot_api_dot_sys__rpc__api__pb2.ReportTaskResultFileSummaryRequest.FromString,
-                    response_serializer=lib_dot_common_dot_base__pb2.SimpleResponse.SerializeToString,
+                    response_serializer=lib_dot_types_dot_base__pb2.SimpleResponse.SerializeToString,
             ),
             'QueryAvailableDataNode': grpc.unary_unary_rpc_method_handler(
                     servicer.QueryAvailableDataNode,
@@ -387,6 +382,11 @@ def add_YarnServiceServicer_to_server(servicer, server):
                     servicer.GetTaskResultFileSummaryList,
                     request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                     response_serializer=lib_dot_api_dot_sys__rpc__api__pb2.GetTaskResultFileSummaryListResponse.SerializeToString,
+            ),
+            'GenerateObServerProxyWalletAddress': grpc.unary_unary_rpc_method_handler(
+                    servicer.GenerateObServerProxyWalletAddress,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                    response_serializer=lib_dot_api_dot_sys__rpc__api__pb2.GenerateObServerProxyWalletAddressResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -413,23 +413,6 @@ class YarnService(object):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/GetNodeInfo',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             lib_dot_api_dot_sys__rpc__api__pb2.GetNodeInfoResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def GetRegisteredPeers(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/GetRegisteredPeers',
-            lib_dot_api_dot_sys__rpc__api__pb2.GetRegisteredPeersRequest.SerializeToString,
-            lib_dot_api_dot_sys__rpc__api__pb2.GetRegisteredPeersResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -463,7 +446,7 @@ class YarnService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/DeleteSeedNode',
             lib_dot_api_dot_sys__rpc__api__pb2.DeleteSeedNodeRequest.SerializeToString,
-            lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+            lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -531,7 +514,7 @@ class YarnService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/DeleteDataNode',
             lib_dot_api_dot_sys__rpc__api__pb2.DeleteRegisteredNodeRequest.SerializeToString,
-            lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+            lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -599,7 +582,7 @@ class YarnService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/DeleteJobNode',
             lib_dot_api_dot_sys__rpc__api__pb2.DeleteRegisteredNodeRequest.SerializeToString,
-            lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+            lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -633,7 +616,7 @@ class YarnService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/ReportTaskEvent',
             lib_dot_api_dot_sys__rpc__api__pb2.ReportTaskEventRequest.SerializeToString,
-            lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+            lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -650,7 +633,7 @@ class YarnService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/ReportTaskResourceUsage',
             lib_dot_api_dot_sys__rpc__api__pb2.ReportTaskResourceUsageRequest.SerializeToString,
-            lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+            lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -667,7 +650,7 @@ class YarnService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/ReportUpFileSummary',
             lib_dot_api_dot_sys__rpc__api__pb2.ReportUpFileSummaryRequest.SerializeToString,
-            lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+            lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -684,7 +667,7 @@ class YarnService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/ReportTaskResultFileSummary',
             lib_dot_api_dot_sys__rpc__api__pb2.ReportTaskResultFileSummaryRequest.SerializeToString,
-            lib_dot_common_dot_base__pb2.SimpleResponse.FromString,
+            lib_dot_types_dot_base__pb2.SimpleResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -753,5 +736,22 @@ class YarnService(object):
         return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/GetTaskResultFileSummaryList',
             google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             lib_dot_api_dot_sys__rpc__api__pb2.GetTaskResultFileSummaryListResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GenerateObServerProxyWalletAddress(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/rpcapi.YarnService/GenerateObServerProxyWalletAddress',
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            lib_dot_api_dot_sys__rpc__api__pb2.GenerateObServerProxyWalletAddressResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
