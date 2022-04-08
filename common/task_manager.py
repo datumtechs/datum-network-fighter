@@ -60,7 +60,7 @@ class TaskManager:
         log.info(f"algorithm_cfg: {req.algorithm_cfg}")
         str_parties = str(req.parties).replace('\n', ' ')
         log.info(f"parties: {str_parties}")
-        log.info(f"data_party: {req.data_party}, computation_party: {req.computation_party}, result_party: {req.result_party}")
+        log.info(f"data_party: {req.data_party_ids}, computation_party: {req.computation_party_ids}, result_party: {req.result_party_ids}")
         task_id = req.task_id
         party_id = req.party_id
         uniq_task = (task_id, party_id)
