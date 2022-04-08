@@ -97,7 +97,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             ret = report_task_result(cfg['schedule_svc'], 'upload_file', file_summary)
             log.info(f'report_upload_file_summary return: {ret}')
             if ret and ret.status == 0:
-                result = data_svc_pb2.UploadReply(ok=True, data_id=origin_id, file_path=full_new_name)
+                result = data_svc_pb2.UploadReply(ok=True, data_id=origin_id, file_path=full_new_name, data_hash=data_hash)
             else:
                 result = data_svc_pb2.UploadReply(ok=False)
             return result
