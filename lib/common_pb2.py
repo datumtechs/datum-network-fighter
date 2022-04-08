@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10lib/common.proto\x12\x06\x63ommon\"A\n\x05Party\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x12\x10\n\x08party_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\"\xba\x03\n\x0eTaskReadyGoReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x03 \x01(\t\x12\x0e\n\x06\x65nv_id\x18\x04 \x01(\t\x12\x1e\n\x07parties\x18\x05 \x03(\x0b\x32\r.common.Party\x12\x16\n\x0e\x61lgorithm_code\x18\x06 \x01(\t\x12\x34\n\x12\x61lgorithm_cfg_type\x18\x07 \x01(\x0e\x32\x18.common.AlgorithmCfgType\x12\x15\n\ralgorithm_cfg\x18\x08 \x01(\t\x12\x12\n\ndata_party\x18\t \x03(\t\x12\x19\n\x11\x63omputation_party\x18\n \x03(\t\x12\x14\n\x0cresult_party\x18\x0b \x03(\t\x12\x10\n\x08\x64uration\x18\x0c \x01(\x04\x12\x0e\n\x06memory\x18\r \x01(\x04\x12\x11\n\tprocessor\x18\x0e \x01(\r\x12\x11\n\tbandwidth\x18\x0f \x01(\x04\x12:\n\x15\x63onnect_policy_format\x18\x10 \x01(\x0e\x32\x1b.common.ConnectPolicyFormat\x12\x16\n\x0e\x63onnect_policy\x18\x11 \x01(\t\"+\n\x10TaskReadyGoReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"2\n\rTaskCancelReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\"*\n\x0fTaskCancelReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t*Q\n\x10\x41lgorithmCfgType\x12\x1c\n\x18\x41lgorithmCfgType_2DTable\x10\x00\x12\x1f\n\x1b\x41lgorithmCfgType_non2DTable\x10\x01*P\n\x13\x43onnectPolicyFormat\x12\x1b\n\x17\x43onnectPolicyFormat_Str\x10\x00\x12\x1c\n\x18\x43onnectPolicyFormat_Json\x10\x01\x62\x06proto3'
+  serialized_pb=b'\n\x10lib/common.proto\x12\x06\x63ommon\"A\n\x05Party\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x12\x10\n\x08party_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\"\xc6\x03\n\x0eTaskReadyGoReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x03 \x01(\t\x12\x0e\n\x06\x65nv_id\x18\x04 \x01(\t\x12\x1e\n\x07parties\x18\x05 \x03(\x0b\x32\r.common.Party\x12\x16\n\x0e\x61lgorithm_code\x18\x06 \x01(\t\x12\x34\n\x12\x61lgorithm_cfg_type\x18\x07 \x01(\x0e\x32\x18.common.AlgorithmCfgType\x12\x15\n\ralgorithm_cfg\x18\x08 \x01(\t\x12\x16\n\x0e\x64\x61ta_party_ids\x18\t \x03(\t\x12\x1d\n\x15\x63omputation_party_ids\x18\n \x03(\t\x12\x18\n\x10result_party_ids\x18\x0b \x03(\t\x12\x10\n\x08\x64uration\x18\x0c \x01(\x04\x12\x0e\n\x06memory\x18\r \x01(\x04\x12\x11\n\tprocessor\x18\x0e \x01(\r\x12\x11\n\tbandwidth\x18\x0f \x01(\x04\x12:\n\x15\x63onnect_policy_format\x18\x10 \x01(\x0e\x32\x1b.common.ConnectPolicyFormat\x12\x16\n\x0e\x63onnect_policy\x18\x11 \x01(\t\"+\n\x10TaskReadyGoReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"2\n\rTaskCancelReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\"*\n\x0fTaskCancelReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t*o\n\x10\x41lgorithmCfgType\x12\x1c\n\x18\x41lgorithmCfgType_Unknown\x10\x00\x12\x1c\n\x18\x41lgorithmCfgType_2DTable\x10\x01\x12\x1f\n\x1b\x41lgorithmCfgType_non2DTable\x10\x02*q\n\x13\x43onnectPolicyFormat\x12\x1f\n\x1b\x43onnectPolicyFormat_Unknown\x10\x00\x12\x1b\n\x17\x43onnectPolicyFormat_Str\x10\x01\x12\x1c\n\x18\x43onnectPolicyFormat_Json\x10\x02\x62\x06proto3'
 )
 
 _ALGORITHMCFGTYPE = _descriptor.EnumDescriptor(
@@ -31,20 +31,25 @@ _ALGORITHMCFGTYPE = _descriptor.EnumDescriptor(
   create_key=_descriptor._internal_create_key,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='AlgorithmCfgType_2DTable', index=0, number=0,
+      name='AlgorithmCfgType_Unknown', index=0, number=0,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='AlgorithmCfgType_non2DTable', index=1, number=1,
+      name='AlgorithmCfgType_2DTable', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='AlgorithmCfgType_non2DTable', index=2, number=2,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=681,
-  serialized_end=762,
+  serialized_start=693,
+  serialized_end=804,
 )
 _sym_db.RegisterEnumDescriptor(_ALGORITHMCFGTYPE)
 
@@ -57,28 +62,35 @@ _CONNECTPOLICYFORMAT = _descriptor.EnumDescriptor(
   create_key=_descriptor._internal_create_key,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='ConnectPolicyFormat_Str', index=0, number=0,
+      name='ConnectPolicyFormat_Unknown', index=0, number=0,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='ConnectPolicyFormat_Json', index=1, number=1,
+      name='ConnectPolicyFormat_Str', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='ConnectPolicyFormat_Json', index=2, number=2,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=764,
-  serialized_end=844,
+  serialized_start=806,
+  serialized_end=919,
 )
 _sym_db.RegisterEnumDescriptor(_CONNECTPOLICYFORMAT)
 
 ConnectPolicyFormat = enum_type_wrapper.EnumTypeWrapper(_CONNECTPOLICYFORMAT)
-AlgorithmCfgType_2DTable = 0
-AlgorithmCfgType_non2DTable = 1
-ConnectPolicyFormat_Str = 0
-ConnectPolicyFormat_Json = 1
+AlgorithmCfgType_Unknown = 0
+AlgorithmCfgType_2DTable = 1
+AlgorithmCfgType_non2DTable = 2
+ConnectPolicyFormat_Unknown = 0
+ConnectPolicyFormat_Str = 1
+ConnectPolicyFormat_Json = 2
 
 
 
@@ -200,21 +212,21 @@ _TASKREADYGOREQ = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='data_party', full_name='common.TaskReadyGoReq.data_party', index=8,
+      name='data_party_ids', full_name='common.TaskReadyGoReq.data_party_ids', index=8,
       number=9, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='computation_party', full_name='common.TaskReadyGoReq.computation_party', index=9,
+      name='computation_party_ids', full_name='common.TaskReadyGoReq.computation_party_ids', index=9,
       number=10, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='result_party', full_name='common.TaskReadyGoReq.result_party', index=10,
+      name='result_party_ids', full_name='common.TaskReadyGoReq.result_party_ids', index=10,
       number=11, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -275,7 +287,7 @@ _TASKREADYGOREQ = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=96,
-  serialized_end=538,
+  serialized_end=550,
 )
 
 
@@ -313,8 +325,8 @@ _TASKREADYGOREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=540,
-  serialized_end=583,
+  serialized_start=552,
+  serialized_end=595,
 )
 
 
@@ -352,8 +364,8 @@ _TASKCANCELREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=585,
-  serialized_end=635,
+  serialized_start=597,
+  serialized_end=647,
 )
 
 
@@ -391,8 +403,8 @@ _TASKCANCELREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=637,
-  serialized_end=679,
+  serialized_start=649,
+  serialized_end=691,
 )
 
 _TASKREADYGOREQ.fields_by_name['parties'].message_type = _PARTY

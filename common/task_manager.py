@@ -26,12 +26,14 @@ class TaskManager:
             string name = 4;
         }
         enum AlgorithmCfgType {
-            AlgorithmCfgType_2DTable = 0;
-            AlgorithmCfgType_non2DTable = 1;
+            AlgorithmCfgType_Unknown = 0;
+            AlgorithmCfgType_2DTable = 1;
+            AlgorithmCfgType_non2DTable = 2;
         }
         enum ConnectPolicyFormat {
-            ConnectPolicyFormat_Str = 0;
-            ConnectPolicyFormat_Json = 1;
+            ConnectPolicyFormat_Unknown = 0;
+            ConnectPolicyFormat_Str = 1;
+            ConnectPolicyFormat_Json = 2;
         }
         message TaskReadyGoReq {
             string task_id = 1;
@@ -42,9 +44,9 @@ class TaskManager:
             string algorithm_code = 6;
             AlgorithmCfgType algorithm_cfg_type = 7;
             string algorithm_cfg = 8;
-            repeated string data_party = 9;
-            repeated string computation_party = 10;
-            repeated string result_party = 11;
+            repeated string data_party_ids = 9;
+            repeated string computation_party_ids = 10;
+            repeated string result_party_ids = 11;
             uint64 duration = 12;
             uint64 memory = 13;
             uint32 processor = 14;
@@ -70,9 +72,9 @@ class TaskManager:
         data_id = req.data_id
         env_id = req.env_id
         algorithm_cfg = req.algorithm_cfg
-        data_party = tuple(req.data_party)
-        computation_party = tuple(req.computation_party)
-        result_party = tuple(req.result_party)
+        data_party = tuple(req.data_party_ids)
+        computation_party = tuple(req.computation_party_ids)
+        result_party = tuple(req.result_party_ids)
         duration = req.duration
         limit_memory = req.memory
         limit_cpu  = req.processor
@@ -80,8 +82,10 @@ class TaskManager:
         connect_policy_format = req.connect_policy_format
         if connect_policy_format == pb2.ConnectPolicyFormat_Json:
             connect_policy = json.loads(req.connect_policy)
-        else:
+        elif connect_policy_format == pb2.ConnectPolicyFormat_Str:
             connect_policy = req.connect_policy
+        else:
+            raise Exception('Unknown connect_policy_format. only support str/json.')
         
         parties = tuple(TParty(p.ip, p.port, p.party_id, p.name) for p in req.parties)
         task = Task(self.cfg, task_id, party_id, algorithm_code, data_id, env_id, parties, 
