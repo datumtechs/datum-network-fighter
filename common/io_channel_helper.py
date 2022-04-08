@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 
 def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party,
-                         result_party, cfg, current_server_ip):
+                         result_party, cfg, current_server_ip, connect_policy):
     pass_ice = cfg['pass_ice']
     ice_grid = cfg['ice_grid']
     grid_ip, grid_port = ice_grid.replace(' ', '').split(':')
@@ -71,18 +71,19 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
     config_dict['RESULT_NODES'] = result_party
     config_dict['GRICER2_INFO'] = grice2_dict
     config_dict['ICE_GRID_INFO'] = ice_grid_dict
+    config_dict['POLICY'] = connect_policy
     return config_dict
 
 
 def get_channel_config(task_id, self_party_id, peers, data_party, compute_party, result_party,
-                       cfg, event_type):
+                       cfg, connect_policy):
     parent_proc_ip = cfg['bind_ip']
     task_port_range = cfg['task_port_range']
     port = find_free_port_in_range(task_port_range)
     self_internal_addr = f'{parent_proc_ip}:{port}'
     log.info(f'get a free port: {self_internal_addr}')
     config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party,
-                                       result_party, cfg, parent_proc_ip)
+                                       result_party, cfg, parent_proc_ip, connect_policy)
     channel_config = json.dumps(config_dict)
     # log.info(f'self_party_id: {self_party_id}, channel_config: {channel_config}')
     log.info("get channel config finish.")

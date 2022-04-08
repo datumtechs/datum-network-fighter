@@ -1,13 +1,15 @@
+from email import policy
+import json
 import logging
 import multiprocessing as mp
 import threading
 from collections import namedtuple
-
 from common.task import Task
+from lib.api import sys_rpc_api_pb2 as pb2
+
 
 log = logging.getLogger(__name__)
-TPeer = namedtuple('TPeer', ['ip', 'port', 'party_id', 'name'])
-
+TParty = namedtuple('TParty', ['ip', 'port', 'party_id', 'name'])
 
 class TaskManager:
     def __init__(self, cfg):
@@ -17,30 +19,45 @@ class TaskManager:
 
     def start(self, req):
         '''
+        message Party {
+            string ip = 1;
+            int32 port = 2;
+            string party_id = 3;
+            string name = 4;
+        }
+        enum AlgorithmCfgType {
+            AlgorithmCfgType_2DTable = 0;
+            AlgorithmCfgType_non2DTable = 1;
+        }
+        enum ConnectPolicyFormat {
+            ConnectPolicyFormat_Str = 0;
+            ConnectPolicyFormat_Json = 1;
+        }
         message TaskReadyGoReq {
             string task_id = 1;
-            string contract_id = 2;
+            string party_id = 2;
             string data_id = 3;
-            string party_id = 4;
-            string env_id = 5;
-            message Peer {
-                string ip = 1;
-                int32 port = 2;
-                string party_id = 3;
-                string name = 4;
-            }
-            repeated Peer peers = 6;
-            string contract_cfg = 7;
-            repeated string data_party = 8;
-            repeated string computation_party = 9;
-            repeated string result_party = 10;
+            string env_id = 4;
+            repeated Party parties = 5;
+            string algorithm_code = 6;
+            AlgorithmCfgType algorithm_cfg_type = 7;
+            string algorithm_cfg = 8;
+            repeated string data_party = 9;
+            repeated string computation_party = 10;
+            repeated string result_party = 11;
+            uint64 duration = 12;
+            uint64 memory = 13;
+            uint32 processor = 14;
+            uint64 bandwidth = 15;
+            ConnectPolicyFormat connect_policy_format = 16;
+            string connect_policy = 17;
         }
         '''
         log.info("#################### Get a task request. the request information is as follows.")
         log.info(f"task_id: {req.task_id}, party_id: {req.party_id}")
-        log.info(f"contract_cfg: {req.contract_cfg}")
-        str_peers = str(req.peers).replace('\n', ' ')
-        log.info(f"peers: {str_peers}")
+        log.info(f"algorithm_cfg: {req.algorithm_cfg}")
+        str_parties = str(req.parties).replace('\n', ' ')
+        log.info(f"parties: {str_parties}")
         log.info(f"data_party: {req.data_party}, computation_party: {req.computation_party}, result_party: {req.result_party}")
         task_id = req.task_id
         party_id = req.party_id
@@ -49,10 +66,10 @@ class TaskManager:
         if uniq_task in self.tasks:
             log.info(f'task: {task_name} repetitive submit')
             return False, f'task: {task_name} repetitive submit'
-        contract_id = req.contract_id
+        algorithm_code = req.algorithm_code
         data_id = req.data_id
         env_id = req.env_id
-        contract_cfg = req.contract_cfg
+        algorithm_cfg = req.algorithm_cfg
         data_party = tuple(req.data_party)
         computation_party = tuple(req.computation_party)
         result_party = tuple(req.result_party)
@@ -60,10 +77,16 @@ class TaskManager:
         limit_memory = req.memory
         limit_cpu  = req.processor
         limit_bandwidth = req.bandwidth
+        connect_policy_format = req.connect_policy_format
+        if connect_policy_format == pb2.ConnectPolicyFormat_Json:
+            connect_policy = json.loads(req.connect_policy)
+        else:
+            connect_policy = req.connect_policy
         
-        peers = tuple(TPeer(p.ip, p.port, p.party_id, p.name) for p in req.peers)
-        task = Task(self.cfg, task_id, party_id, contract_id, data_id, env_id, peers, contract_cfg,
-                    data_party, computation_party, result_party, duration, limit_memory, limit_cpu,limit_bandwidth)
+        parties = tuple(TParty(p.ip, p.port, p.party_id, p.name) for p in req.parties)
+        task = Task(self.cfg, task_id, party_id, algorithm_code, data_id, env_id, parties, 
+                    algorithm_cfg, data_party, computation_party, result_party, duration, 
+                    limit_memory, limit_cpu, limit_bandwidth, connect_policy)
         self.tasks[uniq_task] = task
         log.info(f'new task: {task_name}, thread id: {threading.get_ident()}')
         p = mp.Process(target=Task.run, args=(task,), name=task_name, daemon=True)

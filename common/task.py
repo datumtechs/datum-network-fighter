@@ -19,7 +19,8 @@ log = logging.getLogger(__name__)
 
 class Task:
     def __init__(self, cfg, task_id, party_id, contract_id, data_id, env_id, peers, contract_cfg,
-                 data_party, computation_party, result_party, duration, limit_memory, limit_cpu,limit_bandwidth):
+                 data_party, computation_party, result_party, duration, limit_memory, limit_cpu,
+                 limit_bandwidth, connect_policy):
         log.info(f'thread id: {threading.get_ident()}')
         self.cfg = cfg
         self.id_ = task_id
@@ -41,6 +42,7 @@ class Task:
         self.limit_memory = limit_memory
         self.limit_cpu = limit_cpu
         self.limit_bandwidth = limit_bandwidth
+        self.connect_policy = connect_policy
 
         if self._party_id in (self.data_party + self.result_party):
             self.event_type = DATA_EVENT
@@ -93,7 +95,7 @@ class Task:
         try:
             channel_config = get_channel_config(self.id, self.party_id, self.peers,
                             self.data_party, self.computation_party, self.result_party,
-                            self.cfg, self.event_type)
+                            self.cfg, self.connect_policy)
          
             user_cfg = self.assemble_cfg()
             sys.path.insert(0, os.path.abspath(self._get_code_dir()))
