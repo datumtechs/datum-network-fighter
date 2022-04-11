@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-
+import math
 from common.consts import COMMON_EVENT
 from common.socket_utils import find_free_port_in_range
 
@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 
 def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party,
-                         result_party, cfg, current_server_ip, connect_policy):
+                         result_party, cfg, current_server_ip, connect_policy,send_timeout):
     pass_ice = cfg['pass_ice']
     ice_grid = cfg['ice_grid']
     grid_ip, grid_port = ice_grid.replace(' ', '').split(':')
@@ -18,7 +18,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
     channel_log_level = cfg.get('channel_log_level', 2)
     certs_base_path = certs.get('base_path', '')
     config_dict = {'TASK_ID': task_id, 'ROOT_CERT': os.path.join(certs_base_path, certs.get('root_cert', '')),
-                   'LOG_LEVEL': channel_log_level, 'SEND_TIMEOUT': 120, 'CONNECT_TIMEOUT': 120}
+                   'LOG_LEVEL': channel_log_level, 'SEND_TIMEOUT': math.ceil(send_timeout), 'CONNECT_TIMEOUT': 120}
     list_node_info = []
     ice_dict = {}
     grice2_dict = {}
@@ -76,14 +76,14 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
 
 
 def get_channel_config(task_id, self_party_id, peers, data_party, compute_party, result_party,
-                       cfg, connect_policy):
+                       cfg, connect_policy,send_timeout):
     parent_proc_ip = cfg['bind_ip']
     task_port_range = cfg['task_port_range']
     port = find_free_port_in_range(task_port_range)
     self_internal_addr = f'{parent_proc_ip}:{port}'
     log.info(f'get a free port: {self_internal_addr}')
     config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party,
-                                       result_party, cfg, parent_proc_ip, connect_policy)
+                                       result_party, cfg, parent_proc_ip, connect_policy,send_timeout)
     channel_config = json.dumps(config_dict)
     # log.info(f'self_party_id: {self_party_id}, channel_config: {channel_config}')
     log.info("get channel config finish.")
