@@ -92,3 +92,11 @@ def decompose(cont: str, to_dir):
             fp.write('\n')
     
     return files
+
+
+def merge_options(d, opts):
+    for k, v in opts.items():
+        if isinstance(v, dict):
+            merge_options(d[k], v)
+        else:
+            d[k] = v

@@ -10,7 +10,7 @@ import numpy as np
 
 import channel_sdk.pyio as chsdkio
 
-from common.utils import load_cfg
+from common.utils import load_cfg, merge_options
 from agent_helper import flip_ucci_labels
 from data_helper import read_content, recv_sth, send_sth, write_content
 
@@ -86,7 +86,7 @@ class Simulator:
         log.info(f'metis0_default_cfg:{metis0_default_cfg}')
         cfg.update(metis0_default_cfg)
 
-        cfg.update(self.dynamic_parameter)
+        merge_options(cfg, self.dynamic_parameter)
         log.info(cfg)
         cfg.labels = get_iccs_action_space()
         cfg.n_labels = len(cfg.labels)
