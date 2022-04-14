@@ -66,7 +66,8 @@ class TaskManager:
                     data_party, computation_party, result_party, duration, limit_memory, limit_cpu,limit_bandwidth)
         self.tasks[uniq_task] = task
         log.info(f'new task: {task_name}, thread id: {threading.get_ident()}')
-        p = mp.Process(target=Task.run, args=(task,), name=task_name, daemon=True)
+        # do not set daemon, otherwise cannot spawn new process, use process group to kill all processes
+        p = mp.Process(target=Task.run, args=(task,), name=task_name)
         self.procs[uniq_task] = p
         p.start()
         return True, f'submit task {task_name}'

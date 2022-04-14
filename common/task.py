@@ -90,6 +90,7 @@ class Task:
         the_dir = os.path.dirname(__file__)
         pdir = os.path.dirname(the_dir)
         log.info(f'cwd: {os.getcwd()}, the dir: {the_dir}, parent dir: {pdir}')
+        cwd_bak = os.getcwd()
 
         try:
             channel_config = get_channel_config(self.id, self.party_id, self.peers,
@@ -106,6 +107,7 @@ class Task:
             result_dir = self._get_result_dir()
             self._ensure_dir(result_dir)
             self.fire_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
+            os.chdir(self._get_code_dir())
             m.main(channel_config, user_cfg, self.data_party, self.result_party, result_dir)
             log.info(f'run task done')
             if self.party_id in self.result_party:
@@ -127,6 +129,7 @@ class Task:
         finally:
             log.info('task final clean')
             self.clean()
+            os.chdir(cwd_bak)
             log.info(f'#################### task finish run, task_id: {self.id}, party_id: {self.party_id}')
 
     def get_elapsed_time(self):

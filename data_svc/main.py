@@ -1,5 +1,6 @@
 import logging
 import multiprocessing as mp
+import os
 import sys
 import grpc
 import threading
@@ -75,6 +76,7 @@ def main():
     else:
         cfg['schedule_svc'] = args.schedule_svc
 
+    os.setpgrp()
     task_manager = TaskManager(cfg)
     event_stop = mp.Event()
     def task_clean(task_manager, event_stop):
@@ -99,6 +101,7 @@ def main():
         event_stop.set()
         if args.use_consul:
             consul_client_obj.stop()
+        os.killpg(0, SIGKILL)
         log.info("Shut down gracefully")
 
     signal(SIGTERM, handle_sigterm)
