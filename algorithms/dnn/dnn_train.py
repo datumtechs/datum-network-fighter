@@ -526,7 +526,7 @@ class PrivacyDnnTrain(object):
             shutil.rmtree(path)
 
 
-def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: list, results_dir: str):
+def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
