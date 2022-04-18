@@ -95,7 +95,7 @@ class Task:
         try:
             channel_config = get_channel_config(self.id, self.party_id, self.peers,
                             self.data_party, self.computation_party, self.result_party,
-                            self.cfg, self.connect_policy)
+                            self.cfg, self.connect_policy,self.limit_time)
          
             user_cfg = self.assemble_cfg()
             sys.path.insert(0, os.path.abspath(self._get_code_dir()))
