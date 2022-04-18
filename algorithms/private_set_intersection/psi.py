@@ -43,7 +43,9 @@ class PrivateSetIntersection(object):
         {
             "party_id": "p1",
             "data_party": {
-                "input_file": "path/to/file",
+                "access_data_method": "local",
+                "input_data": "path/to/data",
+                "input_data_type": "csv",
                 "key_column": "col1"
             },
             "dynamic_parameter": {
@@ -63,7 +65,9 @@ class PrivateSetIntersection(object):
         self.data_party = list(data_party)
         self.result_party = list(result_party)
         self.party_id = cfg_dict["party_id"]
-        self.input_file = cfg_dict["data_party"].get("input_file")
+        self.access_data_method = cfg_dict["data_party"].get("access_data_method", "local")
+        self.input_file = cfg_dict["data_party"].get("input_data")
+        self.input_data_type = cfg_dict["data_party"].get("input_data_type", "csv")
         self.key_column = cfg_dict["data_party"].get("key_column")
         dynamic_parameter = cfg_dict["dynamic_parameter"]
         self.psi_type = dynamic_parameter.get("psi_type", "T_V1_Basic_GLS254")  # default 'T_V1_Basic_GLS254'
@@ -85,10 +89,13 @@ class PrivateSetIntersection(object):
         self._check_input_file()
 
     def _check_input_file(self):
+        assert self.access_data_method in ["local"], "access_data_method must be local, not {self.access_data_method}"
+        assert isinstance(self.input_file, str), "origin input_data must be type(string)"
+        assert self.input_data_type in ["csv"], "input_data_type must be csv, not {self.input_data_type}"
         self.input_file = self.input_file.strip()
         if os.path.exists(self.input_file):
-            file_suffix = os.path.splitext(self.input_file)[-1]
-            assert file_suffix == ".csv", f"input_file must csv file, not {file_suffix}"
+            file_suffix = os.path.splitext(self.input_file)[-1][1:]
+            assert file_suffix == self.input_data_type, f"input_file must {self.input_data_type} file, not {file_suffix}"
             assert self.key_column, f"key_column can not empty. key_column={self.key_column}"
             input_columns = pd.read_csv(self.input_file, nrows=0)
             input_columns = list(input_columns.columns)

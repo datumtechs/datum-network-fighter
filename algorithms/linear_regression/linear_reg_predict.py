@@ -48,13 +48,16 @@ class PrivacyLinearRegPredict(object):
         {
             "party_id": "p1",
             "data_party": {
-                "input_file": "path/to/file",
+                "access_data_method": "local",
+                "input_data": "path/to/data",
+                "input_data_type": "csv",
                 "key_column": "col1",
-                "selected_columns": ["col2", "col3"],
-                "use_psi": true,
-                "psi_result_file": "path/to/file"
+                "selected_columns": ["col2", "col3"]
             },
             "dynamic_parameter": {
+                "use_psi": true,
+                "psi_result_data": "path/to/data",
+                "psi_result_data_type": "csv",
                 "model_restore_party": "p3",
                 "model_path": "path/to/model"
             }
@@ -73,13 +76,16 @@ class PrivacyLinearRegPredict(object):
         self.data_party = list(data_party)
         self.result_party = list(result_party)
         self.party_id = cfg_dict["party_id"]
-        self.input_file = cfg_dict["data_party"].get("input_file")
+        self.access_data_method = cfg_dict["data_party"].get("access_data_method", "local")
+        self.input_file = cfg_dict["data_party"].get("input_data")
+        self.input_data_type = cfg_dict["data_party"].get("input_data_type", "csv")
         self.key_column = cfg_dict["data_party"].get("key_column")
         self.selected_columns = cfg_dict["data_party"].get("selected_columns")
-        self.use_psi = cfg_dict["data_party"].get("use_psi", True)
-        self.psi_result_file = cfg_dict["data_party"].get("psi_result_file")
-
+        
         dynamic_parameter = cfg_dict["dynamic_parameter"]
+        self.use_psi = dynamic_parameter.get("use_psi", True)
+        self.psi_result_data = dynamic_parameter.get("psi_result_data")
+        self.psi_result_data_type = dynamic_parameter.get("psi_result_data_type")
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
         self.model_path = dynamic_parameter.get("model_path")
         self.model_file = os.path.join(self.model_path, "model")
@@ -93,21 +99,24 @@ class PrivacyLinearRegPredict(object):
         if self.party_id in self.data_party:
             assert isinstance(self.use_psi, bool), "use_psi must be type(bool), true or false"
             if self.use_psi:
-                assert isinstance(self.psi_result_file, str), "psi_result_file must be type(string)" 
-                self.psi_result_file = self.psi_result_file.strip()
-                if os.path.exists(self.psi_result_file):
-                    file_suffix = os.path.splitext(self.psi_result_file)[-1]
-                    assert file_suffix == ".csv", f"psi_result_file must csv file, not {file_suffix}"
+                assert isinstance(self.psi_result_data, str), "psi_result_data must be type(string)"
+                assert self.psi_result_data_type in ["csv"], "psi_result_data_type must be csv, not {self.psi_result_data_type}"
+                self.psi_result_data = self.psi_result_data.strip()
+                if os.path.exists(self.psi_result_data):
+                    file_suffix = os.path.splitext(self.psi_result_data)[-1][1:]
+                    assert file_suffix == self.psi_result_data_type, f"psi_result_data must {self.psi_result_data_type} file, not {file_suffix}"
                 else:
-                    raise Exception(f"psi_result_file is not exist. psi_result_file={self.psi_result_file}")
+                    raise Exception(f"psi_result_data is not exist. psi_result_data={self.psi_result_data}")
             
-            assert isinstance(self.input_file, str), "input_file must be type(string)"
+            assert self.access_data_method in ["local"], "access_data_method must be local, not {self.access_data_method}"
+            assert isinstance(self.input_file, str), "origin input_data must be type(string)"
+            assert self.input_data_type in ["csv"], "input_data_type must be csv, not {self.input_data_type}"
             assert isinstance(self.key_column, str), "key_column must be type(string)"
             assert isinstance(self.selected_columns, list), "selected_columns must be type(list)" 
             self.input_file = self.input_file.strip()
             if os.path.exists(self.input_file):
-                file_suffix = os.path.splitext(self.input_file)[-1]
-                assert file_suffix == ".csv", f"input_file must csv file, not {file_suffix}"
+                file_suffix = os.path.splitext(self.input_file)[-1][1:]
+                assert file_suffix == self.input_data_type, f"input_file must {self.input_data_type} file, not {file_suffix}"
                 input_columns = pd.read_csv(self.input_file, nrows=0)
                 input_columns = list(input_columns.columns)
                 assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
@@ -218,7 +227,7 @@ class PrivacyLinearRegPredict(object):
             input_data = input_data[usecols]
             assert input_data.shape[0] > 0, 'input file is no data.'
             if self.use_psi:
-                psi_result = pd.read_csv(self.psi_result_file, dtype="str")
+                psi_result = pd.read_csv(self.psi_result_data, dtype="str")
                 psi_result.name = self.key_column
                 input_data = pd.merge(psi_result, input_data, on=self.key_column, how='inner')
                 assert input_data.shape[0] > 0, 'input data is empty. because no intersection with psi result.'
