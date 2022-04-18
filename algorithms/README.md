@@ -13,13 +13,16 @@
 {
   "party_id": "p0",    # 本方party_id
   "data_party": {
-    "input_file": "path/to/train_data_input_file",    # 数据集文件的所在路径及文件名
+    "access_data_method": "local",   # 访问数据的方式, 可选local, http, ssh, ftp等等。现阶段仅支持local
+    "input_data": "path/to/data",  # 如果数据在本地，则是文件路径。如果数据在远端，则是请求链接。
+    "input_data_type": "csv",  # 数据文件的格式，可选csv，xlsx，mysql等。告知算法如何读取数据。现阶段仅支持csv
     "key_column": "CLIENT_ID",            # ID列
-    "selected_columns": ["col1", "col2"],  # 自变量(特征)
-    "use_psi": true,    # 是否使用psi
-    "psi_result_file": "path/to/file"  # 若使用psi，则需指定psi结果文件
+    "selected_columns": ["col1", "col2"]  # 自变量(特征)
   },
   "dynamic_parameter": {
+    "use_psi": true,    # 是否使用psi
+    "psi_result_data": "path/to/data",  # 若使用psi，则需指定psi结果文件
+    "psi_result_data_type": "csv", # 现阶段仅支持csv
     "label_owner": "p0",       # 标签所在方的party_id
     "label_column": "Y",       # 因变量(标签)
     "algorithm_parameter": {   # 逻辑回归的一些参数
@@ -48,13 +51,16 @@ dynamic_parameter参数里，label_owner是指标签拥有方，根据任务而�
 {
   "party_id": "p0",
   "data_party": {
-      "input_file": "path/to/predict_data_input_file",  # 数据集文件的所在路径及文件名
-      "key_column": "CLIENT_ID",             # ID列
-      "selected_columns": ["col1", "col2"],   # 自变量(特征)
-      "use_psi": true,    # 是否使用psi
-      "psi_result_file": "path/to/file"  # 若使用psi，则需指定psi结果文件
-    },
+    "access_data_method": "local",   # 访问数据的方式, 可选local, http, ssh, ftp等等。现阶段仅支持local
+    "input_data": "path/to/data",  # 如果数据在本地，则是文件路径。如果数据在远端，则是请求链接。
+    "input_data_type": "csv",  # 数据文件的格式，可选csv，xlsx，mysql等。告知算法如何读取数据。现阶段仅支持csv
+    "key_column": "CLIENT_ID",             # ID列
+    "selected_columns": ["col1", "col2"]   # 自变量(特征)
+  },
   "dynamic_parameter": {
+    "use_psi": true,    # 是否使用psi
+    "psi_result_data": "path/to/data",  # 若使用psi，则需指定psi结果文件
+    "psi_result_data_type": "csv",
     "model_restore_party": "p0",  # 模型所在方
     "model_path": "file_path",    # 模型所在的路径，需填绝对路径。
     "predict_threshold": 0.5      # 预测结果的分类阈值，值域[0,1]
@@ -78,13 +84,16 @@ dynamic_parameter参数里，模型提供方也被当做数据方，会被赋予
 {
   "party_id": "p0",  # 本方party_id
   "data_party": {
-    "input_file": "path/to/train_data_input_file",  # 数据集文件的所在路径及文件名
+    "access_data_method": "local",   # 访问数据的方式, 可选local, http, ssh, ftp等等。现阶段仅支持local
+    "input_data": "path/to/data",  # 如果数据在本地，则是文件路径。如果数据在远端，则是请求链接。
+    "input_data_type": "csv",  # 数据文件的格式，可选csv，xlsx，mysql等。告知算法如何读取数据。现阶段仅支持csv
     "key_column": "CLIENT_ID",            # ID列
-    "selected_columns": ["col1", "col2"],  # 自变量(特征)
-    "use_psi": true,    # 是否使用psi
-    "psi_result_file": "path/to/file"  # 若使用psi，则需指定psi结果文件
+    "selected_columns": ["col1", "col2"]  # 自变量(特征)
   },
   "dynamic_parameter": {
+    "use_psi": true,    # 是否使用psi
+    "psi_result_data": "path/to/data",  # 若使用psi，则需指定psi结果文件
+    "psi_result_data_type": "csv",
     "label_owner": "p0",       # 标签所在方的party_id
     "label_column": "Y",       # 因变量(标签)
     "algorithm_parameter": {   # 逻辑回归的一些参数
@@ -112,13 +121,16 @@ dynamic_parameter参数里，label_owner是指标签拥有方，根据任务而�
 {
   "party_id": "p0",
   "data_party": {
-      "input_file": "path/to/predict_data_input_file",  # 数据集文件的所在路径及文件名
-      "key_column": "CLIENT_ID",             # ID列
-      "selected_columns": ["col1", "col2"],   # 自变量(特征)
-      "use_psi": true,    # 是否使用psi
-      "psi_result_file": "path/to/file"  # 若使用psi，则需指定psi结果文件
-    },
+    "access_data_method": "local",   # 访问数据的方式, 可选local, http, ssh, ftp等等。现阶段仅支持local
+    "input_data": "path/to/data",  # 如果数据在本地，则是文件路径。如果数据在远端，则是请求链接。
+    "input_data_type": "csv",  # 数据文件的格式，可选csv，xlsx，mysql等。告知算法如何读取数据。现阶段仅支持csv
+    "key_column": "CLIENT_ID",             # ID列
+    "selected_columns": ["col1", "col2"]   # 自变量(特征)
+  },
   "dynamic_parameter": {
+    "use_psi": true,    # 是否使用psi
+    "psi_result_data": "path/to/data",  # 若使用psi，则需指定psi结果文件
+    "psi_result_data_type": "csv",
     "model_restore_party": "p0",  # 模型所在方
     "model_path": "file_path"     # 模型所在的路径，需填绝对路径。
   }
@@ -141,13 +153,16 @@ dynamic_parameter参数里，模型提供方也被当做数据方，会被赋予
 {
   "party_id": "p0",  # 本方party_id
   "data_party": {
-    "input_file": "path/to/train_data_input_file",  # 数据集文件的所在路径及文件名
+    "access_data_method": "local",   # 访问数据的方式, 可选local, http, ssh, ftp等等。现阶段仅支持local
+    "input_data": "path/to/data",  # 如果数据在本地，则是文件路径。如果数据在远端，则是请求链接。
+    "input_data_type": "csv",  # 数据文件的格式，可选csv，xlsx，mysql等。告知算法如何读取数据。现阶段仅支持csv
     "key_column": "CLIENT_ID",            # ID列
-    "selected_columns": ["col1", "col2"],  # 自变量(特征)
-    "use_psi": true,    # 是否使用psi
-    "psi_result_file": "path/to/file"  # 若使用psi，则需指定psi结果文件
+    "selected_columns": ["col1", "col2"]  # 自变量(特征)
   },
   "dynamic_parameter": {
+    "use_psi": true,    # 是否使用psi
+    "psi_result_data": "path/to/data",  # 若使用psi，则需指定psi结果文件
+    "psi_result_data_type": "csv",
     "label_owner": "p0",       # 标签所在方的party_id
     "label_column": "Y",       # 因变量(标签)
     "algorithm_parameter": {   # 逻辑回归的一些参数
@@ -180,13 +195,16 @@ dynamic_parameter参数里，模型提供方也被当做数据方，会被赋予
 {
   "party_id": "p0",
   "data_party": {
-      "input_file": "path/to/predict_data_input_file",  # 数据集文件的所在路径及文件名
-      "key_column": "CLIENT_ID",   # ID列
-      "selected_columns": ["col1", "col2"],   # 自变量(特征)
-      "use_psi": true,    # 是否使用psi
-      "psi_result_file": "path/to/file"  # 若使用psi，则需指定psi结果文件
-    },
+    "access_data_method": "local",   # 访问数据的方式, 可选local, http, ssh, ftp等等。现阶段仅支持local
+    "input_data": "path/to/data",  # 如果数据在本地，则是文件路径。如果数据在远端，则是请求链接。
+    "input_data_type": "csv",  # 数据文件的格式，可选csv，xlsx，mysql等。告知算法如何读取数据。现阶段仅支持csv
+    "key_column": "CLIENT_ID",   # ID列
+    "selected_columns": ["col1", "col2"]   # 自变量(特征)
+  },
   "dynamic_parameter": {
+    "use_psi": true,    # 是否使用psi
+    "psi_result_data": "path/to/data",  # 若使用psi，则需指定psi结果文件
+    "psi_result_data_type": "csv",
     "model_restore_party": "p0",  # 模型所在方
     "model_path": "file_path",    # 模型所在的路径，需填绝对路径。
     "algorithm_parameter": {
@@ -212,13 +230,16 @@ dynamic_parameter参数里，模型提供方也被当做数据方，会被赋予
 {
   "party_id": "p0",  # 本方party_id
   "data_party": {
-    "input_file": "path/to/train_data_input_file",  # 数据集文件的所在路径及文件名
+    "access_data_method": "local",   # 访问数据的方式, 可选local, http, ssh, ftp等等。现阶段仅支持local
+    "input_data": "path/to/data",  # 如果数据在本地，则是文件路径。如果数据在远端，则是请求链接。
+    "input_data_type": "csv",  # 数据文件的格式，可选csv，xlsx，mysql等。告知算法如何读取数据。现阶段仅支持csv
     "key_column": "CLIENT_ID",            # ID列
-    "selected_columns": ["col1", "col2"],  # 自变量(特征)
-    "use_psi": true,    # 是否使用psi
-    "psi_result_file": "path/to/file"  # 若使用psi，则需指定psi结果文件
+    "selected_columns": ["col1", "col2"]  # 自变量(特征)
   },
   "dynamic_parameter": {
+    "use_psi": true,    # 是否使用psi
+    "psi_result_data": "path/to/data",  # 若使用psi，则需指定psi结果文件
+    "psi_result_data_type": "csv",
     "label_owner": "p0",       # 标签所在方的party_id
     "label_column": "Y",       # 因变量(标签)
     "algorithm_parameter": {   # 逻辑回归的一些参数
@@ -249,13 +270,16 @@ dynamic_parameter参数里，模型提供方也被当做数据方，会被赋予
 {
   "party_id": "p0",
   "data_party": {
-      "input_file": "path/to/predict_data_input_file",  # 数据集文件的所在路径及文件名
-      "key_column": "CLIENT_ID",             # ID列
-      "selected_columns": ["col1", "col2"],   # 自变量(特征)
-      "use_psi": true,    # 是否使用psi
-      "psi_result_file": "path/to/file"  # 若使用psi，则需指定psi结果文件
-    },
+    "access_data_method": "local",   # 访问数据的方式, 可选local, http, ssh, ftp等等。现阶段仅支持local
+    "input_data": "path/to/data",  # 如果数据在本地，则是文件路径。如果数据在远端，则是请求链接。
+    "input_data_type": "csv",  # 数据文件的格式，可选csv，xlsx，mysql等。告知算法如何读取数据。现阶段仅支持csv
+    "key_column": "CLIENT_ID",             # ID列
+    "selected_columns": ["col1", "col2"]   # 自变量(特征)
+  },
   "dynamic_parameter": {
+    "use_psi": true,    # 是否使用psi
+    "psi_result_data": "path/to/data",  # 若使用psi，则需指定psi结果文件
+    "psi_result_data_type": "csv",
     "model_restore_party": "p0",  # 模型所在方
     "model_path": "file_path",    # 模型所在的路径，需填绝对路径
     "algorithm_parameter": {
@@ -282,7 +306,9 @@ cfg_dict:
 {
     "party_id": "p1",
     "data_party": {
-        "input_file": "path/to/file",  # 源文件
+        "access_data_method": "local",
+        "input_data": "path/to/data",
+        "input_data_type": "csv",
         "key_column": "col1"   # 需进行对齐的列名
     },
     "dynamic_parameter": {
@@ -297,7 +323,7 @@ cfg_dict:
 
 + **二分类模型评估**
 现在支持二分类模型评估的训练算法有logistic regression, DNN, XGBoost.
-生成的评估文件名为evaluation_result.json, 内容如下：
+生成的评估指标的内容如下：
 ```
 {
     "AUC": 0.95,
@@ -310,7 +336,7 @@ cfg_dict:
 
 + **回归类型模型评估**
 现在支持回归类型模型评估的训练算法有linear regression, DNN.
-生成的评估文件名为evaluation_result.json, 内容如下：
+生成的评估指标的内容如下：
 ```
 {
     "R2-score": 0.968016,
