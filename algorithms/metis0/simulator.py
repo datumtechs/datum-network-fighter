@@ -88,7 +88,6 @@ class Simulator:
 
         # TODO: substitute variable
 
-
         log.info(cfg)
         cfg.labels = get_iccs_action_space()
         cfg.n_labels = len(cfg.labels)

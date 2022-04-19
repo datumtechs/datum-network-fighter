@@ -5,7 +5,6 @@ from time import sleep, time
 from datetime import datetime
 from typing import Sequence, Callable, Tuple
 import base64
-from unittest.util import strclass
 import zlib
 import codecs
 
@@ -38,11 +37,10 @@ def recv_sth(io_channel, remote_nodeid) -> Tuple[str, bytes]:
     data_len = int(recv_data, 16)
     recv_data = io_channel.Recv(remote_nodeid, data_len)
     h = ''.join('{:02x}'.format(ord(c)) for c in recv_data)
-    data = bytes.fromhex(h)
-    log.info(
-        f'recv {data_len} bytes data from {remote_nodeid}, in fact len: {len(recv_data)}, {recv_data[:20]}, {data[:20]}')
+    recv_data = bytes.fromhex(h)
+    log.info(f'recv {data_len} bytes data from {remote_nodeid}, in fact len: {len(recv_data)}, {recv_data[:20]}')
     # assert data_len == len(recv_data)  # sometimes assert failed cause by encoding, weird
-    return remote_nodeid, data
+    return remote_nodeid, recv_data
 
 
 def send_sth(io_channel, remote_nodeid, data: str) -> None:
@@ -73,10 +71,9 @@ def read_content(path, text=False):
         log.info(e)
 
 
-def write_content(path, data, text=False):
+def write_content(path: str, data: bytes):
     try:
-        flag = 'w' if text else 'wb'
-        with open(path, flag) as f:
+        with open(path, 'wb') as f:
             f.write(data)
     except Exception as e:
         log.info(e)
@@ -175,13 +172,11 @@ def download_model_data(cfg, io_channel):
                 send_sth(io_channel, server_party_id, 'download_model_weight')
             if expected_feedback == 'download_model_weight':
                 _, data = recv_sth(io_channel, server_party_id)
-                log.info(f'33333: {type(data)}, {len(data) if data is not None else -1}')
                 if data is None:
                     raise ValueError(f'download weight failed, recv nothing')
                 data = b64decode_and_unzip(data)
                 model_weight_path = cfg.resource.model_best_weight_path
-                log.info(f'444444 write to {model_weight_path}, {len(data)}')
-                write_content(model_weight_path, data, text=False)
+                write_content(model_weight_path, data)
                 expected_feedback = None
                 return True
             return False
