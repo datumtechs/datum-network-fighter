@@ -119,7 +119,7 @@ class NNModel:
                 m.update(f.read())
             return m.hexdigest()
 
-    def load(self, config_path, weight_path):
+    def load(self, config_path, weight_path, io_channel):
         """
 
         :param str config_path: path to the file containing the entire configuration
@@ -128,8 +128,11 @@ class NNModel:
         """
         mc = self.config.model
         resources = self.config.resource
+        logger.info(f"model config path {config_path}, weight path {weight_path}, resources {resources}")
         if config_path == resources.model_best_config_path:
-            download_model_data(self.config)
+            ret = download_model_data(self.config, io_channel)
+            if not ret:
+                return False
 
         if os.path.exists(config_path) and os.path.exists(weight_path):
             logger.debug(f"loading model from {config_path}")
@@ -144,7 +147,7 @@ class NNModel:
             logger.debug(f"model files does not exist at {config_path} and {weight_path}")
             return False
 
-    def save(self, config_path, weight_path):
+    def save(self, config_path, weight_path, io_channel):
         """
 
         :param str config_path: path to save the entire configuration to
@@ -161,6 +164,6 @@ class NNModel:
         resources = self.config.resource
         if mc.distributed and config_path == resources.model_best_config_path:
             data = read_content(config_path)
-            upload_data(config_path, data, self.config)
+            upload_data(config_path, data, self.config, io_channel)
             data = read_content(weight_path)
-            upload_data(weight_path, data, self.config)
+            upload_data(weight_path, data, self.config, io_channel)

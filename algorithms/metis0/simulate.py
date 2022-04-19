@@ -19,13 +19,14 @@ from data_helper import get_game_data_filenames, upload_data
 logger = getLogger(__name__)
 
 
-def start(cfg):
-    return SelfPlayWorker(cfg).start()
+def start(cfg, io_channel):
+    return SelfPlayWorker(cfg, io_channel).start()
 
 
 class SelfPlayWorker:
-    def __init__(self, config):
+    def __init__(self, config, io_channel):
         self.config = config
+        self.io_channel = io_channel
         self.current_model = self.load_model()
         self.m = Manager()
         self.pipes_bundle = self.m.list([self.current_model.get_pipes(self.config.play.search_threads) for _ in
@@ -52,14 +53,17 @@ class SelfPlayWorker:
                 self.buffer += data
                 if (game_idx % self.config.playdata.nb_game_in_file) == 0:
                     self.flush_buffer()
-                    reload_best_model_weight_if_changed(self.current_model)
+                    reload_best_model_weight_if_changed(self.current_model, self.io_channel)
                 futures.append(executor.submit(self_play_buffer, self.config, self.pipes_bundle))  # Keep it going
 
     def load_model(self):
         model = NNModel(self.config)
-        if self.config.opts.new or not load_best_model_weight(model):
+        logger.info(f"create new model? {self.config.opts.new}")
+        if self.config.opts.new or not load_best_model_weight(model, self.io_channel):
+            raise ValueError("no model found")
+            logger.info(f"create model from scratch")
             model.build()
-            save_as_best_model(model)
+            save_as_best_model(model, self.io_channel)
         model.session = K.get_session()
         model.graph = model.session.graph
         return model
