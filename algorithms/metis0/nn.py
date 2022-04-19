@@ -160,10 +160,10 @@ class NNModel:
         self.digest = self.fetch_digest(weight_path)
         logger.debug(f"saved model digest {self.digest}")
 
-        mc = self.config.model
-        resources = self.config.resource
-        if mc.distributed and config_path == resources.model_best_config_path:
-            data = read_content(config_path)
-            upload_data(config_path, data, self.config, io_channel)
-            data = read_content(weight_path)
-            upload_data(weight_path, data, self.config, io_channel)
+        # mc = self.config.model
+        # resources = self.config.resource
+        # if mc.distributed and config_path == resources.model_best_config_path:
+        #     data = read_content(config_path)
+        #     upload_data(config_path, data, self.config, io_channel)
+        #     data = read_content(weight_path)
+        #     upload_data(weight_path, data, self.config, io_channel)

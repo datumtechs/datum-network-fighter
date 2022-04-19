@@ -105,10 +105,11 @@ class Task:
 
             m = importlib.import_module(module_name)
             result_dir = self._get_result_dir()
+            data_dir = self._get_data_dir()
             self._ensure_dir(result_dir)
             self.fire_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
             os.chdir(self._get_code_dir())
-            m.main(channel_config, user_cfg, self.data_party, self.result_party, result_dir)
+            m.main(channel_config, user_cfg, self.data_party, self.result_party, result_dir, data_dir=data_dir)
             log.info(f'run task done')
             if self.party_id in self.result_party:
                 file_path = result_dir
@@ -155,6 +156,12 @@ class Task:
 
     def _get_code_dir(self):
         return os.path.join(self.cfg['code_root_dir'], self.id, self.party_id)
+
+    def _get_data_dir(self):
+        data_root = '.'
+        if 'data_root' in self.cfg:
+            data_root = self.cfg['data_root']
+        return os.path.join(data_root, self.id, self.party_id)
 
     def _get_result_dir(self):
         result_dir = os.path.join(self.cfg['results_root_dir'], f"{self.id}/{self.party_id}")

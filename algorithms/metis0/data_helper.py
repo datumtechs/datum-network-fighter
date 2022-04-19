@@ -32,7 +32,7 @@ def len_str(dat_len: int) -> str:
 def recv_sth(io_channel, remote_nodeid) -> Tuple[str, bytes]:
     recv_data = io_channel.Recv(remote_nodeid, 8)
     if recv_data == '\x00'*8:
-        log.info(f'maybe peer {remote_nodeid} has quit or cannot connect to.')
+        # log.info(f'maybe peer {remote_nodeid} has quit or cannot connect to.')
         return remote_nodeid, None
     data_len = int(recv_data, 16)
     recv_data = io_channel.Recv(remote_nodeid, data_len)
@@ -50,7 +50,7 @@ def send_sth(io_channel, remote_nodeid, data: str) -> None:
     log.info(f'send {len(data)} to {remote_nodeid}, {lens}, {data[:20]}')
 
 
-def upload_data(path, data, cfg, io_channel):
+def upload_data(data, cfg, io_channel, prefix):
     party_id = cfg.entry.party_id
     data_party = cfg.entry.data_party
     result_party = cfg.entry.result_party
@@ -59,7 +59,8 @@ def upload_data(path, data, cfg, io_channel):
         pass
     elif party_id not in data_party:  # compute node as client
         remote_nodeid = result_party[0]  # select first result party
-        send_sth(io_channel, remote_nodeid, data)
+        log.info(f'upload {len(data)} {type(data)} to {remote_nodeid}')
+        send_sth(io_channel, remote_nodeid, prefix + data)
 
 
 def read_content(path, text=False):

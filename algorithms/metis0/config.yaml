@@ -69,7 +69,7 @@ model:
   res_layer_num: 7
   l2_reg: 1e-4
   value_fc_size: 256
-  distributed: False
+  distributed: True
   input_depth: 18
 
 
@@ -86,8 +86,8 @@ resource:
   next_generation_model_config_filename: "model_config.json"
   next_generation_model_weight_filename: "model_weight.h5"
 
-  play_data_dir: "./data/play_data"
-  play_data_filename_tmpl: "play_%s.json"
+  play_data_dir: "../../play_data"
+  play_data_filename_tmpl: "%s_play_%s.json"
 
   log_dir: "./logs"
   main_log_path: "./logs/main.log"

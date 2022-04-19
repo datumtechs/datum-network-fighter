@@ -33,16 +33,12 @@ class Simulator:
         log.info(f'channel_config:{channel_config}')
         log.info(f'cfg_dict:{cfg_dict}')
         log.info(f'data_party:{data_party}, result_party:{result_party}, results_dir:{results_dir}')
-        assert isinstance(channel_config, str), 'type of channel_config must be str'
-        assert isinstance(cfg_dict, dict), 'type of cfg_dict must be dict'
-        assert isinstance(data_party, (list, tuple)), 'type of data_party must be list or tuple'
-        assert isinstance(result_party, (list, tuple)), 'type of result_party must be list or tuple'
-        assert isinstance(results_dir, str), 'type of results_dir must be str'
 
         self.channel_config = channel_config
         self.data_party = list(data_party)
         self.result_party = list(result_party)
         self.compute_parties = self._get_compute_parties()
+        self.results_dir = results_dir
 
         self.party_id = cfg_dict['party_id']
         self.all_cfg = self.setup_cfg(cfg_dict)
@@ -98,6 +94,7 @@ class Simulator:
         os.makedirs(os.path.join(file_path, cfg.resource.data_dir), exist_ok=True)
         os.makedirs(os.path.join(file_path, cfg.resource.model_dir), exist_ok=True)
         os.makedirs(os.path.join(file_path, cfg.resource.next_generation_model_dir), exist_ok=True)
+        os.makedirs(os.path.join(self.results_dir, cfg.resource.play_data_dir), exist_ok=True)
 
         return cfg
 
@@ -170,14 +167,31 @@ class Simulator:
                     futures.add(new_future)
 
     def handle_result_party(self, remote_nodeid, recved: bytes, cfg):
+        class recv_nothing(Exception):
+            pass
+        class unkonwn_data(Exception):
+            pass
+        accepted_cmds = [b'upload_playdata']
+        cmds_len = [len(c) for c in accepted_cmds]
         try:
             if recved is None:
-                pass
-            elif recved[:11] == b'upload_data':  # the first 11 bytes is 'upload_data', the rest is the data
-                game_id = datetime.now().strftime("%Y%m%d-%H%M%S.%f")
-                path = os.path.join(cfg.resource.play_data_dir, cfg.resource.play_data_filename_tmpl % game_id)
+                raise recv_nothing
 
-                write_content(path, recved[11:])
+            for l, c in zip(cmds_len, accepted_cmds):
+                if recved[:l] == c:      # start with cmd
+                    recved = recved[l:]  # then real data
+                    break
+            else:
+                raise unkonwn_data
+            if c == b'upload_playdata':
+                game_id = datetime.now().strftime("%Y%m%d-%H%M%S.%f")
+                path = os.path.join(self.results_dir, cfg.resource.play_data_dir, cfg.resource.play_data_filename_tmpl % (remote_nodeid, game_id))
+                log.info(f'write play data to {path}, {os.path.abspath(path)}')
+                write_content(path, recved)
+        except recv_nothing:
+            pass
+        except unkonwn_data:
+            log.warn(f'unknown data from {remote_nodeid}, {recved[:20]}')
         except Exception as e:
             log.warn(f'exception {e} when send to {remote_nodeid}')
 

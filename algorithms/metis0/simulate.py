@@ -1,3 +1,4 @@
+import json
 import os
 from collections import deque
 from concurrent.futures import ProcessPoolExecutor
@@ -72,10 +73,9 @@ class SelfPlayWorker:
         Flush the play data buffer and write the data to the appropriate location
         """
         rc = self.config.resource
-        game_id = datetime.now().strftime("%Y%m%d-%H%M%S.%f")
-        path = os.path.join(rc.play_data_dir, rc.play_data_filename_tmpl % game_id)
-        logger.info(f"save play data to {path}")
-        thread = Thread(target=upload_data, args=(path, self.buffer))
+        data = json.dumps(self.buffer)
+        logger.info(f'data len: {len(data)}, type: {type(data)}')
+        thread = Thread(target=upload_data, args=(data, self.config, self.io_channel, 'upload_playdata'))
         thread.start()
         self.buffer = []
 
