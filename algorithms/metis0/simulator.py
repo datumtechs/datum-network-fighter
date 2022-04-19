@@ -14,7 +14,7 @@ import channel_sdk.pyio as chsdkio
 
 from common.utils import load_cfg, merge_options
 from agent_helper import flip_ucci_labels
-from data_helper import read_content, recv_sth, send_sth, write_content, zip_and_b64encode
+from data_helper import read_content, recv_sth, send_sth, write_content, zip_and_b64encode, b64decode_and_unzip
 
 faulthandler.enable()
 
@@ -187,6 +187,7 @@ class Simulator:
                 game_id = datetime.now().strftime("%Y%m%d-%H%M%S.%f")
                 path = os.path.join(self.results_dir, cfg.resource.play_data_dir, cfg.resource.play_data_filename_tmpl % (remote_nodeid, game_id))
                 log.info(f'write play data to {path}, {os.path.abspath(path)}')
+                recved = b64decode_and_unzip(recved)
                 write_content(path, recved)
         except recv_nothing:
             pass

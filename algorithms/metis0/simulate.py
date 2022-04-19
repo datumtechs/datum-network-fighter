@@ -15,7 +15,7 @@ from model_helper import (
     load_best_model_weight, reload_best_model_weight_if_changed,
     save_as_best_model)
 from nn import NNModel
-from data_helper import get_game_data_filenames, upload_data
+from data_helper import get_game_data_filenames, upload_data, zip_and_b64encode
 
 logger = getLogger(__name__)
 
@@ -74,8 +74,9 @@ class SelfPlayWorker:
         """
         rc = self.config.resource
         data = json.dumps(self.buffer)
-        logger.info(f'data len: {len(data)}, type: {type(data)}')
-        thread = Thread(target=upload_data, args=(data, self.config, self.io_channel, 'upload_playdata'))
+        data1 = zip_and_b64encode(data.encode())
+        logger.info(f'data origin len: {len(data)}, encoded len: {len(data1)}, type: {type(data)}')
+        thread = Thread(target=upload_data, args=(data1, self.config, self.io_channel, 'upload_playdata'))
         thread.start()
         self.buffer = []
 
