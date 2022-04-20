@@ -164,6 +164,7 @@ class NNModel:
         resources = self.config.resource
         if mc.distributed:  # and config_path == resources.model_best_config_path:
             dir_ = os.path.basename(os.path.dirname(config_path))
+            assert ' ' not in dir_ 
             data = read_content(config_path, text=True)
             upload_data(data, self.config, io_channel, f'upload_model_cfg{dir_} ')
             data = read_content(weight_path, text=False)

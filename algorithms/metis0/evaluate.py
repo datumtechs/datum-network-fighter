@@ -22,8 +22,8 @@ from data_helper import get_next_generation_model_dirs
 logger = getLogger(__name__)
 
 
-def start(config):
-    return EvaluateWorker(config).start()
+def start(config, io_channel):
+    return EvaluateWorker(config, io_channel).start()
 
 
 class EvaluateWorker:
@@ -39,11 +39,12 @@ class EvaluateWorker:
             make predictions while playing a game.
     """
 
-    def __init__(self, config):
+    def __init__(self, config, io_channel):
         """
         :param config: Config to use to control how evaluation should work
         """
         self.config = config
+        self.io_channel = io_channel
         self.play_config = config.eval.play_config
         self.current_model = self.load_current_model()
         self.m = Manager()
@@ -61,7 +62,7 @@ class EvaluateWorker:
             ng_is_great = self.evaluate_model(ng_model)
             if ng_is_great:
                 logger.debug(f"New Model become best model: {model_dir}")
-                save_as_best_model(ng_model)
+                save_as_best_model(ng_model, self.io_channel)
                 self.current_model = ng_model
             self.move_model(model_dir)
 
@@ -92,11 +93,6 @@ class EvaluateWorker:
                 logger.debug(f"game {game_idx:3}: ng_score={ng_score:.1f} as {'black' if cur_red else 'red'} "
                              f"win_rate={win_rate * 100:5.1f}% ")
 
-                # colors = ("current_model", "ng_model")
-                # if not cur_red:
-                #     colors = reversed(colors)
-                # pretty_print(env, colors)
-
                 if len(results) - sum(results) >= self.config.eval.game_num * (1 - self.config.eval.replace_rate):
                     logger.debug(f"lose count reach {results.count(0)} so give up challenge")
                     return False
@@ -116,6 +112,7 @@ class EvaluateWorker:
         """
         rc = self.config.resource
         new_dir = os.path.join(rc.next_generation_model_dir, "copies", os.path.basename(model_dir))
+        os.makedirs(new_dir, exist_ok=True)
         os.rename(model_dir, new_dir)
 
     def load_current_model(self):
@@ -124,7 +121,10 @@ class EvaluateWorker:
         :return ChessModel: the model
         """
         model = NNModel(self.config)
-        load_best_model_weight(model)
+        ok = load_best_model_weight(model, self.io_channel)
+        if not ok:
+            logger.info("No best model found, start from scratch")
+            model.build()
         model.session = K.get_session()
         model.graph = model.session.graph
         return model
@@ -145,7 +145,7 @@ class EvaluateWorker:
         config_path = os.path.join(model_dir, rc.next_generation_model_config_filename)
         weight_path = os.path.join(model_dir, rc.next_generation_model_weight_filename)
         model = NNModel(self.config)
-        model.load(config_path, weight_path)
+        model.load(config_path, weight_path, self.io_channel)
         model.session = K.get_session()
         model.graph = model.session.graph
         return model, model_dir

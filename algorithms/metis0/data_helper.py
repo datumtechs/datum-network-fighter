@@ -158,6 +158,8 @@ def download_model_data(cfg, io_channel):
     if party_id in data_party:  # as server
         pass
     elif party_id not in result_party:  # compute node as client
+        if len(data_party) == 0:
+            return False
         server_party_id = data_party[0]  # actually, just one data party
         log.info(f'client {party_id} is waiting for data from {server_party_id}')
 
