@@ -61,9 +61,10 @@ class SelfPlayWorker:
         model = NNModel(self.config)
         logger.info(f"create new model? {self.config.opts.new}")
         if self.config.opts.new or not load_best_model_weight(model, self.io_channel):
-            logger.info(f"create model from scratch")
-            model.build()
-            save_as_best_model(model, self.io_channel)
+            # logger.info(f"create model from scratch")
+            # model.build()
+            # save_as_best_model(model, self.io_channel)
+            raise Exception('cannot load best model')
         model.session = K.get_session()
         model.graph = model.session.graph
         return model

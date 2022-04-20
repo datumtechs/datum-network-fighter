@@ -19,7 +19,7 @@ from keras.regularizers import l2
 
 from xiangqi import N_COLS, N_ROWS
 from inferencer import ChessModelAPI
-from data_helper import download_model_data, read_content, upload_data
+from data_helper import download_model_data, read_content, upload_data, zip_and_b64encode
 
 # noinspection PyPep8Naming
 
@@ -128,23 +128,23 @@ class NNModel:
         """
         mc = self.config.model
         resources = self.config.resource
-        logger.info(f"model config path {config_path}, weight path {weight_path}, resources {resources}")
+        logger.info(f"model config path {config_path}, weight path {os.path.abspath(weight_path)}, resources {resources}")
         if config_path == resources.model_best_config_path:
             ret = download_model_data(self.config, io_channel)
             if not ret:
                 return False
 
         if os.path.exists(config_path) and os.path.exists(weight_path):
-            logger.debug(f"loading model from {config_path}")
+            logger.info(f"loading model from {config_path}")
             with open(config_path, "rt") as f:
                 self.model = Model.from_config(json.load(f))
             self.model.load_weights(weight_path)
             self.model._make_predict_function()
             self.digest = self.fetch_digest(weight_path)
-            logger.debug(f"loaded model digest = {self.digest}")
+            logger.info(f"loaded model digest = {self.digest}")
             return True
         else:
-            logger.debug(f"model files does not exist at {config_path} and {weight_path}")
+            logger.info(f"model files does not exist at {config_path} and {weight_path}")
             return False
 
     def save(self, config_path, weight_path, io_channel):
@@ -153,17 +153,19 @@ class NNModel:
         :param str config_path: path to save the entire configuration to
         :param str weight_path: path to save the model weights to
         """
-        logger.debug(f"save model to {config_path}")
+        logger.info(f"save model to {config_path}")
         with open(config_path, "wt") as f:
             json.dump(self.model.get_config(), f)
             self.model.save_weights(weight_path)
-        self.digest = self.fetch_digest(weight_path)
-        logger.debug(f"saved model digest {self.digest}")
+        # self.digest = self.fetch_digest(weight_path)
+        # logger.debug(f"saved model digest {self.digest}")
 
-        # mc = self.config.model
-        # resources = self.config.resource
-        # if mc.distributed and config_path == resources.model_best_config_path:
-        #     data = read_content(config_path)
-        #     upload_data(config_path, data, self.config, io_channel)
-        #     data = read_content(weight_path)
-        #     upload_data(weight_path, data, self.config, io_channel)
+        mc = self.config.model
+        resources = self.config.resource
+        if mc.distributed:  # and config_path == resources.model_best_config_path:
+            dir_ = os.path.basename(os.path.dirname(config_path))
+            data = read_content(config_path, text=True)
+            upload_data(data, self.config, io_channel, f'upload_model_cfg{dir_} ')
+            data = read_content(weight_path, text=False)
+            data1 = zip_and_b64encode(data)
+            upload_data(data1, self.config, io_channel, f'upload_model_weight{dir_} ')

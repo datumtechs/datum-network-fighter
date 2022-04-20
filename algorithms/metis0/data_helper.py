@@ -7,12 +7,35 @@ from typing import Sequence, Callable, Tuple
 import base64
 import zlib
 import codecs
+import json
 
 log = logging.getLogger(__name__)
 
 
+def install_pkg(pkg_name: str, pkg_version: str = None, whl_file: str = None):
+    """
+    install the package if it is not installed.
+    """
+    import pkg_resources
+    installed_pkgs = pkg_resources.working_set
+    for i in installed_pkgs:
+        if i.project_name == pkg_name:
+            if pkg_version is None:
+                return True
+            i_ver = tuple(map(int, (i.split('.'))))
+            pkg_ver = tuple(map(int, (pkg_version.split('.'))))
+            if i_ver >= pkg_ver:
+                return True
+            return False
+    import subprocess
+    ob = pkg_name if whl_file is None else whl_file
+    cmd = f'pip install {ob}'
+    subprocess.run(cmd, shell=True)
+    return True
+
+
 def get_game_data_filenames(rc):
-    pattern = os.path.join(rc.play_data_dir, rc.play_data_filename_tmpl % "*")
+    pattern = os.path.join(rc.play_data_dir, rc.play_data_filename_tmpl % ("*", "*"))
     files = list(sorted(glob(pattern)))
     return files
 
@@ -22,6 +45,21 @@ def get_next_generation_model_dirs(rc):
     dirs = list(sorted(glob(dir_pattern)))
     return dirs
 
+
+def write_game_data_to_file(path, data):
+    try:
+        with open(path, "wt") as f:
+            json.dump(data, f)
+    except Exception as e:
+        print(e)
+
+
+def read_game_data_from_file(path):
+    try:
+        with open(path, "rt") as f:
+            return json.load(f)
+    except Exception as e:
+        print(e)
 
 def len_str(dat_len: int) -> str:
     """return hex string of len of data, always 8 chars"""
@@ -185,3 +223,4 @@ def download_model_data(cfg, io_channel):
         ops = [query_best, download_model_cfg, download_model_weight]
         r = run_transac(ops)
         log.info(f'end with {r}')
+        return r

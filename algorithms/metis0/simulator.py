@@ -14,7 +14,7 @@ import channel_sdk.pyio as chsdkio
 
 from common.utils import load_cfg, merge_options
 from agent_helper import flip_ucci_labels
-from data_helper import read_content, recv_sth, send_sth, write_content, zip_and_b64encode, b64decode_and_unzip
+from data_helper import read_content, recv_sth, send_sth, write_content, zip_and_b64encode, b64decode_and_unzip, install_pkg
 
 faulthandler.enable()
 
@@ -79,7 +79,7 @@ class Simulator:
 
         merge_options(cfg, user_cfg['dynamic_parameter'])
         user_cfg.pop('party_id')
-        user_cfg.pop('dynamic_parameter')        
+        user_cfg.pop('dynamic_parameter')
         merge_options(cfg, user_cfg)
 
         # TODO: substitute variable
@@ -169,6 +169,7 @@ class Simulator:
     def handle_result_party(self, remote_nodeid, recved: bytes, cfg):
         class recv_nothing(Exception):
             pass
+
         class unkonwn_data(Exception):
             pass
         accepted_cmds = [b'upload_playdata']
@@ -185,7 +186,8 @@ class Simulator:
                 raise unkonwn_data
             if c == b'upload_playdata':
                 game_id = datetime.now().strftime("%Y%m%d-%H%M%S.%f")
-                path = os.path.join(self.results_dir, cfg.resource.play_data_dir, cfg.resource.play_data_filename_tmpl % (remote_nodeid, game_id))
+                path = os.path.join(self.results_dir, cfg.resource.play_data_dir,
+                                    cfg.resource.play_data_filename_tmpl % (remote_nodeid, game_id))
                 log.info(f'write play data to {path}, {os.path.abspath(path)}')
                 recved = b64decode_and_unzip(recved)
                 write_content(path, recved)
@@ -197,28 +199,6 @@ class Simulator:
             log.warn(f'exception {e} when send to {remote_nodeid}')
 
         return self.executor.submit(lambda t: recv_sth(*t), (self.io_channel, remote_nodeid))
-
-
-def install_pkg(pkg_name: str, pkg_version: str = None, whl_file: str = None):
-    """
-    install the package if it is not installed.
-    """
-    import pkg_resources
-    installed_pkgs = pkg_resources.working_set
-    for i in installed_pkgs:
-        if i.project_name == pkg_name:
-            if pkg_version is None:
-                return True
-            i_ver = tuple(map(int, (i.split('.'))))
-            pkg_ver = tuple(map(int, (pkg_version.split('.'))))
-            if i_ver >= pkg_ver:
-                return True
-            return False
-    import subprocess
-    ob = pkg_name if whl_file is None else whl_file
-    cmd = f'pip install {ob}'
-    subprocess.run(cmd, shell=True)
-    return True
 
 
 def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: list, results_dir: str, **kwargs):

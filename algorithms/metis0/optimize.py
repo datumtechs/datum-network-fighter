@@ -24,12 +24,12 @@ from data_helper import (get_game_data_filenames,
 logger = getLogger(__name__)
 
 
-def start(config):
+def start(config, io_channel):
     """
     Helper method which just kicks off the optimization using the specified config
     :param Config config: config to use
     """
-    return OptimizeWorker(config).start()
+    return OptimizeWorker(config, io_channel).start()
 
 
 class OptimizeWorker:
@@ -46,8 +46,9 @@ class OptimizeWorker:
         :ivar ProcessPoolExecutor executor: executor for running all of the training processes
     """
 
-    def __init__(self, config):
+    def __init__(self, config, io_channel):
         self.config = config
+        self.io_channel = io_channel
         self.model = None
         self.dataset = deque(), deque(), deque()
         self.executor = ProcessPoolExecutor(max_workers=config.trainer.cleaning_processes)
@@ -71,6 +72,9 @@ class OptimizeWorker:
         while True:
             self.fill_queue()
             steps = self.train_epoch(self.config.trainer.epoch_to_checkpoint)
+            if steps == 0:
+                sleep(3)
+                continue
             total_steps += steps
             self.save_current_model()
             a, b, c = self.dataset
@@ -87,6 +91,10 @@ class OptimizeWorker:
         """
         tc = self.config.trainer
         state_ary, policy_ary, value_ary = self.collect_all_loaded_data()
+        logger.info(f'shape of state: {state_ary.shape}, policy: {policy_ary.shape}, value: {value_ary.shape}')
+        if state_ary.shape[0] == 0:
+            logger.info("no data to train on, sleeping for a bit")
+            return 0
         tensorboard_cb = TensorBoard(log_dir=self.config.resource.log_dir, batch_size=tc.batch_size, histogram_freq=1)
         self.model.model.fit(state_ary, [policy_ary, value_ary],
                              batch_size=tc.batch_size,
@@ -115,7 +123,7 @@ class OptimizeWorker:
         os.makedirs(model_dir, exist_ok=True)
         config_path = os.path.join(model_dir, rc.next_generation_model_config_filename)
         weight_path = os.path.join(model_dir, rc.next_generation_model_weight_filename)
-        self.model.save(config_path, weight_path)
+        self.model.save(config_path, weight_path, self.io_channel)
 
     def fill_queue(self):
         """
@@ -127,14 +135,14 @@ class OptimizeWorker:
                 if len(self.filenames) == 0:
                     break
                 filename = self.filenames.popleft()
-                logger.debug(f"loading data from {filename}")
+                logger.info(f"loading data from {filename}")
                 futures.append(executor.submit(load_data_from_file, filename))
             while futures and len(self.dataset[0]) < self.config.trainer.dataset_size:
                 for x, y in zip(self.dataset, futures.popleft().result()):
                     x.extend(y)
                 if len(self.filenames) > 0:
                     filename = self.filenames.popleft()
-                    logger.debug(f"loading data from {filename}")
+                    logger.info(f"loading data from {filename}")
                     futures.append(executor.submit(load_data_from_file, filename))
 
     def collect_all_loaded_data(self):
@@ -156,19 +164,8 @@ class OptimizeWorker:
         the best known model.
         """
         model = NNModel(self.config)
-        rc = self.config.resource
-
-        dirs = get_next_generation_model_dirs(rc)
-        if not dirs:
-            logger.debug("loading best model")
-            if not load_best_model_weight(model):
-                raise RuntimeError("Best model can not loaded!")
-        else:
-            latest_dir = dirs[-1]
-            logger.debug("loading latest model")
-            config_path = os.path.join(latest_dir, rc.next_generation_model_config_filename)
-            weight_path = os.path.join(latest_dir, rc.next_generation_model_weight_filename)
-            model.load(config_path, weight_path)
+        if not load_best_model_weight(model, self.io_channel):
+            raise RuntimeError("Best model can not loaded!")
         return model
 
 
