@@ -186,7 +186,7 @@ class Optimizer:
                 dir_ = recved[:sep]
                 recved = recved[sep + 1:]
                 model_dir = os.path.join(cfg.resource.next_generation_model_dir,  dir_.decode())
-                os.makedirs(model_dir, exist_ok=True)              
+                os.makedirs(model_dir, exist_ok=True)
                 path = os.path.join(model_dir, cfg.resource.next_generation_model_config_filename)
                 log.info(f'write model config to {path}, {os.path.abspath(path)}')
                 write_content(path, recved)
@@ -197,7 +197,7 @@ class Optimizer:
                 recved = recved[sep + 1:]
                 recved = b64decode_and_unzip(recved)
                 model_dir = os.path.join(cfg.resource.next_generation_model_dir,  dir_.decode())
-                os.makedirs(model_dir, exist_ok=True)              
+                os.makedirs(model_dir, exist_ok=True)
                 path = os.path.join(model_dir, cfg.resource.next_generation_model_weight_filename)
                 log.info(f'write model weight to {path}, {os.path.abspath(path)}')
                 write_content(path, recved)

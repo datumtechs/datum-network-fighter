@@ -3,8 +3,10 @@ import os
 import yaml
 import time
 import logging
+from collections import namedtuple
 from grpc import _common
 
+Import = namedtuple("Import", ["module", "name", "alias"])
 
 log = logging.getLogger(__name__)
 
@@ -100,3 +102,58 @@ def merge_options(d, opts):
             merge_options(d[k], v)
         else:
             d[k] = v
+
+
+def get_imports(path):
+    with open(path) as fh:
+        lines = fh.readlines()
+    pat1 = re.compile(r'^\s*from\s+(\S+)\s+import\s+(\S+)')
+    pat2 = re.compile(r'^\s*import\s+(\S+)')
+    pat3 = re.compile(r'^\s*from\s+(\S+)\s+import\s+(\S+)\s+as\s+(\S+)')
+    pat4 = re.compile(r'^\s*import\s+(\S+)\s+as\s+(\S+)')
+    imports = []
+    for line in lines:
+        m = pat1.match(line)
+        if m:
+            imports.append(Import(m.group(1).split('.'), [m.group(2)], None))
+        m = pat2.match(line)
+        if m:
+            imports.append(Import([], [m.group(1)], None))
+        m = pat3.match(line)
+        if m:
+            imports.append(Import(m.group(1).split('.'), [m.group(2)], m.group(3)))
+        m = pat4.match(line)
+        if m:
+            imports.append(Import([], [m.group(1)], m.group(2)))
+    return imports
+
+
+def get_imports_recursive(entry_path):
+    dir_ = os.path.dirname(entry_path)
+    all_mods = {}
+    for root, dirs, files in os.walk(dir_):
+        for f in files:
+            if f.endswith('.py'):
+                m = os.path.splitext(os.path.basename(f))[0]
+                all_mods[m] = os.path.join(root, f)
+
+    def get_imports_from_file(start, all_mods):
+        user_mods = set()
+        imports = get_imports(start)
+        for i in imports:
+            if len(i.module) == 0 and len(i.name) == 1:
+                user_mods.add(i.name[0])
+            elif len(i.module) == 1:
+                user_mods.add(i.module[0])
+            else:
+                pass
+        user_mods = user_mods.intersection(all_mods.keys())
+        more_user_mods = set()
+        for m in user_mods:
+            m = get_imports_from_file(all_mods[m], all_mods)
+            more_user_mods.update(m)
+        return user_mods.union(more_user_mods)
+
+    user_mods = get_imports_from_file(entry_path, all_mods)
+    user_mods.add(os.path.splitext(os.path.basename(entry_path))[0])
+    return all_mods, user_mods
