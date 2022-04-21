@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 from glob import glob
 from time import sleep, time
 from datetime import datetime
@@ -12,7 +13,7 @@ import json
 log = logging.getLogger(__name__)
 
 
-def install_pkg(pkg_name: str, pkg_version: str = None, whl_file: str = None):
+def install_pkg(pkg_name: str, pkg_version: str = None, whl_file: str = None, index_url: str = None):
     """
     install the package if it is not installed.
     """
@@ -29,7 +30,13 @@ def install_pkg(pkg_name: str, pkg_version: str = None, whl_file: str = None):
             return False
     import subprocess
     ob = pkg_name if whl_file is None else whl_file
-    cmd = f'pip install {ob}'
+    cmd = f'{sys.executable} -m pip install {ob}'
+    if index_url is not None:
+        cmd += f' --index-url {index_url}'
+        if index_url.startswith('http://'):
+            ip = index_url.split('//')[1].split('/')[0].split(':')[0]
+            cmd += ' --trusted-host ' + ip
+    log.info(cmd)
     subprocess.run(cmd, shell=True)
     return True
 

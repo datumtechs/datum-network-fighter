@@ -30,7 +30,7 @@ def parse_cfg(json_file):
 
 def pack_src():
     src_zip_name = 'fighter.tar.gz'
-    cmd = f'tar -czPf {src_zip_name} common protos data_svc compute_svc consul_client third_party/via_svc tests console gateway'
+    cmd = f'tar -czPf {src_zip_name} common lib data_svc compute_svc consul_client third_party/via_svc tests console gateway'
     print(cmd)
     ret = os.system(cmd)
     succ = not bool(ret)
