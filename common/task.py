@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 class Task:
     def __init__(self, cfg, task_id, party_id, contract_id, data_id, env_id, peers, contract_cfg,
-                 data_party, computation_party, result_party, duration, limit_memory, limit_cpu,limit_bandwidth):
+                 data_party, computation_party, result_party, duration, limit_memory, limit_cpu, limit_bandwidth):
         log.info(f'thread id: {threading.get_ident()}')
         self.cfg = cfg
         self.id_ = task_id

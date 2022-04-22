@@ -63,7 +63,7 @@ class TaskManager:
         
         peers = tuple(TPeer(p.ip, p.port, p.party_id, p.name) for p in req.peers)
         task = Task(self.cfg, task_id, party_id, contract_id, data_id, env_id, peers, contract_cfg,
-                    data_party, computation_party, result_party, duration, limit_memory, limit_cpu,limit_bandwidth)
+                    data_party, computation_party, result_party, duration, limit_memory, limit_cpu, limit_bandwidth)
         self.tasks[uniq_task] = task
         log.info(f'new task: {task_name}, thread id: {threading.get_ident()}')
         # do not set daemon, otherwise cannot spawn new process, use process group to kill all processes
