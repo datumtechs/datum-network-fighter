@@ -14,7 +14,7 @@ import channel_sdk.pyio as chsdkio
 
 from common.utils import load_cfg, merge_options
 from agent_helper import flip_ucci_labels
-from data_helper import read_content, recv_sth, send_sth, write_content, zip_and_b64encode, b64decode_and_unzip, install_pkg
+from data_helper import read_content, recv_sth, send_sth, write_content, zip_and_b64encode, b64decode_and_unzip
 
 faulthandler.enable()
 
@@ -205,8 +205,5 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
     """
     This is the entrance to this module
     """
-    install_pkg('xiangqi')
-    install_pkg('easydict')
-
     sim = Simulator(channel_config, cfg_dict, data_party, result_party, results_dir, kwargs)
     sim.run()

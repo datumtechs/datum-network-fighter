@@ -10,7 +10,7 @@ import numpy as np
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from common.utils import load_cfg, merge_options
 from agent_helper import flip_ucci_labels
-from data_helper import read_content, recv_sth, send_sth, write_content, zip_and_b64encode, b64decode_and_unzip, install_pkg
+from data_helper import read_content, recv_sth, send_sth, write_content, zip_and_b64encode, b64decode_and_unzip
 
 faulthandler.enable()
 
@@ -212,7 +212,5 @@ class Optimizer:
 
 
 def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: list, results_dir: str, **kwargs):
-    install_pkg('xiangqi')
-    install_pkg('easydict')
     opt = Optimizer(channel_config, cfg_dict, data_party, result_party, results_dir, kwargs)
     opt.run()

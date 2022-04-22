@@ -10,13 +10,14 @@ warnings.filterwarnings('ignore', message=r'Passing', category=FutureWarning)
 import functools
 
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
-from common.utils import decompose
+from common.utils import decompose, install_pkg
 from common.event_engine import event_engine
 from common.report_engine import  report_task_result, monitor_resource_usage
 from common.io_channel_helper import get_channel_config
 
 
 log = logging.getLogger(__name__)
+
 
 class Task:
     def __init__(self, cfg, task_id, party_id, contract_id, data_id, env_id, peers, contract_cfg,
@@ -85,7 +86,8 @@ class Task:
             self.fire_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail.")
             self.fire_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
 
-        self.build_env()
+        user_cfg = self.assemble_cfg()
+        self.build_env(user_cfg)
 
         the_dir = os.path.dirname(__file__)
         pdir = os.path.dirname(the_dir)
@@ -97,7 +99,6 @@ class Task:
                             self.data_party, self.computation_party, self.result_party,
                             self.cfg, self.event_type)
          
-            user_cfg = self.assemble_cfg()
             sys.path.insert(0, os.path.abspath(self._get_code_dir()))
             code_path = self.main_file
             module_name = os.path.splitext(code_path)[0]
@@ -146,8 +147,15 @@ class Task:
         files = decompose(self.contract_id, dir_)  # the contract_id is code itself at now, may include more than one file
         self.main_file = files[0]
 
-    def build_env(self):
+    def build_env(self, cfg_dict):
         log.info(f'build env {self.env_id}')
+        if 'dynamic_parameter' in cfg_dict and 'env_packages' in cfg_dict['dynamic_parameter']:
+            env_packages = cfg_dict['dynamic_parameter']['env_packages']
+            for item in env_packages:
+                name = item['name']
+                url = item.get('index_url')
+                ver = item.get('version')
+                install_pkg(name, version=ver, index_url=url)
 
     def assemble_cfg(self):
         import json

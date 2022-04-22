@@ -157,3 +157,32 @@ def get_imports_recursive(entry_path):
     user_mods = get_imports_from_file(entry_path, all_mods)
     user_mods.add(os.path.splitext(os.path.basename(entry_path))[0])
     return all_mods, user_mods
+
+
+def install_pkg(pkg_name: str, version: str = None, whl_file: str = None, index_url: str = None):
+    """
+    install the package if it is not installed.
+    """
+    import pkg_resources
+    installed_pkgs = pkg_resources.working_set
+    for i in installed_pkgs:
+        if i.project_name == pkg_name:
+            if version is None:
+                return True
+            i_ver = tuple(map(int, (i.split('.'))))
+            pkg_ver = tuple(map(int, (version.split('.'))))
+            if i_ver >= pkg_ver:
+                return True
+            return False
+    import subprocess
+    import sys
+    ob = pkg_name if whl_file is None else whl_file
+    cmd = f'{sys.executable} -m pip install {ob}'
+    if index_url is not None:
+        cmd += f' --index-url {index_url}'
+        if index_url.startswith('http://'):
+            ip = index_url.split('//')[1].split('/')[0].split(':')[0]
+            cmd += ' --trusted-host ' + ip
+    log.info(cmd)
+    subprocess.run(cmd, shell=True)
+    return True

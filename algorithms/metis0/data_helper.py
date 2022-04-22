@@ -13,34 +13,6 @@ import json
 log = logging.getLogger(__name__)
 
 
-def install_pkg(pkg_name: str, pkg_version: str = None, whl_file: str = None, index_url: str = None):
-    """
-    install the package if it is not installed.
-    """
-    import pkg_resources
-    installed_pkgs = pkg_resources.working_set
-    for i in installed_pkgs:
-        if i.project_name == pkg_name:
-            if pkg_version is None:
-                return True
-            i_ver = tuple(map(int, (i.split('.'))))
-            pkg_ver = tuple(map(int, (pkg_version.split('.'))))
-            if i_ver >= pkg_ver:
-                return True
-            return False
-    import subprocess
-    ob = pkg_name if whl_file is None else whl_file
-    cmd = f'{sys.executable} -m pip install {ob}'
-    if index_url is not None:
-        cmd += f' --index-url {index_url}'
-        if index_url.startswith('http://'):
-            ip = index_url.split('//')[1].split('/')[0].split(':')[0]
-            cmd += ' --trusted-host ' + ip
-    log.info(cmd)
-    subprocess.run(cmd, shell=True)
-    return True
-
-
 def get_game_data_filenames(rc):
     pattern = os.path.join(rc.play_data_dir, rc.play_data_filename_tmpl % ("*", "*"))
     files = list(sorted(glob(pattern)))
