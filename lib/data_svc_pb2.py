@@ -23,7 +23,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z\023../gateway/data_svc',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x12lib/data_svc.proto\x12\x07\x64\x61tasvc\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x10lib/common.proto\"\x8c\x01\n\x0f\x44ownloadRequest\x12\x11\n\tfile_path\x18\x01 \x01(\t\x12\x36\n\x07options\x18\x02 \x03(\x0b\x32%.datasvc.DownloadRequest.OptionsEntry\x1a.\n\x0cOptionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"Q\n\rDownloadReply\x12%\n\x06status\x18\x01 \x01(\x0e\x32\x13.datasvc.TaskStatusH\x00\x12\x11\n\x07\x63ontent\x18\x02 \x01(\x0cH\x00\x42\x06\n\x04\x64\x61ta\"|\n\x08\x46ileInfo\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x11\n\tfile_type\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0f\n\x07\x63olumns\x18\x04 \x03(\t\x12\x12\n\ncol_dtypes\x18\x05 \x03(\t\x12\x10\n\x08keywords\x18\x06 \x03(\t\"\x92\x01\n\rUploadRequest\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\x0c\x12\x11\n\tfile_type\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x0f\n\x07\x63olumns\x18\x05 \x03(\t\x12\x12\n\ncol_dtypes\x18\x06 \x03(\t\x12\x10\n\x08keywords\x18\x07 \x03(\t\"P\n\x0bUploadReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\t\x12\x11\n\tfile_path\x18\x03 \x01(\t\x12\x11\n\tdata_hash\x18\x04 \x01(\t\"\x80\x01\n\rListDataReply\x12(\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x1a.datasvc.ListDataReply.Row\x1a\x45\n\x03Row\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x0c\n\x04info\x18\x02 \x01(\t\x12\x11\n\tfile_name\x18\x03 \x01(\t\x12\x0c\n\x04size\x18\x04 \x01(\x05\"|\n\x12GetDataDetailReply\x12\x0e\n\x06n_rows\x18\x01 \x01(\x05\x12/\n\x05items\x18\x02 \x03(\x0b\x32 .datasvc.GetDataDetailReply.Item\x1a%\n\x04Item\x12\x0e\n\x06\x63olumn\x18\x01 \x01(\t\x12\r\n\x05\x64type\x18\x02 \x01(\t\"\x8a\x02\n\x0eGetStatusReply\x12\x11\n\ttotal_cpu\x18\x01 \x01(\r\x12\x10\n\x08used_cpu\x18\x02 \x01(\r\x12\x10\n\x08idle_cpu\x18\x03 \x01(\r\x12\x14\n\x0ctotal_memory\x18\x04 \x01(\x04\x12\x13\n\x0bused_memory\x18\x05 \x01(\x04\x12\x13\n\x0bidle_memory\x18\x06 \x01(\x04\x12\x12\n\ntotal_disk\x18\x07 \x01(\x04\x12\x11\n\tused_disk\x18\x08 \x01(\x04\x12\x11\n\tidle_disk\x18\t \x01(\x04\x12\x17\n\x0ftotal_bandwidth\x18\n \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x0b \x01(\x04\x12\x16\n\x0eidle_bandwidth\x18\x0c \x01(\x04\";\n\x15SendSharesDataRequest\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x11\n\treceivers\x18\x02 \x03(\t\":\n\x13SendSharesDataReply\x12#\n\x06status\x18\x01 \x01(\x0e\x32\x13.datasvc.TaskStatus*@\n\nTaskStatus\x12\t\n\x05Start\x10\x00\x12\x0c\n\x08\x46inished\x10\x01\x12\r\n\tCancelled\x10\x02\x12\n\n\x06\x46\x61iled\x10\x03\x32\xba\x06\n\x0c\x44\x61taProvider\x12U\n\tGetStatus\x12\x16.google.protobuf.Empty\x1a\x17.datasvc.GetStatusReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/data/getStatus\x12R\n\x08ListData\x12\x16.google.protobuf.Empty\x1a\x16.datasvc.ListDataReply\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/data/listData\x12Y\n\nUploadData\x12\x16.datasvc.UploadRequest\x1a\x14.datasvc.UploadReply\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x10/data/uploadData:\x01*(\x01\x12]\n\x0b\x42\x61tchUpload\x12\x16.datasvc.UploadRequest\x1a\x14.datasvc.UploadReply\"\x1c\x82\xd3\xe4\x93\x02\x16\"\x11/data/batchUpload:\x01*(\x01\x30\x01\x12\x61\n\x0c\x44ownloadData\x12\x18.datasvc.DownloadRequest\x1a\x16.datasvc.DownloadReply\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x12/data/downLoadData:\x01*0\x01\x12>\n\nDeleteData\x12\x18.datasvc.DownloadRequest\x1a\x14.datasvc.UploadReply\"\x00\x12P\n\x0eSendSharesData\x12\x1e.datasvc.SendSharesDataRequest\x1a\x1c.datasvc.SendSharesDataReply\"\x00\x12i\n\x11HandleTaskReadyGo\x12\x16.common.TaskReadyGoReq\x1a\x18.common.TaskReadyGoReply\"\"\x82\xd3\xe4\x93\x02\x1c\"\x17/data/handleTaskReadyGo:\x01*\x12\x65\n\x10HandleCancelTask\x12\x15.common.TaskCancelReq\x1a\x17.common.TaskCancelReply\"!\x82\xd3\xe4\x93\x02\x1b\"\x16/data/handleCancelTask:\x01*B\x15Z\x13../gateway/data_svcb\x06proto3'
+  serialized_pb=b'\n\x12lib/data_svc.proto\x12\x07\x64\x61tasvc\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x10lib/common.proto\"\x8c\x01\n\x0f\x44ownloadRequest\x12\x11\n\tfile_path\x18\x01 \x01(\t\x12\x36\n\x07options\x18\x02 \x03(\x0b\x32%.datasvc.DownloadRequest.OptionsEntry\x1a.\n\x0cOptionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"Q\n\rDownloadReply\x12%\n\x06status\x18\x01 \x01(\x0e\x32\x13.datasvc.TaskStatusH\x00\x12\x11\n\x07\x63ontent\x18\x02 \x01(\x0cH\x00\x42\x06\n\x04\x64\x61ta\"|\n\x08\x46ileInfo\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x11\n\tfile_type\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12\x0f\n\x07\x63olumns\x18\x04 \x03(\t\x12\x12\n\ncol_dtypes\x18\x05 \x03(\t\x12\x10\n\x08keywords\x18\x06 \x03(\t\"\x92\x01\n\rUploadRequest\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\x0c\x12\x11\n\tfile_type\x18\x03 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x0f\n\x07\x63olumns\x18\x05 \x03(\t\x12\x12\n\ncol_dtypes\x18\x06 \x03(\t\x12\x10\n\x08keywords\x18\x07 \x03(\t\"a\n\x0bUploadReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x03 \x01(\t\x12\x11\n\tfile_path\x18\x04 \x01(\t\x12\x11\n\tdata_hash\x18\x05 \x01(\t\"\x9d\x01\n\rListDataReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12(\n\x04\x64\x61ta\x18\x03 \x03(\x0b\x32\x1a.datasvc.ListDataReply.Row\x1a\x45\n\x03Row\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x0c\n\x04info\x18\x02 \x01(\t\x12\x11\n\tfile_name\x18\x03 \x01(\t\x12\x0c\n\x04size\x18\x04 \x01(\x05\"\x99\x01\n\x12GetDataDetailReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x0e\n\x06n_rows\x18\x03 \x01(\x05\x12/\n\x05items\x18\x04 \x03(\x0b\x32 .datasvc.GetDataDetailReply.Item\x1a%\n\x04Item\x12\x0e\n\x06\x63olumn\x18\x01 \x01(\t\x12\r\n\x05\x64type\x18\x02 \x01(\t\"\xa7\x02\n\x0eGetStatusReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x11\n\ttotal_cpu\x18\x03 \x01(\r\x12\x10\n\x08used_cpu\x18\x04 \x01(\r\x12\x10\n\x08idle_cpu\x18\x05 \x01(\r\x12\x14\n\x0ctotal_memory\x18\x06 \x01(\x04\x12\x13\n\x0bused_memory\x18\x07 \x01(\x04\x12\x13\n\x0bidle_memory\x18\x08 \x01(\x04\x12\x12\n\ntotal_disk\x18\t \x01(\x04\x12\x11\n\tused_disk\x18\n \x01(\x04\x12\x11\n\tidle_disk\x18\x0b \x01(\x04\x12\x17\n\x0ftotal_bandwidth\x18\x0c \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\r \x01(\x04\x12\x16\n\x0eidle_bandwidth\x18\x0e \x01(\x04\";\n\x15SendSharesDataRequest\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x11\n\treceivers\x18\x02 \x03(\t\":\n\x13SendSharesDataReply\x12#\n\x06status\x18\x01 \x01(\x0e\x32\x13.datasvc.TaskStatus*@\n\nTaskStatus\x12\t\n\x05Start\x10\x00\x12\x0c\n\x08\x46inished\x10\x01\x12\r\n\tCancelled\x10\x02\x12\n\n\x06\x46\x61iled\x10\x03\x32\xba\x06\n\x0c\x44\x61taProvider\x12U\n\tGetStatus\x12\x16.google.protobuf.Empty\x1a\x17.datasvc.GetStatusReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/data/getStatus\x12R\n\x08ListData\x12\x16.google.protobuf.Empty\x1a\x16.datasvc.ListDataReply\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/data/listData\x12Y\n\nUploadData\x12\x16.datasvc.UploadRequest\x1a\x14.datasvc.UploadReply\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x10/data/uploadData:\x01*(\x01\x12]\n\x0b\x42\x61tchUpload\x12\x16.datasvc.UploadRequest\x1a\x14.datasvc.UploadReply\"\x1c\x82\xd3\xe4\x93\x02\x16\"\x11/data/batchUpload:\x01*(\x01\x30\x01\x12\x61\n\x0c\x44ownloadData\x12\x18.datasvc.DownloadRequest\x1a\x16.datasvc.DownloadReply\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x12/data/downLoadData:\x01*0\x01\x12>\n\nDeleteData\x12\x18.datasvc.DownloadRequest\x1a\x14.datasvc.UploadReply\"\x00\x12P\n\x0eSendSharesData\x12\x1e.datasvc.SendSharesDataRequest\x1a\x1c.datasvc.SendSharesDataReply\"\x00\x12i\n\x11HandleTaskReadyGo\x12\x16.common.TaskReadyGoReq\x1a\x18.common.TaskReadyGoReply\"\"\x82\xd3\xe4\x93\x02\x1c\"\x17/data/handleTaskReadyGo:\x01*\x12\x65\n\x10HandleCancelTask\x12\x15.common.TaskCancelReq\x1a\x17.common.TaskCancelReply\"!\x82\xd3\xe4\x93\x02\x1b\"\x16/data/handleCancelTask:\x01*B\x15Z\x13../gateway/data_svcb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,lib_dot_common__pb2.DESCRIPTOR,])
 
@@ -57,8 +57,8 @@ _TASKSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1338,
-  serialized_end=1402,
+  serialized_start=1443,
+  serialized_end=1507,
 )
 _sym_db.RegisterEnumDescriptor(_TASKSTATUS)
 
@@ -341,29 +341,36 @@ _UPLOADREPLY = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ok', full_name='datasvc.UploadReply.ok', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      name='status', full_name='datasvc.UploadReply.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='data_id', full_name='datasvc.UploadReply.data_id', index=1,
+      name='msg', full_name='datasvc.UploadReply.msg', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='file_path', full_name='datasvc.UploadReply.file_path', index=2,
+      name='data_id', full_name='datasvc.UploadReply.data_id', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='data_hash', full_name='datasvc.UploadReply.data_hash', index=3,
+      name='file_path', full_name='datasvc.UploadReply.file_path', index=3,
       number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='data_hash', full_name='datasvc.UploadReply.data_hash', index=4,
+      number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -381,7 +388,7 @@ _UPLOADREPLY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=609,
-  serialized_end=689,
+  serialized_end=706,
 )
 
 
@@ -433,8 +440,8 @@ _LISTDATAREPLY_ROW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=751,
-  serialized_end=820,
+  serialized_start=797,
+  serialized_end=866,
 )
 
 _LISTDATAREPLY = _descriptor.Descriptor(
@@ -446,8 +453,22 @@ _LISTDATAREPLY = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='data', full_name='datasvc.ListDataReply.data', index=0,
-      number=1, type=11, cpp_type=10, label=3,
+      name='status', full_name='datasvc.ListDataReply.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='msg', full_name='datasvc.ListDataReply.msg', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='data', full_name='datasvc.ListDataReply.data', index=2,
+      number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -464,8 +485,8 @@ _LISTDATAREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=692,
-  serialized_end=820,
+  serialized_start=709,
+  serialized_end=866,
 )
 
 
@@ -503,8 +524,8 @@ _GETDATADETAILREPLY_ITEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=909,
-  serialized_end=946,
+  serialized_start=985,
+  serialized_end=1022,
 )
 
 _GETDATADETAILREPLY = _descriptor.Descriptor(
@@ -516,15 +537,29 @@ _GETDATADETAILREPLY = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='n_rows', full_name='datasvc.GetDataDetailReply.n_rows', index=0,
+      name='status', full_name='datasvc.GetDataDetailReply.status', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='items', full_name='datasvc.GetDataDetailReply.items', index=1,
-      number=2, type=11, cpp_type=10, label=3,
+      name='msg', full_name='datasvc.GetDataDetailReply.msg', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='n_rows', full_name='datasvc.GetDataDetailReply.n_rows', index=2,
+      number=3, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='items', full_name='datasvc.GetDataDetailReply.items', index=3,
+      number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -541,8 +576,8 @@ _GETDATADETAILREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=822,
-  serialized_end=946,
+  serialized_start=869,
+  serialized_end=1022,
 )
 
 
@@ -555,85 +590,99 @@ _GETSTATUSREPLY = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='total_cpu', full_name='datasvc.GetStatusReply.total_cpu', index=0,
-      number=1, type=13, cpp_type=3, label=1,
+      name='status', full_name='datasvc.GetStatusReply.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_cpu', full_name='datasvc.GetStatusReply.used_cpu', index=1,
-      number=2, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
+      name='msg', full_name='datasvc.GetStatusReply.msg', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='idle_cpu', full_name='datasvc.GetStatusReply.idle_cpu', index=2,
+      name='total_cpu', full_name='datasvc.GetStatusReply.total_cpu', index=2,
       number=3, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_memory', full_name='datasvc.GetStatusReply.total_memory', index=3,
-      number=4, type=4, cpp_type=4, label=1,
+      name='used_cpu', full_name='datasvc.GetStatusReply.used_cpu', index=3,
+      number=4, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_memory', full_name='datasvc.GetStatusReply.used_memory', index=4,
-      number=5, type=4, cpp_type=4, label=1,
+      name='idle_cpu', full_name='datasvc.GetStatusReply.idle_cpu', index=4,
+      number=5, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='idle_memory', full_name='datasvc.GetStatusReply.idle_memory', index=5,
+      name='total_memory', full_name='datasvc.GetStatusReply.total_memory', index=5,
       number=6, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_disk', full_name='datasvc.GetStatusReply.total_disk', index=6,
+      name='used_memory', full_name='datasvc.GetStatusReply.used_memory', index=6,
       number=7, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_disk', full_name='datasvc.GetStatusReply.used_disk', index=7,
+      name='idle_memory', full_name='datasvc.GetStatusReply.idle_memory', index=7,
       number=8, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='idle_disk', full_name='datasvc.GetStatusReply.idle_disk', index=8,
+      name='total_disk', full_name='datasvc.GetStatusReply.total_disk', index=8,
       number=9, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_bandwidth', full_name='datasvc.GetStatusReply.total_bandwidth', index=9,
+      name='used_disk', full_name='datasvc.GetStatusReply.used_disk', index=9,
       number=10, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_bandwidth', full_name='datasvc.GetStatusReply.used_bandwidth', index=10,
+      name='idle_disk', full_name='datasvc.GetStatusReply.idle_disk', index=10,
       number=11, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='idle_bandwidth', full_name='datasvc.GetStatusReply.idle_bandwidth', index=11,
+      name='total_bandwidth', full_name='datasvc.GetStatusReply.total_bandwidth', index=11,
       number=12, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='used_bandwidth', full_name='datasvc.GetStatusReply.used_bandwidth', index=12,
+      number=13, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='idle_bandwidth', full_name='datasvc.GetStatusReply.idle_bandwidth', index=13,
+      number=14, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -650,8 +699,8 @@ _GETSTATUSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=949,
-  serialized_end=1215,
+  serialized_start=1025,
+  serialized_end=1320,
 )
 
 
@@ -689,8 +738,8 @@ _SENDSHARESDATAREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1217,
-  serialized_end=1276,
+  serialized_start=1322,
+  serialized_end=1381,
 )
 
 
@@ -721,8 +770,8 @@ _SENDSHARESDATAREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1278,
-  serialized_end=1336,
+  serialized_start=1383,
+  serialized_end=1441,
 )
 
 _DOWNLOADREQUEST_OPTIONSENTRY.containing_type = _DOWNLOADREQUEST
@@ -857,8 +906,8 @@ _DATAPROVIDER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1405,
-  serialized_end=2231,
+  serialized_start=1510,
+  serialized_end=2336,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetStatus',

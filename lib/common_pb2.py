@@ -20,40 +20,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10lib/common.proto\x12\x06\x63ommon\"A\n\x05Party\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x12\x10\n\x08party_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\"\xc6\x03\n\x0eTaskReadyGoReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x03 \x01(\t\x12\x0e\n\x06\x65nv_id\x18\x04 \x01(\t\x12\x1e\n\x07parties\x18\x05 \x03(\x0b\x32\r.common.Party\x12\x16\n\x0e\x61lgorithm_code\x18\x06 \x01(\t\x12\x34\n\x12\x61lgorithm_cfg_type\x18\x07 \x01(\x0e\x32\x18.common.AlgorithmCfgType\x12\x15\n\ralgorithm_cfg\x18\x08 \x01(\t\x12\x16\n\x0e\x64\x61ta_party_ids\x18\t \x03(\t\x12\x1d\n\x15\x63omputation_party_ids\x18\n \x03(\t\x12\x18\n\x10result_party_ids\x18\x0b \x03(\t\x12\x10\n\x08\x64uration\x18\x0c \x01(\x04\x12\x0e\n\x06memory\x18\r \x01(\x04\x12\x11\n\tprocessor\x18\x0e \x01(\r\x12\x11\n\tbandwidth\x18\x0f \x01(\x04\x12:\n\x15\x63onnect_policy_format\x18\x10 \x01(\x0e\x32\x1b.common.ConnectPolicyFormat\x12\x16\n\x0e\x63onnect_policy\x18\x11 \x01(\t\"+\n\x10TaskReadyGoReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"2\n\rTaskCancelReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\"*\n\x0fTaskCancelReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t*o\n\x10\x41lgorithmCfgType\x12\x1c\n\x18\x41lgorithmCfgType_Unknown\x10\x00\x12\x1c\n\x18\x41lgorithmCfgType_2DTable\x10\x01\x12\x1f\n\x1b\x41lgorithmCfgType_non2DTable\x10\x02*q\n\x13\x43onnectPolicyFormat\x12\x1f\n\x1b\x43onnectPolicyFormat_Unknown\x10\x00\x12\x1b\n\x17\x43onnectPolicyFormat_Str\x10\x01\x12\x1c\n\x18\x43onnectPolicyFormat_Json\x10\x02\x62\x06proto3'
+  serialized_pb=b'\n\x10lib/common.proto\x12\x06\x63ommon\"A\n\x05Party\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\x05\x12\x10\n\x08party_id\x18\x03 \x01(\t\x12\x0c\n\x04name\x18\x04 \x01(\t\"\xa3\x03\n\x0eTaskReadyGoReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\x12\x0e\n\x06\x65nv_id\x18\x03 \x01(\t\x12\x1e\n\x07parties\x18\x04 \x03(\x0b\x32\r.common.Party\x12\x16\n\x0e\x61lgorithm_code\x18\x05 \x01(\t\x12\x17\n\x0fself_cfg_params\x18\x06 \x01(\t\x12 \n\x18\x61lgorithm_dynamic_params\x18\x07 \x01(\t\x12\x16\n\x0e\x64\x61ta_party_ids\x18\x08 \x03(\t\x12\x1d\n\x15\x63omputation_party_ids\x18\t \x03(\t\x12\x18\n\x10result_party_ids\x18\n \x03(\t\x12\x10\n\x08\x64uration\x18\x0b \x01(\x04\x12\x0e\n\x06memory\x18\x0c \x01(\x04\x12\x11\n\tprocessor\x18\r \x01(\r\x12\x11\n\tbandwidth\x18\x0e \x01(\x04\x12:\n\x15\x63onnect_policy_format\x18\x0f \x01(\x0e\x32\x1b.common.ConnectPolicyFormat\x12\x16\n\x0e\x63onnect_policy\x18\x10 \x01(\t\"/\n\x10TaskReadyGoReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\"2\n\rTaskCancelReq\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\".\n\x0fTaskCancelReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t*q\n\x13\x43onnectPolicyFormat\x12\x1f\n\x1b\x43onnectPolicyFormat_Unknown\x10\x00\x12\x1b\n\x17\x43onnectPolicyFormat_Str\x10\x01\x12\x1c\n\x18\x43onnectPolicyFormat_Json\x10\x02\x62\x06proto3'
 )
 
-_ALGORITHMCFGTYPE = _descriptor.EnumDescriptor(
-  name='AlgorithmCfgType',
-  full_name='common.AlgorithmCfgType',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='AlgorithmCfgType_Unknown', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='AlgorithmCfgType_2DTable', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='AlgorithmCfgType_non2DTable', index=2, number=2,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=693,
-  serialized_end=804,
-)
-_sym_db.RegisterEnumDescriptor(_ALGORITHMCFGTYPE)
-
-AlgorithmCfgType = enum_type_wrapper.EnumTypeWrapper(_ALGORITHMCFGTYPE)
 _CONNECTPOLICYFORMAT = _descriptor.EnumDescriptor(
   name='ConnectPolicyFormat',
   full_name='common.ConnectPolicyFormat',
@@ -79,15 +48,12 @@ _CONNECTPOLICYFORMAT = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=806,
-  serialized_end=919,
+  serialized_start=666,
+  serialized_end=779,
 )
 _sym_db.RegisterEnumDescriptor(_CONNECTPOLICYFORMAT)
 
 ConnectPolicyFormat = enum_type_wrapper.EnumTypeWrapper(_CONNECTPOLICYFORMAT)
-AlgorithmCfgType_Unknown = 0
-AlgorithmCfgType_2DTable = 1
-AlgorithmCfgType_non2DTable = 2
 ConnectPolicyFormat_Unknown = 0
 ConnectPolicyFormat_Str = 1
 ConnectPolicyFormat_Json = 2
@@ -170,106 +136,99 @@ _TASKREADYGOREQ = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='data_id', full_name='common.TaskReadyGoReq.data_id', index=2,
+      name='env_id', full_name='common.TaskReadyGoReq.env_id', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='env_id', full_name='common.TaskReadyGoReq.env_id', index=3,
-      number=4, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='parties', full_name='common.TaskReadyGoReq.parties', index=4,
-      number=5, type=11, cpp_type=10, label=3,
+      name='parties', full_name='common.TaskReadyGoReq.parties', index=3,
+      number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='algorithm_code', full_name='common.TaskReadyGoReq.algorithm_code', index=5,
+      name='algorithm_code', full_name='common.TaskReadyGoReq.algorithm_code', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='self_cfg_params', full_name='common.TaskReadyGoReq.self_cfg_params', index=5,
       number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='algorithm_cfg_type', full_name='common.TaskReadyGoReq.algorithm_cfg_type', index=6,
-      number=7, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='algorithm_cfg', full_name='common.TaskReadyGoReq.algorithm_cfg', index=7,
-      number=8, type=9, cpp_type=9, label=1,
+      name='algorithm_dynamic_params', full_name='common.TaskReadyGoReq.algorithm_dynamic_params', index=6,
+      number=7, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='data_party_ids', full_name='common.TaskReadyGoReq.data_party_ids', index=8,
+      name='data_party_ids', full_name='common.TaskReadyGoReq.data_party_ids', index=7,
+      number=8, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='computation_party_ids', full_name='common.TaskReadyGoReq.computation_party_ids', index=8,
       number=9, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='computation_party_ids', full_name='common.TaskReadyGoReq.computation_party_ids', index=9,
+      name='result_party_ids', full_name='common.TaskReadyGoReq.result_party_ids', index=9,
       number=10, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='result_party_ids', full_name='common.TaskReadyGoReq.result_party_ids', index=10,
-      number=11, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
+      name='duration', full_name='common.TaskReadyGoReq.duration', index=10,
+      number=11, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='duration', full_name='common.TaskReadyGoReq.duration', index=11,
+      name='memory', full_name='common.TaskReadyGoReq.memory', index=11,
       number=12, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='memory', full_name='common.TaskReadyGoReq.memory', index=12,
-      number=13, type=4, cpp_type=4, label=1,
+      name='processor', full_name='common.TaskReadyGoReq.processor', index=12,
+      number=13, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='processor', full_name='common.TaskReadyGoReq.processor', index=13,
-      number=14, type=13, cpp_type=3, label=1,
+      name='bandwidth', full_name='common.TaskReadyGoReq.bandwidth', index=13,
+      number=14, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='bandwidth', full_name='common.TaskReadyGoReq.bandwidth', index=14,
-      number=15, type=4, cpp_type=4, label=1,
+      name='connect_policy_format', full_name='common.TaskReadyGoReq.connect_policy_format', index=14,
+      number=15, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='connect_policy_format', full_name='common.TaskReadyGoReq.connect_policy_format', index=15,
-      number=16, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='connect_policy', full_name='common.TaskReadyGoReq.connect_policy', index=16,
-      number=17, type=9, cpp_type=9, label=1,
+      name='connect_policy', full_name='common.TaskReadyGoReq.connect_policy', index=15,
+      number=16, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -287,7 +246,7 @@ _TASKREADYGOREQ = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=96,
-  serialized_end=550,
+  serialized_end=515,
 )
 
 
@@ -300,9 +259,9 @@ _TASKREADYGOREPLY = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ok', full_name='common.TaskReadyGoReply.ok', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      name='status', full_name='common.TaskReadyGoReply.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -325,8 +284,8 @@ _TASKREADYGOREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=552,
-  serialized_end=595,
+  serialized_start=517,
+  serialized_end=564,
 )
 
 
@@ -364,8 +323,8 @@ _TASKCANCELREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=597,
-  serialized_end=647,
+  serialized_start=566,
+  serialized_end=616,
 )
 
 
@@ -378,9 +337,9 @@ _TASKCANCELREPLY = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ok', full_name='common.TaskCancelReply.ok', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      name='status', full_name='common.TaskCancelReply.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -403,19 +362,17 @@ _TASKCANCELREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=649,
-  serialized_end=691,
+  serialized_start=618,
+  serialized_end=664,
 )
 
 _TASKREADYGOREQ.fields_by_name['parties'].message_type = _PARTY
-_TASKREADYGOREQ.fields_by_name['algorithm_cfg_type'].enum_type = _ALGORITHMCFGTYPE
 _TASKREADYGOREQ.fields_by_name['connect_policy_format'].enum_type = _CONNECTPOLICYFORMAT
 DESCRIPTOR.message_types_by_name['Party'] = _PARTY
 DESCRIPTOR.message_types_by_name['TaskReadyGoReq'] = _TASKREADYGOREQ
 DESCRIPTOR.message_types_by_name['TaskReadyGoReply'] = _TASKREADYGOREPLY
 DESCRIPTOR.message_types_by_name['TaskCancelReq'] = _TASKCANCELREQ
 DESCRIPTOR.message_types_by_name['TaskCancelReply'] = _TASKCANCELREPLY
-DESCRIPTOR.enum_types_by_name['AlgorithmCfgType'] = _ALGORITHMCFGTYPE
 DESCRIPTOR.enum_types_by_name['ConnectPolicyFormat'] = _CONNECTPOLICYFORMAT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 

@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z\026../gateway/compute_svc',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15lib/compute_svc.proto\x12\ncomputesvc\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x10lib/common.proto\"\x86\x01\n\x0eUploadShardReq\x12/\n\x04meta\x18\x01 \x01(\x0b\x32\x1f.computesvc.UploadShardReq.InfoH\x00\x12\x11\n\x07\x63ontent\x18\x02 \x01(\x0cH\x00\x1a(\n\x04Info\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\tB\x06\n\x04\x64\x61ta\"+\n\x10UploadShardReply\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t\"\x8a\x02\n\x0eGetStatusReply\x12\x11\n\ttotal_cpu\x18\x01 \x01(\r\x12\x10\n\x08used_cpu\x18\x02 \x01(\r\x12\x10\n\x08idle_cpu\x18\x03 \x01(\r\x12\x14\n\x0ctotal_memory\x18\x04 \x01(\x04\x12\x13\n\x0bused_memory\x18\x05 \x01(\x04\x12\x13\n\x0bidle_memory\x18\x06 \x01(\x04\x12\x12\n\ntotal_disk\x18\x07 \x01(\x04\x12\x11\n\tused_disk\x18\x08 \x01(\x04\x12\x11\n\tidle_disk\x18\t \x01(\x04\x12\x17\n\x0ftotal_bandwidth\x18\n \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x0b \x01(\x04\x12\x16\n\x0eidle_bandwidth\x18\x0c \x01(\x04\"%\n\x11GetTaskDetailsReq\x12\x10\n\x08task_ids\x18\x01 \x03(\t\"\xe3\x01\n\x13GetTaskDetailsReply\x12<\n\x0ctask_details\x18\x01 \x03(\x0b\x32&.computesvc.GetTaskDetailsReply.Detail\x1a\x8d\x01\n\x06\x44\x65tail\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\x13\n\x0b\x63ontract_id\x18\x03 \x01(\t\x12\x14\n\x0c\x65lapsed_time\x18\x04 \x01(\x03\x12\x13\n\x0bremain_time\x18\x05 \x01(\x03\x12\x10\n\x08progress\x18\x06 \x01(\t\x12\r\n\x05phase\x18\x07 \x01(\t2\x89\x04\n\x0f\x43omputeProvider\x12[\n\tGetStatus\x12\x16.google.protobuf.Empty\x1a\x1a.computesvc.GetStatusReply\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/compute/getStatus\x12t\n\x0eGetTaskDetails\x12\x1d.computesvc.GetTaskDetailsReq\x1a\x1f.computesvc.GetTaskDetailsReply\"\"\x82\xd3\xe4\x93\x02\x1c\"\x17/compute/getTaskDetails:\x01*\x12K\n\x0bUploadShard\x12\x1a.computesvc.UploadShardReq\x1a\x1c.computesvc.UploadShardReply\"\x00(\x01\x12l\n\x11HandleTaskReadyGo\x12\x16.common.TaskReadyGoReq\x1a\x18.common.TaskReadyGoReply\"%\x82\xd3\xe4\x93\x02\x1f\"\x1a/compute/handleTaskReadyGo:\x01*\x12h\n\x10HandleCancelTask\x12\x15.common.TaskCancelReq\x1a\x17.common.TaskCancelReply\"$\x82\xd3\xe4\x93\x02\x1e\"\x19/compute/handleCancelTask:\x01*B\x18Z\x16../gateway/compute_svcb\x06proto3'
+  serialized_pb=b'\n\x15lib/compute_svc.proto\x12\ncomputesvc\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x10lib/common.proto\"\x86\x01\n\x0eUploadShardReq\x12/\n\x04meta\x18\x01 \x01(\x0b\x32\x1f.computesvc.UploadShardReq.InfoH\x00\x12\x11\n\x07\x63ontent\x18\x02 \x01(\x0cH\x00\x1a(\n\x04Info\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\tB\x06\n\x04\x64\x61ta\"/\n\x10UploadShardReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\"\xa7\x02\n\x0eGetStatusReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x11\n\ttotal_cpu\x18\x03 \x01(\r\x12\x10\n\x08used_cpu\x18\x04 \x01(\r\x12\x10\n\x08idle_cpu\x18\x05 \x01(\r\x12\x14\n\x0ctotal_memory\x18\x06 \x01(\x04\x12\x13\n\x0bused_memory\x18\x07 \x01(\x04\x12\x13\n\x0bidle_memory\x18\x08 \x01(\x04\x12\x12\n\ntotal_disk\x18\t \x01(\x04\x12\x11\n\tused_disk\x18\n \x01(\x04\x12\x11\n\tidle_disk\x18\x0b \x01(\x04\x12\x17\n\x0ftotal_bandwidth\x18\x0c \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\r \x01(\x04\x12\x16\n\x0eidle_bandwidth\x18\x0e \x01(\x04\"%\n\x11GetTaskDetailsReq\x12\x10\n\x08task_ids\x18\x01 \x03(\t\"\x80\x02\n\x13GetTaskDetailsReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12<\n\x0ctask_details\x18\x03 \x03(\x0b\x32&.computesvc.GetTaskDetailsReply.Detail\x1a\x8d\x01\n\x06\x44\x65tail\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\x13\n\x0b\x63ontract_id\x18\x03 \x01(\t\x12\x14\n\x0c\x65lapsed_time\x18\x04 \x01(\x03\x12\x13\n\x0bremain_time\x18\x05 \x01(\x03\x12\x10\n\x08progress\x18\x06 \x01(\t\x12\r\n\x05phase\x18\x07 \x01(\t2\x89\x04\n\x0f\x43omputeProvider\x12[\n\tGetStatus\x12\x16.google.protobuf.Empty\x1a\x1a.computesvc.GetStatusReply\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/compute/getStatus\x12t\n\x0eGetTaskDetails\x12\x1d.computesvc.GetTaskDetailsReq\x1a\x1f.computesvc.GetTaskDetailsReply\"\"\x82\xd3\xe4\x93\x02\x1c\"\x17/compute/getTaskDetails:\x01*\x12K\n\x0bUploadShard\x12\x1a.computesvc.UploadShardReq\x1a\x1c.computesvc.UploadShardReply\"\x00(\x01\x12l\n\x11HandleTaskReadyGo\x12\x16.common.TaskReadyGoReq\x1a\x18.common.TaskReadyGoReply\"%\x82\xd3\xe4\x93\x02\x1f\"\x1a/compute/handleTaskReadyGo:\x01*\x12h\n\x10HandleCancelTask\x12\x15.common.TaskCancelReq\x1a\x17.common.TaskCancelReply\"$\x82\xd3\xe4\x93\x02\x1e\"\x19/compute/handleCancelTask:\x01*B\x18Z\x16../gateway/compute_svcb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,lib_dot_common__pb2.DESCRIPTOR,])
 
@@ -120,9 +120,9 @@ _UPLOADSHARDREPLY = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ok', full_name='computesvc.UploadShardReply.ok', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      name='status', full_name='computesvc.UploadShardReply.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -146,7 +146,7 @@ _UPLOADSHARDREPLY = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=251,
-  serialized_end=294,
+  serialized_end=298,
 )
 
 
@@ -159,85 +159,99 @@ _GETSTATUSREPLY = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='total_cpu', full_name='computesvc.GetStatusReply.total_cpu', index=0,
-      number=1, type=13, cpp_type=3, label=1,
+      name='status', full_name='computesvc.GetStatusReply.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_cpu', full_name='computesvc.GetStatusReply.used_cpu', index=1,
-      number=2, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
+      name='msg', full_name='computesvc.GetStatusReply.msg', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='idle_cpu', full_name='computesvc.GetStatusReply.idle_cpu', index=2,
+      name='total_cpu', full_name='computesvc.GetStatusReply.total_cpu', index=2,
       number=3, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_memory', full_name='computesvc.GetStatusReply.total_memory', index=3,
-      number=4, type=4, cpp_type=4, label=1,
+      name='used_cpu', full_name='computesvc.GetStatusReply.used_cpu', index=3,
+      number=4, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_memory', full_name='computesvc.GetStatusReply.used_memory', index=4,
-      number=5, type=4, cpp_type=4, label=1,
+      name='idle_cpu', full_name='computesvc.GetStatusReply.idle_cpu', index=4,
+      number=5, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='idle_memory', full_name='computesvc.GetStatusReply.idle_memory', index=5,
+      name='total_memory', full_name='computesvc.GetStatusReply.total_memory', index=5,
       number=6, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_disk', full_name='computesvc.GetStatusReply.total_disk', index=6,
+      name='used_memory', full_name='computesvc.GetStatusReply.used_memory', index=6,
       number=7, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_disk', full_name='computesvc.GetStatusReply.used_disk', index=7,
+      name='idle_memory', full_name='computesvc.GetStatusReply.idle_memory', index=7,
       number=8, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='idle_disk', full_name='computesvc.GetStatusReply.idle_disk', index=8,
+      name='total_disk', full_name='computesvc.GetStatusReply.total_disk', index=8,
       number=9, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='total_bandwidth', full_name='computesvc.GetStatusReply.total_bandwidth', index=9,
+      name='used_disk', full_name='computesvc.GetStatusReply.used_disk', index=9,
       number=10, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='used_bandwidth', full_name='computesvc.GetStatusReply.used_bandwidth', index=10,
+      name='idle_disk', full_name='computesvc.GetStatusReply.idle_disk', index=10,
       number=11, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='idle_bandwidth', full_name='computesvc.GetStatusReply.idle_bandwidth', index=11,
+      name='total_bandwidth', full_name='computesvc.GetStatusReply.total_bandwidth', index=11,
       number=12, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='used_bandwidth', full_name='computesvc.GetStatusReply.used_bandwidth', index=12,
+      number=13, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='idle_bandwidth', full_name='computesvc.GetStatusReply.idle_bandwidth', index=13,
+      number=14, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -254,8 +268,8 @@ _GETSTATUSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=297,
-  serialized_end=563,
+  serialized_start=301,
+  serialized_end=596,
 )
 
 
@@ -286,8 +300,8 @@ _GETTASKDETAILSREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=565,
-  serialized_end=602,
+  serialized_start=598,
+  serialized_end=635,
 )
 
 
@@ -360,8 +374,8 @@ _GETTASKDETAILSREPLY_DETAIL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=691,
-  serialized_end=832,
+  serialized_start=753,
+  serialized_end=894,
 )
 
 _GETTASKDETAILSREPLY = _descriptor.Descriptor(
@@ -373,8 +387,22 @@ _GETTASKDETAILSREPLY = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='task_details', full_name='computesvc.GetTaskDetailsReply.task_details', index=0,
-      number=1, type=11, cpp_type=10, label=3,
+      name='status', full_name='computesvc.GetTaskDetailsReply.status', index=0,
+      number=1, type=5, cpp_type=1, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='msg', full_name='computesvc.GetTaskDetailsReply.msg', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='task_details', full_name='computesvc.GetTaskDetailsReply.task_details', index=2,
+      number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -391,8 +419,8 @@ _GETTASKDETAILSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=605,
-  serialized_end=832,
+  serialized_start=638,
+  serialized_end=894,
 )
 
 _UPLOADSHARDREQ_INFO.containing_type = _UPLOADSHARDREQ
@@ -473,8 +501,8 @@ _COMPUTEPROVIDER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=835,
-  serialized_end=1356,
+  serialized_start=897,
+  serialized_end=1418,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetStatus',
