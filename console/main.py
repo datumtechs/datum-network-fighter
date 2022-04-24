@@ -211,26 +211,27 @@ def comp_run_task(args, stub):
         contract = load_f.read()
         print('contract:\n', contract[:100])
 
-    req.contract_id = contract
-    req.data_id = run_task_cfg['data_id']
     req.env_id = run_task_cfg['env_id']
+    req.algorithm_code = contract
 
     data_parties = run_task_cfg['data_party']
     compute_parties = run_task_cfg['computation_party']
     result_parties = run_task_cfg['result_party']
-    req.data_party.extend(data_parties)
-    req.computation_party.extend(compute_parties)
-    req.result_party.extend(result_parties)
+    req.data_party_ids.extend(data_parties)
+    req.computation_party_ids.extend(compute_parties)
+    req.result_party_ids.extend(result_parties)
     req.duration = run_task_cfg.get('duration', 24*60*60*1000)  # ms
     req.memory = run_task_cfg.get('memory', 256*1024*1024*1024) # Byte
     req.processor = run_task_cfg.get('processor', 32)   # number
-    req.bandwidth = run_task_cfg.get('bandwidth', 100*1000)  # bps
+    req.bandwidth = run_task_cfg.get('bandwidth', 1000000*1000)  # bps
+    req.connect_policy_format = common_pb2.ConnectPolicyFormat_Str
+    req.connect_policy = 'all'
 
     each_party = {d['party_id']: d for d in run_task_cfg['each_party']}
 
     peers = {}
     for peer_cfg in run_task_cfg['peers']:
-        p = req.peers.add()
+        p = req.parties.add()
         addr = peer_cfg['ADDRESS']
         ip_port = addr.split(':')
         p.ip = ip_port[0]
@@ -252,11 +253,11 @@ def _mock_schedule_dispatch_task(peers, req, data_parties, compute_parties, each
         print("svc_type:", svc_type)
         stub = svc_stub[svc_type](ch)
         req.party_id = party
-        contract_cfg = {'dynamic_parameter': dynamic_parameter}
-        contract_cfg.update(each_party[party])
-
-        req.contract_cfg = json.dumps(contract_cfg)
-        print("req.contract_cfg:", req.contract_cfg)
+        self_cfg_params = each_party[party]
+        req.self_cfg_params = json.dumps(self_cfg_params)
+        req.algorithm_dynamic_params = json.dumps(dynamic_parameter)
+        print("req.self_cfg_params:", req.self_cfg_params)
+        print("req.algorithm_dynamic_params:", req.algorithm_dynamic_params)
         resp = stub.HandleTaskReadyGo(req)
         print(f"addr:{addr}, resp: {resp}")
 

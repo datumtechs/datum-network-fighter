@@ -7,6 +7,7 @@ import json
 import time
 import logging
 import shutil
+import traceback
 import numpy as np
 import pandas as pd
 import latticex.rosetta as rtt
@@ -43,19 +44,29 @@ class PrivacyXgbPredict(object):
         '''
         cfg_dict:
         {
-            "party_id": "p1",
-            "data_party": {
-                "input_file": "path/to/file",
-                "key_column": "col1",
-                "selected_columns": ["col2", "col3"]
+            "self_cfg_params": {
+                "party_id": "data1",
+                "input_data": [
+                    {
+                        "input_type": 1,
+                        "data_type": 1,
+                        "data_path": "path/to/data",
+                        "key_column": "col1",
+                        "selected_columns": ["col2", "col3"]
+                    },
+                    {
+                        "input_type": 2,
+                        "data_type": 1,
+                        "data_path": "path/to/data1/psi_result.csv",
+                        "key_column": "",
+                        "selected_columns": []
+                    }
+                ]
             },
-            "dynamic_parameter": {
+            "algorithm_dynamic_params": {
                 "use_psi": true,
-                "psi_result_data": "path/to/data",
-                "psi_result_data_type": "csv",
-                "model_restore_party": "p3",
-                "model_path": "/absoulte_path/to/model_dir",
-                "algorithm_parameter": {
+                "model_restore_party": "model1",
+                "hyperparams": {
                     "num_trees": 1,
                     "max_depth": 3,
                     "num_bins": 4,
@@ -77,35 +88,49 @@ class PrivacyXgbPredict(object):
         assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
         assert isinstance(results_dir, str), "type of results_dir must be str"
         
+        log.info(f"start get input parameter.")
         self.channel_config = channel_config
         self.data_party = list(data_party)
         self.result_party = list(result_party)
-        self.party_id = cfg_dict["party_id"]
-        self.access_data_method = cfg_dict["data_party"].get("access_data_method", "local")
-        self.input_file = cfg_dict["data_party"].get("input_data")
-        self.input_data_type = cfg_dict["data_party"].get("input_data_type", "csv")
-        self.key_column = cfg_dict["data_party"].get("key_column")
-        self.selected_columns = cfg_dict["data_party"].get("selected_columns")
-
-        dynamic_parameter = cfg_dict["dynamic_parameter"]
-        self.use_psi = dynamic_parameter.get("use_psi", True)
-        self.psi_result_data = dynamic_parameter.get("psi_result_data")
-        self.psi_result_data_type = dynamic_parameter.get("psi_result_data_type")
-        self.model_restore_party = dynamic_parameter.get("model_restore_party")
-        self.model_path = dynamic_parameter.get("model_path")
-        algorithm_parameter = dynamic_parameter["algorithm_parameter"]
-        self.num_trees = algorithm_parameter.get("num_trees", 1)
-        self.max_depth = algorithm_parameter.get("max_depth", 3)
-        self.num_bins = algorithm_parameter.get("num_bins", 4)
-        self.num_class = algorithm_parameter.get("num_class", 2)
-        self.lambd = algorithm_parameter.get("lambd", 1.0)
-        self.gamma = algorithm_parameter.get("gamma", 0.0)
-        self.predict_threshold = algorithm_parameter.get("predict_threshold", 0.5)        
         self.output_file = os.path.join(results_dir, "result")
+        self._parse_algo_cfg(cfg_dict)
         self.data_party.remove(self.model_restore_party)  # except restore party
-        self.check_parameters()
+        self._check_parameters()
 
-    def check_parameters(self):
+    def _parse_algo_cfg(self, cfg_dict):
+        self.party_id = cfg_dict["self_cfg_params"]["party_id"]
+        input_data = cfg_dict["self_cfg_params"]["input_data"]
+        self.psi_result_data = None
+        if self.party_id in self.data_party:
+            for data in input_data:
+                input_type = data["input_type"]
+                data_type = data["data_type"]
+                if input_type == 1:
+                    self.input_file = data["data_path"]
+                    self.key_column = data.get("key_column")
+                    self.selected_columns = data.get("selected_columns")
+                elif input_type == 2:
+                    self.psi_result_data = data["data_path"]
+                elif input_type == 3:
+                    self.model_path = data["data_path"]
+                    self.model_file = os.path.join(self.model_path, "model")
+                else:
+                    raise Exception("paramter error. input_type only support 1/2/3")
+
+        dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
+        self.use_psi = dynamic_parameter.get("use_psi", True)
+        self.model_restore_party = dynamic_parameter.get("model_restore_party")
+
+        hyperparams = dynamic_parameter["hyperparams"]
+        self.num_trees = hyperparams.get("num_trees", 1)
+        self.max_depth = hyperparams.get("max_depth", 3)
+        self.num_bins = hyperparams.get("num_bins", 4)
+        self.num_class = hyperparams.get("num_class", 2)
+        self.lambd = hyperparams.get("lambd", 1.0)
+        self.gamma = hyperparams.get("gamma", 0.0)
+        self.predict_threshold = hyperparams.get("predict_threshold", 0.5)
+
+    def _check_parameters(self):
         log.info(f"check parameter start.")      
         assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         assert isinstance(self.num_trees, int) and self.num_trees > 0, "num_trees must be type(int) and greater 0"
@@ -118,24 +143,21 @@ class PrivacyXgbPredict(object):
         if self.party_id in self.data_party:
             assert isinstance(self.use_psi, bool), "use_psi must be type(bool), true or false"
             if self.use_psi:
-                assert isinstance(self.psi_result_data, str), "psi_result_data must be type(string)"
-                assert self.psi_result_data_type in ["csv"], "psi_result_data_type must be csv, not {self.psi_result_data_type}"
+                assert isinstance(self.psi_result_data, str), f"psi_result_data must be type(string), not {self.psi_result_data}"
                 self.psi_result_data = self.psi_result_data.strip()
                 if os.path.exists(self.psi_result_data):
                     file_suffix = os.path.splitext(self.psi_result_data)[-1][1:]
-                    assert file_suffix == self.psi_result_data_type, f"psi_result_data must {self.psi_result_data_type} file, not {file_suffix}"
+                    assert file_suffix == "csv", f"psi_result_data must csv file, not {file_suffix}"
                 else:
                     raise Exception(f"psi_result_data is not exist. psi_result_data={self.psi_result_data}")
             
-            assert self.access_data_method in ["local"], "access_data_method must be local, not {self.access_data_method}"
             assert isinstance(self.input_file, str), "origin input_data must be type(string)"
-            assert self.input_data_type in ["csv"], "input_data_type must be csv, not {self.input_data_type}"
             assert isinstance(self.key_column, str), "key_column must be type(string)"
             assert isinstance(self.selected_columns, list), "selected_columns must be type(list)" 
             self.input_file = self.input_file.strip()
             if os.path.exists(self.input_file):
                 file_suffix = os.path.splitext(self.input_file)[-1][1:]
-                assert file_suffix == self.input_data_type, f"input_file must {self.input_data_type} file, not {file_suffix}"
+                assert file_suffix == "csv", f"input_file must csv file, not {file_suffix}"
                 input_columns = pd.read_csv(self.input_file, nrows=0)
                 input_columns = list(input_columns.columns)
                 assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
@@ -292,5 +314,11 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
         privacy_xgb = PrivacyXgbPredict(channel_config, cfg_dict, data_party, result_party, results_dir)
         privacy_xgb.predict()
     except Exception as e:
-        raise Exception(f"<ALGO>: xgboost_predict. <RUN_STAGE>: {log.run_stage} <ERROR>: {str(e)}")
+        et, ev, tb = sys.exc_info()
+        error_filename = traceback.extract_tb(tb)[1].filename
+        error_filename = os.path.split(error_filename)[1]
+        error_lineno = traceback.extract_tb(tb)[1].lineno
+        error_function = traceback.extract_tb(tb)[1].name
+        error_msg = str(e)
+        raise Exception(f"<ALGO>:xgboost_predict. <RUN_STAGE>:{log.run_stage} <ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")
     log.info("finish main function. xgboost predict.")

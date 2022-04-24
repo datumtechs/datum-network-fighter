@@ -1,44 +1,44 @@
 {
     "contract_id": "/absolute_path/to/algorithm_file",
-    "data_id": "DA7A-1",
     "env_id": "E5",
-    "data_party": ["p1", "p2"],
-    "computation_party": ["p4", "p5", "p6"],
-    "result_party": ["p3"],
+    "data_party": ["data1", "data2"],
+    "computation_party": ["compute1", "compute2", "compute3"],
+    "result_party": ["result1"],
     "peers": [
         {
-            "NODE_ID": "p1",
+            "NODE_ID": "data1",
             "ADDRESS": "192.168.0.1:55553",
             "INTERNAL": "192.168.0.1:55551"
         },
         {
-            "NODE_ID": "p2",
+            "NODE_ID": "data2",
             "ADDRESS": "192.168.0.2:55553",
             "INTERNAL": "192.168.0.2:55551"
         },
         {
-            "NODE_ID": "p3",
+            "NODE_ID": "result1",
             "ADDRESS": "192.168.0.3:55553",
             "INTERNAL": "192.168.0.3:55551"
         },
         {
-            "NODE_ID": "p4",
+            "NODE_ID": "compute1",
             "ADDRESS": "192.168.0.1:55553",
             "INTERNAL": "192.168.0.1:55552"
         },
         {
-            "NODE_ID": "p5",
+            "NODE_ID": "compute2",
             "ADDRESS": "192.168.0.2:55553",
             "INTERNAL": "192.168.0.2:55552"
         },
 	    {
-            "NODE_ID": "p6",
+            "NODE_ID": "compute3",
             "ADDRESS": "192.168.0.3:55553",
             "INTERNAL": "192.168.0.3:55552"
         }
     ],
     "dynamic_parameter": {
-        "label_owner": "p1",
+        "use_psi": true,
+        "label_owner": "data1",
         "label_column": "Y",
         "algorithm_parameter": {
             "epochs": 2,
@@ -48,52 +48,69 @@
     },
     "each_party": [
         {
-            "party_id": "p1",
-            "data_party": {
-                "input_file": "/absolute_path/to/data_file",
-                "key_column": "index_col",
-                "selected_columns": ["col1", "col2"]
-            }
+            "party_id": "data1",
+            "input_data": [
+                {
+                    "input_type": 1,
+                    "access_type": 1,
+                    "data_type": 1,
+                    "data_path": "/absolute_path/to/data_file",
+                    "key_column": "index_col",
+                    "selected_columns": ["col1", "col2"]
+                },
+                {
+                    "input_type": 2,
+                    "access_type": 1,
+                    "data_type": 1,
+                    "data_path": "/absolute_path/to/psi_result.csv",
+                    "key_column": "",
+                    "selected_columns": []
+                }
+            ]
         },
         {
-            "party_id": "p2",
-            "data_party": {
-                "input_file": "/absolute_path/to/data_file",
-                "key_column": "index_col",
-                "selected_columns": ["col3", "col4"]
-            }
+            "party_id": "data2",
+            "input_data": [
+                {
+                    "input_type": 1,
+                    "access_type": 1,
+                    "data_type": 1,
+                    "data_path": "/absolute_path/to/data_file",
+                    "key_column": "index_col",
+                    "selected_columns": ["col3", "col4"]
+                },
+                {
+                    "input_type": 2,
+                    "access_type": 1,
+                    "data_type": 1,
+                    "data_path": "/absolute_path/to/psi_result.csv",
+                    "key_column": "",
+                    "selected_columns": []
+                }
+            ]
         },
         {
-            "party_id": "p3",
-            "data_party": {
-                "input_file": "",
-                "key_column": "",
-                "selected_columns": []
-            }
+            "party_id": "result1",
+            "input_data": [
+                {
+                    "input_type": 3,
+                    "access_type": 1,
+                    "data_type": 2,
+                    "data_path": "/absolute_path/to/model_file"
+                }
+            ]
         },
         {
-            "party_id": "p4",
-            "data_party": {
-                "input_file": "",
-                "key_column": "",
-                "selected_columns": []
-            }
+            "party_id": "compute1",
+            "input_data": []
         },
         {
-            "party_id": "p5",
-            "data_party": {
-                "input_file": "",
-                "key_column": "",
-                "selected_columns": []
-            }
+            "party_id": "compute2",
+            "input_data": []
         },
         {
-            "party_id": "p6",
-            "data_party": {
-                "input_file": "",
-                "key_column": "",
-                "selected_columns": []
-            }
+            "party_id": "compute3",
+            "input_data": []
         }
     ]
 }

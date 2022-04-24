@@ -12,6 +12,7 @@ try:
 except:
     from metis.data_svc.config import cfg
 from common.report_engine import report_task_result
+from common.consts import ERROR_CODE
 from lib import common_pb2
 from lib import compute_svc_pb2, compute_svc_pb2_grpc
 from lib import data_svc_pb2, data_svc_pb2_grpc
@@ -39,6 +40,9 @@ def get_sys_stat(cfg):
     net_2 = psutil.net_io_counters()
     stat.used_bandwidth = (net_2.bytes_sent - net_1.bytes_sent) + (net_2.bytes_recv - net_1.bytes_recv)
     stat.idle_bandwidth = max(stat.total_bandwidth - stat.used_bandwidth, 0)
+
+    stat.status = ERROR_CODE["OK"]
+    stat.msg = 'get system status success.'
     str_res = '{' + str(stat).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
     log.debug(f"get sys stat: {str_res}")
     return stat
@@ -77,6 +81,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             pass
         f = open(path, 'r+b')
         try:
+            status = ERROR_CODE["UPLOAD_CONTENT_ERROR"]
             for req in request_it:
                 f.write(req.content)
                 m.update(req.content)
@@ -84,6 +89,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                 cols = req.columns
 
             log.info(f"origin filename: {file}, len(columns): {len(cols)}, columns:{','.join(cols)}")
+            status = ERROR_CODE["GENERATE_SUMMARY_ERROR"]
             data_hash = m.hexdigest()
             stem, ext = os.path.splitext(os.path.basename(file))
             new_name = f'{stem}_{now}{ext}'
@@ -94,16 +100,19 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             origin_id = m.hexdigest()
             file_summary = {"origin_id": origin_id, "data_path": full_new_name, "ip": cfg["bind_ip"],
                             "port": cfg["port"], "data_hash": data_hash}
+            status = ERROR_CODE["REPORT_SUMMARY_ERROR"]
             ret = report_task_result(cfg['schedule_svc'], 'upload_file', file_summary)
             log.info(f'report_upload_file_summary return: {ret}')
             if ret and ret.status == 0:
-                result = data_svc_pb2.UploadReply(ok=True, data_id=origin_id, file_path=full_new_name, data_hash=data_hash)
+                status = ERROR_CODE["OK"]
+                result = data_svc_pb2.UploadReply(status=status, msg='upload success.',\
+                                data_id=origin_id, file_path=full_new_name, data_hash=data_hash)
             else:
-                result = data_svc_pb2.UploadReply(ok=False)
+                result = data_svc_pb2.UploadReply(status=status, msg='report summary fail.')
             return result
         except Exception as e:
             log.error(repr(e))
-            result = data_svc_pb2.UploadReply(ok=False)
+            result = data_svc_pb2.UploadReply(status=status, msg=f'{str(e)[:100]}')
             return result
         finally:
             if f:
@@ -203,16 +212,18 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             row = ans.data.add()
             row.file_name = f
             row.size = sz
+        ans.status = ERROR_CODE["OK"]
+        ans.msg = 'list data success.'
         return ans
 
     def HandleTaskReadyGo(self, request, context):
         log.info(f'{context.peer()} submit a task {request.task_id}, thread id: {threading.get_ident()}')
-        ok, msg = self.task_manager.start(request)
-        return common_pb2.TaskReadyGoReply(ok=ok, msg=msg)
+        status, msg = self.task_manager.start(request)
+        return common_pb2.TaskReadyGoReply(status=status, msg=msg)
 
     def HandleCancelTask(self, request, context):
         task_name = f'{request.task_id[:15]}-{request.party_id}'
         log.info(f'{context.peer()} want to cancel task {task_name}')
-        ok, msg = self.task_manager.cancel_task(request.task_id, request.party_id)
-        log.info(f'cancel task {ok}, {msg}')
-        return common_pb2.TaskCancelReply(ok=ok, msg=msg)
+        status, msg = self.task_manager.cancel_task(request.task_id, request.party_id)
+        log.info(f'cancel task {status}, {msg}')
+        return common_pb2.TaskCancelReply(status=status, msg=msg)

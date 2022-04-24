@@ -7,6 +7,7 @@ import json
 import time
 import logging
 import shutil
+import traceback
 import numpy as np
 import pandas as pd
 import latticex.psi as psi
@@ -41,14 +42,19 @@ class PrivateSetIntersection(object):
         '''
         cfg_dict:
         {
-            "party_id": "p1",
-            "data_party": {
-                "access_data_method": "local",
-                "input_data": "path/to/data",
-                "input_data_type": "csv",
-                "key_column": "col1"
+            "self_cfg_params": {
+                "party_id": "data1",
+                "input_data": [
+                    {
+                        "input_type": 1,
+                        "data_type": 1,
+                        "data_path": "path/to/data",
+                        "key_column": "col1",
+                        "selected_columns": []
+                    }
+                ]
             },
-            "dynamic_parameter": {
+            "algorithm_dynamic_params": {
                 "psi_type": "T_V1_Basic_GLS254"
             }
         }
@@ -61,22 +67,33 @@ class PrivateSetIntersection(object):
         assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
         assert isinstance(results_dir, str), "type of results_dir must be str"
         
+        log.info(f"start get input parameter.")
         self.channel_config = channel_config
         self.data_party = list(data_party)
         self.result_party = list(result_party)
-        self.party_id = cfg_dict["party_id"]
-        self.access_data_method = cfg_dict["data_party"].get("access_data_method", "local")
-        self.input_file = cfg_dict["data_party"].get("input_data")
-        self.input_data_type = cfg_dict["data_party"].get("input_data_type", "csv")
-        self.key_column = cfg_dict["data_party"].get("key_column")
-        dynamic_parameter = cfg_dict["dynamic_parameter"]
-        self.psi_type = dynamic_parameter.get("psi_type", "T_V1_Basic_GLS254")  # default 'T_V1_Basic_GLS254'
-
+        self._parse_algo_cfg(cfg_dict)
         self._check_parameters()
         self.result_type = self._get_result_type()        
         self.output_file = os.path.join(results_dir, "psi_result.csv")
         self.sdk_log_level = 3  # Trace=0, Debug=1, Audit=2, Info=3, Warn=4, Error=5, Fatal=6, Off=7
-                
+
+    def _parse_algo_cfg(self, cfg_dict):
+        self.party_id = cfg_dict["self_cfg_params"]["party_id"]
+        input_data = cfg_dict["self_cfg_params"]["input_data"]
+        self.psi_result_data = None
+        if self.party_id in self.data_party:
+            for data in input_data:
+                input_type = data["input_type"]
+                data_type = data["data_type"]
+                if input_type == 1:
+                    self.input_file = data["data_path"]
+                    self.key_column = data.get("key_column")
+                else:
+                    raise Exception("paramter error. input_type only support 1")
+        
+        dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
+        self.psi_type = dynamic_parameter.get("psi_type", "T_V1_Basic_GLS254")  # default 'T_V1_Basic_GLS254'
+
     def _check_parameters(self):
         assert len(self.data_party) == 2, f"length of data_party must be 2, not {len(self.data_party)}."
         assert len(self.result_party) in [1, 2], f"length of result_party must be 1 or 2, not {len(self.result_party)}."
@@ -89,13 +106,11 @@ class PrivateSetIntersection(object):
         self._check_input_file()
 
     def _check_input_file(self):
-        assert self.access_data_method in ["local"], "access_data_method must be local, not {self.access_data_method}"
         assert isinstance(self.input_file, str), "origin input_data must be type(string)"
-        assert self.input_data_type in ["csv"], "input_data_type must be csv, not {self.input_data_type}"
         self.input_file = self.input_file.strip()
         if os.path.exists(self.input_file):
             file_suffix = os.path.splitext(self.input_file)[-1][1:]
-            assert file_suffix == self.input_data_type, f"input_file must {self.input_data_type} file, not {file_suffix}"
+            assert file_suffix == "csv", f"input_file must csv file, not {file_suffix}"
             assert self.key_column, f"key_column can not empty. key_column={self.key_column}"
             input_columns = pd.read_csv(self.input_file, nrows=0)
             input_columns = list(input_columns.columns)
@@ -161,7 +176,7 @@ class PrivateSetIntersection(object):
         psihandler.log_to_stdout(True)
         psihandler.set_loglevel(self.sdk_log_level)
         log.info("start set recv party.")
-        psihandler.set_recv_party(self.result_type, "")
+        psihandler.set_recv_party(self.result_party, "")
 
         log.info("start create and set channel.")
         self._create_set_channel()
@@ -252,5 +267,11 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
         psi = PrivateSetIntersection(channel_config, cfg_dict, data_party, result_party, results_dir)
         psi.run()
     except Exception as e:
-        raise Exception(f"<ALGO>: psi. <RUN_STAGE>: {log.run_stage} <ERROR>: {str(e)}")
+        et, ev, tb = sys.exc_info()
+        error_filename = traceback.extract_tb(tb)[1].filename
+        error_filename = os.path.split(error_filename)[1]
+        error_lineno = traceback.extract_tb(tb)[1].lineno
+        error_function = traceback.extract_tb(tb)[1].name
+        error_msg = str(e)
+        raise Exception(f"<ALGO>:psi. <RUN_STAGE>:{log.run_stage} <ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")
     log.info("finish main function. private set intersection.")

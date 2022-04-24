@@ -2,9 +2,8 @@ import logging
 import math
 import threading
 import time
-
 import psutil
-
+from common.consts import ERROR_CODE
 from lib import common_pb2, compute_svc_pb2, compute_svc_pb2_grpc
 
 log = logging.getLogger(__name__)
@@ -30,6 +29,9 @@ def get_sys_stat(cfg):
     net_2 = psutil.net_io_counters()
     stat.used_bandwidth = (net_2.bytes_sent - net_1.bytes_sent) + (net_2.bytes_recv - net_1.bytes_recv)
     stat.idle_bandwidth = max(stat.total_bandwidth - stat.used_bandwidth, 0)
+
+    stat.status = ERROR_CODE["OK"]
+    stat.msg = 'get system status success.'
     str_res = '{' + str(stat).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
     log.debug(f"get sys stat: {str_res}")
     return stat
@@ -47,23 +49,25 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
         for task_id in request.task_ids:
             task = self.task_manager.get_task(task_id)
             if task is not None:
-                detail = ret.add()
+                detail = ret.task_details.add()
                 detail.task_id = task_id
                 detail.elapsed_time = task.get_elapsed_time()
+        ret.status = ERROR_CODE["OK"]
+        ret.msg = 'get task details success.'
         return ret
 
     def UploadShard(self, request_it, context):
         for req in request_it:
-            yield compute_svc_pb2.UploadShardReply(ok=False, msg='deprecated')
+            yield compute_svc_pb2.UploadShardReply(status=-1, msg='deprecated')
 
     def HandleTaskReadyGo(self, request, context):
         log.info(f'{context.peer()} submit a task {request.task_id}, thread id: {threading.get_ident()}')
-        ok, msg = self.task_manager.start(request)
-        return common_pb2.TaskReadyGoReply(ok=ok, msg=msg)
+        status, msg = self.task_manager.start(request)
+        return common_pb2.TaskReadyGoReply(status=status, msg=msg)
 
     def HandleCancelTask(self, request, context):
         task_name = f'{request.task_id[:15]}-{request.party_id}'
         log.info(f'{context.peer()} want to cancel task {task_name}')
-        ok, msg = self.task_manager.cancel_task(request.task_id, request.party_id)
-        log.info(f'cancel task {ok}, {msg}')
-        return common_pb2.TaskCancelReply(ok=ok, msg=msg)
+        status, msg = self.task_manager.cancel_task(request.task_id, request.party_id)
+        log.info(f'cancel task status:{status}, {msg}')
+        return common_pb2.TaskCancelReply(status=status, msg=msg)

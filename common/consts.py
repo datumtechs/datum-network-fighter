@@ -49,3 +49,21 @@ GRPC_OPTIONS = [
     ('grpc.so_reuseport', 0)  # setting SO_REUSEPORT is False
     # ('grpc.max_send_message_length', -1),  # default no limited
 ]
+
+ERROR_CODE = {
+    "OK": 0,   # 请求成功
+
+    # common
+    "PARAMS_ERROR": 10001,  # 请求参数出错
+    "DUPLICATE_SUBMIT_ERROR": 10002,  # 重复提交任务
+    "TASK_NOT_FOUND_ERROR": 10003,  # 找不到任务，任务不存在或者已被清理
+    
+    # data_svc
+    'UPLOAD_CONTENT_ERROR': 11001, # 上传文件内容出错
+    'GENERATE_SUMMARY_ERROR': 11002, # 产生文件摘要出错
+    'REPORT_SUMMARY_ERROR': 11003, # 上报文件摘要出错
+
+    # compute_svc, 1200X
+
+}
+

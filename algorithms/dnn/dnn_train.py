@@ -8,6 +8,7 @@ import time
 import copy
 import logging
 import shutil
+import traceback
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -47,21 +48,30 @@ class PrivacyDnnTrain(object):
         '''
         cfg_dict:
         {
-            "party_id": "p1",
-            "data_party": {
-                "access_data_method": "local",
-                "input_data": "path/to/data",
-                "input_data_type": "csv",
-                "key_column": "col1",
-                "selected_columns": ["col2", "col3"]
+            "self_cfg_params": {
+                "party_id": "data1",
+                "input_data": [
+                    {
+                        "input_type": 1,
+                        "data_type": 1,
+                        "data_path": "path/to/data",
+                        "key_column": "col1",
+                        "selected_columns": ["col2", "col3"]
+                    },
+                    {
+                        "input_type": 2,
+                        "data_type": 1,
+                        "data_path": "path/to/data1/psi_result.csv",
+                        "key_column": "",
+                        "selected_columns": []
+                    }
+                ]
             },
-            "dynamic_parameter": {
+            "algorithm_dynamic_params": {
                 "use_psi": true,
-                "psi_result_data": "path/to/data",
-                "psi_result_data_type": "csv",
                 "label_owner": "p1",
                 "label_column": "Y",
-                "algorithm_parameter": {
+                "hyperparams": {
                     "epochs": 10,
                     "batch_size": 256,
                     "learning_rate": 0.1,
@@ -86,21 +96,34 @@ class PrivacyDnnTrain(object):
         assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
         assert isinstance(results_dir, str), "type of results_dir must be str"
         
+        log.info(f"start get input parameter.")
         self.channel_config = channel_config
         self.data_party = list(data_party)
         self.result_party = list(result_party)
         self.results_dir = results_dir
-        self.party_id = cfg_dict["party_id"]
-        self.access_data_method = cfg_dict["data_party"].get("access_data_method", "local")
-        self.input_file = cfg_dict["data_party"].get("input_data")
-        self.input_data_type = cfg_dict["data_party"].get("input_data_type", "csv")
-        self.key_column = cfg_dict["data_party"].get("key_column")
-        self.selected_columns = cfg_dict["data_party"].get("selected_columns")
+        self.output_file = os.path.join(results_dir, "model")
+        self._parse_algo_cfg(cfg_dict)
+        self._check_parameters()
+
+    def _parse_algo_cfg(self, cfg_dict):
+        self.party_id = cfg_dict["self_cfg_params"]["party_id"]
+        input_data = cfg_dict["self_cfg_params"]["input_data"]
+        self.psi_result_data = None
+        if self.party_id in self.data_party:
+            for data in input_data:
+                input_type = data["input_type"]
+                data_type = data["data_type"]
+                if input_type == 1:
+                    self.input_file = data["data_path"]
+                    self.key_column = data.get("key_column")
+                    self.selected_columns = data.get("selected_columns")
+                elif input_type == 2:
+                    self.psi_result_data = data["data_path"]
+                else:
+                    raise Exception("paramter error. input_type only support 1/2")
         
-        dynamic_parameter = cfg_dict["dynamic_parameter"]
+        dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
         self.use_psi = dynamic_parameter.get("use_psi", True)
-        self.psi_result_data = dynamic_parameter.get("psi_result_data")
-        self.psi_result_data_type = dynamic_parameter.get("psi_result_data_type")
         self.label_owner = dynamic_parameter.get("label_owner")
         if self.party_id == self.label_owner:
             self.label_column = dynamic_parameter.get("label_column")
@@ -109,23 +132,20 @@ class PrivacyDnnTrain(object):
             self.label_column = ""
             self.data_with_label = False
                         
-        algorithm_parameter = dynamic_parameter["algorithm_parameter"]
-        self.epochs = algorithm_parameter.get("epochs", 50)
-        self.batch_size = algorithm_parameter.get("batch_size", 256)
-        self.learning_rate = algorithm_parameter.get("learning_rate", 0.1)
-        self.layer_units = algorithm_parameter.get("layer_units", [32, 1])
-        self.layer_activation = algorithm_parameter.get("layer_activation", ["sigmoid", "sigmoid"])
-        self.init_method = algorithm_parameter.get("init_method", "random_normal")  # 'random_normal', 'random_uniform', 'zeros', 'ones'
-        self.use_intercept = algorithm_parameter.get("use_intercept", True)  # True: use bias, False: not use bias
-        self.optimizer = algorithm_parameter.get("optimizer", "sgd")
-        self.use_validation_set = algorithm_parameter.get("use_validation_set", True)
-        self.validation_set_rate = algorithm_parameter.get("validation_set_rate", 0.2)
-        self.predict_threshold = algorithm_parameter.get("predict_threshold", 0.5)
-        self.output_file = os.path.join(self.results_dir, "model")
-        
-        self.check_parameters()
+        hyperparams = dynamic_parameter["hyperparams"]
+        self.epochs = hyperparams.get("epochs", 50)
+        self.batch_size = hyperparams.get("batch_size", 256)
+        self.learning_rate = hyperparams.get("learning_rate", 0.1)
+        self.layer_units = hyperparams.get("layer_units", [32, 1])
+        self.layer_activation = hyperparams.get("layer_activation", ["sigmoid", "sigmoid"])
+        self.init_method = hyperparams.get("init_method", "random_normal")  # 'random_normal', 'random_uniform', 'zeros', 'ones'
+        self.use_intercept = hyperparams.get("use_intercept", True)  # True: use bias, False: not use bias
+        self.optimizer = hyperparams.get("optimizer", "sgd")
+        self.use_validation_set = hyperparams.get("use_validation_set", True)
+        self.validation_set_rate = hyperparams.get("validation_set_rate", 0.2)
+        self.predict_threshold = hyperparams.get("predict_threshold", 0.5)
 
-    def check_parameters(self):
+    def _check_parameters(self):
         log.info(f"check parameter start.")        
         assert isinstance(self.epochs, int) and self.epochs > 0, "epochs must be type(int) and greater 0"
         assert isinstance(self.batch_size, int) and self.batch_size > 0, "batch_size must be type(int) and greater 0"
@@ -166,24 +186,21 @@ class PrivacyDnnTrain(object):
         if self.party_id in self.data_party:
             assert isinstance(self.use_psi, bool), "use_psi must be type(bool), true or false"
             if self.use_psi:
-                assert isinstance(self.psi_result_data, str), "psi_result_data must be type(string)"
-                assert self.psi_result_data_type in ["csv"], "psi_result_data_type must be csv, not {self.psi_result_data_type}"
+                assert isinstance(self.psi_result_data, str), f"psi_result_data must be type(string), not {self.psi_result_data}"
                 self.psi_result_data = self.psi_result_data.strip()
                 if os.path.exists(self.psi_result_data):
                     file_suffix = os.path.splitext(self.psi_result_data)[-1][1:]
-                    assert file_suffix == self.psi_result_data_type, f"psi_result_data must {self.psi_result_data_type} file, not {file_suffix}"
+                    assert file_suffix == "csv", f"psi_result_data must csv file, not {file_suffix}"
                 else:
                     raise Exception(f"psi_result_data is not exist. psi_result_data={self.psi_result_data}")
             
-            assert self.access_data_method in ["local"], "access_data_method must be local, not {self.access_data_method}"
             assert isinstance(self.input_file, str), "origin input_data must be type(string)"
-            assert self.input_data_type in ["csv"], "input_data_type must be csv, not {self.input_data_type}"
             assert isinstance(self.key_column, str), "key_column must be type(string)"
             assert isinstance(self.selected_columns, list), "selected_columns must be type(list)" 
             self.input_file = self.input_file.strip()
             if os.path.exists(self.input_file):
                 file_suffix = os.path.splitext(self.input_file)[-1][1:]
-                assert file_suffix == self.input_data_type, f"input_file must {self.input_data_type} file, not {file_suffix}"
+                assert file_suffix == "csv", f"input_file must csv file, not {file_suffix}"
                 input_columns = pd.read_csv(self.input_file, nrows=0)
                 input_columns = list(input_columns.columns)
                 assert self.key_column in input_columns, f"key_column:{self.key_column} not in input_file"
@@ -535,5 +552,11 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: li
         privacy_dnn = PrivacyDnnTrain(channel_config, cfg_dict, data_party, result_party, results_dir)
         privacy_dnn.train()
     except Exception as e:
-        raise Exception(f"<ALGO>: dnn_train. <RUN_STAGE>: {log.run_stage} <ERROR>: {str(e)}")
+        et, ev, tb = sys.exc_info()
+        error_filename = traceback.extract_tb(tb)[1].filename
+        error_filename = os.path.split(error_filename)[1]
+        error_lineno = traceback.extract_tb(tb)[1].lineno
+        error_function = traceback.extract_tb(tb)[1].name
+        error_msg = str(e)
+        raise Exception(f"<ALGO>:dnn_train. <RUN_STAGE>:{log.run_stage} <ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")
     log.info("finish main function. dnn train.")

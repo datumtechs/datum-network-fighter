@@ -24,7 +24,6 @@ CLIENT_OPTIONS = [('grpc.enable_retries', 0),
 class ReportEngine(object):
 
     def __init__(self, server_addr: str):
-        log.info(f'server_addr: {server_addr}')
         self.conn = grpc.insecure_channel(server_addr)
         self.__client = pb2_grpc.YarnServiceStub(channel=self.conn)
 
@@ -57,9 +56,10 @@ class ReportEngine(object):
         req.task_event.party_id = event.dict_["party_id"]
         req.task_event.content = "{}:{}".format(event.dict_["party_id"], event.dict_["content"])
         req.task_event.create_at = event.dict_["create_at"]
+        response = self.__client.ReportTaskEvent(req)
         str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-        log.info(str_req)
-        return self.__client.ReportTaskEvent(req)
+        log.info(str_req)  # print when report success
+        return response
 
     def report_upload_file_summary(self, summary):
         """
@@ -85,9 +85,10 @@ class ReportEngine(object):
         req.ip = summary["ip"]
         req.port = str(summary["port"])
         req.data_hash = summary["data_hash"]
+        response = self.__client.ReportUpFileSummary(req)
         str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
         log.info(str_req)
-        return self.__client.ReportUpFileSummary(req)
+        return response
 
     def report_task_result_file_summary(self, summary):
         """
@@ -116,9 +117,10 @@ class ReportEngine(object):
         req.ip = summary["ip"]
         req.port = str(summary["port"])
         req.extra = str(summary["extra"])
+        response = self.__client.ReportTaskResultFileSummary(req, timeout=10)
         str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
         log.info(str_req)
-        return self.__client.ReportTaskResultFileSummary(req, timeout=10)
+        return response
 
     def report_task_resource_usage(self, task_id, party_id, node_type, ip: str, port: str, resource_usage):
         """
@@ -177,9 +179,10 @@ class ReportEngine(object):
         req.usage.used_bandwidth = resource_usage["used_bandwidth"]
         req.usage.total_disk = resource_usage["total_disk"]
         req.usage.used_disk = resource_usage["used_disk"]
+        response = self.__client.ReportTaskResourceUsage(req)
         str_req = 'report_task_resource_usage: {' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-        log.info(str_req)
-        return self.__client.ReportTaskResourceUsage(req)
+        log.debug(str_req)
+        return response
 
     def close(self):
         self.conn.close()
@@ -225,6 +228,7 @@ class ReportEngine(object):
 #             raise
 
 def report_task_event(server_addr, create_event, event_type, content):
+    log.info('start report task event.')
     report_success = False
     try_max_times = 20
     try_cnt = 0
