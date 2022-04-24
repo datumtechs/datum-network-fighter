@@ -49,7 +49,7 @@ class SelfPlayWorker:
                 env, data = x.result()
                 time_cost = time() - start_time
                 winner = env.winner.name if env.winner is not None else str(env.winner)
-                print(f'game: {game_idx}, time: {time_cost:.3f}, n_steps: {env.n_steps}, '
+                logger.info(f'game: {game_idx}, time: {time_cost:.3f}, n_steps: {env.n_steps}, '
                       f'winner: {winner}, data len: {len(data)}')
                 self.buffer += data
                 if (game_idx % self.config.playdata.nb_game_in_file) == 0:
@@ -61,10 +61,10 @@ class SelfPlayWorker:
         model = NNModel(self.config)
         logger.info(f"create new model? {self.config.opts.new}")
         if self.config.opts.new or not load_best_model_weight(model, self.io_channel):
-            logger.info(f"create model from scratch")
-            model.build()
+            # logger.info(f"create model from scratch")
+            # model.build()
             # save_as_best_model(model, self.io_channel)
-            # raise Exception('cannot load best model')
+            raise Exception('cannot load best model')
         model.session = K.get_session()
         model.graph = model.session.graph
         return model
@@ -120,13 +120,13 @@ def self_play_buffer(config, pipes_bundle):
         time_cost = time() - start_time
         cnt += 1
         cost += time_cost
-        print(f'step: {cnt}, time cost(sec.): {time_cost:.3f}, average: {cost / cnt:.3f}')
+        logger.info(f'step: {cnt}, time cost(sec.): {time_cost:.3f}, average: {cost / cnt:.3f}')
         ob, reward, done, info = env.step(action)
         if done:
             extra = '' if info is None else f', info: {info}'
-            print(f'player {player.id.name}, reward: {reward}{extra}')
+            logger.info(f'player {player.id.name}, reward: {reward}{extra}')
             break
-    print(f'average cost(sec.): {cost / cnt:.3f}')
+    logger.info(f'average cost(sec.): {cost / cnt:.3f}')
     player = players[env.cur_player]
     player.finish_game(reward)
     oppo = players[env.cur_player.opponent()]

@@ -9,6 +9,9 @@ import grpc
 import pandas as pd
 from google.protobuf import empty_pb2
 from prompt_toolkit import prompt
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.completion import WordCompleter
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
@@ -352,7 +355,10 @@ if __name__ == '__main__':
 
     while True:
         print("***************************")
-        user_input = prompt('command>>> ')
+        user_input = prompt('command>>> ',
+                            history=FileHistory('history.txt'),
+                            auto_suggest=AutoSuggestFromHistory(),
+                            completer=WordCompleter(list(directions.keys())))
         if user_input == 'exit':
             break
         user_input = user_input.strip().split()

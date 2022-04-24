@@ -40,6 +40,8 @@ compute_svc/start_compute_svc_group.sh
 logs
 console/algorithm*
 console/task_cfg*
+console/history.txt
+console/tmp.py
 contract_work_dir
 results_root
 log/
