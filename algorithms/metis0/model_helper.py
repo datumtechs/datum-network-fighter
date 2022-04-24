@@ -7,8 +7,8 @@ def load_best_model_weight(model, io_channel):
     return model.load(model.config.resource.model_best_config_path, model.config.resource.model_best_weight_path, io_channel)
 
 
-def save_as_best_model(model, io_channel):
-    return model.save(model.config.resource.model_best_config_path, model.config.resource.model_best_weight_path, io_channel)
+def save_as_best_model(model, io_channel, upload=False):
+    return model.save(model.config.resource.model_best_config_path, model.config.resource.model_best_weight_path, io_channel, upload)
 
 
 def reload_best_model_weight_if_changed(model, io_channel):

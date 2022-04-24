@@ -161,7 +161,7 @@ def download_model_data(cfg, io_channel):
                 mt = os.path.getmtime(model_weight_path)
                 log.info(f'file mtime on server: {datetime.fromtimestamp(float(data)).strftime("%Y-%m-%d %H:%M:%S")}'
                          f', on client: {datetime.fromtimestamp(mt).strftime("%Y-%m-%d %H:%M:%S")}'
-                         f', {mt < float(data)}, {model_weight_path}')
+                         f', {mt < float(data)}')
                 behind_server = mt < float(data)
                 if not behind_server:
                     raise EarlyStop

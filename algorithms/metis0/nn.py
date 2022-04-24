@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 from logging import getLogger
+import multiprocessing as mp
 
 import tensorflow as tf
 from keras import backend as K
@@ -34,6 +35,7 @@ class NNModel:
         self.api = None
         self.graph = None
         self.session = None
+        self.lock = mp.Lock()
 
     def get_pipes(self, num=1):
         """
@@ -136,18 +138,19 @@ class NNModel:
 
         if os.path.exists(config_path) and os.path.exists(weight_path):
             logger.info(f"loading model from {config_path}")
-            with open(config_path, "rt") as f:
-                self.model = Model.from_config(json.load(f))
-            self.model.load_weights(weight_path)
-            self.model._make_predict_function()
-            self.digest = self.fetch_digest(weight_path)
-            logger.info(f"loaded model digest = {self.digest}")
-            return True
+            with self.lock:
+                with open(config_path, "rt") as f:
+                    self.model = Model.from_config(json.load(f))
+                self.model.load_weights(weight_path)
+                self.model._make_predict_function()
+                self.digest = self.fetch_digest(weight_path)
+                logger.info(f"loaded model digest = {self.digest}")
+                return True
         else:
             logger.info(f"model files does not exist at {config_path} and {weight_path}")
             return False
 
-    def save(self, config_path, weight_path, io_channel):
+    def save(self, config_path, weight_path, io_channel, upload=False):
         """
 
         :param str config_path: path to save the entire configuration to
@@ -162,7 +165,7 @@ class NNModel:
 
         mc = self.config.model
         resources = self.config.resource
-        if mc.distributed:  # and config_path == resources.model_best_config_path:
+        if upload:  # mc.distributed and config_path == resources.model_best_config_path:
             dir_ = os.path.basename(os.path.dirname(config_path))
             assert ' ' not in dir_
             data = read_content(config_path, text=True)

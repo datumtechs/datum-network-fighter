@@ -62,7 +62,7 @@ class EvaluateWorker:
             ng_is_great = self.evaluate_model(ng_model)
             if ng_is_great:
                 logger.debug(f"New Model become best model: {model_dir}")
-                save_as_best_model(ng_model, self.io_channel)
+                save_as_best_model(ng_model, self.io_channel, upload=True)
                 self.current_model = ng_model
             self.move_model(model_dir)
 

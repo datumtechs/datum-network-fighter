@@ -61,12 +61,13 @@ class SelfPlayWorker:
         model = NNModel(self.config)
         logger.info(f"create new model? {self.config.opts.new}")
         if self.config.opts.new or not load_best_model_weight(model, self.io_channel):
-            # logger.info(f"create model from scratch")
-            # model.build()
-            # save_as_best_model(model, self.io_channel)
-            raise Exception('cannot load best model')
-        model.session = K.get_session()
-        model.graph = model.session.graph
+            logger.info(f"create model from scratch")
+            model.build()
+            save_as_best_model(model, self.io_channel, upload=False)
+            # raise Exception('cannot load best model')
+        with model.lock:
+            model.session = K.get_session()
+            model.graph = model.session.graph
         return model
 
     def flush_buffer(self):
@@ -120,7 +121,7 @@ def self_play_buffer(config, pipes_bundle):
         time_cost = time() - start_time
         cnt += 1
         cost += time_cost
-        logger.info(f'step: {cnt}, time cost(sec.): {time_cost:.3f}, average: {cost / cnt:.3f}')
+        # logger.info(f'step: {cnt}, time cost(sec.): {time_cost:.3f}, average: {cost / cnt:.3f}')
         ob, reward, done, info = env.step(action)
         if done:
             extra = '' if info is None else f', info: {info}'

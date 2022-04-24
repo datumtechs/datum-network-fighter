@@ -55,8 +55,7 @@ class ChessModelAPI:
         Thread worker which listens on each pipe in self.pipes for an observation, and then outputs
         the predictions for the policy and value networks when the observations come in. Repeats.
         """
-        session = self.agent_model.session
-        graph = self.agent_model.graph
+
         while True:
             ready = connection.wait(self.pipes, timeout=0.001)
             if not ready:
@@ -73,6 +72,9 @@ class ChessModelAPI:
                     result_pipes.append(pipe)
 
             data = np.asarray(data, dtype=np.float32)
+            with self.agent_model.lock:
+                session = self.agent_model.session
+                graph = self.agent_model.graph
             with session.as_default():
                 with graph.as_default():
                     policy_ary, value_ary = self.agent_model.model.predict_on_batch(data)

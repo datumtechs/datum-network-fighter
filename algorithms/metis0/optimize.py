@@ -123,7 +123,7 @@ class OptimizeWorker:
         os.makedirs(model_dir, exist_ok=True)
         config_path = os.path.join(model_dir, rc.next_generation_model_config_filename)
         weight_path = os.path.join(model_dir, rc.next_generation_model_weight_filename)
-        self.model.save(config_path, weight_path, self.io_channel)
+        self.model.save(config_path, weight_path, self.io_channel, upload=True)
 
     def fill_queue(self):
         """
