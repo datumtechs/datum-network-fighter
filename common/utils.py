@@ -186,3 +186,15 @@ def install_pkg(pkg_name: str, version: str = None, whl_file: str = None, index_
     log.info(cmd)
     subprocess.run(cmd, shell=True)
     return True
+
+
+def subst_vars(d, mapping):
+    import string
+    for k, v in d.items():
+        if isinstance(v, dict):
+            subst_vars(v, mapping)
+        elif isinstance(v, str):
+            if '$' not in v:
+                continue
+            t = string.Template(v)
+            d[k] = t.substitute(mapping)

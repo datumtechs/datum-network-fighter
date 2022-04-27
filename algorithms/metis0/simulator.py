@@ -12,7 +12,7 @@ import zlib
 
 import channel_sdk.pyio as chsdkio
 
-from common.utils import load_cfg, merge_options
+from common.utils import load_cfg, merge_options, subst_vars
 from agent_helper import flip_ucci_labels
 from data_helper import read_content, recv_sth, send_sth, write_content, zip_and_b64encode, b64decode_and_unzip
 
@@ -39,6 +39,8 @@ class Simulator:
         self.result_party = list(result_party)
         self.compute_parties = self._get_compute_parties()
         self.results_dir = results_dir
+        self.var_mapping = {'results_dir': results_dir}
+        self.var_mapping.update(upper_args)
 
         self.party_id = cfg_dict['party_id']
         self.all_cfg = self.setup_cfg(cfg_dict)
@@ -82,7 +84,7 @@ class Simulator:
         user_cfg.pop('dynamic_parameter')
         merge_options(cfg, user_cfg)
 
-        # TODO: substitute variable
+        subst_vars(cfg, self.var_mapping)
 
         log.info(cfg)
         cfg.labels = get_iccs_action_space()
