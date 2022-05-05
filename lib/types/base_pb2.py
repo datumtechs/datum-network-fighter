@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z/github.com/Metisnetwork/Metis-Carrier/lib/types',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x14lib/types/base.proto\x12\x05types\"\xa1\x01\n\x0cOrganization\x12\x11\n\tnode_name\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x13\n\x0bidentity_id\x18\x03 \x01(\t\x12!\n\x06status\x18\x04 \x01(\x0e\x32\x11.types.DataStatus\x12\x11\n\tupdate_at\x18\x05 \x01(\x04\x12\x11\n\timage_url\x18\x06 \x01(\t\x12\x0f\n\x07\x64\x65tails\x18\x07 \x01(\t\"]\n\x10TaskOrganization\x12\x10\n\x08party_id\x18\x01 \x01(\t\x12\x11\n\tnode_name\x18\x02 \x01(\t\x12\x0f\n\x07node_id\x18\x03 \x01(\t\x12\x13\n\x0bidentity_id\x18\x04 \x01(\t\"-\n\x0eSimpleResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\"a\n\x17TaskResourceCostDeclare\x12\x0e\n\x06memory\x18\x01 \x01(\x04\x12\x11\n\tprocessor\x18\x02 \x01(\r\x12\x11\n\tbandwidth\x18\x03 \x01(\x04\x12\x10\n\x08\x64uration\x18\x04 \x01(\x04*@\n\x08UserType\x12\x10\n\x0cUser_Unknown\x10\x00\x12\n\n\x06User_1\x10\x01\x12\n\n\x06User_2\x10\x02\x12\n\n\x06User_3\x10\x03*R\n\nDataStatus\x12\x16\n\x12\x44\x61taStatus_Unknown\x10\x00\x12\x14\n\x10\x44\x61taStatus_Valid\x10\x01\x12\x16\n\x12\x44\x61taStatus_Invalid\x10\x02*Z\n\x0c\x43ommonStatus\x12\x18\n\x14\x43ommonStatus_Unknown\x10\x00\x12\x16\n\x12\x43ommonStatus_Valid\x10\x01\x12\x18\n\x14\x43ommonStatus_Invalid\x10\x02*M\n\x13\x41uditMetadataOption\x12\x11\n\rAudit_Pending\x10\x00\x12\x10\n\x0c\x41udit_Passed\x10\x01\x12\x11\n\rAudit_Refused\x10\x02*`\n\x0cMetadataType\x12\x18\n\x14MetadataType_Unknown\x10\x00\x12\x19\n\x15MetadataType_DataFile\x10\x01\x12\x1b\n\x17MetadataType_ModuleFile\x10\x02*i\n\x10\x44\x61taLocationType\x12\x1c\n\x18\x44\x61taLocationType_Unknown\x10\x00\x12\x1a\n\x16\x44\x61taLocationType_Local\x10\x01\x12\x1b\n\x17\x44\x61taLocationType_Remote\x10\x02*D\n\x0eOrigindataType\x12\x1a\n\x16OrigindataType_Unknown\x10\x00\x12\x16\n\x12OrigindataType_CSV\x10\x01*|\n\rMetadataState\x12\x19\n\x15MetadataState_Unknown\x10\x00\x12\x19\n\x15MetadataState_Created\x10\x01\x12\x1a\n\x16MetadataState_Released\x10\x02\x12\x19\n\x15MetadataState_Revoked\x10\x03*I\n\x11MetadataUsageType\x12\x11\n\rUsage_Unknown\x10\x00\x12\x10\n\x0cUsage_Period\x10\x01\x12\x0f\n\x0bUsage_Times\x10\x02*\x88\x01\n\nPowerState\x12\x16\n\x12PowerState_Unknown\x10\x00\x12\x16\n\x12PowerState_Created\x10\x01\x12\x17\n\x13PowerState_Released\x10\x02\x12\x19\n\x15PowerState_Occupation\x10\x03\x12\x16\n\x12PowerState_Revoked\x10\x04*\x9e\x01\n\x08TaskRole\x12\x14\n\x10TaskRole_Unknown\x10\x00\x12\x13\n\x0fTaskRole_Sender\x10\x01\x12\x19\n\x15TaskRole_DataSupplier\x10\x02\x12\x1a\n\x16TaskRole_PowerSupplier\x10\x03\x12\x15\n\x11TaskRole_Receiver\x10\x04\x12\x19\n\x15TaskRole_AlgoSupplier\x10\x05*}\n\tTaskState\x12\x15\n\x11TaskState_Unknown\x10\x00\x12\x15\n\x11TaskState_Pending\x10\x01\x12\x15\n\x11TaskState_Running\x10\x02\x12\x14\n\x10TaskState_Failed\x10\x03\x12\x15\n\x11TaskState_Succeed\x10\x04*\x82\x01\n\x16MetadataAuthorityState\x12\x13\n\x0fMAState_Unknown\x10\x00\x12\x13\n\x0fMAState_Created\x10\x01\x12\x14\n\x10MAState_Released\x10\x02\x12\x13\n\x0fMAState_Revoked\x10\x03\x12\x13\n\x0fMAState_Invalid\x10\x04\x42\x31Z/github.com/Metisnetwork/Metis-Carrier/lib/typesb\x06proto3'
+  serialized_pb=b'\n\x14lib/types/base.proto\x12\x05types\"\xcb\x01\n\x0cOrganization\x12\x11\n\tnode_name\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x13\n\x0bidentity_id\x18\x03 \x01(\t\x12&\n\x0b\x64\x61ta_status\x18\x04 \x01(\x0e\x32\x11.types.DataStatus\x12#\n\x06status\x18\x05 \x01(\x0e\x32\x13.types.CommonStatus\x12\x11\n\tupdate_at\x18\x06 \x01(\x04\x12\x11\n\timage_url\x18\x07 \x01(\t\x12\x0f\n\x07\x64\x65tails\x18\x08 \x01(\t\"]\n\x10TaskOrganization\x12\x10\n\x08party_id\x18\x01 \x01(\t\x12\x11\n\tnode_name\x18\x02 \x01(\t\x12\x0f\n\x07node_id\x18\x03 \x01(\t\x12\x13\n\x0bidentity_id\x18\x04 \x01(\t\"-\n\x0eSimpleResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\"a\n\x17TaskResourceCostDeclare\x12\x0e\n\x06memory\x18\x01 \x01(\x04\x12\x11\n\tprocessor\x18\x02 \x01(\r\x12\x11\n\tbandwidth\x18\x03 \x01(\x04\x12\x10\n\x08\x64uration\x18\x04 \x01(\x04*@\n\x08UserType\x12\x10\n\x0cUser_Unknown\x10\x00\x12\n\n\x06User_1\x10\x01\x12\n\n\x06User_2\x10\x02\x12\n\n\x06User_3\x10\x03*R\n\nDataStatus\x12\x16\n\x12\x44\x61taStatus_Unknown\x10\x00\x12\x14\n\x10\x44\x61taStatus_Valid\x10\x01\x12\x16\n\x12\x44\x61taStatus_Invalid\x10\x02*Z\n\x0c\x43ommonStatus\x12\x18\n\x14\x43ommonStatus_Unknown\x10\x00\x12\x16\n\x12\x43ommonStatus_Valid\x10\x01\x12\x18\n\x14\x43ommonStatus_Invalid\x10\x02*M\n\x13\x41uditMetadataOption\x12\x11\n\rAudit_Pending\x10\x00\x12\x10\n\x0c\x41udit_Passed\x10\x01\x12\x11\n\rAudit_Refused\x10\x02*`\n\x0cMetadataType\x12\x18\n\x14MetadataType_Unknown\x10\x00\x12\x19\n\x15MetadataType_DataFile\x10\x01\x12\x1b\n\x17MetadataType_ModuleFile\x10\x02*f\n\x10\x44\x61taLocationType\x12\x1c\n\x18\x44\x61taLocationType_Unknown\x10\x00\x12\x1a\n\x16\x44\x61taLocationType_Local\x10\x01\x12\x18\n\x14\x44\x61taLocationType_URL\x10\x02*\xd9\x01\n\x0eOrigindataType\x12\x1a\n\x16OrigindataType_Unknown\x10\x00\x12\x16\n\x12OrigindataType_CSV\x10\x01\x12\x16\n\x12OrigindataType_DIR\x10\x02\x12\x19\n\x15OrigindataType_BINARY\x10\x03\x12\x16\n\x12OrigindataType_XLS\x10\x04\x12\x17\n\x13OrigindataType_XLSX\x10\x05\x12\x16\n\x12OrigindataType_TXT\x10\x06\x12\x17\n\x13OrigindataType_JSON\x10\x07*|\n\rMetadataState\x12\x19\n\x15MetadataState_Unknown\x10\x00\x12\x19\n\x15MetadataState_Created\x10\x01\x12\x1a\n\x16MetadataState_Released\x10\x02\x12\x19\n\x15MetadataState_Revoked\x10\x03*I\n\x11MetadataUsageType\x12\x11\n\rUsage_Unknown\x10\x00\x12\x10\n\x0cUsage_Period\x10\x01\x12\x0f\n\x0bUsage_Times\x10\x02*\x88\x01\n\nPowerState\x12\x16\n\x12PowerState_Unknown\x10\x00\x12\x16\n\x12PowerState_Created\x10\x01\x12\x17\n\x13PowerState_Released\x10\x02\x12\x19\n\x15PowerState_Occupation\x10\x03\x12\x16\n\x12PowerState_Revoked\x10\x04*\x9e\x01\n\x08TaskRole\x12\x14\n\x10TaskRole_Unknown\x10\x00\x12\x13\n\x0fTaskRole_Sender\x10\x01\x12\x19\n\x15TaskRole_DataSupplier\x10\x02\x12\x1a\n\x16TaskRole_PowerSupplier\x10\x03\x12\x15\n\x11TaskRole_Receiver\x10\x04\x12\x19\n\x15TaskRole_AlgoSupplier\x10\x05*}\n\tTaskState\x12\x15\n\x11TaskState_Unknown\x10\x00\x12\x15\n\x11TaskState_Pending\x10\x01\x12\x15\n\x11TaskState_Running\x10\x02\x12\x14\n\x10TaskState_Failed\x10\x03\x12\x15\n\x11TaskState_Succeed\x10\x04*\x82\x01\n\x16MetadataAuthorityState\x12\x13\n\x0fMAState_Unknown\x10\x00\x12\x13\n\x0fMAState_Created\x10\x01\x12\x14\n\x10MAState_Released\x10\x02\x12\x13\n\x0fMAState_Revoked\x10\x03\x12\x13\n\x0fMAState_Invalid\x10\x04\x42\x31Z/github.com/Metisnetwork/Metis-Carrier/lib/typesb\x06proto3'
 )
 
 _USERTYPE = _descriptor.EnumDescriptor(
@@ -53,8 +53,8 @@ _USERTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=436,
-  serialized_end=500,
+  serialized_start=478,
+  serialized_end=542,
 )
 _sym_db.RegisterEnumDescriptor(_USERTYPE)
 
@@ -84,8 +84,8 @@ _DATASTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=502,
-  serialized_end=584,
+  serialized_start=544,
+  serialized_end=626,
 )
 _sym_db.RegisterEnumDescriptor(_DATASTATUS)
 
@@ -115,8 +115,8 @@ _COMMONSTATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=586,
-  serialized_end=676,
+  serialized_start=628,
+  serialized_end=718,
 )
 _sym_db.RegisterEnumDescriptor(_COMMONSTATUS)
 
@@ -146,8 +146,8 @@ _AUDITMETADATAOPTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=678,
-  serialized_end=755,
+  serialized_start=720,
+  serialized_end=797,
 )
 _sym_db.RegisterEnumDescriptor(_AUDITMETADATAOPTION)
 
@@ -177,8 +177,8 @@ _METADATATYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=757,
-  serialized_end=853,
+  serialized_start=799,
+  serialized_end=895,
 )
 _sym_db.RegisterEnumDescriptor(_METADATATYPE)
 
@@ -201,15 +201,15 @@ _DATALOCATIONTYPE = _descriptor.EnumDescriptor(
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='DataLocationType_Remote', index=2, number=2,
+      name='DataLocationType_URL', index=2, number=2,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=855,
-  serialized_end=960,
+  serialized_start=897,
+  serialized_end=999,
 )
 _sym_db.RegisterEnumDescriptor(_DATALOCATIONTYPE)
 
@@ -231,11 +231,41 @@ _ORIGINDATATYPE = _descriptor.EnumDescriptor(
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='OrigindataType_DIR', index=2, number=2,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='OrigindataType_BINARY', index=3, number=3,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='OrigindataType_XLS', index=4, number=4,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='OrigindataType_XLSX', index=5, number=5,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='OrigindataType_TXT', index=6, number=6,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='OrigindataType_JSON', index=7, number=7,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=962,
-  serialized_end=1030,
+  serialized_start=1002,
+  serialized_end=1219,
 )
 _sym_db.RegisterEnumDescriptor(_ORIGINDATATYPE)
 
@@ -270,8 +300,8 @@ _METADATASTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1032,
-  serialized_end=1156,
+  serialized_start=1221,
+  serialized_end=1345,
 )
 _sym_db.RegisterEnumDescriptor(_METADATASTATE)
 
@@ -301,8 +331,8 @@ _METADATAUSAGETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1158,
-  serialized_end=1231,
+  serialized_start=1347,
+  serialized_end=1420,
 )
 _sym_db.RegisterEnumDescriptor(_METADATAUSAGETYPE)
 
@@ -342,8 +372,8 @@ _POWERSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1234,
-  serialized_end=1370,
+  serialized_start=1423,
+  serialized_end=1559,
 )
 _sym_db.RegisterEnumDescriptor(_POWERSTATE)
 
@@ -388,8 +418,8 @@ _TASKROLE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1373,
-  serialized_end=1531,
+  serialized_start=1562,
+  serialized_end=1720,
 )
 _sym_db.RegisterEnumDescriptor(_TASKROLE)
 
@@ -429,8 +459,8 @@ _TASKSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1533,
-  serialized_end=1658,
+  serialized_start=1722,
+  serialized_end=1847,
 )
 _sym_db.RegisterEnumDescriptor(_TASKSTATE)
 
@@ -470,8 +500,8 @@ _METADATAAUTHORITYSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1661,
-  serialized_end=1791,
+  serialized_start=1850,
+  serialized_end=1980,
 )
 _sym_db.RegisterEnumDescriptor(_METADATAAUTHORITYSTATE)
 
@@ -494,9 +524,15 @@ MetadataType_DataFile = 1
 MetadataType_ModuleFile = 2
 DataLocationType_Unknown = 0
 DataLocationType_Local = 1
-DataLocationType_Remote = 2
+DataLocationType_URL = 2
 OrigindataType_Unknown = 0
 OrigindataType_CSV = 1
+OrigindataType_DIR = 2
+OrigindataType_BINARY = 3
+OrigindataType_XLS = 4
+OrigindataType_XLSX = 5
+OrigindataType_TXT = 6
+OrigindataType_JSON = 7
 MetadataState_Unknown = 0
 MetadataState_Created = 1
 MetadataState_Released = 2
@@ -558,29 +594,36 @@ _ORGANIZATION = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='status', full_name='types.Organization.status', index=3,
+      name='data_status', full_name='types.Organization.data_status', index=3,
       number=4, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='update_at', full_name='types.Organization.update_at', index=4,
-      number=5, type=4, cpp_type=4, label=1,
+      name='status', full_name='types.Organization.status', index=4,
+      number=5, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='image_url', full_name='types.Organization.image_url', index=5,
-      number=6, type=9, cpp_type=9, label=1,
+      name='update_at', full_name='types.Organization.update_at', index=5,
+      number=6, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='image_url', full_name='types.Organization.image_url', index=6,
+      number=7, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='details', full_name='types.Organization.details', index=6,
-      number=7, type=9, cpp_type=9, label=1,
+      name='details', full_name='types.Organization.details', index=7,
+      number=8, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -598,7 +641,7 @@ _ORGANIZATION = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=32,
-  serialized_end=193,
+  serialized_end=235,
 )
 
 
@@ -650,8 +693,8 @@ _TASKORGANIZATION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=195,
-  serialized_end=288,
+  serialized_start=237,
+  serialized_end=330,
 )
 
 
@@ -689,8 +732,8 @@ _SIMPLERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=290,
-  serialized_end=335,
+  serialized_start=332,
+  serialized_end=377,
 )
 
 
@@ -742,11 +785,12 @@ _TASKRESOURCECOSTDECLARE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=337,
-  serialized_end=434,
+  serialized_start=379,
+  serialized_end=476,
 )
 
-_ORGANIZATION.fields_by_name['status'].enum_type = _DATASTATUS
+_ORGANIZATION.fields_by_name['data_status'].enum_type = _DATASTATUS
+_ORGANIZATION.fields_by_name['status'].enum_type = _COMMONSTATUS
 DESCRIPTOR.message_types_by_name['Organization'] = _ORGANIZATION
 DESCRIPTOR.message_types_by_name['TaskOrganization'] = _TASKORGANIZATION
 DESCRIPTOR.message_types_by_name['SimpleResponse'] = _SIMPLERESPONSE

@@ -25,7 +25,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z-github.com/Metisnetwork/Metis-Carrier/lib/api',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x19lib/api/sys_rpc_api.proto\x12\x06rpcapi\x1a\x14lib/types/base.proto\x1a\x18lib/types/taskdata.proto\x1a\x1clib/types/resourcedata.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xa6\x03\n\x0cYarnNodeInfo\x12#\n\tnode_type\x18\x01 \x01(\x0e\x32\x10.rpcapi.NodeType\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x13\n\x0binternal_ip\x18\x03 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\t\x12\x15\n\rexternal_port\x18\x06 \x01(\t\x12\x15\n\ridentity_type\x18\x07 \x01(\t\x12\x13\n\x0bidentity_id\x18\x08 \x01(\t\x12\x33\n\rresource_used\x18\t \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12$\n\x05state\x18\n \x01(\x0e\x32\x15.rpcapi.YarnNodeState\x12\x0c\n\x04name\x18\x0c \x01(\t\x12\x14\n\x0crelate_peers\x18\r \x01(\r\x12\x1c\n\x14local_bootstrap_node\x18\x0e \x01(\t\x12\x18\n\x10local_multi_addr\x18\x0f \x01(\t\x12%\n\x1dobserver_proxy_wallet_address\x18\x10 \x01(\t\"p\n\x12YarnRegisteredPeer\x12#\n\tnode_type\x18\x01 \x01(\x0e\x32\x10.rpcapi.NodeType\x12\x35\n\x0bnode_detail\x18\x02 \x01(\x0b\x32 .rpcapi.YarnRegisteredPeerDetail\"\x8e\x02\n\x18YarnRegisteredPeerDetail\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0binternal_ip\x18\x02 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x03 \x01(\t\x12\x15\n\rinternal_port\x18\x04 \x01(\t\x12\x15\n\rexternal_port\x18\x05 \x01(\t\x12%\n\nconn_state\x18\x06 \x01(\x0e\x32\x11.rpcapi.ConnState\x12\x10\n\x08\x64uration\x18\x07 \x01(\x04\x12\x12\n\ntask_count\x18\x08 \x01(\r\x12\x14\n\x0ctask_id_list\x18\t \x03(\t\x12\x12\n\nfile_count\x18\n \x01(\r\x12\x17\n\x0f\x66ile_total_size\x18\x0b \x01(\r\"S\n\x08SeedPeer\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x01(\t\x12\x12\n\nis_default\x18\x02 \x01(\x08\x12%\n\nconn_state\x18\x03 \x01(\x0e\x32\x11.rpcapi.ConnState\"]\n\x13GetNodeInfoResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12)\n\x0binformation\x18\x03 \x01(\x0b\x32\x14.rpcapi.YarnNodeInfo\")\n\x1b\x44\x65leteRegisteredNodeRequest\x12\n\n\x02id\x18\x01 \x01(\t\"\"\n\x12SetSeedNodeRequest\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x01(\t\"%\n\x15\x44\x65leteSeedNodeRequest\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x01(\t\"R\n\x13SetSeedNodeResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x1e\n\x04node\x18\x03 \x01(\x0b\x32\x10.rpcapi.SeedPeer\"W\n\x17GetSeedNodeListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x1f\n\x05nodes\x18\x03 \x03(\x0b\x32\x10.rpcapi.SeedPeer\"l\n\x12SetDataNodeRequest\x12\x13\n\x0binternal_ip\x18\x03 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\t\x12\x15\n\rexternal_port\x18\x06 \x01(\t\"b\n\x13SetDataNodeResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12.\n\x04node\x18\x03 \x01(\x0b\x32 .rpcapi.YarnRegisteredPeerDetail\"{\n\x15UpdateDataNodeRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0binternal_ip\x18\x03 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\t\x12\x15\n\rexternal_port\x18\x06 \x01(\t\"g\n\x1dGetRegisteredNodeListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12)\n\x05nodes\x18\x03 \x03(\x0b\x32\x1a.rpcapi.YarnRegisteredPeer\"k\n\x11SetJobNodeRequest\x12\x13\n\x0binternal_ip\x18\x03 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\t\x12\x15\n\rexternal_port\x18\x06 \x01(\t\"a\n\x12SetJobNodeResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12.\n\x04node\x18\x03 \x01(\x0b\x32 .rpcapi.YarnRegisteredPeerDetail\"z\n\x14UpdateJobNodeRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0binternal_ip\x18\x03 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\t\x12\x15\n\rexternal_port\x18\x06 \x01(\t\">\n\x16ReportTaskEventRequest\x12$\n\ntask_event\x18\x01 \x01(\x0b\x32\x10.types.TaskEvent\"\xaf\x01\n\x1eReportTaskResourceUsageRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\x12#\n\tnode_type\x18\x03 \x01(\x0e\x32\x10.rpcapi.NodeType\x12\n\n\x02ip\x18\x04 \x01(\t\x12\x0c\n\x04port\x18\x05 \x01(\t\x12+\n\x05usage\x18\x06 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\"o\n\x1aReportUpFileSummaryRequest\x12\x11\n\torigin_id\x18\x01 \x01(\t\x12\x11\n\tdata_path\x18\x02 \x01(\t\x12\n\n\x02ip\x18\x03 \x01(\t\x12\x0c\n\x04port\x18\x04 \x01(\t\x12\x11\n\tdata_hash\x18\x05 \x01(\t\"\x84\x01\n\"ReportTaskResultFileSummaryRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\torigin_id\x18\x02 \x01(\t\x12\x11\n\tdata_path\x18\x03 \x01(\t\x12\n\n\x02ip\x18\x04 \x01(\t\x12\x0c\n\x04port\x18\x05 \x01(\t\x12\r\n\x05\x65xtra\x18\x06 \x01(\t\"\\\n\x1dQueryAvailableDataNodeRequest\x12\x11\n\tfile_size\x18\x01 \x01(\x04\x12(\n\tfile_type\x18\x02 \x01(\x0e\x32\x15.types.OrigindataType\"2\n\x16QueryAvailableDataNode\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\t\"r\n\x1eQueryAvailableDataNodeResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x33\n\x0binformation\x18\x03 \x01(\x0b\x32\x1e.rpcapi.QueryAvailableDataNode\"-\n\x18QueryFilePositionRequest\x12\x11\n\torigin_id\x18\x01 \x01(\t\"@\n\x11QueryFilePosition\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\t\x12\x11\n\tdata_path\x18\x03 \x01(\t\"h\n\x19QueryFilePositionResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12.\n\x0binformation\x18\x03 \x01(\x0b\x32\x19.rpcapi.QueryFilePosition\"2\n\x1fGetTaskResultFileSummaryRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"\xa6\x01\n\x18GetTaskResultFileSummary\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x15\n\rmetadata_name\x18\x02 \x01(\t\x12\x13\n\x0bmetadata_id\x18\x03 \x01(\t\x12\x11\n\torigin_id\x18\x04 \x01(\t\x12\x11\n\tdata_path\x18\x05 \x01(\t\x12\n\n\x02ip\x18\x06 \x01(\t\x12\x0c\n\x04port\x18\x07 \x01(\t\x12\r\n\x05\x65xtra\x18\x08 \x01(\t\"v\n GetTaskResultFileSummaryResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x35\n\x0binformation\x18\x03 \x01(\x0b\x32 .rpcapi.GetTaskResultFileSummary\"\x80\x01\n$GetTaskResultFileSummaryListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12;\n\x11task_result_files\x18\x03 \x03(\x0b\x32 .rpcapi.GetTaskResultFileSummary\"Z\n*GenerateObServerProxyWalletAddressResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x03 \x01(\t*{\n\x08NodeType\x12\x14\n\x10NodeType_Unknown\x10\x00\x12\x15\n\x11NodeType_SeedNode\x10\x01\x12\x14\n\x10NodeType_JobNode\x10\x02\x12\x15\n\x11NodeType_DataNode\x10\x03\x12\x15\n\x11NodeType_YarnNode\x10\x04*i\n\rYarnNodeState\x12\x11\n\rState_Unknown\x10\x00\x12\x10\n\x0cState_Active\x10\x01\x12\x0f\n\x0bState_Leave\x10\x02\x12\x0e\n\nState_Join\x10\x03\x12\x12\n\x0eState_Unuseful\x10\x04*?\n\tConnState\x12\x19\n\x15\x43onnState_UnConnected\x10\x00\x12\x17\n\x13\x43onnState_Connected\x10\x01\x32\xa6\x15\n\x0bYarnService\x12\x65\n\x0bGetNodeInfo\x12\x16.google.protobuf.Empty\x1a\x1b.rpcapi.GetNodeInfoResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/carrier/v1/yarn/nodeInfo\x12k\n\x0bSetSeedNode\x12\x1a.rpcapi.SetSeedNodeRequest\x1a\x1b.rpcapi.SetSeedNodeResponse\"#\x82\xd3\xe4\x93\x02\x1d\"\x18/carrier/v1/yarn/setSeed:\x01*\x12n\n\x0e\x44\x65leteSeedNode\x12\x1d.rpcapi.DeleteSeedNodeRequest\x1a\x15.types.SimpleResponse\"&\x82\xd3\xe4\x93\x02 \"\x1b/carrier/v1/yarn/deleteSeed:\x01*\x12m\n\x0fGetSeedNodeList\x12\x16.google.protobuf.Empty\x1a\x1f.rpcapi.GetSeedNodeListResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/carrier/v1/yarn/seedList\x12o\n\x0bSetDataNode\x12\x1a.rpcapi.SetDataNodeRequest\x1a\x1b.rpcapi.SetDataNodeResponse\"\'\x82\xd3\xe4\x93\x02!\"\x1c/carrier/v1/yarn/setDataNode:\x01*\x12x\n\x0eUpdateDataNode\x12\x1d.rpcapi.UpdateDataNodeRequest\x1a\x1b.rpcapi.SetDataNodeResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/carrier/v1/yarn/updateDataNode:\x01*\x12x\n\x0e\x44\x65leteDataNode\x12#.rpcapi.DeleteRegisteredNodeRequest\x1a\x15.types.SimpleResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/carrier/v1/yarn/deleteDataNode:\x01*\x12w\n\x0fGetDataNodeList\x12\x16.google.protobuf.Empty\x1a%.rpcapi.GetRegisteredNodeListResponse\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/carrier/v1/yarn/dataNodeList\x12k\n\nSetJobNode\x12\x19.rpcapi.SetJobNodeRequest\x1a\x1a.rpcapi.SetJobNodeResponse\"&\x82\xd3\xe4\x93\x02 \"\x1b/carrier/v1/yarn/setJobNode:\x01*\x12t\n\rUpdateJobNode\x12\x1c.rpcapi.UpdateJobNodeRequest\x1a\x1a.rpcapi.SetJobNodeResponse\")\x82\xd3\xe4\x93\x02#\"\x1e/carrier/v1/yarn/updateJobNode:\x01*\x12v\n\rDeleteJobNode\x12#.rpcapi.DeleteRegisteredNodeRequest\x1a\x15.types.SimpleResponse\")\x82\xd3\xe4\x93\x02#\"\x1e/carrier/v1/yarn/deleteJobNode:\x01*\x12u\n\x0eGetJobNodeList\x12\x16.google.protobuf.Empty\x1a%.rpcapi.GetRegisteredNodeListResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/carrier/v1/yarn/jobNodeList\x12u\n\x0fReportTaskEvent\x12\x1e.rpcapi.ReportTaskEventRequest\x1a\x15.types.SimpleResponse\"+\x82\xd3\xe4\x93\x02%\" /carrier/v1/yarn/reportTaskEvent:\x01*\x12\x8d\x01\n\x17ReportTaskResourceUsage\x12&.rpcapi.ReportTaskResourceUsageRequest\x1a\x15.types.SimpleResponse\"3\x82\xd3\xe4\x93\x02-\"(/carrier/v1/yarn/reportTaskResourceUsage:\x01*\x12\x81\x01\n\x13ReportUpFileSummary\x12\".rpcapi.ReportUpFileSummaryRequest\x1a\x15.types.SimpleResponse\"/\x82\xd3\xe4\x93\x02)\"$/carrier/v1/yarn/reportUpFileSummary:\x01*\x12\x99\x01\n\x1bReportTaskResultFileSummary\x12*.rpcapi.ReportTaskResultFileSummaryRequest\x1a\x15.types.SimpleResponse\"7\x82\xd3\xe4\x93\x02\x31\",/carrier/v1/yarn/reportTaskResultFileSummary:\x01*\x12\x9b\x01\n\x16QueryAvailableDataNode\x12%.rpcapi.QueryAvailableDataNodeRequest\x1a&.rpcapi.QueryAvailableDataNodeResponse\"2\x82\xd3\xe4\x93\x02,\"\'/carrier/v1/yarn/queryAvailableDataNode:\x01*\x12\x87\x01\n\x11QueryFilePosition\x12 .rpcapi.QueryFilePositionRequest\x1a!.rpcapi.QueryFilePositionResponse\"-\x82\xd3\xe4\x93\x02\'\"\"/carrier/v1/yarn/queryFilePosition:\x01*\x12\xa0\x01\n\x18GetTaskResultFileSummary\x12\'.rpcapi.GetTaskResultFileSummaryRequest\x1a(.rpcapi.GetTaskResultFileSummaryResponse\"1\x82\xd3\xe4\x93\x02+\"&/carrier/v1/yarn/taskResultFileSummary:\x01*\x12\x98\x01\n\x1cGetTaskResultFileSummaryList\x12\x16.google.protobuf.Empty\x1a,.rpcapi.GetTaskResultFileSummaryListResponse\"2\x82\xd3\xe4\x93\x02,\x12*/carrier/v1/yarn/taskResultFileSummaryList\x12\xa6\x01\n\"GenerateObServerProxyWalletAddress\x12\x16.google.protobuf.Empty\x1a\x32.rpcapi.GenerateObServerProxyWalletAddressResponse\"4\x82\xd3\xe4\x93\x02.\x12,/carrier/v1/yarn/generateObserverProxyWalletB/Z-github.com/Metisnetwork/Metis-Carrier/lib/apib\x06proto3'
+  serialized_pb=b'\n\x19lib/api/sys_rpc_api.proto\x12\x06rpcapi\x1a\x14lib/types/base.proto\x1a\x18lib/types/taskdata.proto\x1a\x1clib/types/resourcedata.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xa6\x03\n\x0cYarnNodeInfo\x12#\n\tnode_type\x18\x01 \x01(\x0e\x32\x10.rpcapi.NodeType\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x13\n\x0binternal_ip\x18\x03 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\t\x12\x15\n\rexternal_port\x18\x06 \x01(\t\x12\x15\n\ridentity_type\x18\x07 \x01(\t\x12\x13\n\x0bidentity_id\x18\x08 \x01(\t\x12\x33\n\rresource_used\x18\t \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12$\n\x05state\x18\n \x01(\x0e\x32\x15.rpcapi.YarnNodeState\x12\x0c\n\x04name\x18\x0c \x01(\t\x12\x14\n\x0crelate_peers\x18\r \x01(\r\x12\x1c\n\x14local_bootstrap_node\x18\x0e \x01(\t\x12\x18\n\x10local_multi_addr\x18\x0f \x01(\t\x12%\n\x1dobserver_proxy_wallet_address\x18\x10 \x01(\t\"p\n\x12YarnRegisteredPeer\x12#\n\tnode_type\x18\x01 \x01(\x0e\x32\x10.rpcapi.NodeType\x12\x35\n\x0bnode_detail\x18\x02 \x01(\x0b\x32 .rpcapi.YarnRegisteredPeerDetail\"\x8e\x02\n\x18YarnRegisteredPeerDetail\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0binternal_ip\x18\x02 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x03 \x01(\t\x12\x15\n\rinternal_port\x18\x04 \x01(\t\x12\x15\n\rexternal_port\x18\x05 \x01(\t\x12%\n\nconn_state\x18\x06 \x01(\x0e\x32\x11.rpcapi.ConnState\x12\x10\n\x08\x64uration\x18\x07 \x01(\x04\x12\x12\n\ntask_count\x18\x08 \x01(\r\x12\x14\n\x0ctask_id_list\x18\t \x03(\t\x12\x12\n\nfile_count\x18\n \x01(\r\x12\x17\n\x0f\x66ile_total_size\x18\x0b \x01(\r\"S\n\x08SeedPeer\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x01(\t\x12\x12\n\nis_default\x18\x02 \x01(\x08\x12%\n\nconn_state\x18\x03 \x01(\x0e\x32\x11.rpcapi.ConnState\"]\n\x13GetNodeInfoResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12)\n\x0binformation\x18\x03 \x01(\x0b\x32\x14.rpcapi.YarnNodeInfo\")\n\x1b\x44\x65leteRegisteredNodeRequest\x12\n\n\x02id\x18\x01 \x01(\t\"\"\n\x12SetSeedNodeRequest\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x01(\t\"%\n\x15\x44\x65leteSeedNodeRequest\x12\x0c\n\x04\x61\x64\x64r\x18\x01 \x01(\t\"R\n\x13SetSeedNodeResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x1e\n\x04node\x18\x03 \x01(\x0b\x32\x10.rpcapi.SeedPeer\"W\n\x17GetSeedNodeListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x1f\n\x05nodes\x18\x03 \x03(\x0b\x32\x10.rpcapi.SeedPeer\"l\n\x12SetDataNodeRequest\x12\x13\n\x0binternal_ip\x18\x03 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\t\x12\x15\n\rexternal_port\x18\x06 \x01(\t\"b\n\x13SetDataNodeResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12.\n\x04node\x18\x03 \x01(\x0b\x32 .rpcapi.YarnRegisteredPeerDetail\"{\n\x15UpdateDataNodeRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0binternal_ip\x18\x03 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\t\x12\x15\n\rexternal_port\x18\x06 \x01(\t\"g\n\x1dGetRegisteredNodeListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12)\n\x05nodes\x18\x03 \x03(\x0b\x32\x1a.rpcapi.YarnRegisteredPeer\"k\n\x11SetJobNodeRequest\x12\x13\n\x0binternal_ip\x18\x03 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\t\x12\x15\n\rexternal_port\x18\x06 \x01(\t\"a\n\x12SetJobNodeResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12.\n\x04node\x18\x03 \x01(\x0b\x32 .rpcapi.YarnRegisteredPeerDetail\"z\n\x14UpdateJobNodeRequest\x12\n\n\x02id\x18\x01 \x01(\t\x12\x13\n\x0binternal_ip\x18\x03 \x01(\t\x12\x13\n\x0b\x65xternal_ip\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\t\x12\x15\n\rexternal_port\x18\x06 \x01(\t\">\n\x16ReportTaskEventRequest\x12$\n\ntask_event\x18\x01 \x01(\x0b\x32\x10.types.TaskEvent\"\xaf\x01\n\x1eReportTaskResourceUsageRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x10\n\x08party_id\x18\x02 \x01(\t\x12#\n\tnode_type\x18\x03 \x01(\x0e\x32\x10.rpcapi.NodeType\x12\n\n\x02ip\x18\x04 \x01(\t\x12\x0c\n\x04port\x18\x05 \x01(\t\x12+\n\x05usage\x18\x06 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\"\x9f\x01\n\x1aReportUpFileSummaryRequest\x12\x11\n\torigin_id\x18\x01 \x01(\t\x12\n\n\x02ip\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\t\x12\x11\n\tdata_hash\x18\x04 \x01(\t\x12(\n\tdata_type\x18\x05 \x01(\x0e\x32\x15.types.OrigindataType\x12\x17\n\x0fmetadata_option\x18\x06 \x01(\t\"\xc7\x01\n\"ReportTaskResultFileSummaryRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\torigin_id\x18\x02 \x01(\t\x12\n\n\x02ip\x18\x03 \x01(\t\x12\x0c\n\x04port\x18\x04 \x01(\t\x12\r\n\x05\x65xtra\x18\x05 \x01(\t\x12\x11\n\tdata_hash\x18\x06 \x01(\t\x12(\n\tdata_type\x18\x07 \x01(\x0e\x32\x15.types.OrigindataType\x12\x17\n\x0fmetadata_option\x18\x08 \x01(\t\"\\\n\x1dQueryAvailableDataNodeRequest\x12\x11\n\tdata_size\x18\x01 \x01(\x04\x12(\n\tdata_type\x18\x02 \x01(\x0e\x32\x15.types.OrigindataType\"2\n\x16QueryAvailableDataNode\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\t\"r\n\x1eQueryAvailableDataNodeResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x33\n\x0binformation\x18\x03 \x01(\x0b\x32\x1e.rpcapi.QueryAvailableDataNode\"-\n\x18QueryFilePositionRequest\x12\x11\n\torigin_id\x18\x01 \x01(\t\"@\n\x11QueryFilePosition\x12\n\n\x02ip\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\t\x12\x11\n\tdata_path\x18\x03 \x01(\t\"h\n\x19QueryFilePositionResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12.\n\x0binformation\x18\x03 \x01(\x0b\x32\x19.rpcapi.QueryFilePosition\"2\n\x1fGetTaskResultFileSummaryRequest\x12\x0f\n\x07task_id\x18\x01 \x01(\t\"\xe9\x01\n\x18GetTaskResultFileSummary\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x15\n\rmetadata_name\x18\x02 \x01(\t\x12\x13\n\x0bmetadata_id\x18\x03 \x01(\t\x12\x11\n\torigin_id\x18\x04 \x01(\t\x12\n\n\x02ip\x18\x05 \x01(\t\x12\x0c\n\x04port\x18\x06 \x01(\t\x12\r\n\x05\x65xtra\x18\x07 \x01(\t\x12\x11\n\tdata_hash\x18\x08 \x01(\t\x12(\n\tdata_type\x18\t \x01(\x0e\x32\x15.types.OrigindataType\x12\x17\n\x0fmetadata_option\x18\n \x01(\t\"v\n GetTaskResultFileSummaryResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x35\n\x0binformation\x18\x03 \x01(\x0b\x32 .rpcapi.GetTaskResultFileSummary\"\x80\x01\n$GetTaskResultFileSummaryListResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12;\n\x11task_result_files\x18\x03 \x03(\x0b\x32 .rpcapi.GetTaskResultFileSummary\"Z\n*GenerateObServerProxyWalletAddressResponse\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x0f\n\x07\x61\x64\x64ress\x18\x03 \x01(\t*{\n\x08NodeType\x12\x14\n\x10NodeType_Unknown\x10\x00\x12\x15\n\x11NodeType_SeedNode\x10\x01\x12\x14\n\x10NodeType_JobNode\x10\x02\x12\x15\n\x11NodeType_DataNode\x10\x03\x12\x15\n\x11NodeType_YarnNode\x10\x04*i\n\rYarnNodeState\x12\x11\n\rState_Unknown\x10\x00\x12\x10\n\x0cState_Active\x10\x01\x12\x0f\n\x0bState_Leave\x10\x02\x12\x0e\n\nState_Join\x10\x03\x12\x12\n\x0eState_Unuseful\x10\x04*?\n\tConnState\x12\x19\n\x15\x43onnState_UnConnected\x10\x00\x12\x17\n\x13\x43onnState_Connected\x10\x01\x32\xa6\x15\n\x0bYarnService\x12\x65\n\x0bGetNodeInfo\x12\x16.google.protobuf.Empty\x1a\x1b.rpcapi.GetNodeInfoResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/carrier/v1/yarn/nodeInfo\x12k\n\x0bSetSeedNode\x12\x1a.rpcapi.SetSeedNodeRequest\x1a\x1b.rpcapi.SetSeedNodeResponse\"#\x82\xd3\xe4\x93\x02\x1d\"\x18/carrier/v1/yarn/setSeed:\x01*\x12n\n\x0e\x44\x65leteSeedNode\x12\x1d.rpcapi.DeleteSeedNodeRequest\x1a\x15.types.SimpleResponse\"&\x82\xd3\xe4\x93\x02 \"\x1b/carrier/v1/yarn/deleteSeed:\x01*\x12m\n\x0fGetSeedNodeList\x12\x16.google.protobuf.Empty\x1a\x1f.rpcapi.GetSeedNodeListResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/carrier/v1/yarn/seedList\x12o\n\x0bSetDataNode\x12\x1a.rpcapi.SetDataNodeRequest\x1a\x1b.rpcapi.SetDataNodeResponse\"\'\x82\xd3\xe4\x93\x02!\"\x1c/carrier/v1/yarn/setDataNode:\x01*\x12x\n\x0eUpdateDataNode\x12\x1d.rpcapi.UpdateDataNodeRequest\x1a\x1b.rpcapi.SetDataNodeResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/carrier/v1/yarn/updateDataNode:\x01*\x12x\n\x0e\x44\x65leteDataNode\x12#.rpcapi.DeleteRegisteredNodeRequest\x1a\x15.types.SimpleResponse\"*\x82\xd3\xe4\x93\x02$\"\x1f/carrier/v1/yarn/deleteDataNode:\x01*\x12w\n\x0fGetDataNodeList\x12\x16.google.protobuf.Empty\x1a%.rpcapi.GetRegisteredNodeListResponse\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/carrier/v1/yarn/dataNodeList\x12k\n\nSetJobNode\x12\x19.rpcapi.SetJobNodeRequest\x1a\x1a.rpcapi.SetJobNodeResponse\"&\x82\xd3\xe4\x93\x02 \"\x1b/carrier/v1/yarn/setJobNode:\x01*\x12t\n\rUpdateJobNode\x12\x1c.rpcapi.UpdateJobNodeRequest\x1a\x1a.rpcapi.SetJobNodeResponse\")\x82\xd3\xe4\x93\x02#\"\x1e/carrier/v1/yarn/updateJobNode:\x01*\x12v\n\rDeleteJobNode\x12#.rpcapi.DeleteRegisteredNodeRequest\x1a\x15.types.SimpleResponse\")\x82\xd3\xe4\x93\x02#\"\x1e/carrier/v1/yarn/deleteJobNode:\x01*\x12u\n\x0eGetJobNodeList\x12\x16.google.protobuf.Empty\x1a%.rpcapi.GetRegisteredNodeListResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/carrier/v1/yarn/jobNodeList\x12u\n\x0fReportTaskEvent\x12\x1e.rpcapi.ReportTaskEventRequest\x1a\x15.types.SimpleResponse\"+\x82\xd3\xe4\x93\x02%\" /carrier/v1/yarn/reportTaskEvent:\x01*\x12\x8d\x01\n\x17ReportTaskResourceUsage\x12&.rpcapi.ReportTaskResourceUsageRequest\x1a\x15.types.SimpleResponse\"3\x82\xd3\xe4\x93\x02-\"(/carrier/v1/yarn/reportTaskResourceUsage:\x01*\x12\x81\x01\n\x13ReportUpFileSummary\x12\".rpcapi.ReportUpFileSummaryRequest\x1a\x15.types.SimpleResponse\"/\x82\xd3\xe4\x93\x02)\"$/carrier/v1/yarn/reportUpFileSummary:\x01*\x12\x99\x01\n\x1bReportTaskResultFileSummary\x12*.rpcapi.ReportTaskResultFileSummaryRequest\x1a\x15.types.SimpleResponse\"7\x82\xd3\xe4\x93\x02\x31\",/carrier/v1/yarn/reportTaskResultFileSummary:\x01*\x12\x9b\x01\n\x16QueryAvailableDataNode\x12%.rpcapi.QueryAvailableDataNodeRequest\x1a&.rpcapi.QueryAvailableDataNodeResponse\"2\x82\xd3\xe4\x93\x02,\"\'/carrier/v1/yarn/queryAvailableDataNode:\x01*\x12\x87\x01\n\x11QueryFilePosition\x12 .rpcapi.QueryFilePositionRequest\x1a!.rpcapi.QueryFilePositionResponse\"-\x82\xd3\xe4\x93\x02\'\"\"/carrier/v1/yarn/queryFilePosition:\x01*\x12\xa0\x01\n\x18GetTaskResultFileSummary\x12\'.rpcapi.GetTaskResultFileSummaryRequest\x1a(.rpcapi.GetTaskResultFileSummaryResponse\"1\x82\xd3\xe4\x93\x02+\"&/carrier/v1/yarn/taskResultFileSummary:\x01*\x12\x98\x01\n\x1cGetTaskResultFileSummaryList\x12\x16.google.protobuf.Empty\x1a,.rpcapi.GetTaskResultFileSummaryListResponse\"2\x82\xd3\xe4\x93\x02,\x12*/carrier/v1/yarn/taskResultFileSummaryList\x12\xa6\x01\n\"GenerateObServerProxyWalletAddress\x12\x16.google.protobuf.Empty\x1a\x32.rpcapi.GenerateObServerProxyWalletAddressResponse\"4\x82\xd3\xe4\x93\x02.\x12,/carrier/v1/yarn/generateObserverProxyWalletB/Z-github.com/Metisnetwork/Metis-Carrier/lib/apib\x06proto3'
   ,
   dependencies=[lib_dot_types_dot_base__pb2.DESCRIPTOR,lib_dot_types_dot_taskdata__pb2.DESCRIPTOR,lib_dot_types_dot_resourcedata__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
@@ -64,8 +64,8 @@ _NODETYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=3764,
-  serialized_end=3887,
+  serialized_start=3947,
+  serialized_end=4070,
 )
 _sym_db.RegisterEnumDescriptor(_NODETYPE)
 
@@ -105,8 +105,8 @@ _YARNNODESTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=3889,
-  serialized_end=3994,
+  serialized_start=4072,
+  serialized_end=4177,
 )
 _sym_db.RegisterEnumDescriptor(_YARNNODESTATE)
 
@@ -131,8 +131,8 @@ _CONNSTATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=3996,
-  serialized_end=4059,
+  serialized_start=4179,
+  serialized_end=4242,
 )
 _sym_db.RegisterEnumDescriptor(_CONNSTATE)
 
@@ -1182,29 +1182,36 @@ _REPORTUPFILESUMMARYREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='data_path', full_name='rpcapi.ReportUpFileSummaryRequest.data_path', index=1,
+      name='ip', full_name='rpcapi.ReportUpFileSummaryRequest.ip', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='ip', full_name='rpcapi.ReportUpFileSummaryRequest.ip', index=2,
+      name='port', full_name='rpcapi.ReportUpFileSummaryRequest.port', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='port', full_name='rpcapi.ReportUpFileSummaryRequest.port', index=3,
+      name='data_hash', full_name='rpcapi.ReportUpFileSummaryRequest.data_hash', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='data_hash', full_name='rpcapi.ReportUpFileSummaryRequest.data_hash', index=4,
-      number=5, type=9, cpp_type=9, label=1,
+      name='data_type', full_name='rpcapi.ReportUpFileSummaryRequest.data_type', index=4,
+      number=5, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='metadata_option', full_name='rpcapi.ReportUpFileSummaryRequest.metadata_option', index=5,
+      number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -1221,8 +1228,8 @@ _REPORTUPFILESUMMARYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2471,
-  serialized_end=2582,
+  serialized_start=2472,
+  serialized_end=2631,
 )
 
 
@@ -1249,29 +1256,43 @@ _REPORTTASKRESULTFILESUMMARYREQUEST = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='data_path', full_name='rpcapi.ReportTaskResultFileSummaryRequest.data_path', index=2,
+      name='ip', full_name='rpcapi.ReportTaskResultFileSummaryRequest.ip', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='ip', full_name='rpcapi.ReportTaskResultFileSummaryRequest.ip', index=3,
+      name='port', full_name='rpcapi.ReportTaskResultFileSummaryRequest.port', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='port', full_name='rpcapi.ReportTaskResultFileSummaryRequest.port', index=4,
+      name='extra', full_name='rpcapi.ReportTaskResultFileSummaryRequest.extra', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='extra', full_name='rpcapi.ReportTaskResultFileSummaryRequest.extra', index=5,
+      name='data_hash', full_name='rpcapi.ReportTaskResultFileSummaryRequest.data_hash', index=5,
       number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='data_type', full_name='rpcapi.ReportTaskResultFileSummaryRequest.data_type', index=6,
+      number=7, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='metadata_option', full_name='rpcapi.ReportTaskResultFileSummaryRequest.metadata_option', index=7,
+      number=8, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -1288,8 +1309,8 @@ _REPORTTASKRESULTFILESUMMARYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2585,
-  serialized_end=2717,
+  serialized_start=2634,
+  serialized_end=2833,
 )
 
 
@@ -1302,14 +1323,14 @@ _QUERYAVAILABLEDATANODEREQUEST = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='file_size', full_name='rpcapi.QueryAvailableDataNodeRequest.file_size', index=0,
+      name='data_size', full_name='rpcapi.QueryAvailableDataNodeRequest.data_size', index=0,
       number=1, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='file_type', full_name='rpcapi.QueryAvailableDataNodeRequest.file_type', index=1,
+      name='data_type', full_name='rpcapi.QueryAvailableDataNodeRequest.data_type', index=1,
       number=2, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -1327,8 +1348,8 @@ _QUERYAVAILABLEDATANODEREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2719,
-  serialized_end=2811,
+  serialized_start=2835,
+  serialized_end=2927,
 )
 
 
@@ -1366,8 +1387,8 @@ _QUERYAVAILABLEDATANODE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2813,
-  serialized_end=2863,
+  serialized_start=2929,
+  serialized_end=2979,
 )
 
 
@@ -1412,8 +1433,8 @@ _QUERYAVAILABLEDATANODERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2865,
-  serialized_end=2979,
+  serialized_start=2981,
+  serialized_end=3095,
 )
 
 
@@ -1444,8 +1465,8 @@ _QUERYFILEPOSITIONREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2981,
-  serialized_end=3026,
+  serialized_start=3097,
+  serialized_end=3142,
 )
 
 
@@ -1490,8 +1511,8 @@ _QUERYFILEPOSITION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3028,
-  serialized_end=3092,
+  serialized_start=3144,
+  serialized_end=3208,
 )
 
 
@@ -1536,8 +1557,8 @@ _QUERYFILEPOSITIONRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3094,
-  serialized_end=3198,
+  serialized_start=3210,
+  serialized_end=3314,
 )
 
 
@@ -1568,8 +1589,8 @@ _GETTASKRESULTFILESUMMARYREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3200,
-  serialized_end=3250,
+  serialized_start=3316,
+  serialized_end=3366,
 )
 
 
@@ -1610,29 +1631,43 @@ _GETTASKRESULTFILESUMMARY = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='data_path', full_name='rpcapi.GetTaskResultFileSummary.data_path', index=4,
+      name='ip', full_name='rpcapi.GetTaskResultFileSummary.ip', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='ip', full_name='rpcapi.GetTaskResultFileSummary.ip', index=5,
+      name='port', full_name='rpcapi.GetTaskResultFileSummary.port', index=5,
       number=6, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='port', full_name='rpcapi.GetTaskResultFileSummary.port', index=6,
+      name='extra', full_name='rpcapi.GetTaskResultFileSummary.extra', index=6,
       number=7, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='extra', full_name='rpcapi.GetTaskResultFileSummary.extra', index=7,
+      name='data_hash', full_name='rpcapi.GetTaskResultFileSummary.data_hash', index=7,
       number=8, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='data_type', full_name='rpcapi.GetTaskResultFileSummary.data_type', index=8,
+      number=9, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='metadata_option', full_name='rpcapi.GetTaskResultFileSummary.metadata_option', index=9,
+      number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -1649,8 +1684,8 @@ _GETTASKRESULTFILESUMMARY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3253,
-  serialized_end=3419,
+  serialized_start=3369,
+  serialized_end=3602,
 )
 
 
@@ -1695,8 +1730,8 @@ _GETTASKRESULTFILESUMMARYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3421,
-  serialized_end=3539,
+  serialized_start=3604,
+  serialized_end=3722,
 )
 
 
@@ -1741,8 +1776,8 @@ _GETTASKRESULTFILESUMMARYLISTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3542,
-  serialized_end=3670,
+  serialized_start=3725,
+  serialized_end=3853,
 )
 
 
@@ -1787,8 +1822,8 @@ _GENERATEOBSERVERPROXYWALLETADDRESSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3672,
-  serialized_end=3762,
+  serialized_start=3855,
+  serialized_end=3945,
 )
 
 _YARNNODEINFO.fields_by_name['node_type'].enum_type = _NODETYPE
@@ -1807,9 +1842,12 @@ _SETJOBNODERESPONSE.fields_by_name['node'].message_type = _YARNREGISTEREDPEERDET
 _REPORTTASKEVENTREQUEST.fields_by_name['task_event'].message_type = lib_dot_types_dot_taskdata__pb2._TASKEVENT
 _REPORTTASKRESOURCEUSAGEREQUEST.fields_by_name['node_type'].enum_type = _NODETYPE
 _REPORTTASKRESOURCEUSAGEREQUEST.fields_by_name['usage'].message_type = lib_dot_types_dot_resourcedata__pb2._RESOURCEUSAGEOVERVIEW
-_QUERYAVAILABLEDATANODEREQUEST.fields_by_name['file_type'].enum_type = lib_dot_types_dot_base__pb2._ORIGINDATATYPE
+_REPORTUPFILESUMMARYREQUEST.fields_by_name['data_type'].enum_type = lib_dot_types_dot_base__pb2._ORIGINDATATYPE
+_REPORTTASKRESULTFILESUMMARYREQUEST.fields_by_name['data_type'].enum_type = lib_dot_types_dot_base__pb2._ORIGINDATATYPE
+_QUERYAVAILABLEDATANODEREQUEST.fields_by_name['data_type'].enum_type = lib_dot_types_dot_base__pb2._ORIGINDATATYPE
 _QUERYAVAILABLEDATANODERESPONSE.fields_by_name['information'].message_type = _QUERYAVAILABLEDATANODE
 _QUERYFILEPOSITIONRESPONSE.fields_by_name['information'].message_type = _QUERYFILEPOSITION
+_GETTASKRESULTFILESUMMARY.fields_by_name['data_type'].enum_type = lib_dot_types_dot_base__pb2._ORIGINDATATYPE
 _GETTASKRESULTFILESUMMARYRESPONSE.fields_by_name['information'].message_type = _GETTASKRESULTFILESUMMARY
 _GETTASKRESULTFILESUMMARYLISTRESPONSE.fields_by_name['task_result_files'].message_type = _GETTASKRESULTFILESUMMARY
 DESCRIPTOR.message_types_by_name['YarnNodeInfo'] = _YARNNODEINFO
@@ -2083,8 +2121,8 @@ _YARNSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=4062,
-  serialized_end=6788,
+  serialized_start=4245,
+  serialized_end=6971,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetNodeInfo',

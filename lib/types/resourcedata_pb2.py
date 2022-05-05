@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z/github.com/Metisnetwork/Metis-Carrier/lib/types',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1clib/types/resourcedata.proto\x12\x05types\x1a\x14lib/types/base.proto\"\xef\x02\n\nResourcePB\x12\"\n\x05owner\x18\x01 \x01(\x0b\x32\x13.types.Organization\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\t\x12&\n\x0b\x64\x61ta_status\x18\x03 \x01(\x0e\x32\x11.types.DataStatus\x12 \n\x05state\x18\x04 \x01(\x0e\x32\x11.types.PowerState\x12\x11\n\ttotal_mem\x18\x05 \x01(\x04\x12\x10\n\x08used_mem\x18\x06 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x07 \x01(\r\x12\x16\n\x0eused_processor\x18\x08 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\t \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\n \x01(\x04\x12\x12\n\ntotal_disk\x18\x0b \x01(\x04\x12\x11\n\tused_disk\x18\x0c \x01(\x04\x12\x12\n\npublish_at\x18\r \x01(\x04\x12\x11\n\tupdate_at\x18\x0e \x01(\x04\x12\r\n\x05nonce\x18\x0f \x01(\x04\"\xfa\x02\n\x0fLocalResourcePB\x12\"\n\x05owner\x18\x01 \x01(\x0b\x32\x13.types.Organization\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\t\x12&\n\x0b\x64\x61ta_status\x18\x03 \x01(\x0e\x32\x11.types.DataStatus\x12 \n\x05state\x18\x04 \x01(\x0e\x32\x11.types.PowerState\x12\x11\n\ttotal_mem\x18\x05 \x01(\x04\x12\x10\n\x08used_mem\x18\x06 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x07 \x01(\r\x12\x16\n\x0eused_processor\x18\x08 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\t \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\n \x01(\x04\x12\x12\n\ntotal_disk\x18\x0b \x01(\x04\x12\x11\n\tused_disk\x18\x0c \x01(\x04\x12\x12\n\npublish_at\x18\r \x01(\x04\x12\x11\n\tupdate_at\x18\x0e \x01(\x04\x12\x13\n\x0bjob_node_id\x18\x0f \x01(\t\"\x95\x01\n\x05Power\x12\x13\n\x0bjob_node_id\x18\x01 \x01(\t\x12\x10\n\x08power_id\x18\x02 \x01(\t\x12\x34\n\x0eusage_overview\x18\x03 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12 \n\x05state\x18\x04 \x01(\x0e\x32\x11.types.PowerState\x12\r\n\x05nonce\x18\x05 \x01(\x04\"\xf4\x01\n\x10PowerUsageDetail\x12\x31\n\x0binformation\x18\x01 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12\x18\n\x10total_task_count\x18\x02 \x01(\r\x12\x1a\n\x12\x63urrent_task_count\x18\x03 \x01(\r\x12\x1f\n\x05tasks\x18\x04 \x03(\x0b\x32\x10.types.PowerTask\x12 \n\x05state\x18\x05 \x01(\x0e\x32\x11.types.PowerState\x12\x12\n\npublish_at\x18\x06 \x01(\x04\x12\x11\n\tupdate_at\x18\x07 \x01(\x04\x12\r\n\x05nonce\x18\x08 \x01(\x04\"\xa5\x02\n\tPowerTask\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\"\n\x05owner\x18\x03 \x01(\x0b\x32\x13.types.Organization\x12%\n\x08partners\x18\x04 \x03(\x0b\x32\x13.types.Organization\x12&\n\treceivers\x18\x05 \x03(\x0b\x32\x13.types.Organization\x12\x36\n\x0eoperation_cost\x18\x06 \x01(\x0b\x32\x1e.types.TaskResourceCostDeclare\x12\x37\n\x0foperation_spend\x18\x07 \x01(\x0b\x32\x1e.types.TaskResourceCostDeclare\x12\x10\n\x08\x63reateAt\x18\x08 \x01(\x04\"\xc5\x01\n\x15ResourceUsageOverview\x12\x11\n\ttotal_mem\x18\x01 \x01(\x04\x12\x10\n\x08used_mem\x18\x02 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x03 \x01(\r\x12\x16\n\x0eused_processor\x18\x04 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x05 \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x06 \x01(\x04\x12\x12\n\ntotal_disk\x18\x07 \x01(\x04\x12\x11\n\tused_disk\x18\x08 \x01(\x04\x42\x31Z/github.com/Metisnetwork/Metis-Carrier/lib/typesb\x06proto3'
+  serialized_pb=b'\n\x1clib/types/resourcedata.proto\x12\x05types\x1a\x14lib/types/base.proto\"\xef\x02\n\nResourcePB\x12\"\n\x05owner\x18\x01 \x01(\x0b\x32\x13.types.Organization\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\t\x12&\n\x0b\x64\x61ta_status\x18\x03 \x01(\x0e\x32\x11.types.DataStatus\x12 \n\x05state\x18\x04 \x01(\x0e\x32\x11.types.PowerState\x12\x11\n\ttotal_mem\x18\x05 \x01(\x04\x12\x10\n\x08used_mem\x18\x06 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x07 \x01(\r\x12\x16\n\x0eused_processor\x18\x08 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\t \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\n \x01(\x04\x12\x12\n\ntotal_disk\x18\x0b \x01(\x04\x12\x11\n\tused_disk\x18\x0c \x01(\x04\x12\x12\n\npublish_at\x18\r \x01(\x04\x12\x11\n\tupdate_at\x18\x0e \x01(\x04\x12\r\n\x05nonce\x18\x0f \x01(\x04\"\x89\x03\n\x0fLocalResourcePB\x12\"\n\x05owner\x18\x01 \x01(\x0b\x32\x13.types.Organization\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\t\x12&\n\x0b\x64\x61ta_status\x18\x03 \x01(\x0e\x32\x11.types.DataStatus\x12 \n\x05state\x18\x04 \x01(\x0e\x32\x11.types.PowerState\x12\x11\n\ttotal_mem\x18\x05 \x01(\x04\x12\x10\n\x08used_mem\x18\x06 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x07 \x01(\r\x12\x16\n\x0eused_processor\x18\x08 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\t \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\n \x01(\x04\x12\x12\n\ntotal_disk\x18\x0b \x01(\x04\x12\x11\n\tused_disk\x18\x0c \x01(\x04\x12\x12\n\npublish_at\x18\r \x01(\x04\x12\x11\n\tupdate_at\x18\x0e \x01(\x04\x12\r\n\x05nonce\x18\x0f \x01(\x04\x12\x13\n\x0bjob_node_id\x18\x10 \x01(\t\"\x95\x01\n\x05Power\x12\x13\n\x0bjob_node_id\x18\x01 \x01(\t\x12\x10\n\x08power_id\x18\x02 \x01(\t\x12\x34\n\x0eusage_overview\x18\x03 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12 \n\x05state\x18\x04 \x01(\x0e\x32\x11.types.PowerState\x12\r\n\x05nonce\x18\x05 \x01(\x04\"\xf4\x01\n\x10PowerUsageDetail\x12\x31\n\x0binformation\x18\x01 \x01(\x0b\x32\x1c.types.ResourceUsageOverview\x12\x18\n\x10total_task_count\x18\x02 \x01(\r\x12\x1a\n\x12\x63urrent_task_count\x18\x03 \x01(\r\x12\x1f\n\x05tasks\x18\x04 \x03(\x0b\x32\x10.types.PowerTask\x12 \n\x05state\x18\x05 \x01(\x0e\x32\x11.types.PowerState\x12\x12\n\npublish_at\x18\x06 \x01(\x04\x12\x11\n\tupdate_at\x18\x07 \x01(\x04\x12\r\n\x05nonce\x18\x08 \x01(\x04\"\xa5\x02\n\tPowerTask\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\"\n\x05owner\x18\x03 \x01(\x0b\x32\x13.types.Organization\x12%\n\x08partners\x18\x04 \x03(\x0b\x32\x13.types.Organization\x12&\n\treceivers\x18\x05 \x03(\x0b\x32\x13.types.Organization\x12\x36\n\x0eoperation_cost\x18\x06 \x01(\x0b\x32\x1e.types.TaskResourceCostDeclare\x12\x37\n\x0foperation_spend\x18\x07 \x01(\x0b\x32\x1e.types.TaskResourceCostDeclare\x12\x10\n\x08\x63reateAt\x18\x08 \x01(\x04\"\xc5\x01\n\x15ResourceUsageOverview\x12\x11\n\ttotal_mem\x18\x01 \x01(\x04\x12\x10\n\x08used_mem\x18\x02 \x01(\x04\x12\x17\n\x0ftotal_processor\x18\x03 \x01(\r\x12\x16\n\x0eused_processor\x18\x04 \x01(\r\x12\x17\n\x0ftotal_bandwidth\x18\x05 \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\x06 \x01(\x04\x12\x12\n\ntotal_disk\x18\x07 \x01(\x04\x12\x11\n\tused_disk\x18\x08 \x01(\x04\x42\x31Z/github.com/Metisnetwork/Metis-Carrier/lib/typesb\x06proto3'
   ,
   dependencies=[lib_dot_types_dot_base__pb2.DESCRIPTOR,])
 
@@ -264,8 +264,15 @@ _LOCALRESOURCEPB = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='job_node_id', full_name='types.LocalResourcePB.job_node_id', index=14,
-      number=15, type=9, cpp_type=9, label=1,
+      name='nonce', full_name='types.LocalResourcePB.nonce', index=14,
+      number=15, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='job_node_id', full_name='types.LocalResourcePB.job_node_id', index=15,
+      number=16, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -283,7 +290,7 @@ _LOCALRESOURCEPB = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=432,
-  serialized_end=810,
+  serialized_end=825,
 )
 
 
@@ -342,8 +349,8 @@ _POWER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=813,
-  serialized_end=962,
+  serialized_start=828,
+  serialized_end=977,
 )
 
 
@@ -423,8 +430,8 @@ _POWERUSAGEDETAIL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=965,
-  serialized_end=1209,
+  serialized_start=980,
+  serialized_end=1224,
 )
 
 
@@ -504,8 +511,8 @@ _POWERTASK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1212,
-  serialized_end=1505,
+  serialized_start=1227,
+  serialized_end=1520,
 )
 
 
@@ -585,8 +592,8 @@ _RESOURCEUSAGEOVERVIEW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1508,
-  serialized_end=1705,
+  serialized_start=1523,
+  serialized_end=1720,
 )
 
 _RESOURCEPB.fields_by_name['owner'].message_type = lib_dot_types_dot_base__pb2._ORGANIZATION
