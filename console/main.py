@@ -18,6 +18,7 @@ from lib import compute_svc_pb2, compute_svc_pb2_grpc
 from lib import data_svc_pb2, data_svc_pb2_grpc
 from lib import io_channel_pb2_grpc
 from lib import via_svc_pb2
+from lib.types import base_pb2
 
 cfg = {}
 task_id = None
@@ -85,7 +86,23 @@ def _upload_chunk(path):
     assert os.path.exists(path), f'file not exists: {path}'
     df = pd.read_csv(path)
     file_name = os.path.basename(path)
-    file_type = os.path.splitext(path)[1]
+    data_type_str = os.path.splitext(path)[1][1:]
+    if data_type_str.lower() == 'csv':
+        data_type_int = base_pb2.OrigindataType_CSV
+    elif data_type_str.lower() in ['dir', 'directory']:
+        data_type_int = base_pb2.OrigindataType_DIR
+    elif data_type_str.lower() in ['bin', 'binary']:
+        data_type_int = base_pb2.OrigindataType_BINARY
+    elif data_type_str.lower() == 'xls':
+        data_type_int = base_pb2.OrigindataType_XLS
+    elif data_type_str.lower() == 'xlsx':
+        data_type_int = base_pb2.OrigindataType_XLSX
+    elif data_type_str.lower() == 'txt':
+        data_type_int = base_pb2.OrigindataType_TXT
+    elif data_type_str.lower() == 'json':
+        data_type_int = base_pb2.OrigindataType_JSON
+    else:
+        data_type_int = base_pb2.OrigindataType_Unknown
     cols, dtypes = [], []
     for c, t in df.dtypes.items():
         cols.append(c)
@@ -99,7 +116,7 @@ def _upload_chunk(path):
         while chunk:
             yield data_svc_pb2.UploadRequest(file_name=file_name,
                                              content=chunk,
-                                             file_type=file_type,
+                                             file_type=data_type_int,
                                              description='',
                                              columns=cols,
                                              col_dtypes=[''],
@@ -224,8 +241,13 @@ def comp_run_task(args, stub):
     req.memory = run_task_cfg.get('memory', 256*1024*1024*1024) # Byte
     req.processor = run_task_cfg.get('processor', 32)   # number
     req.bandwidth = run_task_cfg.get('bandwidth', 1000000*1000)  # bps
-    req.connect_policy_format = common_pb2.ConnectPolicyFormat_Str
-    req.connect_policy = 'all'
+    connect_policy = run_task_cfg.get('connect_policy')
+    if connect_policy is None:
+        req.connect_policy = 'all'
+        req.connect_policy_format = common_pb2.ConnectPolicyFormat_Str
+    else:
+        req.connect_policy = json.dumps(connect_policy)
+        req.connect_policy_format = common_pb2.ConnectPolicyFormat_Json
 
     each_party = {d['party_id']: d for d in run_task_cfg['each_party']}
 

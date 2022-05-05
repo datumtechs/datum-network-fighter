@@ -4,7 +4,7 @@ import math
 import os
 import threading
 import time
-
+import json
 import grpc
 import psutil
 try:
@@ -16,6 +16,7 @@ from common.consts import ERROR_CODE
 from lib import common_pb2
 from lib import compute_svc_pb2, compute_svc_pb2_grpc
 from lib import data_svc_pb2, data_svc_pb2_grpc
+from lib.types import base_pb2
 
 log = logging.getLogger(__name__)
 
@@ -59,9 +60,9 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
     def UploadData(self, request_it, context):
         '''
         message UploadRequest {
-            string file_name = 1;
+            string data_name = 1;
             bytes content = 2;
-            string file_type = 3;
+            string data_type = 3;
             string description = 4;
             repeated string columns = 5;
             repeated string col_dtypes = 6;
@@ -85,28 +86,42 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             for req in request_it:
                 f.write(req.content)
                 m.update(req.content)
-                file = req.file_name
+                data_name = req.data_name
                 cols = req.columns
+                data_type = req.data_type
 
-            log.info(f"origin filename: {file}, len(columns): {len(cols)}, columns:{','.join(cols)}")
+            log.info(f"origin filename: {data_name}, len(columns): {len(cols)}, columns:{','.join(cols)}")
             status = ERROR_CODE["GENERATE_SUMMARY_ERROR"]
             data_hash = m.hexdigest()
-            stem, ext = os.path.splitext(os.path.basename(file))
+            stem, ext = os.path.splitext(os.path.basename(data_name))
             new_name = f'{stem}_{now}{ext}'
             m.update(new_name.encode())
             full_new_name = os.path.join(folder, new_name)
             log.info(f'full_new_name: {full_new_name}')
             os.rename(path, full_new_name)
             origin_id = m.hexdigest()
-            file_summary = {"origin_id": origin_id, "data_path": full_new_name, "ip": cfg["bind_ip"],
-                            "port": cfg["port"], "data_hash": data_hash}
+
+            metadata_option = {"originId": origin_id, "dataPath": full_new_name}
+            if data_type == base_pb2.OrigindataType_CSV:
+                metadata_option["size"] = os.path.getsize(full_new_name)
+                metadata_option["rows"] = 0
+                metadata_option["columns"] = 0
+                metadata_option["hasTitle"] = True
+                metadata_option["metadataColumns"] = []
+            elif data_type == base_pb2.OrigindataType_DIR:
+                raise NotImplementedError("TO DO UPLOAD DIR.")
+            else:
+                metadata_option["size"] = os.path.getsize(full_new_name)
+            metadata_option = json.dumps(metadata_option)
+            file_summary = {"origin_id": origin_id, "ip": cfg["bind_ip"], "port": cfg["port"], "data_hash": data_hash,
+                            "data_type": data_type, "metadata_option": metadata_option}
             status = ERROR_CODE["REPORT_SUMMARY_ERROR"]
             ret = report_task_result(cfg['schedule_svc'], 'upload_file', file_summary)
             log.info(f'report_upload_file_summary return: {ret}')
             if ret and ret.status == 0:
                 status = ERROR_CODE["OK"]
                 result = data_svc_pb2.UploadReply(status=status, msg='upload success.',\
-                                data_id=origin_id, file_path=full_new_name, data_hash=data_hash)
+                                data_id=origin_id, data_path=full_new_name, data_hash=data_hash)
             else:
                 result = data_svc_pb2.UploadReply(status=status, msg='report summary fail.')
             return result
@@ -127,11 +142,11 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             folder = cfg['data_root']
             if 'file_root_dir' in request.options and request.options['file_root_dir'] == 'result':
                 folder = cfg['results_root_dir']
-            norm_path = os.path.normpath(request.file_path)
+            norm_path = os.path.normpath(request.data_path)
             dir_part = os.path.dirname(norm_path)
             basename = os.path.basename(norm_path)
             path = norm_path if os.path.isabs(norm_path) else os.path.join(folder, dir_part, basename)
-            log.info(f'download {request.file_path} from {folder}, which in {path}')
+            log.info(f'download {request.data_path} from {folder}, which in {path}')
 
             if 'compress' in request.options:
                 compress = request.options['compress'].strip().lower()
@@ -210,7 +225,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             sz = os.path.getsize(path)
             log.info(f'{f}: {sz}')
             row = ans.data.add()
-            row.file_name = f
+            row.data_name = f
             row.size = sz
         ans.status = ERROR_CODE["OK"]
         ans.msg = 'list data success.'

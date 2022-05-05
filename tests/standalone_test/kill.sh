@@ -49,5 +49,5 @@ done
 
 # if [[ -n $(ps -aux | grep python | grep -v grep | awk '{print $2}') ]]
 # then
-#     ps -aux | grep python | grep -v grep | awk '{print $2}' | xargs sudo kill -9
+#     ps -aux | grep "python3 -u main.py" | grep -v grep | awk '{print $2}' | xargs sudo kill -9
 # fi

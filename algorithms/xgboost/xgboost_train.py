@@ -39,6 +39,7 @@ class PrivacyXgbTrain(object):
                  channel_config: str,
                  cfg_dict: dict,
                  data_party: list,
+                 compute_party: list,
                  result_party: list,
                  results_dir: str):
         '''
@@ -64,7 +65,6 @@ class PrivacyXgbTrain(object):
                 ]
             },
             "algorithm_dynamic_params": {
-                "use_psi": true,
                 "label_owner": "data1",
                 "label_column": "Y",
                 "hyperparams": {
@@ -91,15 +91,18 @@ class PrivacyXgbTrain(object):
         assert isinstance(channel_config, str), "type of channel_config must be str"
         assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
         assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
+        assert isinstance(compute_party, (list, tuple)), "type of compute_party must be list or tuple"
         assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
         assert isinstance(results_dir, str), "type of results_dir must be str"
         
         log.info(f"start get input parameter.")
         self.channel_config = channel_config
         self.data_party = list(data_party)
+        self.compute_party = list(compute_party)
         self.result_party = list(result_party)
         self.results_dir = results_dir
-        self.output_file = os.path.join(self.results_dir, "model")
+        self.output_dir = self.get_output_dir()
+        self.output_file = os.path.join(self.output_dir, "model")
         self._parse_algo_cfg(cfg_dict)
         self._check_parameters()
 
@@ -121,7 +124,6 @@ class PrivacyXgbTrain(object):
                     raise Exception("paramter error. input_type only support 1/2")
         
         dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
-        self.use_psi = dynamic_parameter.get("use_psi", True)
         self.label_owner = dynamic_parameter.get("label_owner")
         if self.party_id == self.label_owner:
             self.label_column = dynamic_parameter.get("label_column")
@@ -159,16 +161,6 @@ class PrivacyXgbTrain(object):
         assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
         
         if self.party_id in self.data_party:
-            assert isinstance(self.use_psi, bool), "use_psi must be type(bool), true or false"
-            if self.use_psi:
-                assert isinstance(self.psi_result_data, str), f"psi_result_data must be type(string), not {self.psi_result_data}"
-                self.psi_result_data = self.psi_result_data.strip()
-                if os.path.exists(self.psi_result_data):
-                    file_suffix = os.path.splitext(self.psi_result_data)[-1][1:]
-                    assert file_suffix == "csv", f"psi_result_data must csv file, not {file_suffix}"
-                else:
-                    raise Exception(f"psi_result_data is not exist. psi_result_data={self.psi_result_data}")
-            
             assert isinstance(self.input_file, str), "origin input_data must be type(string)"
             assert isinstance(self.key_column, str), "key_column must be type(string)"
             assert isinstance(self.selected_columns, list), "selected_columns must be type(list)" 
@@ -269,23 +261,21 @@ class PrivacyXgbTrain(object):
         rtt.deactivate()
         log.info("rtt deactivate success.")
              
-        if (self.party_id in self.result_party) and self.use_validation_set:
-            log.info("result_party evaluate model.")
-            Y_pred = np.squeeze(Y_pred.astype("float"))
-            Y_true = np.squeeze(Y_actual.astype("float"))
-            evaluation_result = self.model_evaluation(Y_true, Y_pred)
-        else:
-            evaluation_result = ""
+        result_path, result_type, evaluation_result = "", "", ""
+        if self.party_id in self.result_party:
+            log.info("result_party deal with the result.")
+            result_path = self.output_dir
+            result_type = "dir"
+            if self.use_validation_set:
+                log.info("result_party evaluate model.")
+                Y_pred = np.squeeze(Y_pred.astype("float"))
+                Y_true = np.squeeze(Y_actual.astype("float"))
+                evaluation_result = self.model_evaluation(Y_true, Y_pred)
         
-        log.info("remove temp dir.")
-        if self.party_id in (self.data_party + self.result_party):
-            # self.remove_temp_dir()
-            pass
-        else:
-            # delete the model in the compute party.
-            self.remove_output_dir()
+        log.info("start remove temp dir.")
+        self.remove_temp_dir()
         log.info("train success all.")
-        return evaluation_result
+        return result_path, result_type, evaluation_result
     
     def model_evaluation(self, Y_true, Y_pred):
         from sklearn.metrics import roc_auc_score, roc_curve, f1_score, precision_score, recall_score, accuracy_score
@@ -348,11 +338,6 @@ class PrivacyXgbTrain(object):
             input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str")
             input_data = input_data[usecols]
             assert input_data.shape[0] > 0, 'input file is no data.'
-            if self.use_psi:
-                psi_result = pd.read_csv(self.psi_result_data, dtype="str")
-                psi_result.name = self.key_column
-                input_data = pd.merge(psi_result, input_data, on=self.key_column, how='inner')
-                assert input_data.shape[0] > 0, 'input data is empty. because no intersection with psi result.'
             # only if self.validation_set_rate==0, split_point==input_data.shape[0]
             split_point = int(input_data.shape[0] * (1 - self.validation_set_rate))
             assert split_point > 0, f"train set is empty, because validation_set_rate:{self.validation_set_rate} is too big"
@@ -385,43 +370,53 @@ class PrivacyXgbTrain(object):
         Get the directory for temporarily saving files
         '''
         temp_dir = os.path.join(self.results_dir, 'temp')
-        if not os.path.exists(temp_dir):
-            os.makedirs(temp_dir, exist_ok=True)
+        self._mkdir(temp_dir)
         return temp_dir
+    
+    def get_output_dir(self):
+        output_dir = os.path.join(self.results_dir, 'model')
+        self._mkdir(output_dir)
+        return output_dir
 
     def remove_temp_dir(self):
-        '''
-        Delete all files in the temporary directory, these files are some temporary data.
-        Only delete temp file.
-        '''
-        temp_dir = self.get_temp_dir()
-        if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
+        if self.party_id in (self.data_party + self.result_party):
+            # only delete the temp dir
+            temp_dir = self.get_temp_dir()
+        else:
+            # delete the all results in the compute party.
+            temp_dir = self.results_dir
+        self._remove_dir(temp_dir)
     
-    def remove_output_dir(self):
-        '''
-        Delete all files in the temporary directory, these files are some temporary data.
-        This is used to delete all output files of the non-resulting party
-        '''
-        temp_dir = self.results_dir
-        if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
+    def _mkdir(self, _directory):
+        if not os.path.exists(_directory):
+            os.makedirs(_directory, exist_ok=True)
+
+    def _remove_dir(self, _directory):
+        if os.path.exists(_directory):
+            shutil.rmtree(_directory)
 
 
-def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: list, results_dir: str, **kwargs):
+def main(channel_config: str, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
-    log.info("start main function. xgboost train.")
+    algo_type = "privacy_xgb_train"
     try:
-        privacy_xgb = PrivacyXgbTrain(channel_config, cfg_dict, data_party, result_party, results_dir)
-        privacy_xgb.train()
+        log.info(f"start main function. {algo_type}.")
+        privacy_xgb = PrivacyXgbTrain(channel_config, cfg_dict, data_party, compute_party, result_party, results_dir)
+        result_path, result_type, extra = privacy_xgb.train()
+        log.info(f"finish main function. {algo_type}.")
+        return result_path, result_type, extra
     except Exception as e:
-        et, ev, tb = sys.exc_info()
-        error_filename = traceback.extract_tb(tb)[1].filename
-        error_filename = os.path.split(error_filename)[1]
-        error_lineno = traceback.extract_tb(tb)[1].lineno
-        error_function = traceback.extract_tb(tb)[1].name
-        error_msg = str(e)
-        raise Exception(f"<ALGO>:xgboost_train. <RUN_STAGE>:{log.run_stage} <ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")
-    log.info("finish main function. xgboost train.")
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        all_error = traceback.extract_tb(exc_traceback)
+        error_algo_file = all_error[0].filename
+        error_filename = os.path.split(error_algo_file)[1]
+        error_lineno, error_function = [], []
+        for one_error in all_error:
+            if one_error.filename == error_algo_file:  # only report the algo file error
+                error_lineno.append(one_error.lineno)
+                error_function.append(one_error.name)
+        error_msg = repr(e)
+        raise Exception(f"<ALGO>:{algo_type}. <RUN_STAGE>:{log.run_stage} "
+                        f"<ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")

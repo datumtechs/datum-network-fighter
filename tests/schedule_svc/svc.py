@@ -48,9 +48,11 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         log.info(f'get upload file summary start.')
         summary = {}
         summary["origin_id"] = request.origin_id
-        summary["file_path"] = request.file_path
         summary["ip"] = request.ip
         summary["port"] = request.port
+        summary["data_hash"] = request.data_hash
+        summary["data_type"] = request.data_type
+        summary["metadata_option"] = request.metadata_option
         log.info(f'get up file summary finish: {summary}')
         return base_pb2.SimpleResponse(status=0, msg="report file summary ok.")
 
@@ -59,9 +61,12 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         summary = {}
         summary["task_id"] = request.task_id
         summary["origin_id"] = request.origin_id
-        summary["file_path"] = request.file_path
         summary["ip"] = request.ip
         summary["port"] = request.port
+        summary["extra"] = request.extra
+        summary["data_hash"] = request.data_hash
+        summary["data_type"] = request.data_type
+        summary["metadata_option"] = request.metadata_option
         log.info(f'get task result file summary finish: {summary}')
         return base_pb2.SimpleResponse(status=0, msg="report task result file summary ok.")
 

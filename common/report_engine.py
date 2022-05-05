@@ -20,6 +20,9 @@ CLIENT_OPTIONS = [('grpc.enable_retries', 0),
                   ('grpc.keepalive_timeout_ms', 20000)
                   ]
 
+def request_to_str(req):
+    str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
+    return str_req
 
 class ReportEngine(object):
 
@@ -57,8 +60,7 @@ class ReportEngine(object):
         req.task_event.content = "{}:{}".format(event.dict_["party_id"], event.dict_["content"])
         req.task_event.create_at = event.dict_["create_at"]
         response = self.__client.ReportTaskEvent(req)
-        str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-        log.info(str_req)  # print when report success
+        log.info(request_to_str(req))
         return response
 
     def report_upload_file_summary(self, summary):
@@ -73,21 +75,22 @@ class ReportEngine(object):
         }
         message ReportUpFileSummaryRequest {
             string origin_id = 1;
-            string data_path = 2;
-            string ip = 3;
-            string port = 4;
-            string data_hash = 5;
+            string ip = 2;
+            string port = 3;
+            string data_hash = 4;
+            types.OrigindataType data_type = 5;
+            string metadata_option = 6;
         }
         """
         req = pb2.ReportUpFileSummaryRequest()
         req.origin_id = summary["origin_id"]
-        req.data_path = summary["data_path"]
         req.ip = summary["ip"]
         req.port = str(summary["port"])
         req.data_hash = summary["data_hash"]
+        req.data_type = summary["data_type"]
+        req.metadata_option = summary["metadata_option"]
         response = self.__client.ReportUpFileSummary(req)
-        str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-        log.info(str_req)
+        log.info(request_to_str(req))
         return response
 
     def report_task_result_file_summary(self, summary):
@@ -103,23 +106,26 @@ class ReportEngine(object):
         message ReportTaskResultFileSummaryRequest {
             string task_id = 1;
             string origin_id = 2;
-            string data_path = 3;
-            string ip = 4;
-            string port = 5;
-            string extra = 6;
+            string ip = 3;
+            string port = 4;
+            string extra = 5;
+            string data_hash = 6;
+            types.OrigindataType data_type = 7;
+            string metadata_option = 8;
         }
         """
 
         req = pb2.ReportTaskResultFileSummaryRequest()
         req.task_id = summary["task_id"]
         req.origin_id = summary["origin_id"]
-        req.data_path = summary["data_path"]
         req.ip = summary["ip"]
         req.port = str(summary["port"])
         req.extra = str(summary["extra"])
+        req.data_hash = summary["data_hash"]
+        req.data_type = summary["data_type"]
+        req.metadata_option = summary["metadata_option"]
         response = self.__client.ReportTaskResultFileSummary(req, timeout=10)
-        str_req = '{' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-        log.info(str_req)
+        log.info(request_to_str(req))
         return response
 
     def report_task_resource_usage(self, task_id, party_id, node_type, ip: str, port: str, resource_usage):
@@ -180,52 +186,12 @@ class ReportEngine(object):
         req.usage.total_disk = resource_usage["total_disk"]
         req.usage.used_disk = resource_usage["used_disk"]
         response = self.__client.ReportTaskResourceUsage(req)
-        str_req = 'report_task_resource_usage: {' + str(req).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
-        log.debug(str_req)
+        log.debug(request_to_str(req))
         return response
 
     def close(self):
         self.conn.close()
 
-
-# def report_task_event(cfg, stop_event, pipe=None):
-#     if pipe:
-#         t_address = threading.Thread(target=process_recv_address, args=(cfg, pipe))
-#         t_address.start()
-#     get_new_event = True
-#     try_max_times = 20
-#     try_cnt = 0
-#     while True:
-#         try:
-#             schedule_svc = cfg['schedule_svc']
-#             if not schedule_svc:
-#                 time.sleep(3)
-#                 continue
-#             report_engine = ReportEngine(schedule_svc)
-#             while True:
-#                 if get_new_event:
-#                     new_event = EVENT_QUEUE.get(block=True)
-#                 report_engine.report_task_event(new_event)
-#                 get_new_event = True
-#                 if stop_event.is_set():
-#                     log.info('report task event closed')
-#                     sys.exit(0)
-#                 try_cnt = 0
-#         except grpc._channel._InactiveRpcError as e:
-#             if 'new_event' in dir():
-#                 get_new_event = False
-#             try_cnt = try_cnt + 1
-#             if try_cnt == 1:
-#                 continue
-#             elif (try_cnt < try_max_times):
-#                 time.sleep(0.5)
-#             elif (try_cnt == try_max_times):
-#                 log.info("waiting grpc server set up...")
-#                 time.sleep(30)
-#             else:
-#                 time.sleep(30)
-#         except Exception as e:
-#             raise
 
 def report_task_event(server_addr, create_event, event_type, content):
     log.info('start report task event.')

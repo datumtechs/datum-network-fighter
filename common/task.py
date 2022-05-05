@@ -9,11 +9,12 @@ import importlib
 import warnings
 warnings.filterwarnings('ignore', message=r'Passing', category=FutureWarning)
 import functools
-
+import pandas as pd
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
 from common.report_engine import  report_task_result, monitor_resource_usage, report_task_event
 from common.io_channel_helper import get_channel_config
+from lib.types import base_pb2
 
 
 log = logging.getLogger(__name__)
@@ -51,7 +52,7 @@ class Task:
             self.event_type = COMPUTE_EVENT
             self.party_type = "compute_svc"
         else:
-            self.event_type = None
+            raise Exception(f"{self._party_id} is not one of data_party/computation_party/result_party.")
         
         self.create_event = functools.partial(event_engine.create_event, task_id=self.id, party_id=self.party_id)
         self.fire_event = functools.partial(event_engine.fire_event, task_id=self.id, party_id=self.party_id)
@@ -108,17 +109,27 @@ class Task:
             self._ensure_dir(result_dir)
             log.info(f'start execute contract.')
             report_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
-            extra = algo_module.main(channel_config, user_cfg, self.data_party, self.result_party, result_dir)
-            if not extra:
+            algo_return = algo_module.main(channel_config, user_cfg, self.data_party, self.computation_party, self.result_party, result_dir)
+            algo_return_len = len(algo_return)
+            assert algo_return_len in [2,3], f"algo return must 2 or 3 params, not {algo_return_len}"
+            if len(algo_return) == 3:
+                result_path, result_type, extra = algo_return
+            else:
+                result_path, result_type = algo_return
                 extra = ""
+            assert isinstance(result_path, str), f"result_path must be type(string), not {type(result_path)}"
+            assert isinstance(result_type, str), f"result_type must be type(string), not {type(result_type)}"
+            assert isinstance(extra, str), f"extra must be type(string), not {type(extra)}"
+
             log.info(f'finish execute contract.')
             if self.party_id in self.result_party:
-                data_path = result_dir
-                m = hashlib.sha256()
-                m.update(data_path.encode())
-                origin_id = m.hexdigest()
-                file_summary = {"task_id": self.id, "origin_id": origin_id, "data_path": data_path,
-                                "ip": self.cfg["bind_ip"], "port": self.cfg["port"], "extra": extra}
+                assert result_path, f"result_path can not Empty. result_path={result_path}"
+                result_path = os.path.abspath(result_path)
+                assert os.path.exists(result_path), f"result_path is not exist. result_path={result_path}"
+                data_type = map_data_type_to_int(result_type)
+                origin_id, data_hash, metadata_option = get_metadata(result_path, data_type)
+                file_summary = {"task_id": self.id, "origin_id": origin_id, "ip": self.cfg["bind_ip"], "port": self.cfg["port"],
+                                "extra": extra, "data_hash": data_hash, "data_type": data_type, "metadata_option": metadata_option}
                 log.info(f'start report task result file summary.')
                 report_task_result(self.cfg['schedule_svc'], 'result_file', file_summary)
                 log.info(f'finish report task result file summary. ')
@@ -126,7 +137,7 @@ class Task:
             report_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task success.")
         except Exception as e:
             log.exception(repr(e))
-            report_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed.error:{str(e)[:900]}")
+            report_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed. {str(e)[:900]}")
             report_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
         finally:
             log.info('task final clean.')
@@ -162,11 +173,11 @@ class Task:
             input_type = data["input_type"]
             data_type = data["data_type"]
             data_path = data["data_path"]
-            if access_type == 1:     # 0: unknown, 1: local, 2: http, 3: https, 4: ftp
+            if access_type == 1:     # 0: unknown, 1: local, 2: url
                 new_data["input_type"] = input_type
                 new_data["data_type"] = data_type
                 new_data["data_path"] = data_path
-                if data_type in [1,3,6]:   # 0:unknown, 1:csv, 2:folder, 3:xls, 4:txt, 5:json, 6:mysql, 7:bin
+                if data_type in [1,4,5]:   # 0:unknown, 1:csv, 2:dir, 3:binary, 4:xls, 5:xlsx, 6:txt, 7:json
                     new_data["key_column"] = data.get("key_column")
                     new_data["selected_columns"] = data.get("selected_columns")
             else:
@@ -203,3 +214,113 @@ class Task:
         import shutil
         dir_ = self._get_code_dir()
         shutil.rmtree(dir_, ignore_errors=True)
+
+def map_data_type_to_int(data_type_str):
+    if data_type_str.lower() == 'csv':
+        data_type_int = base_pb2.OrigindataType_CSV
+    elif data_type_str.lower() in ['dir', 'directory']:
+        data_type_int = base_pb2.OrigindataType_DIR
+    elif data_type_str.lower() in ['bin', 'binary']:
+        data_type_int = base_pb2.OrigindataType_BINARY
+    elif data_type_str.lower() == 'xls':
+        data_type_int = base_pb2.OrigindataType_XLS
+    elif data_type_str.lower() == 'xlsx':
+        data_type_int = base_pb2.OrigindataType_XLSX
+    elif data_type_str.lower() == 'txt':
+        data_type_int = base_pb2.OrigindataType_TXT
+    elif data_type_str.lower() == 'json':
+        data_type_int = base_pb2.OrigindataType_JSON
+    else:
+        data_type_int = base_pb2.OrigindataType_Unknown
+    return data_type_int
+
+
+def get_metadata(path, data_type):
+    if data_type == base_pb2.OrigindataType_DIR:
+        origin_id, data_hash, metadata_option = get_directory_metadata(path, data_type)
+    else:
+        origin_id, data_hash, metadata_option = get_file_metadata(path, data_type)
+    metadata_option = json.dumps(metadata_option)
+    return origin_id, data_hash, metadata_option
+
+def get_file_metadata(path, data_type):
+    m = hashlib.sha256()
+    with open(path, 'rb') as f:
+        chunk_size = 1024 * 1024 * 1024
+        chunk = f.read(chunk_size)
+        while chunk:
+            m.update(chunk)
+            chunk = f.read(chunk_size)
+    data_hash = m.hexdigest()
+    m.update(path.encode())
+    origin_id = m.hexdigest()
+
+    metadata_option = {"originId": origin_id}
+    if data_type == base_pb2.OrigindataType_CSV:
+        metadata_option["dataPath"] = path
+        metadata_option["size"] = os.path.getsize(path)
+        with open(path, 'r') as f:
+            rows = 0
+            for line in f:
+                rows += 1
+        file_data = pd.read_csv(path, nrows=10)
+        metadata_option["columns"] = file_data.shape[1]
+        metadata_option["hasTitle"] = True
+        if metadata_option["hasTitle"]:
+            metadata_option["rows"] = rows - 1
+            data_columns = list(file_data.columns)
+            metadata_columns = []
+            for index, col in enumerate(data_columns, 1):
+                one_col_metadata = {}
+                one_col_metadata["index"] = index
+                one_col_metadata["name"] = col
+                df_data_type = file_data[col].dtype
+                if df_data_type == 'float':
+                    col_data_type = 'float'
+                elif df_data_type == 'int':
+                    col_data_type = 'int'
+                elif df_data_type == 'object':
+                    col_data_type = 'string'
+                else:
+                    col_data_type = ''
+                one_col_metadata["type"] = col_data_type
+                one_col_metadata["size"] = 0
+                one_col_metadata["comment"] = ""
+                metadata_columns.append(one_col_metadata)
+            metadata_option["metadataColumns"] = metadata_columns
+        else:
+            metadata_option["rows"] = 0
+            metadata_option["metadataColumns"] = []
+    else:
+        metadata_option["dataPath"] = path
+        metadata_option["size"] = os.path.getsize(path)
+
+    return origin_id, data_hash, metadata_option
+
+def get_directory_metadata(path, data_type):
+    m = hashlib.sha256()
+    m.update(path.encode())
+    origin_id = m.hexdigest()
+    data_hash = origin_id
+    metadata_option = {
+        "originId": origin_id,
+        "dirPath": path,
+        "childs": [],
+        "filePaths": []
+    }
+    num_subdir = 0
+    for subdir_file in os.listdir(path):
+        # if os.path.isdir(subdir_file):
+        #     print(f"######### {subdir_file}")
+        #     num_subdir += 1
+        #     # metadata_option["child_dirs"].append(subdir_file)
+        #     # TO DO: need to implement recursion
+        # else:
+        #     metadata_option["filePaths"].append(subdir_file)
+        metadata_option["filePaths"].append(subdir_file)
+    if num_subdir == 0:
+        metadata_option["last"] = True
+    else:
+        metadata_option["last"] = False
+    return origin_id, data_hash, metadata_option
+        

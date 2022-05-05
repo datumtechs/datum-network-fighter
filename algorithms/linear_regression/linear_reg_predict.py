@@ -42,6 +42,7 @@ class PrivacyLinearRegPredict(object):
                  channel_config: str,
                  cfg_dict: dict,
                  data_party: list,
+                 compute_party: list,
                  result_party: list,
                  results_dir: str):
         '''
@@ -74,19 +75,21 @@ class PrivacyLinearRegPredict(object):
         '''
         log.info(f"channel_config:{channel_config}")
         log.info(f"cfg_dict:{cfg_dict}")
-        log.info(f"data_party:{data_party}, result_party:{result_party}, results_dir:{results_dir}")
+        log.info(f"data_party:{data_party}, compute_party:{compute_party}, result_party:{result_party}, results_dir:{results_dir}")
         assert isinstance(channel_config, str), "type of channel_config must be str"
         assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
         assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
+        assert isinstance(compute_party, (list, tuple)), "type of compute_party must be list or tuple"
         assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
         assert isinstance(results_dir, str), "type of results_dir must be str"
         
         log.info(f"start get input parameter.")
         self.channel_config = channel_config
         self.data_party = list(data_party)
+        self.compute_party = list(compute_party)
         self.result_party = list(result_party)
         self.results_dir = results_dir
-        self.output_file = os.path.join(results_dir, "result")
+        self.output_file = os.path.join(results_dir, "result_predict.csv")
         self._parse_algo_cfg(cfg_dict)
         self.data_party.remove(self.model_restore_party)  # except restore party
         self._check_parameters()
@@ -94,7 +97,6 @@ class PrivacyLinearRegPredict(object):
     def _parse_algo_cfg(self, cfg_dict):
         self.party_id = cfg_dict["self_cfg_params"]["party_id"]
         input_data = cfg_dict["self_cfg_params"]["input_data"]
-        self.psi_result_data = None
         if self.party_id in self.data_party:
             for data in input_data:
                 input_type = data["input_type"]
@@ -104,12 +106,10 @@ class PrivacyLinearRegPredict(object):
                     self.key_column = data.get("key_column")
                     self.selected_columns = data.get("selected_columns")
                 elif input_type == 2:
-                    self.psi_result_data = data["data_path"]
-                elif input_type == 3:
                     self.model_path = data["data_path"]
                     self.model_file = os.path.join(self.model_path, "model")
                 else:
-                    raise Exception("paramter error. input_type only support 1/2/3")
+                    raise Exception("paramter error. input_type only support 1/2")
         
         dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
         self.use_psi = dynamic_parameter.get("use_psi", True)
@@ -212,15 +212,18 @@ class PrivacyLinearRegPredict(object):
         rtt.deactivate()
         log.info("rtt deactivate finish.")
         
+        result_path, result_type = "", ""
         if self.party_id in self.result_party:
             log.info("predict result write to file.")
-            output_file_predict_prob = os.path.splitext(self.output_file)[0] + "_predict.csv"
             Y_pred = Y_pred.astype("float")
             Y_result = pd.DataFrame(Y_pred, columns=["result"])
-            Y_result.to_csv(output_file_predict_prob, header=True, index=False)
+            Y_result.to_csv(self.output_file, header=True, index=False)
+            result_path = self.output_file
+            result_type = "csv"
         log.info("start remove temp dir.")
         self.remove_temp_dir()
         log.info("predict success all.")
+        return result_path, result_type
 
     def create_set_channel(self):
         '''
@@ -277,20 +280,27 @@ class PrivacyLinearRegPredict(object):
             shutil.rmtree(temp_dir)
 
 
-def main(channel_config: str, cfg_dict: dict, data_party: list, result_party: list, results_dir: str, **kwargs):
+def main(channel_config: str, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
-    log.info("start main function. linear regression predict.")
+    algo_type = "privacy_linr_predict"
     try:
-        privacy_linear_reg = PrivacyLinearRegPredict(channel_config, cfg_dict, data_party, result_party, results_dir)
-        privacy_linear_reg.predict()
+        log.info(f"start main function. {algo_type}.")
+        privacy_linr = PrivacyLinearRegPredict(channel_config, cfg_dict, data_party, compute_party, result_party, results_dir)
+        result_path, result_type = privacy_linr.predict()
+        log.info(f"finish main function. {algo_type}.")
+        return result_path, result_type
     except Exception as e:
-        et, ev, tb = sys.exc_info()
-        error_filename = traceback.extract_tb(tb)[1].filename
-        error_filename = os.path.split(error_filename)[1]
-        error_lineno = traceback.extract_tb(tb)[1].lineno
-        error_function = traceback.extract_tb(tb)[1].name
-        error_msg = str(e)
-        raise Exception(f"<ALGO>:linr_predict. <RUN_STAGE>:{log.run_stage} <ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")
-    log.info("finish main function. linear regression predict.")
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        all_error = traceback.extract_tb(exc_traceback)
+        error_algo_file = all_error[0].filename
+        error_filename = os.path.split(error_algo_file)[1]
+        error_lineno, error_function = [], []
+        for one_error in all_error:
+            if one_error.filename == error_algo_file:  # only report the algo file error
+                error_lineno.append(one_error.lineno)
+                error_function.append(one_error.name)
+        error_msg = repr(e)
+        raise Exception(f"<ALGO>:{algo_type}. <RUN_STAGE>:{log.run_stage} "
+                        f"<ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")

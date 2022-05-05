@@ -55,8 +55,8 @@ class TaskManager:
         str_parties = str(req.parties).replace('\n', ' ')
         log.info(f"parties: {str_parties}")
         log.info(f"self_cfg_params: {req.self_cfg_params}, algorithm_dynamic_params: {req.algorithm_dynamic_params}")
-        log.info(f"data_party_ids:{req.data_party_ids}, computation_party_ids:{req.computation_party_ids}, result_party_ids:{req.result_party_ids}"
-                f"duration:{req.duration}, memory:{req.memory}, processor:{req.processor}, bandwidth:{req.bandwidth}"
+        log.info(f"data_party_ids:{req.data_party_ids}, computation_party_ids:{req.computation_party_ids}, result_party_ids:{req.result_party_ids}, "
+                f"duration:{req.duration}, memory:{req.memory}, processor:{req.processor}, bandwidth:{req.bandwidth}, "
                 f"connect_policy:{req.connect_policy}")
 
         task_id = req.task_id

@@ -10,9 +10,9 @@
 算法所需输入的cfg_dict参数的结构由两大部分组成，一是本方的配置参数(self_cfg_params)，二是算法动态参数(algorithm_dynamic_params)。\n
 **本方的配置参数(self_cfg_params)：**
   暂时仅包含input_data字段，如果后面有新的需求变化，可以增加新的字段。input_data里面的字段含义如下：
-  ①input_type：输入数据的类型. (算法用，标识数据使用方式).  0:unknown, 1:origin_data, 2:psi_output, 3:model等等。可以根据数据类型的增加而增加。暂时只有三种类型：源数据，psi输出结果，模型结果
-  ②access_type: 访问数据的方式, (fighter用，决定是否预先加载数据). 0:unknown, 1:local, 2:http, 3:https, 4:ftp等等。现阶段仅支持local
-  ③data_type：数据的格式, (算法用，标识数据格式). 0:unknown, 1:csv, 2:folder, 3:xls, 4:txt, 5:json, 6:mysql, 7:bin等等。现阶段仅支持csv和folder。
+  ①input_type：输入数据的类型. (算法用，标识数据使用方式).  0:unknown, 1:origin_data, 2:model等等。可以根据数据类型的增加而增加。暂时只有三种类型：源数据，模型结果
+  ②access_type: 访问数据的方式, (fighter用，决定是否预先加载数据). 0:unknown, 1:local, 2:url等等。现阶段仅支持local
+  ③data_type：数据的格式, (算法用，标识数据格式). 0:unknown, 1:csv, 2:dir, 3:binary, 4:xls, 5:xlsx, 6:txt, 7:json等等。现阶段仅支持csv和folder。
   ④data_path：如果数据在本地(access_type=local)，则这里是数据路径。如果数据在远程(access_type=http/https/ftp)，则这里是超链接
   ⑤key_column：id列，作为样本的唯一标识。如果数据的格式(data_type)是非二维表类型, 如folder/bin/图像/文本/音频/视频等格式，则无此字段
   ⑥selected_columns：选择的列，指的是自变量(特征列)。如果数据的格式(data_type)是非二维表类型, 如folder/bin/图像/文本/音频/视频等格式，则无此字段
@@ -28,23 +28,15 @@
       "party_id": "data1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 1,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
-            "data_type": 1,      # 数据的格式. 0:unknown, 1:csv, 2:folder, 3:xls, 4:txt, 5:json, 6:mysql, 7:bin
+            "input_type": 1,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: model
+            "data_type": 1,      # 数据的格式. 
             "data_path": "path/to/data",  # 数据所在的本地路径
             "key_column": "col1",  # ID列名
             "selected_columns": ["col2", "col3"]  # 自变量(特征列名)
-        },
-        {
-            "input_type": 2,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
-            "data_type": 1,
-            "data_path": "path/to/data1/psi_result.csv",
-            "key_column": "",
-            "selected_columns": []
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,           # 是否使用psi
       "label_owner": "data1",       # 标签所在方的party_id
       "label_column": "Y",       # 因变量(标签)
       "hyperparams": {           # 逻辑回归的超参数
@@ -67,7 +59,6 @@
       "input_data": []
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,           # 是否使用psi
       "label_owner": "data1",       # 标签所在方的party_id
       "label_column": "Y",       # 因变量(标签)
       "hyperparams": {           # 逻辑回归的超参数
@@ -90,7 +81,6 @@
       "input_data": []
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,           # 是否使用psi
       "label_owner": "data1",       # 标签所在方的party_id
       "label_column": "Y",       # 因变量(标签)
       "hyperparams": {           # 逻辑回归的超参数
@@ -119,23 +109,15 @@
       "party_id": "data1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 1,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
+            "input_type": 1,     # 输入数据的类型. 
             "data_type": 1,      # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
             "key_column": "col1",  # ID列名
             "selected_columns": ["col2", "col3"]  # 自变量(特征列名)
-        },
-        {
-            "input_type": 2,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
-            "data_type": 1,
-            "data_path": "path/to/data1/psi_result.csv",
-            "key_column": "",
-            "selected_columns": []
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1",  # 模型所在方
       "predict_threshold": 0.5      # 预测结果的分类阈值，值域[0,1]
   }
@@ -150,14 +132,13 @@
       "party_id": "model1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 3,    # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
+            "input_type": 2,    # 输入数据的类型.
             "data_type": 2      # 数据的格式.
             "data_path": "path/to/data"   # 数据所在的本地路径
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1",  # 模型所在方
       "predict_threshold": 0.5      # 预测结果的分类阈值，值域[0,1]
   }
@@ -172,7 +153,6 @@
       "input_data": []
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1",  # 模型所在方
       "predict_threshold": 0.5      # 预测结果的分类阈值，值域[0,1]
   }
@@ -187,7 +167,6 @@
       "input_data": []
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1",  # 模型所在方
       "predict_threshold": 0.5      # 预测结果的分类阈值，值域[0,1]
   }
@@ -210,24 +189,15 @@ self_cfg_params里的参数的含义请详见逻辑回归训练的部分。
       "party_id": "data1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 1,       # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
+            "input_type": 1,       # 输入数据的类型.
             "data_path": "path/to/data",  # 数据所在的本地路径
             "data_format": 1,      # 数据的格式.
             "key_column": "col1",  # ID列名
             "selected_columns": ["col2", "col3"]  # 自变量(特征列名)
-        },
-        {
-            "input_type": 2,
-            "access_method": 1,
-            "data_path": "path/to/data1/psi_result.csv",
-            "data_format": 1,
-            "key_column": "",
-            "selected_columns": []
         }
       ]
   },
    "algorithm_dynamic_params": {
-      "use_psi": true,           # 是否使用psi
       "label_owner": "data1",       # 标签所在方的party_id
       "label_column": "Y",       # 因变量(标签)
       "hyperparams": {           # 线性回归的超参数
@@ -249,7 +219,6 @@ self_cfg_params里的参数的含义请详见逻辑回归训练的部分。
       "input_data": []
   },
    "algorithm_dynamic_params": {
-      "use_psi": true,           # 是否使用psi
       "label_owner": "data1",       # 标签所在方的party_id
       "label_column": "Y",       # 因变量(标签)
       "hyperparams": {           # 线性回归的超参数
@@ -271,7 +240,6 @@ self_cfg_params里的参数的含义请详见逻辑回归训练的部分。
       "input_data": []
   },
    "algorithm_dynamic_params": {
-      "use_psi": true,           # 是否使用psi
       "label_owner": "data1",    # 标签所在方的party_id
       "label_column": "Y",       # 因变量(标签)
       "hyperparams": {           # 线性回归的超参数
@@ -299,23 +267,15 @@ self_cfg_params里的参数的含义请详见逻辑回归训练的部分。
       "party_id": "data1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 1,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
+            "input_type": 1,     # 输入数据的类型.
             "data_type": 1,      # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
             "key_column": "col1",  # ID列名
             "selected_columns": ["col2", "col3"]  # 自变量(特征列名)
-        },
-        {
-            "input_type": 2,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
-            "data_type": 1,
-            "data_path": "path/to/data1/psi_result.csv",
-            "key_column": "",
-            "selected_columns": []
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1",  # 模型所在方
       "predict_threshold": 0.5      # 预测结果的分类阈值，值域[0,1]
   }
@@ -330,14 +290,13 @@ self_cfg_params里的参数的含义请详见逻辑回归训练的部分。
       "party_id": "model1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 3,    # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
+            "input_type": 2,    # 输入数据的类型. 0: unknown, 1: origin_data, 2: model
             "data_type": 2      # 数据的格式.
             "data_path": "path/to/data"   # 数据所在的本地路径
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1"  # 模型所在方
   }
 }
@@ -351,7 +310,6 @@ self_cfg_params里的参数的含义请详见逻辑回归训练的部分。
       "input_data": []
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1"  # 模型所在方
   }
 }
@@ -365,7 +323,6 @@ self_cfg_params里的参数的含义请详见逻辑回归训练的部分。
       "input_data": []
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1"  # 模型所在方
 }
 ```
@@ -384,23 +341,15 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
       "party_id": "data1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 1,       # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
+            "input_type": 1,       # 输入数据的类型.
             "data_type": 1,        # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
             "key_column": "col1",  # ID列名
             "selected_columns": ["col2", "col3"]  # 自变量(特征列名)
-        },
-        {
-            "input_type": 2,
-            "data_type": 1,
-            "data_path": "path/to/data1/psi_result.csv",
-            "key_column": "",
-            "selected_columns": []
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,           # 是否使用psi
       "label_owner": "data1",       # 标签所在方的party_id
       "label_column": "Y",       # 因变量(标签)
       "hyperparams": {           # DNN的超参数
@@ -436,23 +385,15 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
       "party_id": "data1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 1,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
+            "input_type": 1,     # 输入数据的类型.
             "data_type": 1,      # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
             "key_column": "col1",  # ID列名
             "selected_columns": ["col2", "col3"]  # 自变量(特征列名)
-        },
-        {
-            "input_type": 2,
-            "data_type": 1,
-            "data_path": "path/to/data1/psi_result.csv",
-            "key_column": "",
-            "selected_columns": []
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1",   # 模型所在方
       "hyperparams": {           # DNN的超参数
           "layer_units": [32, 128, 32, 1],   # 隐藏层与输出层的每层单元数，此参数配置必须与训练时的一样
@@ -472,14 +413,13 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
       "party_id": "model1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 3,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
-            "data_type": 1       # 数据的格式.
+            "input_type": 2,     # 输入数据的类型.
+            "data_type": 2       # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1",   # 模型所在方
       "hyperparams": {           # DNN的超参数
           "layer_units": [32, 128, 32, 1],   # 隐藏层与输出层的每层单元数，此参数配置必须与训练时的一样
@@ -507,23 +447,15 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
       "party_id": "data1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 1,       # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
+            "input_type": 1,       # 输入数据的类型.
             "data_type": 1,        # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
             "key_column": "col1",  # ID列名
             "selected_columns": ["col2", "col3"]  # 自变量(特征列名)
-        },
-        {
-            "input_type": 2,
-            "data_type": 1,
-            "data_path": "path/to/data1/psi_result.csv",
-            "key_column": "",
-            "selected_columns": []
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,           # 是否使用psi
       "label_owner": "data1",       # 标签所在方的party_id
       "label_column": "Y",       # 因变量(标签)
       "hyperparams": {           # XGBoost的超参数
@@ -555,23 +487,15 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
       "party_id": "data1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 1,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
+            "input_type": 1,     # 输入数据的类型.
             "data_type": 1,      # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
             "key_column": "col1",  # ID列名
             "selected_columns": ["col2", "col3"]  # 自变量(特征列名)
-        },
-        {
-            "input_type": 2,
-            "data_type": 1,
-            "data_path": "path/to/data1/psi_result.csv",
-            "key_column": "",
-            "selected_columns": []
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1",   # 模型所在方
       "hyperparams": {           # XGBoost的超参数
           "num_trees": 3,   # 多少棵树，大于0的整数，此参数配置必须与训练时的一样
@@ -593,14 +517,13 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
       "party_id": "model1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 3,     # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
-            "data_type": 1       # 数据的格式.
+            "input_type": 2,     # 输入数据的类型.
+            "data_type": 2       # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "use_psi": true,    # 是否使用psi
       "model_restore_party": "model1",   # 模型所在方
       "hyperparams": {           # XGBoost的超参数
           "num_trees": 3,   # 多少棵树，大于0的整数，此参数配置必须与训练时的一样
@@ -615,11 +538,11 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
 }
 ```
 
+## 3. Private Set Intersection
 
-
-## 2. Private Set Intersection
-
+该模块用于单独使用，后面不接训练或者预测算法。常见应用场景是隐私黑名单查询业务。
 cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归训练相同，algorithm_dynamic_params是由本算法定制。
+数据提供方有两方[data1, data2],  计算方有两方[compute1, compute2], 结果方有两方[result1, result2]。结果方可以只有一方，result1或者result2，那么data_flow_restrict需要相应地改动。
 
 - data1数据提供方
 ```
@@ -628,22 +551,67 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
       "party_id": "data1",    # 本方party_id
       "input_data": [
         {
-            "input_type": 1,       # 输入数据的类型. 0: unknown, 1: origin_data, 2: psi_output 3: model
+            "input_type": 1,       # 输入数据的类型. 0: unknown, 1: origin_data, 2: model
             "data_type": 1,      # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
             "key_column": "col1",  # ID列名
-            "selected_columns": []  # 自变量(特征列名)
+            "selected_columns": []  # 自变量(特征列名), 该字段一直为空列表[]
         }
       ]
   },
   "algorithm_dynamic_params": {
-      "psi_type": "T_V1_Basic_GLS254"  # 支持T_V1_Basic_GLS254, T_V1_Basic_SECP等
+      "use_alignment": false,
+      "label_owner": "",   # 可无此字段
+      "label_column": "",  # 可无此字段
+      "psi_type": "T_V1_Basic_GLS254",  # 支持T_V1_Basic_GLS254, T_V1_Basic_SECP等
+      "data_flow_restrict": {
+        "data1": ["compute1"],
+        "data2": ["compute2"],
+        "result1": ["compute1"],
+        "result2": ["compute2"]
+      }
+  }
+}
+```
+
+## 4. Alignment
+
+该模块专门用于训练和预测算法的对齐。与训练或者预测算法配套使用。与上一个算法不同的是use_alignment=true
+cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归训练相同，algorithm_dynamic_params是由本算法定制。
+数据提供方有两方[data1, data2],  计算方有两方[compute1, compute2], 结果方有两方[result1, result2]。
+
+- data1数据提供方
+```
+{
+  "self_cfg_params": {
+      "party_id": "data1",    # 本方party_id
+      "input_data": [
+        {
+            "input_type": 1,       # 输入数据的类型.
+            "data_type": 1,      # 数据的格式.
+            "data_path": "path/to/data",  # 数据所在的本地路径
+            "key_column": "col1",  # ID列名
+            "selected_columns": ["col1", "col2"]  # 自变量(特征列名), 训练或者预测算法选择的字段。
+        }
+      ]
+  },
+  "algorithm_dynamic_params": {
+      "use_alignment": true,
+      "label_owner": "data1",
+      "label_column": "diagnosis",
+      "psi_type": "T_V1_Basic_GLS254",  # 支持T_V1_Basic_GLS254, T_V1_Basic_SECP等
+      "data_flow_restrict": {
+        "data1": ["compute1"],
+        "data2": ["compute2"],
+        "result1": ["compute1"],
+        "result2": ["compute2"]
+      }
   }
 }
 ```
 
 
-## 3. 模型评估
+## 5. 模型评估
 
 现阶段模型评估有2种类型，一种是二分类模型评估，一种是回归类型模型评估。
 
