@@ -60,7 +60,13 @@ class PrivateSetIntersection(object):
                 "use_alignment": true,
                 "label_owner": "data1",
                 "label_column": "diagnosis",
-                "psi_type": "T_V1_Basic_GLS254"
+                "psi_type": "T_V1_Basic_GLS254",
+                "data_flow_restrict": {
+                    "data1": ["compute1"],
+                    "data2": ["compute2"],
+                    "result1": ["compute1"],
+                    "result2": ["compute2"]
+                }
             }
         }
         '''
@@ -155,7 +161,7 @@ class PrivateSetIntersection(object):
         if len(self.result_party) == 2:
             result_recv_mode = 2
         else:
-            if self.party_id == self.data_flow_restrict[self.result_party[0]][0]:  # 根据数据流向链决定该值
+            if self.party_id == self.data_flow_restrict[self.result_party[0]][0]:  # Determine the value according to the data flow chain
                 result_recv_mode = 0
             else:
                 result_recv_mode = 1
@@ -258,12 +264,11 @@ class PrivateSetIntersection(object):
         log.info("start activate.")
         psihandler.activate(self.psi_type, "")
         log.info("finish activate.")
-
-        log.info("start prepare data.")
+        log.info("start psihandler prepare data.")
         psihandler.prepare(input_file, taskid="")
-        log.info("start run.")
+        log.info("start psihandler run.")
         psihandler.run(input_file, output_file, taskid="")
-        log.info("finish run.")
+        log.info("finish psihandler run.")
         run_stats = psihandler.get_perf_stats(True, "")
         run_stats = run_stats.replace('\n', '').replace(' ', '')
         log.info(f"run stats: {run_stats}")
@@ -275,22 +280,21 @@ class PrivateSetIntersection(object):
         '''
         for the compute_party, sort the key_col values and alignment the select_columns.
         '''
-        if self.party_id in self.compute_party:
-            if os.path.exists(psi_output_file):
-                psi_result = pd.read_csv(psi_output_file, header=None, dtype="str")
-                psi_result = pd.DataFrame(psi_result.values, columns=[key_col_name])
-                psi_result.sort_values(by=[key_col_name], ascending=True, inplace=True)
-                if self.use_alignment:
-                    alignment_result = pd.merge(psi_result, usecols_data, on=key_col_name)
-                else:
-                    alignment_result = psi_result
-                alignment_result.to_csv(alignment_output_file, index=False, header=True)
-                log.info(f"alignment_result shape: {alignment_result.shape}")
+        if os.path.exists(psi_output_file):
+            psi_result = pd.read_csv(psi_output_file, header=None, dtype="str")
+            psi_result = pd.DataFrame(psi_result.values, columns=[key_col_name])
+            psi_result.sort_values(by=[key_col_name], ascending=True, inplace=True)
+            if self.use_alignment:
+                alignment_result = pd.merge(psi_result, usecols_data, on=key_col_name)
             else:
-                use_cols = list(usecols_data.columns)
-                log.info(f"psi_result is Empty, only have Column name: {use_cols}")
-                with open(alignment_output_file, 'w') as output_f:
-                    output_f.write(','.join(use_cols)+"\n")
+                alignment_result = psi_result
+            alignment_result.to_csv(alignment_output_file, index=False, header=True)
+            log.info(f"alignment_result shape: {alignment_result.shape}")
+        else:
+            use_cols = list(usecols_data.columns)
+            log.info(f"psi_result is Empty, only have Column name: {use_cols}")
+            with open(alignment_output_file, 'w') as output_f:
+                output_f.write(','.join(use_cols)+"\n")
 
     def _create_set_channel(self):
         '''
@@ -318,7 +322,7 @@ class PrivateSetIntersection(object):
             # only delete the temp dir
             temp_dir = self.temp_dir
         else:
-            # delete the all results in the other party.
+            # delete the all results in the non-result party.
             temp_dir = self.results_dir
         self._remove_dir(temp_dir)
     
@@ -341,28 +345,26 @@ class PrivateSetIntersection(object):
         self.write_content(output_data_path, data)
     
     def len_str(self, dat_len: int) -> str:
-        """return hex string of len of data, always 8 chars"""
+        """return hex string of len of data for transmission, always 8 chars"""
         lb = dat_len.to_bytes(4, byteorder='big')
         return codecs.encode(lb, 'hex').decode()
 
     def recv_sth(self, remote_nodeid):
         recv_data = self.io_channel.Recv(remote_nodeid, 8)
         if recv_data == '\x00'*8:
-            # log.info(f'maybe peer {remote_nodeid} has quit or cannot connect to.')
             return remote_nodeid, None
         data_len = int(recv_data, 16)
         recv_data = self.io_channel.Recv(remote_nodeid, data_len)
         h = ''.join('{:02x}'.format(ord(c)) for c in recv_data)
         recv_data = bytes.fromhex(h)
-        log.info(f'recv {data_len} bytes data from {remote_nodeid}, in fact len: {len(recv_data)}, {recv_data[:20]}')
-        # assert data_len == len(recv_data)  # sometimes assert failed cause by encoding, weird
+        log.info(f'recv {data_len} bytes data from {remote_nodeid}, in fact len: {len(recv_data)} bytes')
         return remote_nodeid, recv_data
 
     def send_sth(self, remote_nodeid, data: str) -> None:
         lens = self.len_str(len(data))
         self.io_channel.Send(remote_nodeid, lens)
         self.io_channel.Send(remote_nodeid, data)
-        log.info(f'send {len(data)} to {remote_nodeid}, {lens}, {data[:20]}')
+        log.info(f'send {int(lens, 16)} bytes data to {remote_nodeid}, in fact len: {len(data)} bytes')
     
     def read_content(self, path, text=False):
         flag = 'r' if text else 'rb'
@@ -374,7 +376,6 @@ class PrivateSetIntersection(object):
         with open(path, 'wb') as f:
             f.write(data)
 
-    
 
 def main(channel_config: str, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
@@ -385,7 +386,7 @@ def main(channel_config: str, cfg_dict: dict, data_party: list, compute_party: l
         log.info(f"start main function. {algo_type}.")
         psi = PrivateSetIntersection(channel_config, cfg_dict, data_party, compute_party, result_party, results_dir)
         result_path, result_type = psi.run()
-        log.info(f"start main function. {algo_type}.")
+        log.info(f"finish main function. {algo_type}.")
         return result_path, result_type
     except Exception as e:
         exc_type, exc_value, exc_traceback = sys.exc_info()

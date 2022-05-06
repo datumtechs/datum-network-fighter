@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import json
+import copy
 import logging
 import threading
 import hashlib
@@ -237,7 +238,7 @@ def map_data_type_to_int(data_type_str):
 
 def get_metadata(path, data_type):
     if data_type == base_pb2.OrigindataType_DIR:
-        origin_id, data_hash, metadata_option = get_directory_metadata(path, data_type)
+        origin_id, data_hash, metadata_option = get_directory_metadata(path)
     else:
         origin_id, data_hash, metadata_option = get_file_metadata(path, data_type)
     metadata_option = json.dumps(metadata_option)
@@ -297,30 +298,41 @@ def get_file_metadata(path, data_type):
 
     return origin_id, data_hash, metadata_option
 
-def get_directory_metadata(path, data_type):
-    m = hashlib.sha256()
-    m.update(path.encode())
-    origin_id = m.hexdigest()
+def get_directory_metadata(path):
+    # List all subpaths's metadata
+    metadata_temp = []
+    for current_path, sub_dir, files in os.walk(path):
+        current_abspath = os.path.abspath(current_path)
+        sha256 = hashlib.sha256()
+        sha256.update(current_abspath.encode())
+        path_hash = sha256.hexdigest()
+        one_dir_info = {}
+        one_dir_info["originId"] = path_hash
+        one_dir_info["dirPath"] = current_abspath
+        one_dir_info["childs"] = []
+        one_dir_info["last"] = False if sub_dir else True
+        one_dir_info["filePaths"] = []
+        for one_file in files:
+            one_dir_info["filePaths"].append(os.path.join(current_abspath, one_file))
+        metadata_temp.append(one_dir_info)
+
+    # Assemble into the desired message structure
+    metadata_option = copy.deepcopy(metadata_temp.pop(0))
+    base_path = metadata_option['dirPath']
+    base_path_list_len = len(base_path.split('/'))
+    while metadata_temp:
+        sub_path_list = metadata_temp[0]['dirPath'].split('/')
+        sub_dirs = sub_path_list[base_path_list_len:]  # only get the sub directory
+        # find the insert point to insert the one_dir_info
+        full_dir = base_path
+        insert_point = metadata_option["childs"]
+        for dir_ in sub_dirs:
+            full_dir = os.path.join(full_dir, dir_)
+            for postion in insert_point:
+                if full_dir == postion['dirPath']:
+                    insert_point = postion['childs']
+        insert_point.append(metadata_temp.pop(0))
+    origin_id = metadata_option['originId']
     data_hash = origin_id
-    metadata_option = {
-        "originId": origin_id,
-        "dirPath": path,
-        "childs": [],
-        "filePaths": []
-    }
-    num_subdir = 0
-    for subdir_file in os.listdir(path):
-        # if os.path.isdir(subdir_file):
-        #     print(f"######### {subdir_file}")
-        #     num_subdir += 1
-        #     # metadata_option["child_dirs"].append(subdir_file)
-        #     # TO DO: need to implement recursion
-        # else:
-        #     metadata_option["filePaths"].append(subdir_file)
-        metadata_option["filePaths"].append(subdir_file)
-    if num_subdir == 0:
-        metadata_option["last"] = True
-    else:
-        metadata_option["last"] = False
     return origin_id, data_hash, metadata_option
-        
+ 

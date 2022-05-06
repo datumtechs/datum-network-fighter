@@ -54,13 +54,6 @@ class PrivacyXgbTrain(object):
                         "data_path": "path/to/data",
                         "key_column": "col1",
                         "selected_columns": ["col2", "col3"]
-                    },
-                    {
-                        "input_type": 2,
-                        "data_type": 1,
-                        "data_path": "path/to/data1/psi_result.csv",
-                        "key_column": "",
-                        "selected_columns": []
                     }
                 ]
             },
@@ -109,7 +102,6 @@ class PrivacyXgbTrain(object):
     def _parse_algo_cfg(self, cfg_dict):
         self.party_id = cfg_dict["self_cfg_params"]["party_id"]
         input_data = cfg_dict["self_cfg_params"]["input_data"]
-        self.psi_result_data = None
         if self.party_id in self.data_party:
             for data in input_data:
                 input_type = data["input_type"]
@@ -118,10 +110,8 @@ class PrivacyXgbTrain(object):
                     self.input_file = data["data_path"]
                     self.key_column = data.get("key_column")
                     self.selected_columns = data.get("selected_columns")
-                elif input_type == 2:
-                    self.psi_result_data = data["data_path"]
                 else:
-                    raise Exception("paramter error. input_type only support 1/2")
+                    raise Exception("paramter error. input_type only support 1, not {input_type}")
         
         dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
         self.label_owner = dynamic_parameter.get("label_owner")
@@ -379,11 +369,11 @@ class PrivacyXgbTrain(object):
         return output_dir
 
     def remove_temp_dir(self):
-        if self.party_id in (self.data_party + self.result_party):
+        if self.party_id in self.result_party:
             # only delete the temp dir
             temp_dir = self.get_temp_dir()
         else:
-            # delete the all results in the compute party.
+            # delete the all results in the non-result party.
             temp_dir = self.results_dir
         self._remove_dir(temp_dir)
     

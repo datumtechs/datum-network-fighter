@@ -364,11 +364,11 @@ class PrivacyLRTrain(object):
         return output_dir
     
     def remove_temp_dir(self):
-        if self.party_id in (self.data_party + self.result_party):
+        if self.party_id in self.result_party:
             # only delete the temp dir
             temp_dir = self.get_temp_dir()
         else:
-            # delete the all results in the compute party.
+            # delete the all results in the non-result party.
             temp_dir = self.results_dir
         self._remove_dir(temp_dir)
     

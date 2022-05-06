@@ -57,18 +57,10 @@ class PrivacyLinearRegPredict(object):
                         "data_path": "path/to/data",
                         "key_column": "col1",
                         "selected_columns": ["col2", "col3"]
-                    },
-                    {
-                        "input_type": 2,
-                        "data_type": 1,
-                        "data_path": "path/to/data1/psi_result.csv",
-                        "key_column": "",
-                        "selected_columns": []
                     }
                 ]
             },
             "algorithm_dynamic_params": {
-                "use_psi": true,
                 "model_restore_party": "model1",
             }
         }
@@ -109,26 +101,15 @@ class PrivacyLinearRegPredict(object):
                     self.model_path = data["data_path"]
                     self.model_file = os.path.join(self.model_path, "model")
                 else:
-                    raise Exception("paramter error. input_type only support 1/2")
+                    raise Exception("paramter error. input_type only support 1/2, not {input_type}")
         
         dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
-        self.use_psi = dynamic_parameter.get("use_psi", True)
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
 
     def _check_parameters(self):
         log.info(f"check parameter start.")        
         
-        if self.party_id in self.data_party:
-            assert isinstance(self.use_psi, bool), "use_psi must be type(bool), true or false"
-            if self.use_psi:
-                assert isinstance(self.psi_result_data, str), f"psi_result_data must be type(string), not {self.psi_result_data}"
-                self.psi_result_data = self.psi_result_data.strip()
-                if os.path.exists(self.psi_result_data):
-                    file_suffix = os.path.splitext(self.psi_result_data)[-1][1:]
-                    assert file_suffix == "csv", f"psi_result_data must csv file, not {file_suffix}"
-                else:
-                    raise Exception(f"psi_result_data is not exist. psi_result_data={self.psi_result_data}")
-            
+        if self.party_id in self.data_party:            
             assert isinstance(self.input_file, str), "origin input_data must be type(string)"
             assert isinstance(self.key_column, str), "key_column must be type(string)"
             assert isinstance(self.selected_columns, list), "selected_columns must be type(list)" 
@@ -248,12 +229,6 @@ class PrivacyLinearRegPredict(object):
             input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str")
             input_data = input_data[usecols]
             assert input_data.shape[0] > 0, 'input file is no data.'
-            if self.use_psi:
-                psi_result = pd.read_csv(self.psi_result_data, dtype="str")
-                psi_result.name = self.key_column
-                input_data = pd.merge(psi_result, input_data, on=self.key_column, how='inner')
-                assert input_data.shape[0] > 0, 'input data is empty. because no intersection with psi result.'
-
             id_col = input_data[self.key_column]
             file_x = os.path.join(temp_dir, f"file_x_{self.party_id}.csv")
             x_data = input_data.drop(labels=self.key_column, axis=1)
@@ -265,19 +240,26 @@ class PrivacyLinearRegPredict(object):
         '''
         Get the directory for temporarily saving files
         '''
-        temp_dir = os.path.join(os.path.dirname(self.output_file), 'temp')
-        if not os.path.exists(temp_dir):
-            os.makedirs(temp_dir, exist_ok=True)
+        temp_dir = os.path.join(self.results_dir, 'temp')
+        self._mkdir(temp_dir)
         return temp_dir
-
+    
     def remove_temp_dir(self):
-        '''
-        Delete all files in the temporary directory, these files are some temporary data.
-        Only delete temp file.
-        '''
-        temp_dir = self.get_temp_dir()
-        if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
+        if self.party_id in self.result_party:
+            # only delete the temp dir
+            temp_dir = self.get_temp_dir()
+        else:
+            # delete the all results in the non-result party.
+            temp_dir = self.results_dir
+        self._remove_dir(temp_dir)
+    
+    def _mkdir(self, _directory):
+        if not os.path.exists(_directory):
+            os.makedirs(_directory, exist_ok=True)
+
+    def _remove_dir(self, _directory):
+        if os.path.exists(_directory):
+            shutil.rmtree(_directory)
 
 
 def main(channel_config: str, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):

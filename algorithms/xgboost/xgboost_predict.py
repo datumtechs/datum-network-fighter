@@ -54,13 +54,6 @@ class PrivacyXgbPredict(object):
                         "data_path": "path/to/data",
                         "key_column": "col1",
                         "selected_columns": ["col2", "col3"]
-                    },
-                    {
-                        "input_type": 2,
-                        "data_type": 1,
-                        "data_path": "path/to/data1/psi_result.csv",
-                        "key_column": "",
-                        "selected_columns": []
                     }
                 ]
             },
@@ -94,6 +87,7 @@ class PrivacyXgbPredict(object):
         self.data_party = list(data_party)
         self.compute_party = list(compute_party)
         self.result_party = list(result_party)
+        self.results_dir = results_dir
         self.output_file = os.path.join(results_dir, "result_predict.csv")
         self._parse_algo_cfg(cfg_dict)
         self.data_party.remove(self.model_restore_party)  # except restore party
@@ -114,7 +108,7 @@ class PrivacyXgbPredict(object):
                     self.model_path = data["data_path"]
                     self.model_file = os.path.join(self.model_path, "model")
                 else:
-                    raise Exception("paramter error. input_type only support 1/2")
+                    raise Exception("paramter error. input_type only support 1/2, not {input_type}")
 
         dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
         self.model_restore_party = dynamic_parameter.get("model_restore_party")
@@ -276,19 +270,26 @@ class PrivacyXgbPredict(object):
         '''
         Get the directory for temporarily saving files
         '''
-        temp_dir = os.path.join(os.path.dirname(self.output_file), 'temp')
-        if not os.path.exists(temp_dir):
-            os.makedirs(temp_dir, exist_ok=True)
+        temp_dir = os.path.join(self.results_dir, 'temp')
+        self._mkdir(temp_dir)
         return temp_dir
-
+    
     def remove_temp_dir(self):
-        '''
-        Delete all files in the temporary directory, these files are some temporary data.
-        Only delete temp file.
-        '''
-        temp_dir = self.get_temp_dir()
-        if os.path.exists(temp_dir):
-            shutil.rmtree(temp_dir)
+        if self.party_id in self.result_party:
+            # only delete the temp dir
+            temp_dir = self.get_temp_dir()
+        else:
+            # delete the all results in the non-result party.
+            temp_dir = self.results_dir
+        self._remove_dir(temp_dir)
+    
+    def _mkdir(self, _directory):
+        if not os.path.exists(_directory):
+            os.makedirs(_directory, exist_ok=True)
+
+    def _remove_dir(self, _directory):
+        if os.path.exists(_directory):
+            shutil.rmtree(_directory)
 
 
 def main(channel_config: str, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
