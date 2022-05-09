@@ -53,3 +53,7 @@ def process_recv_address(cfg, pipe):
 def check_grpc_channel_state(channel, try_to_connect=True):
     result = channel._channel.check_connectivity_state(try_to_connect)
     return _common.CYGRPC_CONNECTIVITY_STATE_TO_CHANNEL_CONNECTIVITY[result]
+
+def check_input_param_type(**kargs):
+    for key,value in kargs.items():
+        assert isinstance(value[0], value[1]), f'{key} must be type({value[1]}), not {type(value[0])}'

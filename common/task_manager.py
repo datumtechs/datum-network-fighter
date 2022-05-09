@@ -7,6 +7,7 @@ from collections import namedtuple
 from common.task import Task
 from lib import common_pb2
 from common.consts import ERROR_CODE
+from common.utils import check_input_param_type
 
 
 log = logging.getLogger(__name__)
@@ -51,44 +52,60 @@ class TaskManager:
         }
         '''
         log.info("#################### Get a task request. the request information is as follows.")
-        log.info(f"task_id: {req.task_id}, party_id: {req.party_id}")
-        str_parties = str(req.parties).replace('\n', ' ')
-        log.info(f"parties: {str_parties}")
-        log.info(f"self_cfg_params: {req.self_cfg_params}, algorithm_dynamic_params: {req.algorithm_dynamic_params}")
-        log.info(f"data_party_ids:{req.data_party_ids}, computation_party_ids:{req.computation_party_ids}, result_party_ids:{req.result_party_ids}, "
-                f"duration:{req.duration}, memory:{req.memory}, processor:{req.processor}, bandwidth:{req.bandwidth}, "
-                f"connect_policy:{req.connect_policy}")
-
         task_id = req.task_id
         party_id = req.party_id
-        uniq_task = (task_id, party_id)
-        task_name = f'{task_id[:15]}-{party_id}'
-        if uniq_task in self.tasks:
-            log.info(f'task: {task_name} repetitive submit')
-            return ERROR_CODE["DUPLICATE_SUBMIT_ERROR"], f'task: {task_name} repetitive submit'
         env_id = req.env_id
-        parties = tuple(TParty(p.ip, p.port, p.party_id, p.name) for p in req.parties)
+        parties = req.parties
         algorithm_code = req.algorithm_code
         self_cfg_params = req.self_cfg_params
         algorithm_dynamic_params = req.algorithm_dynamic_params
-        data_party = tuple(req.data_party_ids)
-        computation_party = tuple(req.computation_party_ids)
-        result_party = tuple(req.result_party_ids)
+        data_party_ids = req.data_party_ids
+        computation_party_ids = req.computation_party_ids
+        result_party_ids = req.result_party_ids
         duration = req.duration
         limit_memory = req.memory
         limit_cpu  = req.processor
         limit_bandwidth = req.bandwidth
         connect_policy_format = req.connect_policy_format
+        connect_policy = req.connect_policy
+        log.info(f"task_id: {task_id}, party_id: {party_id}")
+        str_parties = str(parties).replace('\n', ' ')
+        log.info(f"parties: {str_parties}")
+        log.info(f"self_cfg_params: {self_cfg_params}, algorithm_dynamic_params: {algorithm_dynamic_params}")
+        log.info(f"data_party_ids:{data_party_ids}, computation_party_ids:{computation_party_ids}, result_party_ids:{result_party_ids}, "
+                f"duration:{duration}, memory:{limit_memory}, processor:{limit_cpu}, bandwidth:{limit_bandwidth}, "
+                f"connect_policy:{connect_policy}")
+        check_input_param_type(task_id=(task_id, str), 
+                                party_id=(party_id, str), 
+                                env_id=(env_id, str),
+                                algorithm_code=(algorithm_code, str), 
+                                self_cfg_params=(self_cfg_params, str),
+                                algorithm_dynamic_params=(algorithm_dynamic_params, str),
+                                duration=(duration, int), 
+                                memory=(limit_memory, int), 
+                                processor=(limit_cpu, int), 
+                                bandwidth=(limit_bandwidth, int),
+                                connect_policy=(connect_policy, str))
+
+        uniq_task = (task_id, party_id)
+        task_name = f'{task_id[:15]}-{party_id}'
+        if uniq_task in self.tasks:
+            log.info(f'task: {task_name} repetitive submit')
+            return ERROR_CODE["DUPLICATE_SUBMIT_ERROR"], f'task: {task_name} repetitive submit'
+        parties = tuple(TParty(p.ip, p.port, p.party_id, p.name) for p in parties)
+        data_party_ids = list(data_party_ids)
+        computation_party_ids = list(computation_party_ids)
+        result_party_ids = list(result_party_ids)
         if connect_policy_format == common_pb2.ConnectPolicyFormat_Json:
-            connect_policy = json.loads(req.connect_policy)
+            connect_policy = json.loads(connect_policy)
         elif connect_policy_format == common_pb2.ConnectPolicyFormat_Str:
-            connect_policy = req.connect_policy
+            pass
         else:
             return  ERROR_CODE["PARAMS_ERROR"], \
                     f'Unknown connect_policy_format: {connect_policy_format}. only support str/json.'
         
         task = Task(self.cfg, task_id, party_id, env_id, parties, algorithm_code, self_cfg_params,
-                    algorithm_dynamic_params, data_party, computation_party, result_party, duration, 
+                    algorithm_dynamic_params, data_party_ids, computation_party_ids, result_party_ids, duration, 
                     limit_memory, limit_cpu, limit_bandwidth, connect_policy)
         self.tasks[uniq_task] = task
         log.info(f'new task: {task_name}, thread id: {threading.get_ident()}')
