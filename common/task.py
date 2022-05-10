@@ -238,8 +238,10 @@ def map_data_type_to_int(data_type_str):
 
 def get_metadata(path, data_type):
     if data_type == base_pb2.OrigindataType_DIR:
+        assert os.path.isdir(path), f'{path} is not a directory.'
         origin_id, data_hash, metadata_option = get_directory_metadata(path)
     else:
+        assert os.path.isfile(path), f'{path} is not a file.'
         origin_id, data_hash, metadata_option = get_file_metadata(path, data_type)
     metadata_option = json.dumps(metadata_option)
     return origin_id, data_hash, metadata_option
