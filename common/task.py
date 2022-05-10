@@ -182,7 +182,7 @@ class Task:
                     new_data["key_column"] = data.get("key_column")
                     new_data["selected_columns"] = data.get("selected_columns")
             else:
-                raise NotImplementedError("todo access_type: {access_type}, only support 1.")
+                raise NotImplementedError(f"todo access_type: {access_type}, only support 1.")
             new_input_data.append(new_data)
         return new_input_data
     
