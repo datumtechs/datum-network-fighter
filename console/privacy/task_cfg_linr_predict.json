@@ -100,7 +100,7 @@
                     "input_type": 2,
                     "access_type": 1,
                     "data_type": 2,
-                    "data_path": "../data_svc/results_root/train_001/result1/model"
+                    "data_path": "../data_svc/results_root/train_002/result1/model"
                 }
             ]
         },
