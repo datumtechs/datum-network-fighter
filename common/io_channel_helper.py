@@ -86,9 +86,6 @@ def get_channel_config(task_id, self_party_id, peers, data_party, compute_party,
     config_dict = build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party,
                                        result_party, cfg, parent_proc_ip, connect_policy,send_timeout)
     channel_config = json.dumps(config_dict)
-    # log.info(f'self_party_id: {self_party_id}, channel_config: {channel_config}')
-    log.info("get channel config finish.")
-
     return channel_config
 
 class IOChannel():

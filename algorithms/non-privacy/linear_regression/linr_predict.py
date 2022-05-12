@@ -231,7 +231,7 @@ class LinRPredict(BaseAlgorithm):
             result_type = 'csv'
         log.info("start remove temp dir.")
         self.remove_temp_dir()
-        log.info("train success all.")
+        log.info("predict success all.")
         return result_path, result_type
 
     def _send_data_to_compute_party(self, data_path):

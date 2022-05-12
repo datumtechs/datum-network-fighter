@@ -90,4 +90,6 @@ echo "   train: comp_run_task train_101 non-privacy/task_cfg_lr_train.json"
 echo " predict: comp_run_task predict_101 non-privacy/task_cfg_lr_predict.json"
 echo "   train: comp_run_task train_102 non-privacy/task_cfg_linr_train.json"
 echo " predict: comp_run_task predict_102 non-privacy/task_cfg_linr_predict.json"
+echo "   train: comp_run_task train_103 non-privacy/task_cfg_dnn_train.json"
+echo " predict: comp_run_task predict_103 non-privacy/task_cfg_dnn_predict.json"
 $python_command -u main.py --config=$cfg --data_svc_ip=${ip} --data_svc_port=${data_svc_base_port}

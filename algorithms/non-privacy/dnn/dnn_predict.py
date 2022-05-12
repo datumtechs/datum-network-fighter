@@ -5,20 +5,20 @@ import sys
 import math
 import json
 import time
+import copy
 import logging
+import shutil
 import traceback
 import numpy as np
 import pandas as pd
-import codecs
-import shutil
 import tensorflow as tf
-import channel_sdk.pyio as io
 from functools import wraps
 
 
 np.set_printoptions(suppress=True)
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+logger = logging.getLogger(__name__)
 class LogWithStage():
     def __init__(self, name):
         self.run_stage = 'init log.'
@@ -70,9 +70,8 @@ class BaseAlgorithm(object):
                  results_dir: str):
         log.info(f"cfg_dict:{cfg_dict}")
         log.info(f"data_party:{data_party}, compute_party:{compute_party}, result_party:{result_party}, results_dir:{results_dir}")
-        self.check_params_type(cfg_dict=(cfg_dict, dict), 
-                                data_party=(data_party, list), compute_party=(compute_party, list), 
-                                result_party=(result_party, list), results_dir=(results_dir, str))        
+        self.check_params_type(cfg_dict=(cfg_dict, dict), data_party=(data_party, list), compute_party=(compute_party, list), 
+                               result_party=(result_party, list), results_dir=(results_dir, str))        
         log.info(f"start get input parameter.")
         self.io_channel = io_channel
         self.data_party = list(data_party)
@@ -93,7 +92,7 @@ class BaseAlgorithm(object):
     
     def check_parameters(self):
         raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
-    
+        
     def get_temp_dir(self):
         '''
         Get the directory for temporarily saving files
@@ -120,17 +119,16 @@ class BaseAlgorithm(object):
     def remove_dir(self, directory):
         if os.path.exists(directory):
             shutil.rmtree(directory)
-    
 
-class LRPredict(BaseAlgorithm):
-    '''
-    Plaintext logistic regression predict.
-    '''
 
+class PrivacyDnnPredict(BaseAlgorithm):
+    '''
+    Privacy Dnn predict base on rosetta.
+    '''
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.output_file = os.path.join(self.results_dir, "result_predict.csv")
-    
+
     def parse_algo_cfg(self, cfg_dict):
         '''
         cfg_dict:
@@ -149,13 +147,18 @@ class LRPredict(BaseAlgorithm):
             },
             "algorithm_dynamic_params": {
                 "model_restore_party": "model1",
-                "predict_threshold": 0.5,
+                "hyperparams": {
+                    "layer_units": [32, 1],
+                    "layer_activation": ["sigmoid", "sigmoid"],
+                    "use_intercept": true,
+                    "predict_threshold": 0.5
+                },
                 "data_flow_restrict": {
                     "data1": ["compute1"],
-                    "model1": ["compute1"],
                     "compute1": ["result1"]
                 }
             }
+
         }
         '''
         self.party_id = cfg_dict["self_cfg_params"]["party_id"]
@@ -172,30 +175,49 @@ class LRPredict(BaseAlgorithm):
                     self.model_path = data["data_path"]
                     self.model_file = os.path.join(self.model_path, "model")
                 else:
-                    raise Exception(f"paramter error. input_type only support 1/2, not {input_type}")
-        
+                    raise Exception("paramter error. input_type only support 1/2, not {input_type}")
+
         dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
         self.model_restore_party = dynamic_parameter["model_restore_party"]
-        self.predict_threshold = dynamic_parameter.get("predict_threshold", 0.5)
+        hyperparams = dynamic_parameter["hyperparams"]
+        self.layer_units = hyperparams.get("layer_units", [32, 1])
+        self.layer_activation = hyperparams.get("layer_activation", ["sigmoid", "sigmoid"])
+        self.use_intercept = hyperparams.get("use_intercept", True)  # True: use b, False: not use b        
+        self.predict_threshold = hyperparams.get("predict_threshold", 0.5)
         self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
         self.data_party.remove(self.model_restore_party)  # except restore party
 
     def check_parameters(self):
         log.info(f"check parameter start.")
         self._check_input_data()
-        self.check_params_type(model_restore_party=(self.model_restore_party, str), 
+        self.check_params_type(model_restore_party=(self.model_restore_party, str),
+                               layer_units=(self.layer_units, list),
+                               layer_activation=(self.layer_activation, list),
+                               use_intercept=(self.use_intercept, bool),
                                predict_threshold=(self.predict_threshold, float),
                                data_flow_restrict=(self.data_flow_restrict, dict))
         if self.party_id == self.model_restore_party:
-            assert os.path.exists(self.model_path), f"model_path is not exists. model_path={self.model_path}"
+            assert os.path.exists(self.model_path), f"model_path is not exist. model_path={self.model_path}"
         assert 0 <= self.predict_threshold <= 1, f"predict threshold must be between [0,1], not {self.predict_threshold}"
+        assert self.layer_units, f"layer_units must not empty, not {self.layer_units}"
+        assert self.layer_activation, f"layer_activation must not empty, not {self.layer_activation}"
+        assert len(self.layer_units) == len(self.layer_activation), \
+                f"the length of layer_units:{len(self.layer_units)} and layer_activation:{len(self.layer_activation)} not same"
+        for i in self.layer_units:
+            assert isinstance(i, int) and i > 0, f"layer_units'element can only be type(int) and greater 0, not {i}"
+        for i in self.layer_activation:
+            if i not in ["", "sigmoid", "relu", None]:
+                raise Exception(f'layer_activation can only be ""/"sigmoid"/"relu"/None, not {i}')
+        if self.layer_activation[-1] == 'sigmoid':
+            if self.layer_units[-1] != 1:
+                raise Exception(f"output layer activation is sigmoid, output layer units must be 1, not {self.layer_units[-1]}")
         log.info(f"check parameter finish.")
     
     def _check_input_data(self):
         if self.party_id in self.data_party:
             self.check_params_type(data_path=(self.input_file, str), 
-                                   key_column=(self.key_column, str),
-                                   selected_columns=(self.selected_columns, list))
+                                    key_column=(self.key_column, str),
+                                    selected_columns=(self.selected_columns, list))
             self.input_file = self.input_file.strip()
             if os.path.exists(self.input_file):
                 file_suffix = os.path.splitext(self.input_file)[-1][1:]
@@ -211,8 +233,7 @@ class LRPredict(BaseAlgorithm):
                 assert self.key_column not in self.selected_columns, f"key_column:{self.key_column} can not in selected_columns"
             else:
                 raise Exception(f"input_file is not exist. input_file={self.input_file}")
-                        
-        
+
     def predict(self):
         '''
         Logistic regression predict algorithm implementation function
@@ -305,12 +326,18 @@ class LRPredict(BaseAlgorithm):
         column_total_num = x_data.shape[1]
 
         log.info("start build the model structure.")
-        X = tf.placeholder(tf.float64, [None, column_total_num])
-        Y = tf.placeholder(tf.float64, [None, 1])
-        W = tf.Variable(tf.zeros([column_total_num, 1], dtype=tf.float64))
-        b = tf.Variable(tf.zeros([1], dtype=tf.float64))
-        logits = tf.matmul(X, W) + b        
-        pred_Y = tf.sigmoid(logits)
+        X = tf.placeholder(tf.float64, [None, column_total_num], name='X')
+        output = self.dnn(X, column_total_num)
+        output_layer_activation = self.layer_activation[-1]
+        with tf.name_scope('output'):
+            if not output_layer_activation:
+                pred_Y = output
+            elif output_layer_activation == 'sigmoid':
+                pred_Y = tf.sigmoid(output)
+            elif output_layer_activation == 'relu':
+                pred_Y = tf.nn.relu(output)
+            else:
+                raise Exception('output layer not support {output_layer_activation} activation.')
         saver = tf.train.Saver(var_list=None, max_to_keep=5, name='v2')
         init = tf.global_variables_initializer()
         log.info("finish build the model structure.")
@@ -329,20 +356,61 @@ class LRPredict(BaseAlgorithm):
             Y_pred_prob = sess.run(pred_Y, feed_dict={X: x_data})
             predict_use_time = round(time.time()-predict_start_time, 3)
             log.info(f"predict success. predict_use_time={predict_use_time}s")
+
             Y_pred_prob = Y_pred_prob.astype("float")
-            Y_prob = pd.DataFrame(Y_pred_prob, columns=["Y_prob"])
-            Y_class = (Y_pred_prob > self.predict_threshold) * 1
-            Y_class = pd.DataFrame(Y_class, columns=[f"Y_class(>{self.predict_threshold})"])
-            Y_result = pd.concat([Y_prob, Y_class], axis=1)
+            if (not output_layer_activation) or (output_layer_activation == 'relu'):
+                Y_result = pd.DataFrame(Y_pred, columns=["Y_predict"])
+            elif output_layer_activation == 'sigmoid':
+                Y_prob = pd.DataFrame(Y_pred_prob, columns=["Y_prob"])
+                Y_class = (Y_pred_prob > self.predict_threshold) * 1
+                Y_class = pd.DataFrame(Y_class, columns=[f"Y_class(>{self.predict_threshold})"])
+                Y_result = pd.concat([Y_prob, Y_class], axis=1)
+            log.info("predict result write to file.")
             Y_result.to_csv(self.output_file, header=True, index=False, float_format = '%.6f')
 
+    def layer(self, input_tensor, input_dim, output_dim, activation, layer_name='Dense'):
+        with tf.name_scope(layer_name):
+            W = tf.Variable(tf.random_normal([input_dim, output_dim], dtype=tf.float64), name='W')
+            if self.use_intercept:
+                b = tf.Variable(tf.random_normal([output_dim], dtype=tf.float64), name='b')
+                with tf.name_scope('logits'):
+                    logits = tf.matmul(input_tensor, W) + b
+            else:
+                with tf.name_scope('logits'):
+                    logits = tf.matmul(input_tensor, W)
+            if not activation:
+                one_layer = logits
+            elif activation == 'sigmoid':
+                one_layer = tf.sigmoid(logits)
+            elif activation == 'relu':
+                one_layer = tf.nn.relu(logits)
+            else:
+                raise Exception(f'not support {activation} activation.')
+            return one_layer
     
+    def dnn(self, input_X, input_dim):
+        layer_activation = copy.deepcopy(self.layer_activation[:-1])
+        layer_activation.append("")
+        for i in range(len(self.layer_units)):
+            if i == 0:
+                input_units = input_dim
+                previous_output = input_X
+            else:
+                input_units = self.layer_units[i-1]
+                previous_output = output
+            output = self.layer(previous_output, 
+                                input_units, 
+                                self.layer_units[i], 
+                                layer_activation[i], 
+                                layer_name=f"Dense_{i}")
+        return output
+   
 
-@ErrorTraceback("non-privacy_lr_predict")
+@ErrorTraceback("privacy_dnn_predict")
 def main(io_channel, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
-    lr = LRPredict(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
-    result_path, result_type = lr.predict()
+    privacy_dnn = PrivacyDnnPredict(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
+    result_path, result_type = privacy_dnn.predict()
     return result_path, result_type

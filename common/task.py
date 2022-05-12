@@ -96,6 +96,7 @@ class Task:
             channel_config = get_channel_config(self.id, self.party_id, self.parties,
                             self.data_party, self.computation_party, self.result_party,
                             self.cfg, self.connect_policy,self.limit_time)
+            log.info(f'channel_config: {channel_config}.')
             io_channel = IOChannel(self.party_id, channel_config)
             log.info(f'start get_input_data.')
             new_input_data = self.get_input_data()

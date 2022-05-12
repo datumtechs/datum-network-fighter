@@ -46,7 +46,6 @@
         }
     ],
     "dynamic_parameter": {
-        "use_psi": true,
         "label_owner": "data1",
         "label_column": "diagnosis",
         "hyperparams": {

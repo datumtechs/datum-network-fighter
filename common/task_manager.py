@@ -74,7 +74,7 @@ class TaskManager:
         log.info(f"self_cfg_params: {self_cfg_params}, algorithm_dynamic_params: {algorithm_dynamic_params}")
         log.info(f"data_party_ids:{data_party_ids}, computation_party_ids:{computation_party_ids}, result_party_ids:{result_party_ids}, "
                 f"duration:{duration}, memory:{limit_memory}, processor:{limit_cpu}, bandwidth:{limit_bandwidth}, "
-                f"connect_policy:{connect_policy}")
+                f"connect_policy_format:{connect_policy_format}, connect_policy:{connect_policy}")
         check_input_param_type(task_id=(task_id, str), 
                                 party_id=(party_id, str), 
                                 env_id=(env_id, str),

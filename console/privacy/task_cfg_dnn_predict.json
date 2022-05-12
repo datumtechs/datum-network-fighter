@@ -52,7 +52,6 @@
         }
     ],
     "dynamic_parameter": {
-        "use_psi": true,
         "model_restore_party": "model1",
         "hyperparams": {
             "layer_units": [32, 1],

@@ -178,12 +178,11 @@ class PrivacyXgbTrain(BaseAlgorithm):
                     raise Exception("paramter error. input_type only support 1, not {input_type}")
         
         dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
-        self.label_owner = dynamic_parameter.get("label_owner")
+        self.label_owner = dynamic_parameter["label_owner"]
+        self.label_column = dynamic_parameter["label_column"]
         if self.party_id == self.label_owner:
-            self.label_column = dynamic_parameter.get("label_column")
             self.data_with_label = True
         else:
-            self.label_column = ""
             self.data_with_label = False
                         
         hyperparams = dynamic_parameter["hyperparams"]
@@ -245,7 +244,7 @@ class PrivacyXgbTrain(BaseAlgorithm):
                         error_col.append(col)   
                 assert not error_col, f"selected_columns:{error_col} not in input_file"
                 assert self.key_column not in self.selected_columns, f"key_column:{self.key_column} can not in selected_columns"
-                if self.label_column:
+                if self.data_with_label:
                     assert self.label_column in input_columns, f"label_column:{self.label_column} not in input_file"
                     assert self.label_column not in self.selected_columns, f"label_column:{self.label_column} can not in selected_columns"
             else:

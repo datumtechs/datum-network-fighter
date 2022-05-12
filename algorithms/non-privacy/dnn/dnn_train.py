@@ -12,14 +12,13 @@ import traceback
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-import latticex.rosetta as rtt
+from sklearn.model_selection import train_test_split
 from functools import wraps
 
 
 np.set_printoptions(suppress=True)
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-rtt.set_backend_loglevel(3)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
 class LogWithStage():
     def __init__(self, name):
         self.run_stage = 'init log.'
@@ -121,10 +120,7 @@ class BaseAlgorithm(object):
         if os.path.exists(directory):
             shutil.rmtree(directory)
 
-class PrivacyDnnTrain(BaseAlgorithm):
-    '''
-    Privacy DNN train base on rosetta.
-    '''
+class DnnTrain(BaseAlgorithm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.output_dir = self._get_output_dir()
@@ -161,6 +157,10 @@ class PrivacyDnnTrain(BaseAlgorithm):
                     "use_validation_set": true,
                     "validation_set_rate": 0.2,
                     "predict_threshold": 0.5
+                },
+                "data_flow_restrict": {
+                    "data1": ["compute1"],
+                    "compute1": ["result1"]
                 }
             }
         }
@@ -184,8 +184,7 @@ class PrivacyDnnTrain(BaseAlgorithm):
         if self.party_id == self.label_owner:
             self.data_with_label = True
         else:
-            self.data_with_label = False
-                        
+            self.data_with_label = False              
         hyperparams = dynamic_parameter["hyperparams"]
         self.epochs = hyperparams.get("epochs", 50)
         self.batch_size = hyperparams.get("batch_size", 256)
@@ -198,6 +197,7 @@ class PrivacyDnnTrain(BaseAlgorithm):
         self.use_validation_set = hyperparams.get("use_validation_set", True)
         self.validation_set_rate = hyperparams.get("validation_set_rate", 0.2)
         self.predict_threshold = hyperparams.get("predict_threshold", 0.5)
+        self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
 
     def check_parameters(self):
         log.info(f"check parameter start.")
@@ -212,7 +212,8 @@ class PrivacyDnnTrain(BaseAlgorithm):
                                optimizer=(self.optimizer, str),
                                use_validation_set=(self.use_validation_set, bool),
                                validation_set_rate=(self.validation_set_rate, float),
-                               predict_threshold=(self.predict_threshold, float))
+                               predict_threshold=(self.predict_threshold, float),
+                               data_flow_restrict=(self.data_flow_restrict, dict))
         assert self.epochs > 0, f"epochs must be greater 0, not {self.epochs}"
         assert self.batch_size > 0, f"batch_size must be greater 0, not {self.batch_size}"
         assert self.learning_rate > 0, f"learning rate must be greater 0, not {self.learning_rate}"
@@ -270,132 +271,161 @@ class PrivacyDnnTrain(BaseAlgorithm):
             else:
                 raise Exception(f"input_file is not exist. input_file={self.input_file}")                       
         
+    
     def train(self):
         '''
         training algorithm implementation function
         '''
-
-        log.info("extract feature or label.")
-        train_x, train_y, val_x, val_y = self.extract_feature_or_label(with_label=self.data_with_label)
-        
-        log.info("start set channel.")
-        rtt.set_channel("", self.io_channel.channel)
-        log.info("waiting other party connect...")
-        rtt.activate("SecureNN")
-        log.info("protocol has been activated.")
-        
-        log.info(f"start set save model. save to party: {self.result_party}")
-        rtt.set_saver_model(False, plain_model=self.result_party)
-        # sharing data
-        log.info(f"start sharing train data. data_owner={self.data_party}, label_owner={self.label_owner}")
-        shard_x, shard_y = rtt.PrivateDataset(data_owner=self.data_party, 
-                                              label_owner=self.label_owner)\
-                                .load_data(train_x, train_y, header=0)
-        log.info("finish sharing train data.")
-        column_total_num = shard_x.shape[1]
-        log.info(f"column_total_num = {column_total_num}.")
-        
-        if self.use_validation_set:
-            log.info("start sharing validation data.")
-            shard_x_val, shard_y_val = rtt.PrivateDataset(data_owner=self.data_party, 
-                                                          label_owner=self.label_owner)\
-                                            .load_data(val_x, val_y, header=0)
-            log.info("finish sharing validation data.")
-
-        if self.party_id not in self.data_party:  
-            # mean the compute party and result party
-            log.info("compute start.")
-            X = tf.placeholder(tf.float64, [None, column_total_num], name='X')
-            Y = tf.placeholder(tf.float64, [None, self.layer_units[-1]], name='Y')
-            val_Y = tf.placeholder(tf.float64, [None, self.layer_units[-1]], name='val_Y')
-                        
-            output = self.dnn(X, column_total_num)
-            
-            output_layer_activation = self.layer_activation[-1]
-            with tf.name_scope('output'):
-                if not output_layer_activation:
-                    pred_Y = output
-                elif output_layer_activation == 'sigmoid':
-                    pred_Y = tf.sigmoid(output)
-                elif output_layer_activation == 'relu':
-                    pred_Y = tf.nn.relu(output)
-                else:
-                    raise Exception('output layer not support {output_layer_activation} activation.')
-            with tf.name_scope('loss'):
-                if (not output_layer_activation) or (output_layer_activation == 'relu'):
-                    loss = tf.square(Y - pred_Y)
-                    loss = tf.reduce_mean(loss)
-                elif output_layer_activation == 'sigmoid':
-                    loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=Y, logits=output)
-                    loss = tf.reduce_mean(loss)
-                else:
-                    raise Exception('output layer not support {output_layer_activation} activation.')
-            
-            # optimizer
-            with tf.name_scope('optimizer'):
-                optimizer = self.optimizer(self.learning_rate).minimize(loss)
-            init = tf.global_variables_initializer()
-            saver = tf.train.Saver(var_list=None, max_to_keep=5, name='saver')
-                        
-            reveal_loss = rtt.SecureReveal(loss) # only reveal to the result party
-            reveal_Y = rtt.SecureReveal(pred_Y)  # only reveal to the result party
-            reveal_val_Y = rtt.SecureReveal(val_Y) # only reveal to the result party
-
-            with tf.Session() as sess:
-                log.info("session init.")
-                sess.run(init)
-                summary_writer = tf.summary.FileWriter(self.get_temp_dir(), sess.graph)
-                # train
-                log.info("train start.")
-                train_start_time = time.time()
-                batch_num = math.ceil(len(shard_x) / self.batch_size)
-                loss_history_train, loss_history_val = [], []
-                for e in range(self.epochs):
-                    for i in range(batch_num):
-                        bX = shard_x[(i * self.batch_size): (i + 1) * self.batch_size]
-                        bY = shard_y[(i * self.batch_size): (i + 1) * self.batch_size]
-                        sess.run(optimizer, feed_dict={X: bX, Y: bY})
-                        if (i % 50 == 0) or (i == batch_num - 1):
-                            log.info(f"epoch:{e + 1}/{self.epochs}, batch:{i + 1}/{batch_num}")
-                    # train_loss = sess.run(reveal_loss, feed_dict={X: shard_x, Y: shard_y})
-                    # # collect loss
-                    # loss_history_train.append(float(train_loss))
-                    # if self.use_validation_set:
-                    #     val_loss = sess.run(reveal_loss, feed_dict={X: shard_x_val, Y: shard_y_val})
-                    #     loss_history_val.append(float(val_loss))
-                log.info(f"model save to: {self.output_file}")
-                saver.save(sess, self.output_file)
-                train_use_time = round(time.time()-train_start_time, 3)
-                log.info(f"save model success. train_use_time={train_use_time}s")
-                if self.use_validation_set:
-                    Y_pred = sess.run(reveal_Y, feed_dict={X: shard_x_val})
-                    log.info(f"Y_pred:\n {Y_pred[:10]}")
-                    Y_actual = sess.run(reveal_val_Y, feed_dict={val_Y: shard_y_val})
-                    log.info(f"Y_actual:\n {Y_actual[:10]}")
-        
-            running_stats = str(rtt.get_perf_stats(True)).replace('\n', '').replace(' ', '')
-            log.info(f"running stats: {running_stats}")
-        else:
-            log.info("computing, please waiting for compute finish...")
-        rtt.deactivate()
-        
-        result_path, result_type, evaluate_result = "", "", ""
+        log.info("start data party extract data column.")
+        usecols_file = self._extract_data_column()
+        log.info("start data party send data to compute party.")
+        self._send_data_to_compute_party(usecols_file)
+        evaluate_result = ""
+        if self.party_id in self.compute_party:
+            log.info("compute party start  compute.")
+            evaluate_result = self.compute(usecols_file)
+        log.info("start compute party send data to result party.")
+        evaluate_result = self._send_data_to_result_party(self.output_dir, evaluate_result)
+        result_path, result_type = '', ''
         if self.party_id in self.result_party:
-            log.info("result_party deal with the result.")
             result_path = self.output_dir
-            result_type = "dir"
-            if self.use_validation_set:
-                log.info("result_party evaluate model.")
-                Y_pred = Y_pred.astype("float").reshape([-1, ])
-                Y_true = Y_actual.astype("float").reshape([-1, ])
-                evaluate_result = self.evaluate(Y_true, Y_pred, output_layer_activation)
-            # self.show_train_history(loss_history_train, loss_history_val, self.epochs)
-            # log.info(f"result_party show train history finish.")
-        
+            result_type = 'dir'
         log.info("start remove temp dir.")
         self.remove_temp_dir()
         log.info("train success all.")
         return result_path, result_type, evaluate_result
+
+    def _send_data_to_compute_party(self, data_path):
+        if self.party_id in self.data_party:
+            compute_party = self.data_flow_restrict[self.party_id][0]
+            self.io_channel.send_data_to_other_party(compute_party, data_path)
+        elif self.party_id in self.compute_party:
+            for party in self.data_party:
+                if self.party_id == self.data_flow_restrict[party][0]:
+                    self.io_channel.recv_data_from_other_party(party, data_path)
+        else:
+            pass
+    
+    def _send_data_to_result_party(self, data_path, evaluate_result):
+        if self.party_id in self.compute_party:
+            if os.path.isdir(data_path):
+                temp_model_dir = os.path.join(self.temp_dir, 'model')
+                data_path = shutil.make_archive(base_name=temp_model_dir, format='zip', root_dir=data_path)
+            result_party = self.data_flow_restrict[self.party_id][0]
+            self.io_channel.send_data_to_other_party(result_party, data_path)
+            self.io_channel.send_sth(result_party, evaluate_result)
+        elif self.party_id in self.result_party:
+            for party in self.compute_party:
+                if self.party_id == self.data_flow_restrict[party][0]:
+                    temp_model_dir = os.path.join(self.temp_dir, 'model.zip')
+                    self.io_channel.recv_data_from_other_party(party, temp_model_dir)
+                    shutil.unpack_archive(temp_model_dir, self.output_dir)
+                    evaluate_result = self.io_channel.recv_sth(party)
+                    evaluate_result = evaluate_result.decode()
+                    log.info(f'evaluate_result: {evaluate_result}')
+        else:
+            pass
+        return evaluate_result
+
+    def _extract_data_column(self):
+        '''
+        Extract data column from input file,
+        and then write to a new file.
+        '''
+        usecols_file = os.path.join(self.temp_dir, f"usecols_{self.party_id}.csv")
+
+        if self.party_id in self.data_party:
+            use_cols = self.selected_columns
+            if self.data_with_label:
+                use_cols += [self.label_column]
+            log.info("read input file and write to new file.")
+            usecols_data = pd.read_csv(self.input_file, usecols=use_cols, dtype="str")
+            assert usecols_data.shape[0] > 0, 'no data after select columns.'
+            if self.data_with_label:
+                y_data = usecols_data[self.label_column]
+                if self.layer_activation[-1] == 'sigmoid':
+                    class_num = y_data.unique().shape[0]
+                    assert class_num == 2, f"label column has {class_num} class, but the last layer of the network is {self.layer_activation[-1]}."
+            usecols_data = usecols_data[use_cols]
+            usecols_data.to_csv(usecols_file, header=True, index=False)
+        return usecols_file
+
+    def _read_and_split_data(self, usecols_file):
+        '''
+        Extract feature columns or label column from input file,
+        and then divide them into train set and validation set.
+        '''
+        input_data = pd.read_csv(usecols_file)
+        y_data = input_data[self.label_column]
+        del input_data[self.label_column]
+        x_data = input_data
+        if self.layer_activation[-1] == 'sigmoid':
+            train_x, val_x, train_y, val_y = train_test_split(x_data, y_data, stratify=y_data, test_size=self.validation_set_rate)
+        else:
+            train_x, val_x, train_y, val_y = train_test_split(x_data, y_data, test_size=self.validation_set_rate)
+        train_x, val_x, train_y, val_y = train_x.values, train_y.values.reshape(-1, 1), val_x.values, val_y.values
+        return train_x, val_x, train_y, val_y
+    
+    def compute(self, usecols_file):
+        log.info("extract feature or label.")
+        train_x, train_y, val_x, val_y = self._read_and_split_data(usecols_file)
+        column_total_num = train_x.shape[1]
+
+        log.info("start build the model structure.")
+        X = tf.placeholder(tf.float64, [None, column_total_num], name='X')
+        Y = tf.placeholder(tf.float64, [None, self.layer_units[-1]], name='Y')
+        output = self.dnn(X, column_total_num)
+        output_layer_activation = self.layer_activation[-1]
+        with tf.name_scope('output'):
+            if not output_layer_activation:
+                pred_Y = output
+            elif output_layer_activation == 'sigmoid':
+                pred_Y = tf.sigmoid(output)
+            elif output_layer_activation == 'relu':
+                pred_Y = tf.nn.relu(output)
+            else:
+                raise Exception('output layer not support {output_layer_activation} activation.')
+        with tf.name_scope('loss'):
+            if (not output_layer_activation) or (output_layer_activation == 'relu'):
+                loss = tf.square(Y - pred_Y)
+                loss = tf.reduce_mean(loss)
+            elif output_layer_activation == 'sigmoid':
+                loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=Y, logits=output)
+                loss = tf.reduce_mean(loss)
+            else:
+                raise Exception('output layer not support {output_layer_activation} activation.')
+        # optimizer
+        with tf.name_scope('optimizer'):
+            optimizer = self.optimizer(self.learning_rate).minimize(loss)
+        init = tf.global_variables_initializer()
+        saver = tf.train.Saver(var_list=None, max_to_keep=5, name='saver')
+        log.info("finish build the model structure.")
+
+        with tf.Session() as sess:
+            log.info("session init.")
+            sess.run(init)
+            # summary_writer = tf.summary.FileWriter(self.get_temp_dir(), sess.graph)
+            log.info("train start.")
+            train_start_time = time.time()
+            batch_num = math.ceil(len(train_x) / self.batch_size)
+            for e in range(self.epochs):
+                for i in range(batch_num):
+                    bX = train_x[(i * self.batch_size): (i + 1) * self.batch_size]
+                    bY = train_y[(i * self.batch_size): (i + 1) * self.batch_size]
+                    sess.run(optimizer, feed_dict={X: bX, Y: bY})
+                    if (i % 50 == 0) or (i == batch_num - 1):
+                        log.info(f"epoch:{e + 1}/{self.epochs}, batch:{i + 1}/{batch_num}")
+            log.info(f"model save to: {self.output_file}")
+            saver.save(sess, self.output_file)
+            train_use_time = round(time.time()-train_start_time, 3)
+            log.info(f"save model success. train_use_time={train_use_time}s")
+        
+            if self.use_validation_set:
+                pred_y = sess.run(pred_Y, feed_dict={X: val_x})
+                evaluate_result = self.evaluate(val_y, pred_y, output_layer_activation)
+            else:
+                evaluate_result = ""
+        return evaluate_result
     
     def layer(self, input_tensor, input_dim, output_dim, activation, layer_name='Dense'):
         with tf.name_scope(layer_name):
@@ -475,7 +505,7 @@ class PrivacyDnnTrain(BaseAlgorithm):
             raise Exception('output layer not support {output_layer_activation} activation.')
         log.info(f"evaluate_result = {evaluate_result}")
         evaluate_result = json.dumps(evaluate_result)
-        log.info("evaluation success.")
+        log.info("evaluate success.")
         return evaluate_result
     
     def show_train_history(self, train_history, val_history, epochs, name='loss'):
@@ -497,68 +527,17 @@ class PrivacyDnnTrain(BaseAlgorithm):
         figure_path = os.path.join(self.results_dir, f'{name}.jpg')
         plt.savefig(figure_path)
     
-    def extract_feature_or_label(self, with_label: bool=False):
-        '''
-        Extract feature columns or label column from input file,
-        and then divide them into train set and validation set.
-        '''
-        train_x = ""
-        train_y = ""
-        val_x = ""
-        val_y = ""
-        temp_dir = self.get_temp_dir()
-        if self.party_id in self.data_party:
-            usecols = [self.key_column] + self.selected_columns
-            if with_label:
-                usecols += [self.label_column]
-            
-            input_data = pd.read_csv(self.input_file, usecols=usecols, dtype="str")
-            input_data = input_data[usecols]
-            assert input_data.shape[0] > 0, 'input file is no data.'
-            # only if self.validation_set_rate==0, split_point==input_data.shape[0]
-            split_point = int(input_data.shape[0] * (1 - self.validation_set_rate))
-            assert split_point > 0, f"train set is empty, because validation_set_rate:{self.validation_set_rate} is too big"
-            
-            if with_label:
-                y_data = input_data[self.label_column]
-                train_y_data = y_data.iloc[:split_point]
-                train_class_num = train_y_data.unique().shape[0]
-                if self.layer_activation[-1] == 'sigmoid':
-                    assert train_class_num == 2, f"train set must be 2 class, not {train_class_num} class."
-                train_y = os.path.join(temp_dir, f"train_y_{self.party_id}.csv")
-                train_y_data.to_csv(train_y, header=True, index=False)
-                if self.use_validation_set:
-                    assert split_point < input_data.shape[0], \
-                        f"validation set is empty, because validation_set_rate:{self.validation_set_rate} is too small"
-                    val_y_data = y_data.iloc[split_point:]
-                    val_class_num = val_y_data.unique().shape[0]
-                    if self.layer_activation[-1] == 'sigmoid':
-                        assert val_class_num == 2, f"validation set must be 2 class, not {val_class_num} class."
-                    val_y = os.path.join(temp_dir, f"val_y_{self.party_id}.csv")
-                    val_y_data.to_csv(val_y, header=True, index=False)
-            
-            x_data = input_data[self.selected_columns]
-            train_x = os.path.join(temp_dir, f"train_x_{self.party_id}.csv")
-            x_data.iloc[:split_point].to_csv(train_x, header=True, index=False)
-            if self.use_validation_set:
-                assert split_point < input_data.shape[0], \
-                        f"validation set is empty, because validation_set_rate:{self.validation_set_rate} is too small."
-                val_x = os.path.join(temp_dir, f"val_x_{self.party_id}.csv")
-                x_data.iloc[split_point:].to_csv(val_x, header=True, index=False)
-
-        return train_x, train_y, val_x, val_y
-    
     def _get_output_dir(self):
         output_dir = os.path.join(self.results_dir, 'model')
         self.mkdir(output_dir)
         return output_dir
 
 
-@ErrorTraceback("privacy_dnn_train")
+@ErrorTraceback("non-privacy_dnn_train")
 def main(io_channel, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
-    privacy_dnn = PrivacyDnnTrain(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
+    privacy_dnn = DnnTrain(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
     result_path, result_type, extra = privacy_dnn.train()
     return result_path, result_type, extra
