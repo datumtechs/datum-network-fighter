@@ -55,22 +55,6 @@ do
 done
 
 
-# ############## via_svc #############
-# cd $base_dir/third_party/via_svc
-# via_svc_log=${log_path}"/via_svc"
-# mkdir -p ${via_svc_log}
-# for port in $(seq ${via_svc_base_port} $[${via_svc_base_port}+${via_svc_num}-1])
-# do
-#     echo "start via_svc that use port ${port}"
-#     if [ $use_ssl -eq 1 ]
-#     then
-#         nohup ./via-go -ssl ./conf/ssl-conf.yml -address 0.0.0.0:${port} > ${via_svc_log}/via_svc_${port}.log 2>&1 &
-#     else
-#         nohup ./via-go-no_ssl -address 0.0.0.0:${port} > ${via_svc_log}/via_svc_${port}.log 2>&1 &
-#     fi
-# done
-
-
 ############## schedule_svc #############
 cd $base_dir/tests/schedule_svc
 schedule_svc_log=${log_path}"/schedule_svc"
@@ -91,8 +75,19 @@ fi
 cd $base_dir/console
 echo "start console that connect to data_svc which internal port ${data_svc_base_port}"
 echo "run task command: comp_run_task <task_id> <task_cfg_file>"
-echo "***************************"
-echo "     psi example: comp_run_task psi_001 task_cfg_psi.json"
-echo "   train example: comp_run_task train_001 task_cfg_lr_train.json"
-echo " predict example: comp_run_task predict_001 task_cfg_lr_predict.json"
+echo "################### privacy example"
+echo "     psi: comp_run_task psi_001 privacy/task_cfg_psi.json"
+echo "   train: comp_run_task train_001 privacy/task_cfg_lr_train.json"
+echo " predict: comp_run_task predict_001 privacy/task_cfg_lr_predict.json"
+echo "   train: comp_run_task train_001 privacy/task_cfg_linr_train.json"
+echo " predict: comp_run_task predict_001 privacy/task_cfg_linr_predict.json"
+echo "   train: comp_run_task train_001 privacy/task_cfg_dnn_train.json"
+echo " predict: comp_run_task predict_001 privacy/task_cfg_dnn_predict.json"
+echo "   train: comp_run_task train_001 privacy/task_cfg_xgb_train.json"
+echo " predict: comp_run_task predict_001 privacy/task_cfg_xgb_predict.json"
+echo "#################### non-privacy example "
+echo "   train: comp_run_task train_100 non-privacy/task_cfg_lr_train.json"
+echo " predict: comp_run_task predict_100 non-privacy/task_cfg_lr_predict.json"
+echo "   train: comp_run_task train_100 non-privacy/task_cfg_linr_train.json"
+echo " predict: comp_run_task predict_100 non-privacy/task_cfg_linr_predict.json"
 $python_command -u main.py --config=$cfg --data_svc_ip=${ip} --data_svc_port=${data_svc_base_port}

@@ -1,0 +1,89 @@
+{
+    "contract_id": "../algorithms/non-privacy/logistic_regression/lr_predict.py",
+    "env_id": "test_environment",
+    "data_party": [
+        "data1",
+        "model1"
+    ],
+    "computation_party": [
+        "compute1"
+    ],
+    "result_party": [
+        "result1"
+    ],
+    "peers": [
+        {
+            "NODE_ID": "data1",
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50101"
+        },
+        {
+            "NODE_ID": "model1",
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50102"
+        },
+        {
+            "NODE_ID": "compute1",
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50201"
+        },
+        {
+            "NODE_ID": "result1",
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50103"
+        }
+    ],
+    "dynamic_parameter": {
+        "model_restore_party": "model1",
+        "data_flow_restrict": {
+            "data1": ["compute1"],
+            "model1": ["compute1"],
+            "compute1": ["result1"]
+        }
+    },
+    "connect_policy": {
+        "data1": ["compute1"],
+        "model1": ["compute1"],
+        "compute1": ["result1"]
+    },
+    "each_party": [
+        {
+            "party_id": "data1",
+            "input_data": [
+                {
+                    "input_type": 1,
+                    "access_type": 1,
+                    "data_type": 1,
+                    "data_path": "../tests/test_data/binary_class/breast_cancel_partyA_min.csv",
+                    "key_column": "id",
+                    "selected_columns": [
+                        "radius_mean",
+                        "texture_mean",
+                        "perimeter_mean",
+                        "area_mean",
+                        "smoothness_mean"
+                    ]
+                }
+            ]
+        },
+        {
+            "party_id": "model1",
+            "input_data": [
+                {
+                    "input_type": 2,
+                    "access_type": 1,
+                    "data_type": 2,
+                    "data_path": "../data_svc/results_root/train_100/result1/model"
+                }
+            ]
+        },
+        {
+            "party_id": "compute1",
+            "input_data": []
+        },
+        {
+            "party_id": "result1",
+            "input_data": []
+        }
+    ]
+}

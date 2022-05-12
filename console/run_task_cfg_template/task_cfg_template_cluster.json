@@ -37,9 +37,8 @@
         }
     ],
     "dynamic_parameter": {
-        "use_psi": true,
         "label_owner": "data1",
-        "label_column": "Y",
+        "label_column": "label_column_name",
         "algorithm_parameter": {
             "epochs": 2,
             "batch_size": 256,
@@ -57,14 +56,6 @@
                     "data_path": "/absolute_path/to/data_file",
                     "key_column": "index_col",
                     "selected_columns": ["col1", "col2"]
-                },
-                {
-                    "input_type": 2,
-                    "access_type": 1,
-                    "data_type": 1,
-                    "data_path": "/absolute_path/to/psi_result.csv",
-                    "key_column": "",
-                    "selected_columns": []
                 }
             ]
         },
@@ -78,14 +69,6 @@
                     "data_path": "/absolute_path/to/data_file",
                     "key_column": "index_col",
                     "selected_columns": ["col3", "col4"]
-                },
-                {
-                    "input_type": 2,
-                    "access_type": 1,
-                    "data_type": 1,
-                    "data_path": "/absolute_path/to/psi_result.csv",
-                    "key_column": "",
-                    "selected_columns": []
                 }
             ]
         },
@@ -93,7 +76,7 @@
             "party_id": "result1",
             "input_data": [
                 {
-                    "input_type": 3,
+                    "input_type": 2,
                     "access_type": 1,
                     "data_type": 2,
                     "data_path": "/absolute_path/to/model_file"

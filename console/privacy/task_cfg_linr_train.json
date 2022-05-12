@@ -1,46 +1,56 @@
 {
-    "contract_id": "/absolute_path/to/algorithm_file",
-    "env_id": "E5",
-    "data_party": ["data1", "data2"],
-    "computation_party": ["compute1", "compute2", "compute3"],
-    "result_party": ["result1"],
+    "contract_id": "../algorithms/privacy/linear_regression/linear_reg_train.py",
+    "env_id": "test_environment",
+    "data_party": [
+        "data1",
+        "data2"
+    ],
+    "computation_party": [
+        "compute1",
+        "compute2",
+        "compute3"
+    ],
+    "result_party": [
+        "result1"
+    ],
     "peers": [
         {
             "NODE_ID": "data1",
-            "ADDRESS": "127.0.0.1:50301",
+            "ADDRESS": "127.0.0.1:55558",
             "INTERNAL": "127.0.0.1:50101"
         },
         {
             "NODE_ID": "data2",
-            "ADDRESS": "127.0.0.1:50302",
+            "ADDRESS": "127.0.0.1:55558",
             "INTERNAL": "127.0.0.1:50102"
         },
         {
             "NODE_ID": "result1",
-            "ADDRESS": "127.0.0.1:50301",
-            "INTERNAL": "127.0.0.1:50101"
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50103"
         },
         {
             "NODE_ID": "compute1",
-            "ADDRESS": "127.0.0.1:50301",
+            "ADDRESS": "127.0.0.1:55558",
             "INTERNAL": "127.0.0.1:50201"
         },
         {
             "NODE_ID": "compute2",
-            "ADDRESS": "127.0.0.1:50302",
+            "ADDRESS": "127.0.0.1:55558",
             "INTERNAL": "127.0.0.1:50202"
         },
-	    {
+        {
             "NODE_ID": "compute3",
-            "ADDRESS": "127.0.0.1:50303",
+            "ADDRESS": "127.0.0.1:55558",
             "INTERNAL": "127.0.0.1:50203"
         }
     ],
     "dynamic_parameter": {
+        "use_psi": true,
         "label_owner": "data1",
-        "label_column": "label_column_name",
+        "label_column": "radius_mean",
         "hyperparams": {
-            "epochs": 2,
+            "epochs": 10,
             "batch_size": 256,
             "learning_rate": 0.1
         }
@@ -53,9 +63,14 @@
                     "input_type": 1,
                     "access_type": 1,
                     "data_type": 1,
-                    "data_path": "/absolute_path/to/data_file",
-                    "key_column": "index_col",
-                    "selected_columns": ["col1", "col2"]
+                    "data_path": "../tests/test_data/binary_class/breast_cancel_partyA_min.csv",
+                    "key_column": "id",
+                    "selected_columns": [
+                        "texture_mean",
+                        "perimeter_mean",
+                        "area_mean",
+                        "smoothness_mean"
+                    ]
                 }
             ]
         },
@@ -66,22 +81,21 @@
                     "input_type": 1,
                     "access_type": 1,
                     "data_type": 1,
-                    "data_path": "/absolute_path/to/data_file",
-                    "key_column": "index_col",
-                    "selected_columns": ["col3", "col4"]
+                    "data_path": "../tests/test_data/binary_class/breast_cancel_partyB_min.csv",
+                    "key_column": "id",
+                    "selected_columns": [
+                        "compactness_se",
+                        "concavity_se",
+                        "concave points_se",
+                        "symmetry_se",
+                        "fractal_dimension_se"
+                    ]
                 }
             ]
         },
         {
             "party_id": "result1",
-            "input_data": [
-                {
-                    "input_type": 3,
-                    "access_type": 1,
-                    "data_type": 2,
-                    "data_path": "/absolute_path/to/model_file"
-                }
-            ]
+            "input_data": []
         },
         {
             "party_id": "compute1",

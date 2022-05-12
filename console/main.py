@@ -237,7 +237,7 @@ def comp_run_task(args, stub):
     req.data_party_ids.extend(data_parties)
     req.computation_party_ids.extend(compute_parties)
     req.result_party_ids.extend(result_parties)
-    req.duration = run_task_cfg.get('duration', 24*60*60*1000)  # ms
+    req.duration = run_task_cfg.get('duration', 30*60*1000)  # ms
     req.memory = run_task_cfg.get('memory', 256*1024*1024*1024) # Byte
     req.processor = run_task_cfg.get('processor', 32)   # number
     req.bandwidth = run_task_cfg.get('bandwidth', 1000000*1000)  # bps
