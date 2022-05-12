@@ -543,6 +543,21 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
 该模块用于单独使用，后面不接训练或者预测算法。常见应用场景是隐私黑名单查询业务。
 cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归训练相同，algorithm_dynamic_params是由本算法定制。
 数据提供方有两方[data1, data2],  计算方有两方[compute1, compute2], 结果方有两方[result1, result2]。结果方可以只有一方，result1或者result2，那么data_flow_restrict需要相应地改动。
+- 参与方的连接策略示意图
+```
+ data1             data2
+   |                 |
+   |                 |
+   |                 |
+   ↓                 ↓
+compute1 -------> compute2
+         <------- 
+   |                 | 
+   |                 |
+   |                 |
+   ↓                 ↓
+ result1           result2
+```
 
 - data1数据提供方
 ```
@@ -567,8 +582,8 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
       "data_flow_restrict": {
         "data1": ["compute1"],
         "data2": ["compute2"],
-        "result1": ["compute1"],
-        "result2": ["compute2"]
+        "compute1": ["result1"],
+        "compute2": ["result2"]
       }
   }
 }
