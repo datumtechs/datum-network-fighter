@@ -184,7 +184,8 @@ class LRPredict(BaseAlgorithm):
         log.info(f"check parameter start.")
         self._check_input_data()
         self.check_params_type(model_restore_party=(self.model_restore_party, str), 
-                               predict_threshold=(self.predict_threshold, float))
+                               predict_threshold=(self.predict_threshold, float),
+                               data_flow_restrict=(self.data_flow_restrict, dict))
         if self.party_id == self.model_restore_party:
             assert os.path.exists(self.model_path), f"model_path is not exists. model_path={self.model_path}"
         assert 0 <= self.predict_threshold <= 1, f"predict threshold must be between [0,1], not {self.predict_threshold}"

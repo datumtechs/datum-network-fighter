@@ -203,7 +203,8 @@ class LinRTrain(BaseAlgorithm):
                                batch_size=(self.batch_size, int),
                                learning_rate=(self.learning_rate, float),
                                use_validation_set=(self.use_validation_set, bool),
-                               validation_set_rate=(self.validation_set_rate, float))
+                               validation_set_rate=(self.validation_set_rate, float),
+                               data_flow_restrict=(self.data_flow_restrict, dict))
         assert self.epochs > 0, f"epochs must be greater 0, not {self.epochs}"
         assert self.batch_size > 0, f"batch_size must be greater 0, not {self.batch_size}"
         assert self.learning_rate > 0, f"learning rate must be greater 0, not {self.learning_rate}"

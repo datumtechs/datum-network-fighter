@@ -150,8 +150,8 @@ class PrivateSetIntersection(BaseAlgorithm):
                 "data_flow_restrict": {
                     "data1": ["compute1"],
                     "data2": ["compute2"],
-                    "result1": ["compute1"],
-                    "result2": ["compute2"]
+                    "compute1": ["result1"],
+                    "compute2": ["result2"]
                 }
             }
         }
@@ -170,13 +170,12 @@ class PrivateSetIntersection(BaseAlgorithm):
                     raise Exception("paramter error. input_type only support 1")
         
         dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
-        self.use_alignment = dynamic_parameter.get("use_alignment")
+        self.use_alignment = dynamic_parameter["use_alignment"]
         self.label_owner = dynamic_parameter.get("label_owner")
+        self.label_column = dynamic_parameter.get("label_column")
         if self.use_alignment and (self.party_id == self.label_owner):
-            self.label_column = dynamic_parameter.get("label_column")
             self.data_with_label = True
         else:
-            self.label_column = ""
             self.data_with_label = False
         if not self.use_alignment:
             self.selected_columns = []
@@ -187,10 +186,11 @@ class PrivateSetIntersection(BaseAlgorithm):
         assert len(self.data_party) == 2, f"length of data_party must be 2, not {len(self.data_party)}."
         assert len(self.result_party) in [1, 2], f"length of result_party must be 1 or 2, not {len(self.result_party)}."
         self._check_input_data()
+        self.check_params_type(data_flow_restrict=(self.data_flow_restrict, dict))
 
     def _check_input_data(self):
         if self.party_id in self.data_party:
-            assert isinstance(self.input_file, str), "origin input_data must be type(string)"
+            self.check_params_type(data_path=(self.input_file, str))
             self.input_file = self.input_file.strip()
             if os.path.exists(self.input_file):
                 file_suffix = os.path.splitext(self.input_file)[-1][1:]
