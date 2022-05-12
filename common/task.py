@@ -14,7 +14,7 @@ import pandas as pd
 from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
 from common.event_engine import event_engine
 from common.report_engine import  report_task_result, monitor_resource_usage, report_task_event
-from common.io_channel_helper import get_channel_config
+from common.io_channel_helper import get_channel_config, IOChannel
 from lib.types import base_pb2
 
 
@@ -96,6 +96,7 @@ class Task:
             channel_config = get_channel_config(self.id, self.party_id, self.parties,
                             self.data_party, self.computation_party, self.result_party,
                             self.cfg, self.connect_policy,self.limit_time)
+            io_channel = IOChannel(self.party_id, channel_config)
             log.info(f'start get_input_data.')
             new_input_data = self.get_input_data()
             log.info(f'start assemble_cfg.')
@@ -110,7 +111,7 @@ class Task:
             self._ensure_dir(result_dir)
             log.info(f'start execute contract.')
             report_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
-            algo_return = algo_module.main(channel_config, user_cfg, self.data_party, self.computation_party, self.result_party, result_dir)
+            algo_return = algo_module.main(io_channel, user_cfg, self.data_party, self.computation_party, self.result_party, result_dir)
             algo_return_len = len(algo_return)
             assert algo_return_len in [2,3], f"algo return must 2 or 3 params, not {algo_return_len}"
             if len(algo_return) == 3:

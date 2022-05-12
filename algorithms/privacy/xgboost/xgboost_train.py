@@ -11,37 +11,123 @@ import traceback
 import numpy as np
 import pandas as pd
 import latticex.rosetta as rtt
-import channel_sdk.pyio as io
+from functools import wraps
 
 
 np.set_printoptions(suppress=True)
 rtt.set_backend_loglevel(3)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
-logger = logging.getLogger(__name__)
 class LogWithStage():
-    def __init__(self):
+    def __init__(self, name):
         self.run_stage = 'init log.'
-    
+        self.logger = logging.getLogger(name)
+
     def info(self, content):
         self.run_stage = content
-        logger.info(content)
+        self.logger.info(content)
     
     def debug(self, content):
-        logger.debug(content)
+        self.logger.debug(content)
+log = LogWithStage(__name__)
 
-log = LogWithStage()
 
-class PrivacyXgbTrain(object):
-    '''
-    Privacy XGBoost train base on rosetta.
-    '''
+class ErrorTraceback():
+    def __init__(self, algo_type):
+        self.algo_type = algo_type
+    
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                log.info(f"start {func.__name__} function. algo: {self.algo_type}.")
+                result = func(*args, **kwargs)
+                log.info(f"finish {func.__name__} function. algo: {self.algo_type}.")
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                all_error = traceback.extract_tb(exc_traceback)
+                error_algo_file = all_error[0].filename
+                error_filename = os.path.split(error_algo_file)[1]
+                error_lineno, error_function = [], []
+                for one_error in all_error:
+                    if one_error.filename == error_algo_file:  # only report the algo file error
+                        error_lineno.append(one_error.lineno)
+                        error_function.append(one_error.name)
+                error_msg = repr(e)
+                raise Exception(f"<ALGO>:{self.algo_type}. <RUN_STAGE>:{log.run_stage} "
+                                f"<ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")
+            return result
+        return wrapper
 
+class BaseAlgorithm(object):
     def __init__(self,
-                 channel_config: str,
+                 io_channel,
                  cfg_dict: dict,
                  data_party: list,
                  compute_party: list,
                  result_party: list,
                  results_dir: str):
+        log.info(f"cfg_dict:{cfg_dict}")
+        log.info(f"data_party:{data_party}, compute_party:{compute_party}, result_party:{result_party}, results_dir:{results_dir}")
+        self.check_params_type(cfg_dict=(cfg_dict, dict), data_party=(data_party, list), compute_party=(compute_party, list), 
+                                result_party=(result_party, list), results_dir=(results_dir, str))        
+        log.info(f"start get input parameter.")
+        self.io_channel = io_channel
+        self.data_party = list(data_party)
+        self.compute_party = list(compute_party)
+        self.result_party = list(result_party)
+        self.results_dir = results_dir
+        self.parse_algo_cfg(cfg_dict)
+        self.check_parameters()
+        self.temp_dir = self.get_temp_dir()
+        log.info("finish get input parameter.")
+    
+    def check_params_type(self, **kargs):
+        for key,value in kargs.items():
+            assert isinstance(value[0], value[1]), f'{key} must be type({value[1]}), not {type(value[0])}'
+    
+    def parse_algo_cfg(self, cfg_dict):
+        raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
+    
+    def check_parameters(self):
+        raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
+        
+    def get_temp_dir(self):
+        '''
+        Get the directory for temporarily saving files
+        '''
+        temp_dir = os.path.join(self.results_dir, 'temp')
+        self.mkdir(temp_dir)
+        return temp_dir
+    
+    def remove_temp_dir(self):
+        '''
+        for result party, only delete the temp dir.
+        for non-result party, that is data and compute party, delete the all results
+        '''
+        if self.party_id in self.result_party:
+            temp_dir = self.temp_dir
+        else:
+            temp_dir = self.results_dir
+        self.remove_dir(temp_dir)
+    
+    def mkdir(self, directory):
+        if not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+
+    def remove_dir(self, directory):
+        if os.path.exists(directory):
+            shutil.rmtree(directory)
+
+
+class PrivacyXgbTrain(BaseAlgorithm):
+    '''
+    Privacy XGBoost train base on rosetta.
+    '''
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.output_dir = self._get_output_dir()
+        self.output_file = os.path.join(self.output_dir, "model")
+
+    def parse_algo_cfg(self, cfg_dict):
         '''
         cfg_dict:
         {
@@ -78,28 +164,6 @@ class PrivacyXgbTrain(object):
 
         }
         '''
-        log.info(f"channel_config:{channel_config}")
-        log.info(f"cfg_dict:{cfg_dict}")
-        log.info(f"data_party:{data_party}, result_party:{result_party}, results_dir:{results_dir}")
-        assert isinstance(channel_config, str), "type of channel_config must be str"
-        assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
-        assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
-        assert isinstance(compute_party, (list, tuple)), "type of compute_party must be list or tuple"
-        assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
-        assert isinstance(results_dir, str), "type of results_dir must be str"
-        
-        log.info(f"start get input parameter.")
-        self.channel_config = channel_config
-        self.data_party = list(data_party)
-        self.compute_party = list(compute_party)
-        self.result_party = list(result_party)
-        self.results_dir = results_dir
-        self.output_dir = self.get_output_dir()
-        self.output_file = os.path.join(self.output_dir, "model")
-        self._parse_algo_cfg(cfg_dict)
-        self._check_parameters()
-
-    def _parse_algo_cfg(self, cfg_dict):
         self.party_id = cfg_dict["self_cfg_params"]["party_id"]
         input_data = cfg_dict["self_cfg_params"]["input_data"]
         if self.party_id in self.data_party:
@@ -136,24 +200,38 @@ class PrivacyXgbTrain(object):
         self.validation_set_rate = hyperparams.get("validation_set_rate", 0.2)
         self.predict_threshold = hyperparams.get("predict_threshold", 0.5)
 
-    def _check_parameters(self):
+    def check_parameters(self):
         log.info(f"check parameter start.")
-        assert isinstance(self.epochs, int) and self.epochs > 0, "epochs must be type(int) and greater 0"
-        assert isinstance(self.batch_size, int) and self.batch_size > 0, "batch_size must be type(int) and greater 0"
-        assert isinstance(self.learning_rate, float) and self.learning_rate > 0, "learning rate must be type(float) and greater 0"       
-        assert isinstance(self.num_trees, int) and self.num_trees > 0, "num_trees must be type(int) and greater 0"
-        assert isinstance(self.max_depth, int) and self.max_depth > 0, "max_depth must be type(int) and greater 0"
-        assert isinstance(self.num_bins, int) and self.num_bins > 0, "num_bins must be type(int) and greater 0"
-        assert isinstance(self.num_class, int) and self.num_class > 1, "num_class must be type(int) and greater 1"
-        assert isinstance(self.lambd, (float, int)) and self.lambd >= 0, "lambd must be type(float/int) and greater_equal 0"
-        assert isinstance(self.gamma, (float, int)), "gamma must be type(float/int)"
-        assert 0 < self.validation_set_rate < 1, "validattion set rate must be between (0,1)"
-        assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
-        
+        self._check_input_data()
+        self.check_params_type(epochs=(self.epochs, int),
+                               batch_size=(self.batch_size, int),
+                               learning_rate=(self.learning_rate, float),
+                               use_validation_set=(self.use_validation_set, bool),
+                               validation_set_rate=(self.validation_set_rate, float),
+                               predict_threshold=(self.predict_threshold, float),
+                               num_trees=(self.num_trees, int),
+                               max_depth=(self.max_depth, int),
+                               num_bins=(self.num_bins, int),
+                               num_class=(self.num_class, int),
+                               lambd=(self.lambd, (float, int)),
+                               gamma=(self.gamma, (float, int)))
+        assert self.epochs > 0, f"epochs must be greater 0, not {self.epochs}"
+        assert self.batch_size > 0, f"batch_size must be greater 0, not {self.batch_size}"
+        assert self.learning_rate > 0, f"learning rate must be greater 0, not {self.learning_rate}"
+        assert 0 < self.validation_set_rate < 1, f"validattion_set_rate must be between (0,1), not {self.validation_set_rate}"
+        assert 0 <= self.predict_threshold <= 1, f"predict threshold must be between [0,1], not {self.predict_threshold}"    
+        assert self.num_trees > 0, f"num_trees must be greater 0, not {self.num_trees}"
+        assert self.max_depth > 0, f"max_depth must be greater 0, not {self.max_depth}"
+        assert self.num_bins > 0, f"num_bins must be greater 0, not {self.num_bins}"
+        assert self.num_class > 1, f"num_class must be greater 1, not {self.num_class}"
+        assert self.lambd >= 0, f"lambd must be greater_equal 0, not {self.lambd}"
+        log.info(f"check parameter finish.")
+    
+    def _check_input_data(self):
         if self.party_id in self.data_party:
-            assert isinstance(self.input_file, str), "origin input_data must be type(string)"
-            assert isinstance(self.key_column, str), "key_column must be type(string)"
-            assert isinstance(self.selected_columns, list), "selected_columns must be type(list)" 
+            self.check_params_type(data_path=(self.input_file, str), 
+                                    key_column=(self.key_column, str),
+                                    selected_columns=(self.selected_columns, list))
             self.input_file = self.input_file.strip()
             if os.path.exists(self.input_file):
                 file_suffix = os.path.splitext(self.input_file)[-1][1:]
@@ -171,9 +249,7 @@ class PrivacyXgbTrain(object):
                     assert self.label_column in input_columns, f"label_column:{self.label_column} not in input_file"
                     assert self.label_column not in self.selected_columns, f"label_column:{self.label_column} can not in selected_columns"
             else:
-                raise Exception(f"input_file is not exist. input_file={self.input_file}")
-        log.info(f"check parameter finish.")
-                        
+                raise Exception(f"input_file is not exist. input_file={self.input_file}")                        
         
     def train(self):
         '''
@@ -183,8 +259,8 @@ class PrivacyXgbTrain(object):
         log.info("extract feature or label.")
         train_x, train_y, val_x, val_y = self.extract_feature_or_label(with_label=self.data_with_label)
         
-        log.info("start create and set channel.")
-        self.create_set_channel()
+        log.info("start set channel.")
+        rtt.set_channel("", self.io_channel.channel)
         log.info("waiting other party connect...")
         rtt.activate("SecureNN")
         log.info("protocol has been activated.")
@@ -251,7 +327,7 @@ class PrivacyXgbTrain(object):
         rtt.deactivate()
         log.info("rtt deactivate success.")
              
-        result_path, result_type, evaluation_result = "", "", ""
+        result_path, result_type, evaluate_result = "", "", ""
         if self.party_id in self.result_party:
             log.info("result_party deal with the result.")
             result_path = self.output_dir
@@ -260,14 +336,14 @@ class PrivacyXgbTrain(object):
                 log.info("result_party evaluate model.")
                 Y_pred = np.squeeze(Y_pred.astype("float"))
                 Y_true = np.squeeze(Y_actual.astype("float"))
-                evaluation_result = self.model_evaluation(Y_true, Y_pred)
+                evaluate_result = self.evaluate(Y_true, Y_pred)
         
         log.info("start remove temp dir.")
         self.remove_temp_dir()
         log.info("train success all.")
-        return result_path, result_type, evaluation_result
+        return result_path, result_type, evaluate_result
     
-    def model_evaluation(self, Y_true, Y_pred):
+    def evaluate(self, Y_true, Y_pred):
         from sklearn.metrics import roc_auc_score, roc_curve, f1_score, precision_score, recall_score, accuracy_score
         if self.num_class == 2:
             average = 'binary'
@@ -287,28 +363,17 @@ class PrivacyXgbTrain(object):
         f1_score = round(f1_score, 6)
         precision = round(precision, 6)
         recall = round(recall, 6)
-        evaluation_result = {
+        evaluate_result = {
             "AUC": auc_score,
             "accuracy": accuracy,
             "f1_score": f1_score,
             "precision": precision,
             "recall": recall
         }
-        log.info(f"evaluation_result = {evaluation_result}")
-        evaluation_result = json.dumps(evaluation_result)
+        log.info(f"evaluate_result = {evaluate_result}")
+        evaluate_result = json.dumps(evaluate_result)
         log.info("evaluation success.")
-        return evaluation_result
-    
-    def create_set_channel(self):
-        '''
-        create and set channel.
-        '''
-        io_channel = io.APIManager()
-        log.info("start create channel.")
-        channel = io_channel.create_channel(self.party_id, self.channel_config)
-        log.info("start set channel.")
-        rtt.set_channel("", channel)
-        log.info("set channel success.")
+        return evaluate_result
     
     def extract_feature_or_label(self, with_label: bool=False):
         '''
@@ -355,58 +420,17 @@ class PrivacyXgbTrain(object):
 
         return train_x, train_y, val_x, val_y
     
-    def get_temp_dir(self):
-        '''
-        Get the directory for temporarily saving files
-        '''
-        temp_dir = os.path.join(self.results_dir, 'temp')
-        self._mkdir(temp_dir)
-        return temp_dir
-    
-    def get_output_dir(self):
+    def _get_output_dir(self):
         output_dir = os.path.join(self.results_dir, 'model')
-        self._mkdir(output_dir)
+        self.mkdir(output_dir)
         return output_dir
 
-    def remove_temp_dir(self):
-        if self.party_id in self.result_party:
-            # only delete the temp dir
-            temp_dir = self.get_temp_dir()
-        else:
-            # delete the all results in the non-result party.
-            temp_dir = self.results_dir
-        self._remove_dir(temp_dir)
-    
-    def _mkdir(self, _directory):
-        if not os.path.exists(_directory):
-            os.makedirs(_directory, exist_ok=True)
 
-    def _remove_dir(self, _directory):
-        if os.path.exists(_directory):
-            shutil.rmtree(_directory)
-
-
-def main(channel_config: str, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
+@ErrorTraceback("privacy_xgb_train")
+def main(io_channel, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
-    algo_type = "privacy_xgb_train"
-    try:
-        log.info(f"start main function. {algo_type}.")
-        privacy_xgb = PrivacyXgbTrain(channel_config, cfg_dict, data_party, compute_party, result_party, results_dir)
-        result_path, result_type, extra = privacy_xgb.train()
-        log.info(f"finish main function. {algo_type}.")
-        return result_path, result_type, extra
-    except Exception as e:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        all_error = traceback.extract_tb(exc_traceback)
-        error_algo_file = all_error[0].filename
-        error_filename = os.path.split(error_algo_file)[1]
-        error_lineno, error_function = [], []
-        for one_error in all_error:
-            if one_error.filename == error_algo_file:  # only report the algo file error
-                error_lineno.append(one_error.lineno)
-                error_function.append(one_error.name)
-        error_msg = repr(e)
-        raise Exception(f"<ALGO>:{algo_type}. <RUN_STAGE>:{log.run_stage} "
-                        f"<ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")
+    privacy_xgb = PrivacyXgbTrain(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
+    result_path, result_type, extra = privacy_xgb.train()
+    return result_path, result_type, extra

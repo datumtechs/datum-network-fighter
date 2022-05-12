@@ -13,39 +13,124 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import latticex.rosetta as rtt
-import channel_sdk.pyio as io
+from functools import wraps
 
 
 np.set_printoptions(suppress=True)
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 rtt.set_backend_loglevel(3)  # All(0), Trace(1), Debug(2), Info(3), Warn(4), Error(5), Fatal(6)
-logger = logging.getLogger(__name__)
 class LogWithStage():
-    def __init__(self):
+    def __init__(self, name):
         self.run_stage = 'init log.'
-    
+        self.logger = logging.getLogger(name)
+
     def info(self, content):
         self.run_stage = content
-        logger.info(content)
+        self.logger.info(content)
     
     def debug(self, content):
-        logger.debug(content)
+        self.logger.debug(content)
+log = LogWithStage(__name__)
 
-log = LogWithStage()
 
-class PrivacyDnnTrain(object):
-    '''
-    Privacy DNN train base on rosetta.
-    '''
+class ErrorTraceback():
+    def __init__(self, algo_type):
+        self.algo_type = algo_type
+    
+    def __call__(self, func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            try:
+                log.info(f"start {func.__name__} function. algo: {self.algo_type}.")
+                result = func(*args, **kwargs)
+                log.info(f"finish {func.__name__} function. algo: {self.algo_type}.")
+            except Exception as e:
+                exc_type, exc_value, exc_traceback = sys.exc_info()
+                all_error = traceback.extract_tb(exc_traceback)
+                error_algo_file = all_error[0].filename
+                error_filename = os.path.split(error_algo_file)[1]
+                error_lineno, error_function = [], []
+                for one_error in all_error:
+                    if one_error.filename == error_algo_file:  # only report the algo file error
+                        error_lineno.append(one_error.lineno)
+                        error_function.append(one_error.name)
+                error_msg = repr(e)
+                raise Exception(f"<ALGO>:{self.algo_type}. <RUN_STAGE>:{log.run_stage} "
+                                f"<ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")
+            return result
+        return wrapper
 
+class BaseAlgorithm(object):
     def __init__(self,
-                 channel_config: str,
+                 io_channel,
                  cfg_dict: dict,
                  data_party: list,
                  compute_party: list,
                  result_party: list,
                  results_dir: str):
+        log.info(f"cfg_dict:{cfg_dict}")
+        log.info(f"data_party:{data_party}, compute_party:{compute_party}, result_party:{result_party}, results_dir:{results_dir}")
+        self.check_params_type(cfg_dict=(cfg_dict, dict), data_party=(data_party, list), compute_party=(compute_party, list), 
+                                result_party=(result_party, list), results_dir=(results_dir, str))        
+        log.info(f"start get input parameter.")
+        self.io_channel = io_channel
+        self.data_party = list(data_party)
+        self.compute_party = list(compute_party)
+        self.result_party = list(result_party)
+        self.results_dir = results_dir
+        self.parse_algo_cfg(cfg_dict)
+        self.check_parameters()
+        self.temp_dir = self.get_temp_dir()
+        log.info("finish get input parameter.")
+    
+    def check_params_type(self, **kargs):
+        for key,value in kargs.items():
+            assert isinstance(value[0], value[1]), f'{key} must be type({value[1]}), not {type(value[0])}'
+    
+    def parse_algo_cfg(self, cfg_dict):
+        raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
+    
+    def check_parameters(self):
+        raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
+        
+    def get_temp_dir(self):
+        '''
+        Get the directory for temporarily saving files
+        '''
+        temp_dir = os.path.join(self.results_dir, 'temp')
+        self.mkdir(temp_dir)
+        return temp_dir
+    
+    def remove_temp_dir(self):
+        '''
+        for result party, only delete the temp dir.
+        for non-result party, that is data and compute party, delete the all results
+        '''
+        if self.party_id in self.result_party:
+            temp_dir = self.temp_dir
+        else:
+            temp_dir = self.results_dir
+        self.remove_dir(temp_dir)
+    
+    def mkdir(self, directory):
+        if not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+
+    def remove_dir(self, directory):
+        if os.path.exists(directory):
+            shutil.rmtree(directory)
+
+class PrivacyDnnTrain(BaseAlgorithm):
+    '''
+    Privacy DNN train base on rosetta.
+    '''
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.output_dir = self._get_output_dir()
+        self.output_file = os.path.join(self.output_dir, "model")
+
+    def parse_algo_cfg(self, cfg_dict):
         '''
         cfg_dict:
         {
@@ -80,28 +165,6 @@ class PrivacyDnnTrain(object):
             }
         }
         '''
-        log.info(f"channel_config:{channel_config}")
-        log.info(f"cfg_dict:{cfg_dict}")
-        log.info(f"data_party:{data_party}, compute_party:{compute_party}, result_party:{result_party}, results_dir:{results_dir}")
-        assert isinstance(channel_config, str), "type of channel_config must be str"
-        assert isinstance(cfg_dict, dict), "type of cfg_dict must be dict"
-        assert isinstance(data_party, (list, tuple)), "type of data_party must be list or tuple"
-        assert isinstance(compute_party, (list, tuple)), "type of compute_party must be list or tuple"
-        assert isinstance(result_party, (list, tuple)), "type of result_party must be list or tuple"
-        assert isinstance(results_dir, str), "type of results_dir must be str"
-        
-        log.info(f"start get input parameter.")
-        self.channel_config = channel_config
-        self.data_party = list(data_party)
-        self.compute_party = list(compute_party)
-        self.result_party = list(result_party)
-        self.results_dir = results_dir
-        self.output_dir = self.get_output_dir()
-        self.output_file = os.path.join(self.output_dir, "model")
-        self._parse_algo_cfg(cfg_dict)
-        self._check_parameters()
-
-    def _parse_algo_cfg(self, cfg_dict):
         self.party_id = cfg_dict["self_cfg_params"]["party_id"]
         input_data = cfg_dict["self_cfg_params"]["input_data"]
         if self.party_id in self.data_party:
@@ -137,24 +200,37 @@ class PrivacyDnnTrain(object):
         self.validation_set_rate = hyperparams.get("validation_set_rate", 0.2)
         self.predict_threshold = hyperparams.get("predict_threshold", 0.5)
 
-    def _check_parameters(self):
-        log.info(f"check parameter start.")        
-        assert isinstance(self.epochs, int) and self.epochs > 0, "epochs must be type(int) and greater 0"
-        assert isinstance(self.batch_size, int) and self.batch_size > 0, "batch_size must be type(int) and greater 0"
-        assert isinstance(self.learning_rate, float) and self.learning_rate > 0, "learning rate must be type(float) and greater 0"
-        assert isinstance(self.layer_units, list) and self.layer_units, "layer_units must be type(list) and not empty"
-        assert isinstance(self.layer_activation, list) and self.layer_activation, "layer_activation must be type(list) and not empty"
-        assert len(self.layer_units) == len(self.layer_activation), "the length of layer_units and layer_activation must be the same"
+    def check_parameters(self):
+        log.info(f"check parameter start.")
+        self._check_input_data()
+        self.check_params_type(epochs=(self.epochs, int),
+                               batch_size=(self.batch_size, int),
+                               learning_rate=(self.learning_rate, float),
+                               layer_units=(self.layer_units, list),
+                               layer_activation=(self.layer_activation, list),
+                               init_method=(self.init_method, str),
+                               use_intercept=(self.use_intercept, bool),
+                               optimizer=(self.optimizer, str),
+                               use_validation_set=(self.use_validation_set, bool),
+                               validation_set_rate=(self.validation_set_rate, float),
+                               predict_threshold=(self.predict_threshold, float))
+        assert self.epochs > 0, f"epochs must be greater 0, not {self.epochs}"
+        assert self.batch_size > 0, f"batch_size must be greater 0, not {self.batch_size}"
+        assert self.learning_rate > 0, f"learning rate must be greater 0, not {self.learning_rate}"
+        assert 0 < self.validation_set_rate < 1, f"validattion_set_rate must be between (0,1), not {self.validation_set_rate}"
+        assert 0 <= self.predict_threshold <= 1, f"predict threshold must be between [0,1], not {self.predict_threshold}"
+        assert self.layer_units, f"layer_units must not empty, not {self.layer_units}"
+        assert self.layer_activation, f"layer_activation must not empty, not {self.layer_activation}"
+        assert len(self.layer_units) == len(self.layer_activation), \
+                f"the length of layer_units:{len(self.layer_units)} and layer_activation:{len(self.layer_activation)} not same"
         for i in self.layer_units:
-            assert isinstance(i, int) and i > 0, f'layer_units can only be type(int) and greater 0'
+            assert isinstance(i, int) and i > 0, f"layer_units'element can only be type(int) and greater 0, not {i}"
         for i in self.layer_activation:
             if i not in ["", "sigmoid", "relu", None]:
                 raise Exception(f'layer_activation can only be ""/"sigmoid"/"relu"/None, not {i}')
         if self.layer_activation[-1] == 'sigmoid':
             if self.layer_units[-1] != 1:
                 raise Exception(f"when output layer activation is sigmoid, output layer units must be 1, not {self.layer_units[-1]}")
-        
-        assert isinstance(self.init_method, str), "init_method must be type(str)"
         if self.init_method == 'random_normal':
             self.init_method = tf.random_normal
         elif self.init_method == 'random_uniform':
@@ -165,20 +241,17 @@ class PrivacyDnnTrain(object):
             self.init_method = tf.ones
         else:
             raise Exception(f"init_method only can be random_normal/random_uniform/zeros/ones, not {self.init_method}")
-        assert isinstance(self.optimizer, str), "optimizer must be type(str)"
         if self.optimizer == 'sgd':
             self.optimizer = tf.train.GradientDescentOptimizer
         else:
             raise Exception(f"optimizer only can be sgd, not {self.optimizer}")
-        assert isinstance(self.use_intercept, bool), "use_intercept must be type(bool), true or false"
-        assert isinstance(self.use_validation_set, bool), "use_validation_set must be type(bool), true or false"
-        assert 0 < self.validation_set_rate < 1, "validattion set rate must be between (0,1)"
-        assert 0 <= self.predict_threshold <= 1, "predict threshold must be between [0,1]"
-        
+        log.info(f"check parameter finish.")
+
+    def _check_input_data(self):
         if self.party_id in self.data_party:
-            assert isinstance(self.input_file, str), "origin input_data must be type(string)"
-            assert isinstance(self.key_column, str), "key_column must be type(string)"
-            assert isinstance(self.selected_columns, list), "selected_columns must be type(list)" 
+            self.check_params_type(data_path=(self.input_file, str), 
+                                    key_column=(self.key_column, str),
+                                    selected_columns=(self.selected_columns, list))
             self.input_file = self.input_file.strip()
             if os.path.exists(self.input_file):
                 file_suffix = os.path.splitext(self.input_file)[-1][1:]
@@ -196,9 +269,7 @@ class PrivacyDnnTrain(object):
                     assert self.label_column in input_columns, f"label_column:{self.label_column} not in input_file"
                     assert self.label_column not in self.selected_columns, f"label_column:{self.label_column} can not in selected_columns"
             else:
-                raise Exception(f"input_file is not exist. input_file={self.input_file}")
-        log.info(f"check parameter finish.")
-                        
+                raise Exception(f"input_file is not exist. input_file={self.input_file}")                       
         
     def train(self):
         '''
@@ -208,8 +279,8 @@ class PrivacyDnnTrain(object):
         log.info("extract feature or label.")
         train_x, train_y, val_x, val_y = self.extract_feature_or_label(with_label=self.data_with_label)
         
-        log.info("start create and set channel.")
-        self.create_set_channel()
+        log.info("start set channel.")
+        rtt.set_channel("", self.io_channel.channel)
         log.info("waiting other party connect...")
         rtt.activate("SecureNN")
         log.info("protocol has been activated.")
@@ -309,7 +380,7 @@ class PrivacyDnnTrain(object):
             log.info("computing, please waiting for compute finish...")
         rtt.deactivate()
         
-        result_path, result_type, evaluation_result = "", "", ""
+        result_path, result_type, evaluate_result = "", "", ""
         if self.party_id in self.result_party:
             log.info("result_party deal with the result.")
             result_path = self.output_dir
@@ -318,14 +389,14 @@ class PrivacyDnnTrain(object):
                 log.info("result_party evaluate model.")
                 Y_pred = Y_pred.astype("float").reshape([-1, ])
                 Y_true = Y_actual.astype("float").reshape([-1, ])
-                evaluation_result = self.model_evaluation(Y_true, Y_pred, output_layer_activation)
+                evaluate_result = self.evaluate(Y_true, Y_pred, output_layer_activation)
             # self.show_train_history(loss_history_train, loss_history_val, self.epochs)
             # log.info(f"result_party show train history finish.")
         
         log.info("start remove temp dir.")
         self.remove_temp_dir()
         log.info("train success all.")
-        return result_path, result_type, evaluation_result
+        return result_path, result_type, evaluate_result
     
     def layer(self, input_tensor, input_dim, output_dim, activation, layer_name='Dense'):
         with tf.name_scope(layer_name):
@@ -364,7 +435,7 @@ class PrivacyDnnTrain(object):
                                 layer_name=f"Dense_{i}")
         return output
     
-    def model_evaluation(self, Y_true, Y_pred, output_layer_activation):
+    def evaluate(self, Y_true, Y_pred, output_layer_activation):
         if (not output_layer_activation) or (output_layer_activation == 'relu'):
             from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
             r2 = r2_score(Y_true, Y_pred)
@@ -375,7 +446,7 @@ class PrivacyDnnTrain(object):
             rmse = round(rmse, 6)
             mse = round(mse, 6)
             mae = round(mae, 6)
-            evaluation_result = {
+            evaluate_result = {
                 "R2-score": r2,
                 "RMSE": rmse,
                 "MSE": mse,
@@ -394,7 +465,7 @@ class PrivacyDnnTrain(object):
             f1_score = round(f1_score, 6)
             precision = round(precision, 6)
             recall = round(recall, 6)
-            evaluation_result = {
+            evaluate_result = {
                 "AUC": auc_score,
                 "accuracy": accuracy,
                 "f1_score": f1_score,
@@ -403,10 +474,10 @@ class PrivacyDnnTrain(object):
             }
         else:
             raise Exception('output layer not support {output_layer_activation} activation.')
-        log.info(f"evaluation_result = {evaluation_result}")
-        evaluation_result = json.dumps(evaluation_result)
+        log.info(f"evaluate_result = {evaluate_result}")
+        evaluate_result = json.dumps(evaluate_result)
         log.info("evaluation success.")
-        return evaluation_result
+        return evaluate_result
     
     def show_train_history(self, train_history, val_history, epochs, name='loss'):
         log.info("start show_train_history")
@@ -426,17 +497,6 @@ class PrivacyDnnTrain(object):
         plt.legend()
         figure_path = os.path.join(self.results_dir, f'{name}.jpg')
         plt.savefig(figure_path)
-        
-    def create_set_channel(self):
-        '''
-        create and set channel.
-        '''
-        io_channel = io.APIManager()
-        log.info("start create channel.")
-        channel = io_channel.create_channel(self.party_id, self.channel_config)
-        log.info("start set channel.")
-        rtt.set_channel("", channel)
-        log.info("set channel success.")
     
     def extract_feature_or_label(self, with_label: bool=False):
         '''
@@ -489,58 +549,17 @@ class PrivacyDnnTrain(object):
 
         return train_x, train_y, val_x, val_y
     
-    def get_temp_dir(self):
-        '''
-        Get the directory for temporarily saving files
-        '''
-        temp_dir = os.path.join(self.results_dir, 'temp')
-        self._mkdir(temp_dir)
-        return temp_dir
-    
-    def get_output_dir(self):
+    def _get_output_dir(self):
         output_dir = os.path.join(self.results_dir, 'model')
-        self._mkdir(output_dir)
+        self.mkdir(output_dir)
         return output_dir
 
-    def remove_temp_dir(self):
-        if self.party_id in self.result_party:
-            # only delete the temp dir
-            temp_dir = self.get_temp_dir()
-        else:
-            # delete the all results in the non-result party.
-            temp_dir = self.results_dir
-        self._remove_dir(temp_dir)
-    
-    def _mkdir(self, _directory):
-        if not os.path.exists(_directory):
-            os.makedirs(_directory, exist_ok=True)
 
-    def _remove_dir(self, _directory):
-        if os.path.exists(_directory):
-            shutil.rmtree(_directory)
-
-
-def main(channel_config: str, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
+@ErrorTraceback("privacy_dnn_train")
+def main(io_channel, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
-    algo_type = "privacy_dnn_train"
-    try:
-        log.info(f"start main function. {algo_type}.")
-        privacy_dnn = PrivacyDnnTrain(channel_config, cfg_dict, data_party, compute_party, result_party, results_dir)
-        result_path, result_type, extra = privacy_dnn.train()
-        log.info(f"finish main function. {algo_type}.")
-        return result_path, result_type, extra
-    except Exception as e:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
-        all_error = traceback.extract_tb(exc_traceback)
-        error_algo_file = all_error[0].filename
-        error_filename = os.path.split(error_algo_file)[1]
-        error_lineno, error_function = [], []
-        for one_error in all_error:
-            if one_error.filename == error_algo_file:  # only report the algo file error
-                error_lineno.append(one_error.lineno)
-                error_function.append(one_error.name)
-        error_msg = repr(e)
-        raise Exception(f"<ALGO>:{algo_type}. <RUN_STAGE>:{log.run_stage} "
-                        f"<ERROR>: {error_filename},{error_lineno},{error_function},{error_msg}")
+    privacy_dnn = PrivacyDnnTrain(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
+    result_path, result_type, extra = privacy_dnn.train()
+    return result_path, result_type, extra

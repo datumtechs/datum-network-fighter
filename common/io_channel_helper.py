@@ -2,12 +2,13 @@ import os
 import json
 import logging
 import math
+import codecs
 from common.consts import COMMON_EVENT
 from common.socket_utils import find_free_port_in_range
+import channel_sdk.pyio as io
 
 
 log = logging.getLogger(__name__)
-
 
 def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_party,
                          result_party, cfg, current_server_ip, connect_policy,send_timeout):
@@ -90,6 +91,49 @@ def get_channel_config(task_id, self_party_id, peers, data_party, compute_party,
 
     return channel_config
 
+class IOChannel():
+    def __init__(self, party_id, channel_config):
+        self.io_manager = io.APIManager()
+        log.info("start create channel.")
+        self.channel = self.io_manager.create_channel(party_id, channel_config)
+        log.info("create channel success.")
+
+    def send_data_to_other_party(self, remote_partyid, input_data_path):
+        data = self.read_content(input_data_path)
+        self.send_sth(remote_partyid, data)
+    
+    def recv_data_from_other_party(self, remote_partyid, output_data_path):
+        data = self.recv_sth(remote_partyid)
+        self.write_content(output_data_path, data)
+    
+    def len_data(self, dat_len: int) -> str:
+        """return hex string of len of data for transmission, always 8 chars"""
+        lb = dat_len.to_bytes(4, byteorder='big')
+        return codecs.encode(lb, 'hex')
+
+    def send_sth(self, remote_partyid, data: str) -> None:
+        lens = self.len_data(len(data))
+        self.io_manager.Send(remote_partyid, lens)
+        self.io_manager.Send(remote_partyid, data)
+        log.info(f'send {int(lens, 16)} bytes data to {remote_partyid}')
+
+    def recv_sth(self, remote_partyid):
+        data_len = self.io_manager.Recv(remote_partyid, 8)
+        if data_len == b'\x00'*8:
+            raise ValueError(f'failed to receive data length, receive nothing.')
+        data_len = int(data_len, 16)
+        recv_data = self.io_manager.Recv(remote_partyid, data_len)
+        log.info(f'recv {data_len} bytes data from {remote_partyid}')
+        return recv_data
+    
+    def read_content(self, path):
+        with open(path, 'rb') as f:
+            content = f.read()
+        return content
+
+    def write_content(self, path: str, data: bytes):
+        with open(path, 'wb') as f:
+            f.write(data)
 
 if __name__ == '__main__':
     peers = [{'party_id': 'p5',
