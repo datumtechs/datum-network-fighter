@@ -24,34 +24,24 @@
 
 * 激活此环境：`conda activate env_py37`
 
-* 安装tensorflow(版本1.14.0)：`pip install tensorflow==1.14.0`
-
-* 编译并安装 [*latticex.rosetta*](https://github.com/LatticeX-Foundation/Rosetta)：
-
+* 安装 [*channel_sdk*](./third_party/README.md#1-channel-sdk)：
   ```bash
-  $ cd Rosetta
-  $ ./rosetta.sh clean
-  $ ./rosetta.sh compile --enable-protocol-mpc-securenn --enable-protocol-mpc-helix;
-  $ pip install dist/latticex_rosetta-1.0.0-cp37-cp37m-linux_x86_64.whl
+  $ cd channel-sdk 
+  $ pip install dist/channel_sdk-*.whl
   ```
 
-* 编译并安装 [*channel_sdk*](https://github.com/Metisnetwork/Metis-Channel-sdk) 和 [*国密版 grpc*](https://github.com/part-c/grpc/tree/v2.0.0_gmssl/src/cpp)：
+* 安装tensorflow(版本1.14.0)：`pip install tensorflow==1.14.0`
 
+* 安装 [*latticex.rosetta*](./third_party/README.md#2-rosetta)：
   ```bash
-  $ git clone -b v2.0.0_gmssl https://github.com/part-c/grpc.git gm_grpc
-  $ cd gm_grpc
-  $ git submodule update --init
-  # 编译 gmssl grpc
+  $ cd Rosetta
+  $ pip install dist/latticex_rosetta-*.whl
+  ```
 
-  $ cd channel-sdk
-  # 编译 third_party/protobuf
-
-  $ ./build.sh clean
-  $ ./build.sh compile
-  # 如果要国密版本，则需要先编译国密版grpc
-  ./build.sh compile --python-version=3.7 --ssl-type=2
-  
-  $ pip install dist/channel_sdk-1.0.0-cp37-cp37m-linux_x86_64.whl
+* 安装 [*latticex.psi*](./third_party/README.md#3-psi)：
+  ```bash
+  $ cd PSI
+  $ pip install dist/latticex_psi-*.whl
   ```
 
 * 安装数据&计算服务依赖：
