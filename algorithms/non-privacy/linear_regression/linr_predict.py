@@ -181,7 +181,7 @@ class LinRPredict(BaseAlgorithm):
     def check_parameters(self):
         log.info(f"check parameter start.")
         self._check_input_data()
-        self.check_params_type(model_restore_party=(self.model_restore_party, str), 
+        self.check_params_type(model_restore_party=(self.model_restore_party, str),
                                data_flow_restrict=(self.data_flow_restrict, dict))
         if self.party_id == self.model_restore_party:
             assert os.path.exists(self.model_path), f"model_path is not exists. model_path={self.model_path}"
@@ -295,17 +295,38 @@ class LinRPredict(BaseAlgorithm):
         x_data = pd.read_csv(usecols_file)
         return x_data.values
     
+    def load_model_desc(self, model_path):
+        model_desc_file = os.path.join(model_path, 'describe.json')
+        assert os.path.exists(model_desc_file), f"model_desc_file is not exist. model_desc_file={model_desc_file}"
+        with open(model_desc_file, 'r') as f:
+            model_desc = json.load(f)
+        log.info(f"model_desc: {model_desc}")
+        self.model_file_prefix = model_desc["model_file_prefix"]
+        self.train_feature_num = model_desc["feature_num"]
+        self.use_intercept = model_desc["use_intercept"]
+        self.check_params_type(model_file_prefix=(self.model_file_prefix, str),
+                               train_feature_num=(self.train_feature_num, int),
+                               use_intercept=(self.use_intercept, bool))
+        assert self.train_feature_num >=1, f"train_feature_num must be greater or equal to 1, not {self.train_feature_num}"
+
     def compute(self, usecols_file, model_path):
+        log.info("load model desc.")
+        self.load_model_desc(model_path)
         log.info("extract feature or label.")
         x_data = self._read_data(usecols_file)
-        column_total_num = x_data.shape[1]
+        feature_num = x_data.shape[1]
+        assert feature_num == self.train_feature_num, \
+            f"the total number of features used in prediction is not the same as that used in train, {feature_num} != {self.train_feature_num}"
 
         log.info("start build the model structure.")
-        X = tf.placeholder(tf.float64, [None, column_total_num])
-        Y = tf.placeholder(tf.float64, [None, 1])
-        W = tf.Variable(tf.zeros([column_total_num, 1], dtype=tf.float64))
-        b = tf.Variable(tf.zeros([1], dtype=tf.float64))      
-        pred_Y = tf.matmul(X, W) + b
+        X = tf.placeholder(tf.float64, [None, feature_num], name='X')
+        Y = tf.placeholder(tf.float64, [None, 1], name='Y')
+        W = tf.Variable(tf.zeros([feature_num, 1], dtype=tf.float64), name='W')
+        logits = tf.matmul(X, W)
+        if self.use_intercept:
+            b = tf.Variable(tf.zeros([1], dtype=tf.float64), name='b')
+            logits = logits + b
+        pred_Y = logits
         saver = tf.train.Saver(var_list=None, max_to_keep=5, name='v2')
         init = tf.global_variables_initializer()
         log.info("finish build the model structure.")
@@ -315,8 +336,9 @@ class LinRPredict(BaseAlgorithm):
             sess.run(init)
             log.info("start restore model.")
             if os.path.exists(os.path.join(model_path, "checkpoint")):
-                log.info(f"model restore from: {model_path}/model.")
-                saver.restore(sess, f"{model_path}/model")
+                model_file = os.path.join(model_path, self.model_file_prefix)
+                log.info(f"model restore from: {model_file}")
+                saver.restore(sess, model_file)
             else:
                 raise Exception("model not found or model damaged")
             log.info("predict start.")

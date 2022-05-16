@@ -35,12 +35,6 @@
     ],
     "dynamic_parameter": {
         "model_restore_party": "model1",
-        "hyperparams": {
-            "layer_units": [32, 1],
-            "layer_activation": ["sigmoid", "sigmoid"],
-            "use_intercept": true,
-            "predict_threshold": 0.5
-        },
         "data_flow_restrict": {
             "data1": ["compute1"],
             "model1": ["compute1"],

@@ -129,7 +129,7 @@ class LRPredict(BaseAlgorithm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.output_file = os.path.join(self.results_dir, "result_predict.csv")
+        self.output_file = os.path.join(self.results_dir, "result_predict.csv")       
     
     def parse_algo_cfg(self, cfg_dict):
         '''
@@ -149,7 +149,6 @@ class LRPredict(BaseAlgorithm):
             },
             "algorithm_dynamic_params": {
                 "model_restore_party": "model1",
-                "predict_threshold": 0.5,
                 "data_flow_restrict": {
                     "data1": ["compute1"],
                     "model1": ["compute1"],
@@ -170,25 +169,21 @@ class LRPredict(BaseAlgorithm):
                     self.selected_columns = data.get("selected_columns")
                 elif input_type == 2:
                     self.model_path = data["data_path"]
-                    self.model_file = os.path.join(self.model_path, "model")
                 else:
                     raise Exception(f"paramter error. input_type only support 1/2, not {input_type}")
         
         dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
         self.model_restore_party = dynamic_parameter["model_restore_party"]
-        self.predict_threshold = dynamic_parameter.get("predict_threshold", 0.5)
         self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
         self.data_party.remove(self.model_restore_party)  # except restore party
 
     def check_parameters(self):
         log.info(f"check parameter start.")
         self._check_input_data()
-        self.check_params_type(model_restore_party=(self.model_restore_party, str), 
-                               predict_threshold=(self.predict_threshold, float),
+        self.check_params_type(model_restore_party=(self.model_restore_party, str),
                                data_flow_restrict=(self.data_flow_restrict, dict))
         if self.party_id == self.model_restore_party:
             assert os.path.exists(self.model_path), f"model_path is not exists. model_path={self.model_path}"
-        assert 0 <= self.predict_threshold <= 1, f"predict threshold must be between [0,1], not {self.predict_threshold}"
         log.info(f"check parameter finish.")
     
     def _check_input_data(self):
@@ -290,7 +285,7 @@ class LRPredict(BaseAlgorithm):
             usecols_data = usecols_data[use_cols]
             usecols_data.to_csv(usecols_file, header=True, index=False)
         return usecols_file
-
+    
     def _read_data(self, usecols_file):
         '''
         Extract feature columns or label column from input file,
@@ -299,18 +294,54 @@ class LRPredict(BaseAlgorithm):
         x_data = pd.read_csv(usecols_file)
         return x_data.values
     
+    def load_model_desc(self, model_path):
+        model_desc_file = os.path.join(model_path, 'describe.json')
+        assert os.path.exists(model_desc_file), f"model_desc_file is not exist. model_desc_file={model_desc_file}"
+        with open(model_desc_file, 'r') as f:
+            model_desc = json.load(f)
+        log.info(f"model_desc: {model_desc}")
+        self.model_file_prefix = model_desc["model_file_prefix"]
+        self.train_feature_num = model_desc["feature_num"]
+        self.class_num = model_desc["class_num"]
+        self.activation = model_desc["activation"]
+        self.use_intercept = model_desc["use_intercept"]
+        self.check_params_type(model_file_prefix=(self.model_file_prefix, str),
+                               train_feature_num=(self.train_feature_num, int),
+                               class_num=(self.class_num, int),
+                               activation=(self.activation, str),
+                               use_intercept=(self.use_intercept, bool))
+        assert self.train_feature_num >=1, f"train_feature_num must be greater or equal to 1, not {self.train_feature_num}"
+        assert self.activation in ["sigmoid", "softmax"], f"activation support sigmoid,softmax. not {self.activation}"
+        if self.activation == "sigmoid":
+            assert self.class_num == 2, f"when activation=sigmoid, class_num must be equal to 2, not {self.class_num}"
+            self.class_num = 1
+            self.predict_threshold = model_desc["predict_threshold"]
+            assert isinstance(self.predict_threshold, float), f"predict_threshold must be type(float), not {type(self.predict_threshold)}"
+            assert 0 <= self.predict_threshold <= 1, f"predict threshold must be between [0,1], not {self.predict_threshold}"
+        else:
+            assert self.class_num >= 2, f"when activation=softmax, class_num must be greater or equal to 2, not {self.class_num}"
+
     def compute(self, usecols_file, model_path):
+        log.info("load model desc.")
+        self.load_model_desc(model_path)
         log.info("extract feature or label.")
         x_data = self._read_data(usecols_file)
-        column_total_num = x_data.shape[1]
+        feature_num = x_data.shape[1]
+        assert feature_num == self.train_feature_num, \
+            f"the total number of features used in prediction is not the same as that used in train, {feature_num} != {self.train_feature_num}"
 
         log.info("start build the model structure.")
-        X = tf.placeholder(tf.float64, [None, column_total_num])
-        Y = tf.placeholder(tf.float64, [None, 1])
-        W = tf.Variable(tf.zeros([column_total_num, 1], dtype=tf.float64))
-        b = tf.Variable(tf.zeros([1], dtype=tf.float64))
-        logits = tf.matmul(X, W) + b        
-        pred_Y = tf.sigmoid(logits)
+        X = tf.placeholder(tf.float64, [None, feature_num], name='X')
+        Y = tf.placeholder(tf.float64, [None, self.class_num], name='Y')
+        W = tf.Variable(tf.zeros([feature_num, self.class_num], dtype=tf.float64), name='W')
+        logits = tf.matmul(X, W)
+        if self.use_intercept:
+            b = tf.Variable(tf.zeros([self.class_num], dtype=tf.float64), name='b')
+            logits = logits + b
+        if self.activation == 'sigmoid':
+            pred_Y = tf.sigmoid(logits)
+        else:
+            pred_Y = tf.nn.softmax(logits)
         saver = tf.train.Saver(var_list=None, max_to_keep=5, name='v2')
         init = tf.global_variables_initializer()
         log.info("finish build the model structure.")
@@ -320,20 +351,24 @@ class LRPredict(BaseAlgorithm):
             sess.run(init)
             log.info("start restore model.")
             if os.path.exists(os.path.join(model_path, "checkpoint")):
-                log.info(f"model restore from: {model_path}/model.")
-                saver.restore(sess, f"{model_path}/model")
+                model_file = os.path.join(model_path, self.model_file_prefix)
+                log.info(f"model restore from: {model_file}")
+                saver.restore(sess, model_file)
             else:
                 raise Exception("model not found or model damaged")
             log.info("predict start.")
             predict_start_time = time.time()
-            Y_pred_prob = sess.run(pred_Y, feed_dict={X: x_data})
+            Y_pred = sess.run(pred_Y, feed_dict={X: x_data})
             predict_use_time = round(time.time()-predict_start_time, 3)
             log.info(f"predict success. predict_use_time={predict_use_time}s")
-            Y_pred_prob = Y_pred_prob.astype("float")
-            Y_prob = pd.DataFrame(Y_pred_prob, columns=["Y_prob"])
-            Y_class = (Y_pred_prob > self.predict_threshold) * 1
-            Y_class = pd.DataFrame(Y_class, columns=[f"Y_class(>{self.predict_threshold})"])
-            Y_result = pd.concat([Y_prob, Y_class], axis=1)
+            if self.activation == 'sigmoid':
+                Y_prob = pd.DataFrame(Y_pred, columns=["Y_pred_prob"])
+                Y_class = (Y_pred > self.predict_threshold) * 1
+                Y_class = pd.DataFrame(Y_class, columns=[f"Y_pred_class(>{self.predict_threshold})"])
+                Y_result = pd.concat([Y_prob, Y_class], axis=1)
+            else:
+                Y_class = np.argmax(Y_pred, axis=1)
+                Y_result = pd.DataFrame(Y_class, columns=["Y_pred_class"])
             Y_result.to_csv(self.output_file, header=True, index=False, float_format = '%.6f')
 
     

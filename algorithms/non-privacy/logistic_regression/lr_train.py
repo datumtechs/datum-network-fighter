@@ -10,6 +10,7 @@ import traceback
 import numpy as np
 import pandas as pd
 import shutil
+import random
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from functools import wraps
@@ -128,8 +129,18 @@ class LRTrain(BaseAlgorithm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.model_dir_name = "model"
+        self.model_file_prefix = "model"
         self.output_dir = self._get_output_dir()
-        self.output_file = os.path.join(self.output_dir, "model")
+        self.output_file = os.path.join(self.output_dir, self.model_file_prefix)
+        self.model_describe_file = os.path.join(self.output_dir, "describe.json")
+        self.set_random_seed(self.random_seed)
+    
+    @staticmethod
+    def set_random_seed(seed):
+        random.seed(seed)
+        np.random.seed(seed)
+        tf.compat.v1.set_random_seed(seed)
     
     def parse_algo_cfg(self, cfg_dict):
         '''
@@ -154,9 +165,14 @@ class LRTrain(BaseAlgorithm):
                     "epochs": 10,
                     "batch_size": 256,
                     "learning_rate": 0.1,
+                    "init_method": "random_normal",
+                    "use_intercept": true,
+                    "optimizer": "Adam",
+                    "activation": "softmax",
                     "use_validation_set": true,
                     "validation_set_rate": 0.2,
-                    "predict_threshold": 0.5
+                    "predict_threshold": 0.5,
+                    "random_seed": null
                 },
                 "data_flow_restrict": {
                     "data1": ["compute1"],
@@ -189,11 +205,14 @@ class LRTrain(BaseAlgorithm):
         self.epochs = hyperparams.get("epochs", 10)
         self.batch_size = hyperparams.get("batch_size", 256)
         self.learning_rate = hyperparams.get("learning_rate", 0.001)
+        self.init_method = hyperparams.get("init_method", "random_normal")
+        self.use_intercept = hyperparams.get("use_intercept", True)
+        self.optimizer = hyperparams.get("optimizer", "Adam")
+        self.activation = hyperparams.get("activation", "softmax")
         self.use_validation_set = hyperparams.get("use_validation_set", True)
         self.validation_set_rate = hyperparams.get("validation_set_rate", 0.2)
-        if not self.use_validation_set:
-            self.validation_set_rate = 0
         self.predict_threshold = hyperparams.get("predict_threshold", 0.5)
+        self.random_seed = hyperparams.get("random_seed", None)
         self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
 
     def check_parameters(self):
@@ -202,15 +221,57 @@ class LRTrain(BaseAlgorithm):
         self.check_params_type(epochs=(self.epochs, int),
                                batch_size=(self.batch_size, int),
                                learning_rate=(self.learning_rate, float),
+                               init_method=(self.init_method, str),
+                               use_intercept=(self.use_intercept, bool),
+                               optimizer=(self.optimizer, str),
+                               activation=(self.activation, str),
                                use_validation_set=(self.use_validation_set, bool),
                                validation_set_rate=(self.validation_set_rate, float),
-                               predict_threshold=(self.predict_threshold, float),
+                               random_seed=(self.random_seed, (int, type(None))),
                                data_flow_restrict=(self.data_flow_restrict, dict))
         assert self.epochs > 0, f"epochs must be greater 0, not {self.epochs}"
         assert self.batch_size > 0, f"batch_size must be greater 0, not {self.batch_size}"
         assert self.learning_rate > 0, f"learning rate must be greater 0, not {self.learning_rate}"
-        assert 0 < self.validation_set_rate < 1, f"validattion_set_rate must be between (0,1), not {self.validation_set_rate}"
-        assert 0 <= self.predict_threshold <= 1, f"predict threshold must be between [0,1], not {self.predict_threshold}"
+        if self.use_validation_set:
+            assert 0 < self.validation_set_rate < 1, f"validattion_set_rate must be between (0,1), not {self.validation_set_rate}"
+        if self.random_seed:
+            assert 0 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [0,2^32-1], not {self.random_seed}"
+        if self.init_method == 'random_uniform':
+            self.init_method = tf.random_uniform
+        elif self.init_method == 'random_normal':
+            self.init_method = tf.random_normal
+        elif self.init_method == 'truncated_normal':
+            self.init_method = tf.truncated_normal
+        elif self.init_method == 'zeros':
+            self.init_method = tf.zeros
+        elif self.init_method == 'ones':
+            self.init_method = tf.ones
+        elif self.init_method == 'xavier_uniform':
+            self.init_method = tf.contrib.layers.xavier_initializer()
+        elif self.init_method == 'xavier_normal':
+            self.init_method = tf.contrib.layers.xavier_initializer(uniform=False)
+        else:
+            raise Exception(f"init_method support random_uniform,random_normal,truncated_normal,zeros,ones,xavier_uniform,xavier_normal. not {self.init_method}")
+        if self.optimizer == 'SGD':
+            self.optimizer = tf.train.GradientDescentOptimizer
+        elif self.optimizer == 'Adam':
+            self.optimizer = tf.train.AdamOptimizer
+        elif self.optimizer == 'RMSProp':
+            self.optimizer = tf.train.RMSPropOptimizer
+        elif self.optimizer == 'Momentum':
+            self.optimizer = tf.train.MomentumOptimizer
+        elif self.optimizer == 'Adadelta':
+            self.optimizer = tf.train.AdadeltaOptimizer
+        elif self.optimizer == 'Adagrad':
+            self.optimizer = tf.train.AdagradOptimizer
+        elif self.optimizer == 'Ftrl':
+            self.optimizer = tf.train.FtrlOptimizer
+        else:
+            raise Exception(f"optimizer support SGD,Adam,RMSprop,Momentum,Adadelta,Adagrad,Ftrl. not {self.optimizer}")
+        assert self.activation in ["sigmoid", "softmax"], f"activation can only be sigmoid,softmax. not {self.activation}"
+        if self.activation == "sigmoid":
+            assert isinstance(self.predict_threshold, float), f"predict_threshold must be type(float), not {type(self.predict_threshold)}"
+            assert 0 <= self.predict_threshold <= 1, f"predict threshold must be between [0,1], not {self.predict_threshold}"
         log.info(f"check parameter finish.")
     
     def _check_input_data(self):
@@ -275,7 +336,7 @@ class LRTrain(BaseAlgorithm):
     def _send_data_to_result_party(self, data_path, evaluate_result):
         if self.party_id in self.compute_party:
             if os.path.isdir(data_path):
-                temp_model_dir = os.path.join(self.temp_dir, 'model')
+                temp_model_dir = os.path.join(self.temp_dir, self.model_dir_name)
                 data_path = shutil.make_archive(base_name=temp_model_dir, format='zip', root_dir=data_path)
             result_party = self.data_flow_restrict[self.party_id][0]
             self.io_channel.send_data_to_other_party(result_party, data_path)
@@ -283,7 +344,7 @@ class LRTrain(BaseAlgorithm):
         elif self.party_id in self.result_party:
             for party in self.compute_party:
                 if self.party_id == self.data_flow_restrict[party][0]:
-                    temp_model_dir = os.path.join(self.temp_dir, 'model.zip')
+                    temp_model_dir = os.path.join(self.temp_dir, f'{self.model_dir_name}.zip')
                     self.io_channel.recv_data_from_other_party(party, temp_model_dir)
                     shutil.unpack_archive(temp_model_dir, self.output_dir)
                     evaluate_result = self.io_channel.recv_sth(party)
@@ -320,29 +381,69 @@ class LRTrain(BaseAlgorithm):
         y_data = input_data[self.label_column]
         del input_data[self.label_column]
         x_data = input_data
-        train_x, val_x, train_y, val_y = train_test_split(x_data, y_data, stratify=y_data, test_size=self.validation_set_rate)
-        train_x, val_x, train_y, val_y = train_x.values, train_y.values.reshape(-1, 1), val_x.values, val_y.values
+        if self.use_validation_set:
+            train_x, val_x, train_y, val_y = train_test_split(x_data, y_data, stratify=y_data,
+                        test_size=self.validation_set_rate, random_state=self.random_seed)
+        else:
+            # val_x, val_y is invalid.
+            train_x, val_x, train_y, val_y = x_data, x_data, y_data, y_data
         return train_x, val_x, train_y, val_y
     
+    def save_model_describe(self, feature_num, class_num, feature_name, label_name):
+        '''save model description for prediction'''
+        model_desc = {
+            "model_file_prefix": self.model_file_prefix,
+            "feature_num": feature_num,
+            "class_num": class_num,
+            "activation": self.activation,
+            "use_intercept": self.use_intercept,
+            "feature_name": feature_name, 
+            "label_name": label_name
+        }
+        if self.activation == "sigmoid":
+            model_desc["predict_threshold"] = self.predict_threshold
+        log.info(f"model_desc: {model_desc}")
+        with open(self.model_describe_file, 'w') as f:
+            json.dump(model_desc, f, indent=4)
+
     def compute(self, usecols_file):
         log.info("extract feature or label.")
-        train_x, train_y, val_x, val_y = self._read_and_split_data(usecols_file)
-        column_total_num = train_x.shape[1]
+        train_x, val_x, train_y, val_y = self._read_and_split_data(usecols_file)
+        feature_num = train_x.shape[1]
+        feature_name = list(train_x.columns)
+        label_name = train_y.name
+        train_x, val_x, train_y, val_y = train_x.values, val_x.values, train_y.values, val_y.values
+        class_num = np.unique(train_y).shape[0]
+        self.save_model_describe(feature_num, class_num, feature_name, label_name)
+        if self.activation == 'sigmoid':
+            assert class_num <= 2, f"the number of class in train set, as {class_num}, is greater than 2, please use activation=softmax, not sigmoid."
+            assert class_num == 2, f"when activation=sigmoid, number of class in train set must be 2, not {class_num}"
+            class_num = 1
+            train_y = train_y.reshape(-1, 1)
+            val_y = val_y.reshape(-1, 1)
+        else:
+            train_y = np.eye(class_num)[train_y]
+            val_y = np.eye(class_num)[val_y]
 
         log.info("start build the model structure.")
-        X = tf.placeholder(tf.float64, [None, column_total_num])
-        Y = tf.placeholder(tf.float64, [None, 1])
-        W = tf.Variable(tf.zeros([column_total_num, 1], dtype=tf.float64))
-        b = tf.Variable(tf.zeros([1], dtype=tf.float64))
-        logits = tf.matmul(X, W) + b
-        loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=Y, logits=logits)
+        X = tf.placeholder(tf.float64, [None, feature_num], name='X')
+        Y = tf.placeholder(tf.float64, [None, class_num], name='Y')
+        W = tf.Variable(self.init_method([feature_num, class_num], dtype=tf.float64), name='W')
+        logits = tf.matmul(X, W)
+        if self.use_intercept:
+            b = tf.Variable(self.init_method([class_num], dtype=tf.float64), name='b')
+            logits = logits + b
+        if self.activation == 'sigmoid':
+            loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=Y, logits=logits)
+            pred_Y = tf.sigmoid(logits)
+        else:
+            loss = tf.nn.softmax_cross_entropy_with_logits(labels=Y, logits=logits)
+            pred_Y = tf.nn.softmax(logits)
         loss = tf.reduce_mean(loss)
         # optimizer
-        optimizer = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(loss)
+        optimizer = self.optimizer(self.learning_rate).minimize(loss)
         init = tf.global_variables_initializer()
-        saver = tf.train.Saver(var_list=None, max_to_keep=5, name='v2')
-        
-        pred_Y = tf.sigmoid(logits)
+        saver = tf.train.Saver(var_list=None, max_to_keep=5, name='v2')        
         log.info("finish build the model structure.")
 
         with tf.Session() as sess:
@@ -366,28 +467,54 @@ class LRTrain(BaseAlgorithm):
         
             if self.use_validation_set:
                 pred_y = sess.run(pred_Y, feed_dict={X: val_x})
-                evaluate_result = self.evaluate(val_y, pred_y)
+                evaluate = Evaluate(val_y, pred_y)
+                if self.activation == 'sigmoid':
+                    evaluate_result = evaluate.binary_classify(self.predict_threshold)
+                else:
+                    evaluate_result = evaluate.multiclass_classify()
             else:
                 evaluate_result = ""
+        log.info(f"evaluate_result = {evaluate_result}")
         return evaluate_result
     
-    def evaluate(self, Y_true, Y_pred):
-        '''
-        only support binary class
-        '''
-        log.info("start model evaluation.")
-        from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_score, accuracy_score
+    def _get_output_dir(self):
+        output_dir = os.path.join(self.results_dir, self.model_dir_name)
+        self.mkdir(output_dir)
+        return output_dir
+
+class BaseEvaluate():
+    def __init__(self, y_true, y_pred):
+        self.y_true = y_true
+        self.y_pred = y_pred
+    
+    def binary_classify(self, *args, **kwargs):
+        '''binary class classification'''
+        raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
+    
+    def multiclass_classify(self, *args, **kwargs):
+        '''multi-class classification'''
+        raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
+    
+    def regression(self, *args, **kwargs):
+        '''regression evaluation'''
+        raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
+
+class Evaluate(BaseEvaluate):    
+    def binary_classify(self, threshold):
+        from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, precision_score, recall_score
         log.info("start evaluate auc score.")
-        auc_score = roc_auc_score(Y_true, Y_pred)
-        Y_pred_class = (Y_pred > self.predict_threshold).astype('int64')  # default threshold=0.5
+        y_true = self.y_true.reshape(-1,)
+        y_pred = self.y_pred.reshape(-1,)
+        auc_score = roc_auc_score(y_true, y_pred)
+        y_pred_class = (y_pred > threshold).astype('int64')
         log.info("start evaluate accuracy score.")
-        accuracy = accuracy_score(Y_true, Y_pred_class)
+        accuracy = accuracy_score(y_true, y_pred_class)
         log.info("start evaluate f1_score.")
-        f1_score = f1_score(Y_true, Y_pred_class)
+        f1_score = f1_score(y_true, y_pred_class)
         log.info("start evaluate precision score.")
-        precision = precision_score(Y_true, Y_pred_class)
+        precision = precision_score(y_true, y_pred_class)
         log.info("start evaluate recall score.")
-        recall = recall_score(Y_true, Y_pred_class)
+        recall = recall_score(y_true, y_pred_class)
         auc_score = round(auc_score, 6)
         accuracy = round(accuracy, 6)
         f1_score = round(f1_score, 6)
@@ -400,15 +527,40 @@ class LRTrain(BaseAlgorithm):
             "precision": precision,
             "recall": recall
         }
-        log.info(f"evaluate_result = {evaluate_result}")
         evaluate_result = json.dumps(evaluate_result)
         log.info("evaluate success.")
         return evaluate_result
     
-    def _get_output_dir(self):
-        output_dir = os.path.join(self.results_dir, 'model')
-        self.mkdir(output_dir)
-        return output_dir
+    def multiclass_classify(self):
+        from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+        y_true_index = np.argmax(self.y_true, axis=1)
+        y_pred_index = np.argmax(self.y_pred, axis=1)
+        accuracy = accuracy_score(y_true_index, y_pred_index)
+        f1_score_micro = f1_score(y_true_index, y_pred_index, average='micro')
+        precision_micro = precision_score(y_true_index, y_pred_index, average='micro')
+        recall_micro = recall_score(y_true_index, y_pred_index, average='micro')
+        f1_score_macro = f1_score(y_true_index, y_pred_index, average='macro')
+        precision_macro = precision_score(y_true_index, y_pred_index, average='macro')
+        recall_macro = recall_score(y_true_index, y_pred_index, average='macro')
+        accuracy = round(accuracy, 6)
+        f1_score_micro = round(f1_score_micro, 6)
+        precision_micro = round(precision_micro, 6)
+        recall_micro = round(recall_micro, 6)
+        f1_score_macro = round(f1_score_macro, 6)
+        precision_macro = round(precision_macro, 6)
+        recall_macro = round(recall_macro, 6)
+        evaluate_result = {
+            "accuracy": accuracy,
+            "f1_score_micro": f1_score_micro,
+            "precision_micro": precision_micro,
+            "recall_micro": recall_micro,
+            "f1_score_macro": f1_score_macro,
+            "precision_macro": precision_macro,
+            "recall_macro": recall_macro
+        }
+        evaluate_result = json.dumps(evaluate_result)
+        log.info("evaluate success.")
+        return evaluate_result
 
 
 @ErrorTraceback("non-privacy_lr_train")

@@ -147,12 +147,6 @@ class PrivacyDnnPredict(BaseAlgorithm):
             },
             "algorithm_dynamic_params": {
                 "model_restore_party": "model1",
-                "hyperparams": {
-                    "layer_units": [32, 1],
-                    "layer_activation": ["sigmoid", "sigmoid"],
-                    "use_intercept": true,
-                    "predict_threshold": 0.5
-                },
                 "data_flow_restrict": {
                     "data1": ["compute1"],
                     "compute1": ["result1"]
@@ -179,11 +173,6 @@ class PrivacyDnnPredict(BaseAlgorithm):
 
         dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
         self.model_restore_party = dynamic_parameter["model_restore_party"]
-        hyperparams = dynamic_parameter["hyperparams"]
-        self.layer_units = hyperparams.get("layer_units", [32, 1])
-        self.layer_activation = hyperparams.get("layer_activation", ["sigmoid", "sigmoid"])
-        self.use_intercept = hyperparams.get("use_intercept", True)  # True: use b, False: not use b        
-        self.predict_threshold = hyperparams.get("predict_threshold", 0.5)
         self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
         self.data_party.remove(self.model_restore_party)  # except restore party
 
@@ -191,26 +180,9 @@ class PrivacyDnnPredict(BaseAlgorithm):
         log.info(f"check parameter start.")
         self._check_input_data()
         self.check_params_type(model_restore_party=(self.model_restore_party, str),
-                               layer_units=(self.layer_units, list),
-                               layer_activation=(self.layer_activation, list),
-                               use_intercept=(self.use_intercept, bool),
-                               predict_threshold=(self.predict_threshold, float),
                                data_flow_restrict=(self.data_flow_restrict, dict))
         if self.party_id == self.model_restore_party:
             assert os.path.exists(self.model_path), f"model_path is not exist. model_path={self.model_path}"
-        assert 0 <= self.predict_threshold <= 1, f"predict threshold must be between [0,1], not {self.predict_threshold}"
-        assert self.layer_units, f"layer_units must not empty, not {self.layer_units}"
-        assert self.layer_activation, f"layer_activation must not empty, not {self.layer_activation}"
-        assert len(self.layer_units) == len(self.layer_activation), \
-                f"the length of layer_units:{len(self.layer_units)} and layer_activation:{len(self.layer_activation)} not same"
-        for i in self.layer_units:
-            assert isinstance(i, int) and i > 0, f"layer_units'element can only be type(int) and greater 0, not {i}"
-        for i in self.layer_activation:
-            if i not in ["", "sigmoid", "relu", None]:
-                raise Exception(f'layer_activation can only be ""/"sigmoid"/"relu"/None, not {i}')
-        if self.layer_activation[-1] == 'sigmoid':
-            if self.layer_units[-1] != 1:
-                raise Exception(f"output layer activation is sigmoid, output layer units must be 1, not {self.layer_units[-1]}")
         log.info(f"check parameter finish.")
     
     def _check_input_data(self):
@@ -320,24 +292,73 @@ class PrivacyDnnPredict(BaseAlgorithm):
         x_data = pd.read_csv(usecols_file)
         return x_data.values
     
+    def load_model_desc(self, model_path):
+        model_desc_file = os.path.join(model_path, 'describe.json')
+        assert os.path.exists(model_desc_file), f"model_desc_file is not exist. model_desc_file={model_desc_file}"
+        with open(model_desc_file, 'r') as f:
+            model_desc = json.load(f)
+        log.info(f"model_desc: {model_desc}")
+        self.model_file_prefix = model_desc["model_file_prefix"]
+        self.train_feature_num = model_desc["feature_num"]
+        self.layer_units = model_desc["layer_units"]
+        self.layer_activation = model_desc["layer_activation"]
+        self.task_type = model_desc["task_type"]
+        self.use_intercept = model_desc["use_intercept"]
+        self.check_params_type(model_file_prefix=(self.model_file_prefix, str),
+                               train_feature_num=(self.train_feature_num, int),
+                               layer_units=(self.layer_units, list),
+                               layer_activation=(self.layer_activation, list),
+                               task_type=(self.task_type, int),
+                               use_intercept=(self.use_intercept, bool))
+        assert self.train_feature_num >=1, f"train_feature_num must be greater or equal to 1, not {self.train_feature_num}"
+        assert self.layer_units, f"layer_units must not empty, not {self.layer_units}"
+        assert self.layer_activation, f"layer_activation must not empty, not {self.layer_activation}"
+        assert len(self.layer_units) == len(self.layer_activation), \
+                f"the length of layer_units:{len(self.layer_units)} and layer_activation:{len(self.layer_activation)} not same"
+        for i in self.layer_units:
+            assert isinstance(i, int) and i > 0, f"layer_units'element can only be type(int) and greater 0, not {i}"
+        for i in self.layer_activation:
+            if i not in ["", "sigmoid", "relu", "tanh", "softmax"]:
+                raise Exception(f'layer_activation can only be "",sigmoid,relu,tanh,softmax. not {i}')
+        assert self.task_type in [0,1,2], f"task type support 0,1,2. not {self.task_type}"
+        if self.task_type == 0:
+            self.predict_threshold = model_desc["predict_threshold"]
+            assert isinstance(self.predict_threshold, float), f"predict_threshold must be type(float), not {type(self.predict_threshold)}"
+            assert 0 <= self.predict_threshold <= 1, f"predict threshold must be between [0,1], not {self.predict_threshold}"
+            assert self.layer_units[-1] == 1, f"when task_type=0, the last layer units must be 1, not {self.layer_units[-1]}"
+            assert self.layer_activation[-1] == 'sigmoid', f"when when task_type=0, the last layer activation must be sigmoid, not {self.layer_activation[-1]}"
+        elif self.task_type == 1:
+            assert self.layer_activation[-1] == 'softmax', f"when when task_type=1, the last layer activation must be softmax, not {self.layer_activation[-1]}"
+
+    def get_layer_activation(self, logits, activation):
+        if not activation:
+            one_layer = logits
+        elif activation == 'sigmoid':
+            one_layer = tf.sigmoid(logits)
+        elif activation == 'relu':
+            one_layer = tf.nn.relu(logits)
+        elif activation == 'tanh':
+            one_layer = tf.tanh(logits)
+        elif activation == 'softmax':
+            one_layer = tf.nn.softmax(logits)
+        else:
+            raise Exception(f'not support {activation} activation.')
+        return one_layer
+
     def compute(self, usecols_file, model_path):
+        log.info("load model desc.")
+        self.load_model_desc(model_path)
         log.info("extract feature or label.")
         x_data = self._read_data(usecols_file)
-        column_total_num = x_data.shape[1]
+        feature_num = x_data.shape[1]
+        assert feature_num == self.train_feature_num, \
+            f"the total number of features used in prediction is not the same as that used in train, {feature_num} != {self.train_feature_num}"
 
         log.info("start build the model structure.")
-        X = tf.placeholder(tf.float64, [None, column_total_num], name='X')
-        output = self.dnn(X, column_total_num)
-        output_layer_activation = self.layer_activation[-1]
+        X = tf.placeholder(tf.float64, [None, feature_num], name='X')
+        output = self.dnn(X, feature_num)
         with tf.name_scope('output'):
-            if not output_layer_activation:
-                pred_Y = output
-            elif output_layer_activation == 'sigmoid':
-                pred_Y = tf.sigmoid(output)
-            elif output_layer_activation == 'relu':
-                pred_Y = tf.nn.relu(output)
-            else:
-                raise Exception('output layer not support {output_layer_activation} activation.')
+            pred_Y = self.get_layer_activation(output, self.layer_activation[-1])
         saver = tf.train.Saver(var_list=None, max_to_keep=5, name='v2')
         init = tf.global_variables_initializer()
         log.info("finish build the model structure.")
@@ -353,18 +374,20 @@ class PrivacyDnnPredict(BaseAlgorithm):
                 raise Exception("model not found or model damaged")
             log.info("predict start.")
             predict_start_time = time.time()
-            Y_pred_prob = sess.run(pred_Y, feed_dict={X: x_data})
+            Y_pred = sess.run(pred_Y, feed_dict={X: x_data})
             predict_use_time = round(time.time()-predict_start_time, 3)
             log.info(f"predict success. predict_use_time={predict_use_time}s")
 
-            Y_pred_prob = Y_pred_prob.astype("float")
-            if (not output_layer_activation) or (output_layer_activation == 'relu'):
-                Y_result = pd.DataFrame(Y_pred, columns=["Y_predict"])
-            elif output_layer_activation == 'sigmoid':
-                Y_prob = pd.DataFrame(Y_pred_prob, columns=["Y_prob"])
-                Y_class = (Y_pred_prob > self.predict_threshold) * 1
-                Y_class = pd.DataFrame(Y_class, columns=[f"Y_class(>{self.predict_threshold})"])
+            if self.task_type == 0:
+                Y_prob = pd.DataFrame(Y_pred, columns=["Y_pred_prob"])
+                Y_class = (Y_pred > self.predict_threshold) * 1
+                Y_class = pd.DataFrame(Y_class, columns=[f"Y_pred_class(>{self.predict_threshold})"])
                 Y_result = pd.concat([Y_prob, Y_class], axis=1)
+            elif self.task_type == 1:
+                Y_class = np.argmax(Y_pred, axis=1)
+                Y_result = pd.DataFrame(Y_class, columns=["Y_pred_class"])
+            else:
+                Y_result = pd.DataFrame(Y_pred, columns=["Y_predict"])
             log.info("predict result write to file.")
             Y_result.to_csv(self.output_file, header=True, index=False, float_format = '%.6f')
 
@@ -378,14 +401,7 @@ class PrivacyDnnPredict(BaseAlgorithm):
             else:
                 with tf.name_scope('logits'):
                     logits = tf.matmul(input_tensor, W)
-            if not activation:
-                one_layer = logits
-            elif activation == 'sigmoid':
-                one_layer = tf.sigmoid(logits)
-            elif activation == 'relu':
-                one_layer = tf.nn.relu(logits)
-            else:
-                raise Exception(f'not support {activation} activation.')
+            one_layer = self.get_layer_activation(logits, activation)
             return one_layer
     
     def dnn(self, input_X, input_dim):

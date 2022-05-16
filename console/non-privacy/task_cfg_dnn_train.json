@@ -34,14 +34,16 @@
             "epochs": 10,
             "batch_size": 256,
             "learning_rate": 0.1,
-            "layer_units": [32, 1],
-            "layer_activation": ["sigmoid", "sigmoid"],
-            "init_method": "random_normal",
+            "layer_units": [32, 2],
+            "layer_activation": ["sigmoid", "softmax"],
+            "init_method": "xavier_uniform",
             "use_intercept": true,
-            "optimizer": "sgd",
+            "optimizer": "Adam",
             "use_validation_set": true,
             "validation_set_rate": 0.2,
-            "predict_threshold": 0.5
+            "predict_threshold": 0.5,
+            "random_seed": null,
+            "dropout_prob": 0.5
         },
         "data_flow_restrict": {
             "data1": ["compute1"],

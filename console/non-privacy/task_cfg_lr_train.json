@@ -33,7 +33,12 @@
         "hyperparams": {
             "epochs": 10,
             "batch_size": 256,
-            "learning_rate": 0.1
+            "learning_rate": 0.1,
+            "init_method": "xavier_uniform",
+            "use_intercept": true,
+            "optimizer": "Adam",
+            "activation": "softmax",
+            "use_validation_set": true
         },
         "data_flow_restrict": {
             "data1": ["compute1"],
