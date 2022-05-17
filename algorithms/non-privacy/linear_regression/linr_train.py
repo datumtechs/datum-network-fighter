@@ -380,14 +380,15 @@ class LinRTrain(BaseAlgorithm):
             train_x, val_x, train_y, val_y = x_data, x_data, y_data, y_data
         return train_x, val_x, train_y, val_y
     
-    def save_model_describe(self, feature_num, feature_name, label_name):
+    def save_model_describe(self, feature_num, feature_name, label_name, evaluate_result):
         '''save model description for prediction'''
         model_desc = {
             "model_file_prefix": self.model_file_prefix,
             "feature_num": feature_num,
             "use_intercept": self.use_intercept,
             "feature_name": feature_name, 
-            "label_name": label_name
+            "label_name": label_name,
+            "evaluate_result": evaluate_result
         }
         log.info(f"model_desc: {model_desc}")
         with open(self.model_describe_file, 'w') as f:
@@ -399,7 +400,6 @@ class LinRTrain(BaseAlgorithm):
         feature_num = train_x.shape[1]
         feature_name = list(train_x.columns)
         label_name = train_y.name
-        self.save_model_describe(feature_num, feature_name, label_name)
         train_x, val_x, train_y, val_y = train_x.values, val_x.values, train_y.values, val_y.values
         train_y = train_y.reshape(-1, 1)
 
@@ -446,6 +446,9 @@ class LinRTrain(BaseAlgorithm):
             else:
                 evaluate_result = ""
         log.info(f"evaluate_result = {evaluate_result}")
+        self.save_model_describe(feature_num, feature_name, label_name, evaluate_result)
+        log.info(f"save model describe success.")
+        evaluate_result = json.dumps(evaluate_result)
         return evaluate_result
     
     def _get_output_dir(self):
@@ -490,7 +493,6 @@ class Evaluate(BaseEvaluate):
             "MSE": mse,
             "MAE": mae
         }
-        evaluate_result = json.dumps(evaluate_result)
         log.info("evaluate success.")
         return evaluate_result
 

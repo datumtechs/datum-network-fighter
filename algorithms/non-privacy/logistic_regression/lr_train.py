@@ -389,7 +389,7 @@ class LRTrain(BaseAlgorithm):
             train_x, val_x, train_y, val_y = x_data, x_data, y_data, y_data
         return train_x, val_x, train_y, val_y
     
-    def save_model_describe(self, feature_num, class_num, feature_name, label_name):
+    def save_model_describe(self, feature_num, class_num, feature_name, label_name, evaluate_result):
         '''save model description for prediction'''
         model_desc = {
             "model_file_prefix": self.model_file_prefix,
@@ -398,7 +398,8 @@ class LRTrain(BaseAlgorithm):
             "activation": self.activation,
             "use_intercept": self.use_intercept,
             "feature_name": feature_name, 
-            "label_name": label_name
+            "label_name": label_name,
+            "evaluate_result": evaluate_result
         }
         if self.activation == "sigmoid":
             model_desc["predict_threshold"] = self.predict_threshold
@@ -414,7 +415,6 @@ class LRTrain(BaseAlgorithm):
         label_name = train_y.name
         train_x, val_x, train_y, val_y = train_x.values, val_x.values, train_y.values, val_y.values
         class_num = np.unique(train_y).shape[0]
-        self.save_model_describe(feature_num, class_num, feature_name, label_name)
         if self.activation == 'sigmoid':
             assert class_num <= 2, f"the number of class in train set, as {class_num}, is greater than 2, please use activation=softmax, not sigmoid."
             assert class_num == 2, f"when activation=sigmoid, number of class in train set must be 2, not {class_num}"
@@ -475,6 +475,11 @@ class LRTrain(BaseAlgorithm):
             else:
                 evaluate_result = ""
         log.info(f"evaluate_result = {evaluate_result}")
+        if self.activation == 'sigmoid':
+            class_num = 2
+        self.save_model_describe(feature_num, class_num, feature_name, label_name, evaluate_result)
+        log.info(f"save model describe success.")
+        evaluate_result = json.dumps(evaluate_result)
         return evaluate_result
     
     def _get_output_dir(self):
@@ -527,7 +532,6 @@ class Evaluate(BaseEvaluate):
             "precision": precision,
             "recall": recall
         }
-        evaluate_result = json.dumps(evaluate_result)
         log.info("evaluate success.")
         return evaluate_result
     
@@ -558,7 +562,6 @@ class Evaluate(BaseEvaluate):
             "precision_macro": precision_macro,
             "recall_macro": recall_macro
         }
-        evaluate_result = json.dumps(evaluate_result)
         log.info("evaluate success.")
         return evaluate_result
 

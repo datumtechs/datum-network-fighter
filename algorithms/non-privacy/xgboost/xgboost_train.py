@@ -356,7 +356,7 @@ class XGBoostTrain(BaseAlgorithm):
             train_x, val_x, train_y, val_y = x_data, x_data, y_data, y_data
         return train_x, val_x, train_y, val_y
     
-    def save_model_describe(self, feature_num, class_num, feature_name, label_name):
+    def save_model_describe(self, feature_num, class_num, feature_name, label_name, evaluate_result):
         '''save model description for prediction'''
         model_desc = {
             "model_file_name": self.model_file_name,
@@ -366,7 +366,8 @@ class XGBoostTrain(BaseAlgorithm):
             "max_depth": self.max_depth,
             "max_bin": self.max_bin,
             "feature_name": feature_name, 
-            "label_name": label_name
+            "label_name": label_name,
+            "evaluate_result": evaluate_result
         }
         log.info(f"model_desc: {model_desc}")
         with open(self.model_describe_file, 'w') as f:
@@ -381,7 +382,6 @@ class XGBoostTrain(BaseAlgorithm):
         train_x, val_x, train_y, val_y = train_x.values, val_x.values, train_y.values, val_y.values
         class_num = np.unique(train_y).shape[0]
         assert class_num >= 2, f"in train set, the class num of label must greater or equal to 2, not {class_num}"
-        self.save_model_describe(feature_num, class_num, feature_name, label_name)
 
         log.info("train start.")
         train_start_time = time.time()
@@ -398,6 +398,7 @@ class XGBoostTrain(BaseAlgorithm):
                                    random_state=self.random_seed,
                                    num_class=class_num)
         classifier.fit(train_x, train_y)
+        log.info(f"model save to: {self.output_file}")
         classifier.save_model(self.output_file)
         train_use_time = round(time.time()-train_start_time, 3)
         log.info(f"save model success. train_use_time={train_use_time}s")
@@ -412,6 +413,9 @@ class XGBoostTrain(BaseAlgorithm):
         else:
             evaluate_result = ""
         log.info(f"evaluate_result = {evaluate_result}")
+        self.save_model_describe(feature_num, class_num, feature_name, label_name, evaluate_result)
+        log.info(f"save model describe success.")
+        evaluate_result = json.dumps(evaluate_result)
         return evaluate_result
     
     def _get_output_dir(self):
@@ -460,7 +464,6 @@ class Evaluate(BaseEvaluate):
             "precision": precision,
             "recall": recall
         }
-        evaluate_result = json.dumps(evaluate_result)
         log.info("evaluate success.")
         return evaluate_result
     
@@ -491,7 +494,6 @@ class Evaluate(BaseEvaluate):
             "precision_macro": precision_macro,
             "recall_macro": recall_macro
         }
-        evaluate_result = json.dumps(evaluate_result)
         log.info("evaluate success.")
         return evaluate_result
 

@@ -12,7 +12,7 @@ import pandas as pd
 import shutil
 import random
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 import joblib
 from functools import wraps
 
@@ -121,15 +121,15 @@ class BaseAlgorithm(object):
             shutil.rmtree(directory)
     
 
-class KnnTrain(BaseAlgorithm):
+class SVMTrain(BaseAlgorithm):
     '''
-    Plaintext KNN train. Implementing the k-nearest neighbors vote.
+    Plaintext SVM train.
     '''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_dir_name = "model"
-        self.model_file_name = "knn_model"
+        self.model_file_name = "svm_model"
         self.output_dir = self._get_output_dir()
         self.output_file = os.path.join(self.output_dir, self.model_file_name)
         self.model_describe_file = os.path.join(self.output_dir, "describe.json")
@@ -160,9 +160,12 @@ class KnnTrain(BaseAlgorithm):
                 "label_owner": "data1",
                 "label_column": "Y",
                 "hyperparams": {
-                    "n_neighbors": 5, 
-                    "distance_metric": "minkowski",
-                    "metric_p": 2,
+                    "C": 1.0,
+                    "kernel": "rbf",
+                    "degree": 3,
+                    "max_iter": -1,
+                    "decision_function_shape": "ovr",
+                    "tol": 0.001,
                     "use_validation_set": true,
                     "validation_set_rate": 0.2,
                     "random_seed": null
@@ -195,9 +198,12 @@ class KnnTrain(BaseAlgorithm):
         else:
             self.data_with_label = False                  
         hyperparams = dynamic_parameter["hyperparams"]
-        self.n_neighbors = hyperparams.get("n_neighbors", 5)
-        self.distance_metric = hyperparams.get("distance_metric", "minkowski")
-        self.metric_p = hyperparams.get("metric_p", 2)
+        self.C = hyperparams.get("C", 1.0)
+        self.kernel = hyperparams.get("kernel", "rbf")
+        self.degree = hyperparams.get("degree", 3)
+        self.max_iter = hyperparams.get("max_iter", -1)
+        self.decision_function_shape = hyperparams.get("decision_function_shape", "ovr")
+        self.tol = hyperparams.get("tol", 0.001)
         self.use_validation_set = hyperparams.get("use_validation_set", True)
         self.validation_set_rate = hyperparams.get("validation_set_rate", 0.2)
         self.random_seed = hyperparams.get("random_seed", None)
@@ -206,16 +212,23 @@ class KnnTrain(BaseAlgorithm):
     def check_parameters(self):
         log.info(f"check parameter start.")
         self._check_input_data()            
-        self.check_params_type(n_neighbors=(self.n_neighbors, int),
-                               distance_metric=(self.distance_metric, str),
-                               metric_p=(self.metric_p, int),
+        self.check_params_type(C=(self.C, float),
+                               kernel=(self.kernel, str),
+                               degree=(self.degree, int),
+                               max_iter=(self.max_iter, int),
+                               decision_function_shape=(self.decision_function_shape, str),
+                               tol=(self.tol, float),
                                use_validation_set=(self.use_validation_set, bool),
                                validation_set_rate=(self.validation_set_rate, float),
                                random_seed=(self.random_seed, (int, type(None))),
                                data_flow_restrict=(self.data_flow_restrict, dict))
-        assert self.n_neighbors > 0, f"n_neighbors must be greater 0, not {self.n_neighbors}"
-        assert self.distance_metric in ["minkowski"], f"distance_metric only support minkowski, not {self.distance_metric}"
-        assert self.metric_p > 0, f"metric_p must be greater 0, not {self.metric_p}"
+        assert self.C >= 0, f"C must be greater_equal 0, not {self.C}"
+        assert self.kernel in ["rbf", "linear", "poly", "sigmoid"], f"kernel supprot rbf,linear,poly,sigmoid. not {self.kernel}"
+        if self.kernel == "poly":
+            assert self.degree > 0, f"degree must be greater 0, not {self.degree}"
+        assert self.max_iter > 0 or self.max_iter == -1, f"max_iter must be greater 0 or equal to -1, not {self.max_iter}"
+        assert self.decision_function_shape in ["ovr", "ovo"], f"decision_function_shape support ovr,ovo. not {self.decision_function_shape}"
+        assert 0 < self.tol <= 1, f"tol must betweem (0,1], not {self.tol}"
         if self.use_validation_set:
             assert 0 < self.validation_set_rate < 1, f"validattion_set_rate must be between (0,1), not {self.validation_set_rate}"
         if self.random_seed:
@@ -343,9 +356,7 @@ class KnnTrain(BaseAlgorithm):
             "model_file_name": self.model_file_name,
             "feature_num": feature_num,
             "class_num": class_num,
-            "n_neighbors": self.n_neighbors,
-            "distance_metric": self.distance_metric,
-            "metric_p": self.metric_p,
+            "kernel": self.kernel,
             "feature_name": feature_name, 
             "label_name": label_name,
             "evaluate_result": evaluate_result
@@ -366,9 +377,14 @@ class KnnTrain(BaseAlgorithm):
 
         log.info("train start.")
         train_start_time = time.time()
-        classifier = KNeighborsClassifier(n_neighbors=self.n_neighbors, 
-                                          metric=self.distance_metric,
-                                          p=self.metric_p)
+        classifier = SVC(C=self.C,
+                         kernel=self.kernel,
+                         degree=self.degree,
+                         gamma='auto',
+                         max_iter=self.max_iter, 
+                         decision_function_shape=self.decision_function_shape,
+                         tol=self.tol, 
+                         random_state=self.random_seed)
         classifier.fit(train_x, train_y)
         log.info(f"model save to: {self.output_file}")
         joblib.dump(classifier, self.output_file)
@@ -470,11 +486,11 @@ class Evaluate(BaseEvaluate):
         return evaluate_result
 
 
-@ErrorTraceback("non-privacy_knn_train")
+@ErrorTraceback("non-privacy_svm_train")
 def main(io_channel, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
-    knn = KnnTrain(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
-    result_path, result_type, extra = knn.train()
+    svm = SVMTrain(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
+    result_path, result_type, extra = svm.train()
     return result_path, result_type, extra

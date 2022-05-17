@@ -9,12 +9,10 @@ import logging
 import traceback
 import numpy as np
 import pandas as pd
+import codecs
 import shutil
-import random
-from sklearn.model_selection import train_test_split
-from sklearn.cluster import KMeans
-import joblib
 from functools import wraps
+import joblib
 
 
 np.set_printoptions(suppress=True)
@@ -92,7 +90,7 @@ class BaseAlgorithm(object):
     
     def check_parameters(self):
         raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
-        
+    
     def get_temp_dir(self):
         '''
         Get the directory for temporarily saving files
@@ -121,25 +119,15 @@ class BaseAlgorithm(object):
             shutil.rmtree(directory)
     
 
-class KmeansTrain(BaseAlgorithm):
+class SVMPredict(BaseAlgorithm):
     '''
-    Plaintext Kmeans train.
+    Plaintext SVM predict.
     '''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.model_dir_name = "model"
-        self.model_file_name = "kmeans_model"
-        self.output_dir = self._get_output_dir()
-        self.output_file = os.path.join(self.output_dir, self.model_file_name)
-        self.model_describe_file = os.path.join(self.output_dir, "describe.json")
-        self.set_random_seed(self.random_seed)
+        self.output_file = os.path.join(self.results_dir, "result_predict.csv")   
     
-    @staticmethod
-    def set_random_seed(seed):
-        random.seed(seed)
-        np.random.seed(seed)  
-
     def parse_algo_cfg(self, cfg_dict):
         '''
         cfg_dict:
@@ -157,21 +145,15 @@ class KmeansTrain(BaseAlgorithm):
                 ]
             },
             "algorithm_dynamic_params": {
-                "hyperparams": {
-                    "n_clusters": 8,
-                    "init_method": "k-means++", 
-                    "n_init": 10,
-                    "max_iter": 300,
-                    "tol": 0.0001,
-                    "random_seed": null
-                },
+                "model_restore_party": "model1",
                 "data_flow_restrict": {
                     "data1": ["compute1"],
+                    "model1": ["compute1"],
                     "compute1": ["result1"]
                 }
             }
         }
-        '''        
+        '''
         self.party_id = cfg_dict["self_cfg_params"]["party_id"]
         input_data = cfg_dict["self_cfg_params"]["input_data"]
         if self.party_id in self.data_party:
@@ -182,35 +164,23 @@ class KmeansTrain(BaseAlgorithm):
                     self.input_file = data["data_path"]
                     self.key_column = data.get("key_column")
                     self.selected_columns = data.get("selected_columns")
+                elif input_type == 2:
+                    self.model_path = data["data_path"]
                 else:
-                    raise Exception(f"paramter error. input_type only support 1, not {input_type}")
+                    raise Exception(f"paramter error. input_type only support 1/2, not {input_type}")
         
-        dynamic_parameter = cfg_dict["algorithm_dynamic_params"]               
-        hyperparams = dynamic_parameter["hyperparams"]
-        self.n_clusters = hyperparams.get("n_clusters", 8)
-        self.init_method = hyperparams.get("init_method", "k-means++")  # k-means++, random
-        self.n_init = hyperparams.get("n_init", 10)
-        self.max_iter = hyperparams.get("max_iter", 300)
-        self.tol = hyperparams.get("tol", 0.0001)
-        self.random_seed = hyperparams.get("random_seed", None)
+        dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
+        self.model_restore_party = dynamic_parameter["model_restore_party"]
         self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
+        self.data_party.remove(self.model_restore_party)  # except restore party
 
     def check_parameters(self):
         log.info(f"check parameter start.")
-        self._check_input_data()            
-        self.check_params_type(n_clusters=(self.n_clusters, int),
-                               init_method=(self.init_method, str),
-                               n_init=(self.n_init, int),
-                               max_iter=(self.max_iter, int),
-                               tol=(self.tol, float),
-                               random_seed=(self.random_seed, (int, type(None))),
+        self._check_input_data()
+        self.check_params_type(model_restore_party=(self.model_restore_party, str),
                                data_flow_restrict=(self.data_flow_restrict, dict))
-        assert self.n_clusters > 1, f"n_clusters must be greater 1, not {self.n_clusters}"
-        assert self.init_method in ["k-means++", "random"], f"init_method only support k-means++,random. not {self.init_method}"
-        assert self.n_init > 0, f"n_init must be greater 0, not {self.n_init}"
-        assert self.max_iter > 0, f"max_iter must be greater 0, not {self.max_iter}"
-        if self.random_seed:
-            assert 0 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [0,2^32-1], not {self.random_seed}"
+        if self.party_id == self.model_restore_party:
+            assert os.path.exists(self.model_path), f"model_path is not exists. model_path={self.model_path}"
         log.info(f"check parameter finish.")
     
     def _check_input_data(self):
@@ -235,28 +205,30 @@ class KmeansTrain(BaseAlgorithm):
                 raise Exception(f"input_file is not exist. input_file={self.input_file}")
                         
         
-    def train(self):
+    def predict(self):
         '''
-        Logistic regression training algorithm implementation function
+        Logistic regression predict algorithm implementation function
         '''
         log.info("start data party extract data column.")
         usecols_file = self._extract_data_column()
         log.info("start data party send data to compute party.")
         self._send_data_to_compute_party(usecols_file)
-        evaluate_result = ""
+        temp_model_path = os.path.join(self.temp_dir, 'model')
+        log.info("start model party send model to compute party.")
+        self._send_model_to_compute_party(temp_model_path)
         if self.party_id in self.compute_party:
             log.info("compute party start  compute.")
-            evaluate_result = self.compute(usecols_file)
+            self.compute(usecols_file, temp_model_path)
         log.info("start compute party send data to result party.")
-        evaluate_result = self._send_data_to_result_party(self.output_dir, evaluate_result)
+        self._send_data_to_result_party(self.output_file)
         result_path, result_type = '', ''
         if self.party_id in self.result_party:
-            result_path = self.output_dir
-            result_type = 'dir'
+            result_path = self.output_file
+            result_type = 'csv'
         log.info("start remove temp dir.")
         self.remove_temp_dir()
-        log.info("train success all.")
-        return result_path, result_type, evaluate_result
+        log.info("predict success all.")
+        return result_path, result_type
 
     def _send_data_to_compute_party(self, data_path):
         if self.party_id in self.data_party:
@@ -269,26 +241,31 @@ class KmeansTrain(BaseAlgorithm):
         else:
             pass
     
-    def _send_data_to_result_party(self, data_path, evaluate_result):
+    def _send_model_to_compute_party(self, data_path):
+        if self.party_id == self.model_restore_party:
+            temp_model_dir = data_path
+            data_path = shutil.make_archive(base_name=temp_model_dir, format='zip', root_dir=self.model_path)
+            compute_party = self.data_flow_restrict[self.party_id][0]
+            self.io_channel.send_data_to_other_party(compute_party, data_path)
+        elif self.party_id in self.compute_party:
+            party = self.model_restore_party
+            if self.party_id == self.data_flow_restrict[party][0]:
+                temp_model_dir = data_path + '.zip'
+                self.io_channel.recv_data_from_other_party(party, temp_model_dir)
+                shutil.unpack_archive(temp_model_dir, data_path)
+        else:
+            pass
+    
+    def _send_data_to_result_party(self, data_path):
         if self.party_id in self.compute_party:
-            if os.path.isdir(data_path):
-                temp_model_dir = os.path.join(self.temp_dir, self.model_dir_name)
-                data_path = shutil.make_archive(base_name=temp_model_dir, format='zip', root_dir=data_path)
             result_party = self.data_flow_restrict[self.party_id][0]
             self.io_channel.send_data_to_other_party(result_party, data_path)
-            self.io_channel.send_sth(result_party, evaluate_result)
         elif self.party_id in self.result_party:
             for party in self.compute_party:
                 if self.party_id == self.data_flow_restrict[party][0]:
-                    temp_model_dir = os.path.join(self.temp_dir, f'{self.model_dir_name}.zip')
-                    self.io_channel.recv_data_from_other_party(party, temp_model_dir)
-                    shutil.unpack_archive(temp_model_dir, self.output_dir)
-                    evaluate_result = self.io_channel.recv_sth(party)
-                    evaluate_result = evaluate_result.decode()
-                    log.info(f'evaluate_result: {evaluate_result}')
+                    self.io_channel.recv_data_from_other_party(party, data_path)
         else:
             pass
-        return evaluate_result
 
     def _extract_data_column(self):
         '''
@@ -305,85 +282,53 @@ class KmeansTrain(BaseAlgorithm):
             usecols_data = usecols_data[use_cols]
             usecols_data.to_csv(usecols_file, header=True, index=False)
         return usecols_file
-
+    
     def _read_data(self, usecols_file):
         '''
         Extract feature columns or label column from input file,
         and then divide them into train set and validation set.
         '''
-        input_data = pd.read_csv(usecols_file)
-        return input_data
+        x_data = pd.read_csv(usecols_file)
+        return x_data.values
     
-    def save_model_describe(self, feature_num, feature_name, model, evaluate_result):
-        '''save model description for prediction'''
-        cluster_centers = {k:v for k,v in enumerate(model.cluster_centers_.tolist())}
-        model_desc = {
-            "model_file_name": self.model_file_name,
-            "feature_num": feature_num,
-            "n_clusters": self.n_clusters,
-            "tol": self.tol,
-            "feature_name": feature_name,
-            "cluster_centers": cluster_centers,
-            "evaluate_result": evaluate_result
-        }
+    def load_model_desc(self, model_path):
+        model_desc_file = os.path.join(model_path, 'describe.json')
+        assert os.path.exists(model_desc_file), f"model_desc_file is not exist. model_desc_file={model_desc_file}"
+        with open(model_desc_file, 'r') as f:
+            model_desc = json.load(f)
         log.info(f"model_desc: {model_desc}")
-        with open(self.model_describe_file, 'w') as f:
-            json.dump(model_desc, f, indent=4)
+        self.model_file_name = model_desc["model_file_name"]
+        self.train_feature_num = model_desc["feature_num"]
+        self.check_params_type(model_file_name=(self.model_file_name, str),
+                               train_feature_num=(self.train_feature_num, int))
+        assert self.train_feature_num >= 1, f"train_feature_num must be greater or equal to 1, not {self.train_feature_num}"
 
-    def compute(self, usecols_file):
+    def compute(self, usecols_file, model_path):
+        log.info("load model desc.")
+        self.load_model_desc(model_path)
         log.info("extract feature or label.")
-        train_x = self._read_data(usecols_file)
-        feature_num = train_x.shape[1]
-        feature_name = list(train_x.columns)
-        train_x = train_x.values
+        x_data = self._read_data(usecols_file)
+        feature_num = x_data.shape[1]
+        assert feature_num == self.train_feature_num, \
+            f"the total number of features used in prediction is not the same as that used in train, {feature_num} != {self.train_feature_num}"
 
-        log.info("train start.")
-        train_start_time = time.time()
-        model = KMeans(n_clusters=self.n_clusters, 
-                       init=self.init_method,
-                       n_init=self.n_init, 
-                       max_iter=self.max_iter, 
-                       tol=self.tol, 
-                       random_state=self.random_seed)
-        model.fit(train_x)
-        log.info(f"model save to: {self.output_file}")
-        joblib.dump(model, self.output_file)
-        train_use_time = round(time.time()-train_start_time, 3)
-        log.info(f"save model success. train_use_time={train_use_time}s")
-        evaluate_result = evaluate_score(train_x, model)
-        log.info(f"evaluate_result = {evaluate_result}")
-        self.save_model_describe(feature_num, feature_name, model, evaluate_result)
-        log.info(f"save model describe success.")
-        evaluate_result = json.dumps(evaluate_result)
-        return evaluate_result
-    
-    def _get_output_dir(self):
-        output_dir = os.path.join(self.results_dir, self.model_dir_name)
-        self.mkdir(output_dir)
-        return output_dir
-
-    
-def evaluate_score(X, model):
-    '''
-    score = (distanceMeanOut - distanceMeanIn) / max(distanceMeanOut, distanceMeanIn)
-    so that -1 <= score <= 1. when score -> 1 is good, score -> -1 is bad.
-    '''
-    from sklearn.metrics import silhouette_score
-    score = silhouette_score(X, model.labels_, metric='euclidean')
-    score = round(score, 6)
-    evaluate_result = {
-        "silhouette_score": score
-    }
-    log.info("evaluate success.")
-    return evaluate_result
-    
+        model_file = os.path.join(model_path, self.model_file_name)
+        log.info(f"model restore from: {model_file}")
+        classifier = joblib.load(model_file)
+        log.info("predict start.")
+        predict_start_time = time.time()
+        Y_pred = classifier.predict(x_data)
+        predict_use_time = round(time.time()-predict_start_time, 3)
+        log.info(f"predict success. predict_use_time={predict_use_time}s")
+        Y_result = pd.DataFrame(Y_pred, columns=["Y_pred_class"])
+        Y_result.to_csv(self.output_file, header=True, index=False, float_format = '%.6f')
 
 
-@ErrorTraceback("non-privacy_kmeans_train")
+@ErrorTraceback("non-privacy_svm_predict")
 def main(io_channel, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
-    kmeans = KmeansTrain(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
-    result_path, result_type, extra = kmeans.train()
-    return result_path, result_type, extra
+    svm = SVMPredict(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
+    result_path, result_type = svm.predict()
+    return result_path, result_type

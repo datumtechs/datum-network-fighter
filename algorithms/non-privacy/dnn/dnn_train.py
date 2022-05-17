@@ -437,7 +437,7 @@ class DnnTrain(BaseAlgorithm):
             train_x, val_x, train_y, val_y = x_data, x_data, y_data, y_data
         return train_x, val_x, train_y, val_y
     
-    def save_model_describe(self, feature_num, feature_name, label_name):
+    def save_model_describe(self, feature_num, feature_name, label_name, evaluate_result):
         '''save model description for prediction'''
         model_desc = {
             "model_file_prefix": self.model_file_prefix,
@@ -447,7 +447,8 @@ class DnnTrain(BaseAlgorithm):
             "task_type": self.task_type,
             "use_intercept": self.use_intercept,
             "feature_name": feature_name, 
-            "label_name": label_name
+            "label_name": label_name,
+            "evaluate_result": evaluate_result
         }
         if self.task_type == 0:
             model_desc["predict_threshold"] = self.predict_threshold
@@ -462,7 +463,6 @@ class DnnTrain(BaseAlgorithm):
         feature_name = list(train_x.columns)
         label_name = train_y.name
         train_x, val_x, train_y, val_y = train_x.values, val_x.values, train_y.values, val_y.values
-        self.save_model_describe(feature_num, feature_name, label_name)
         if self.task_type == 0:
             class_num = np.unique(train_y).shape[0]
             assert class_num <= 2, f"the number of class in train set, as {class_num}, is greater than 2, please let the last layer activation to softmax, not sigmoid."
@@ -532,6 +532,8 @@ class DnnTrain(BaseAlgorithm):
             else:
                 evaluate_result = ""
         log.info(f"evaluate_result = {evaluate_result}")
+        self.save_model_describe(feature_num, feature_name, label_name, evaluate_result)
+        evaluate_result = json.dumps(evaluate_result)
         return evaluate_result
     
     def layer(self, input_tensor, input_dim, output_dim, activation, layer_name='Dense'):
@@ -634,7 +636,6 @@ class Evaluate(BaseEvaluate):
             "precision": precision,
             "recall": recall
         }
-        evaluate_result = json.dumps(evaluate_result)
         log.info("evaluate success.")
         return evaluate_result
     
@@ -665,7 +666,6 @@ class Evaluate(BaseEvaluate):
             "precision_macro": precision_macro,
             "recall_macro": recall_macro
         }
-        evaluate_result = json.dumps(evaluate_result)
         log.info("evaluate success.")
         return evaluate_result
     
@@ -688,7 +688,6 @@ class Evaluate(BaseEvaluate):
             "MSE": mse,
             "MAE": mae
         }
-        evaluate_result = json.dumps(evaluate_result)
         log.info("evaluate success.")
         return evaluate_result
 
