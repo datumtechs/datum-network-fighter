@@ -129,7 +129,7 @@ class KnnTrain(BaseAlgorithm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_dir_name = "model"
-        self.model_file_name = "model.pkl"
+        self.model_file_name = "knn_model"
         self.output_dir = self._get_output_dir()
         self.output_file = os.path.join(self.output_dir, self.model_file_name)
         self.model_describe_file = os.path.join(self.output_dir, "describe.json")

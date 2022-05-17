@@ -12,8 +12,7 @@ import pandas as pd
 import shutil
 import random
 from sklearn.model_selection import train_test_split
-from sklearn.cluster import KMeans
-import joblib
+from xgboost import XGBClassifier
 from functools import wraps
 
 
@@ -121,15 +120,15 @@ class BaseAlgorithm(object):
             shutil.rmtree(directory)
     
 
-class KmeansTrain(BaseAlgorithm):
+class XGBoostTrain(BaseAlgorithm):
     '''
-    Plaintext Kmeans train.
+    Plaintext XGBoost train.
     '''
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.model_dir_name = "model"
-        self.model_file_name = "kmeans_model"
+        self.model_file_name = "xgboost_model"
         self.output_dir = self._get_output_dir()
         self.output_file = os.path.join(self.output_dir, self.model_file_name)
         self.model_describe_file = os.path.join(self.output_dir, "describe.json")
@@ -157,12 +156,19 @@ class KmeansTrain(BaseAlgorithm):
                 ]
             },
             "algorithm_dynamic_params": {
+                "label_owner": "data1",
+                "label_column": "Y",
                 "hyperparams": {
-                    "n_clusters": 8,
-                    "init_method": "k-means++", 
-                    "n_init": 10,
-                    "max_iter": 300,
-                    "tol": 0.0001,
+                    "n_estimators": 10,   # num of trees
+                    "max_depth": 6,   # max depth of per tree
+                    "max_bin": 8,    # num of bins of feature
+                    "learning_rate": 0.01,
+                    "subsample": 0.8,
+                    "colsample_bytree": 0.8,
+                    "reg_lambda": 1.0,     # L2 regular coefficient, [0, +∞)
+                    "gamma": 0.0,     # Gamma, also known as "complexity control", is an important parameter we use to prevent over fitting
+                    "use_validation_set": true,
+                    "validation_set_rate": 0.2,
                     "random_seed": null
                 },
                 "data_flow_restrict": {
@@ -171,7 +177,7 @@ class KmeansTrain(BaseAlgorithm):
                 }
             }
         }
-        '''        
+        '''    
         self.party_id = cfg_dict["self_cfg_params"]["party_id"]
         input_data = cfg_dict["self_cfg_params"]["input_data"]
         if self.party_id in self.data_party:
@@ -185,30 +191,52 @@ class KmeansTrain(BaseAlgorithm):
                 else:
                     raise Exception(f"paramter error. input_type only support 1, not {input_type}")
         
-        dynamic_parameter = cfg_dict["algorithm_dynamic_params"]               
-        hyperparams = dynamic_parameter["hyperparams"]
-        self.n_clusters = hyperparams.get("n_clusters", 8)
-        self.init_method = hyperparams.get("init_method", "k-means++")  # k-means++, random
-        self.n_init = hyperparams.get("n_init", 10)
-        self.max_iter = hyperparams.get("max_iter", 300)
-        self.tol = hyperparams.get("tol", 0.0001)
+        dynamic_parameter = cfg_dict["algorithm_dynamic_params"]
+        self.label_owner = dynamic_parameter["label_owner"]
+        self.label_column = dynamic_parameter["label_column"]
+        if self.party_id == self.label_owner:
+            self.data_with_label = True
+        else:
+            self.data_with_label = False                  
+        hyperparams = dynamic_parameter["hyperparams"]        
+        self.n_estimators = hyperparams.get("n_estimators", 10)
+        self.max_depth = hyperparams.get("max_depth", 6)
+        self.max_bin = hyperparams.get("max_bin", 8)
+        self.learning_rate = hyperparams.get("learning_rate", 0.01)
+        self.subsample = hyperparams.get("subsample", 0.8)
+        self.colsample_bytree = hyperparams.get("colsample_bytree", 0.8)
+        self.reg_lambda = hyperparams.get("reg_lambda", 1.0)
+        self.gamma = hyperparams.get("gamma", 0.0)
+        self.use_validation_set = hyperparams.get("use_validation_set", True)
+        self.validation_set_rate = hyperparams.get("validation_set_rate", 0.2)
         self.random_seed = hyperparams.get("random_seed", None)
         self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
 
     def check_parameters(self):
         log.info(f"check parameter start.")
         self._check_input_data()            
-        self.check_params_type(n_clusters=(self.n_clusters, int),
-                               init_method=(self.init_method, str),
-                               n_init=(self.n_init, int),
-                               max_iter=(self.max_iter, int),
-                               tol=(self.tol, float),
+        self.check_params_type(n_estimators=(self.n_estimators, int),
+                               max_depth=(self.max_depth, int),
+                               max_bin=(self.max_bin, int),
+                               learning_rate=(self.learning_rate, float),
+                               subsample=(self.subsample, float),
+                               colsample_bytree=(self.colsample_bytree, float),
+                               reg_lambda=(self.reg_lambda, float),
+                               gamma=(self.gamma, float),
+                               use_validation_set=(self.use_validation_set, bool),
+                               validation_set_rate=(self.validation_set_rate, float),
                                random_seed=(self.random_seed, (int, type(None))),
                                data_flow_restrict=(self.data_flow_restrict, dict))
-        assert self.n_clusters > 1, f"n_clusters must be greater 1, not {self.n_clusters}"
-        assert self.init_method in ["k-means++", "random"], f"init_method only support k-means++,random. not {self.init_method}"
-        assert self.n_init > 0, f"n_init must be greater 0, not {self.n_init}"
-        assert self.max_iter > 0, f"max_iter must be greater 0, not {self.max_iter}"
+        assert self.n_estimators > 0, f"n_estimators must be greater 0, not {self.n_estimators}"
+        assert self.max_depth > 0, f"max_depth must be greater 0, not {self.max_depth}"
+        assert self.max_bin > 1, f"max_bin must be greater 1, not {self.max_bin}"
+        assert self.learning_rate > 0, f"learning_rate must be greater 0, not {self.learning_rate}"
+        assert 0 < self.subsample <= 1, f"subsample must betweem (0,1], not {self.subsample}"
+        assert 0 < self.colsample_bytree <= 1, f"colsample_bytree must betweem (0,1], not {self.colsample_bytree}"
+        assert self.reg_lambda >= 0, f"reg_lambda must be greater_equal 0, not {self.reg_lambda}"
+        assert self.gamma >= 0, f"gamma must be greater_equal 0, not {self.gamma}"
+        if self.use_validation_set:
+            assert 0 < self.validation_set_rate < 1, f"validattion_set_rate must be between (0,1), not {self.validation_set_rate}"
         if self.random_seed:
             assert 0 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [0,2^32-1], not {self.random_seed}"
         log.info(f"check parameter finish.")
@@ -231,6 +259,9 @@ class KmeansTrain(BaseAlgorithm):
                         error_col.append(col)   
                 assert not error_col, f"selected_columns:{error_col} not in input_file"
                 assert self.key_column not in self.selected_columns, f"key_column:{self.key_column} can not in selected_columns"
+                if self.data_with_label:
+                    assert self.label_column in input_columns, f"label_column:{self.label_column} not in input_file"
+                    assert self.label_column not in self.selected_columns, f"label_column:{self.label_column} can not in selected_columns"
             else:
                 raise Exception(f"input_file is not exist. input_file={self.input_file}")
                         
@@ -299,6 +330,8 @@ class KmeansTrain(BaseAlgorithm):
 
         if self.party_id in self.data_party:
             use_cols = self.selected_columns
+            if self.data_with_label:
+                use_cols += [self.label_column]
             log.info("read input file and write to new file.")
             usecols_data = pd.read_csv(self.input_file, usecols=use_cols, dtype="str")
             assert usecols_data.shape[0] > 0, 'no data after select columns.'
@@ -306,24 +339,34 @@ class KmeansTrain(BaseAlgorithm):
             usecols_data.to_csv(usecols_file, header=True, index=False)
         return usecols_file
 
-    def _read_data(self, usecols_file):
+    def _read_and_split_data(self, usecols_file):
         '''
         Extract feature columns or label column from input file,
         and then divide them into train set and validation set.
         '''
         input_data = pd.read_csv(usecols_file)
-        return input_data
+        y_data = input_data[self.label_column]
+        del input_data[self.label_column]
+        x_data = input_data
+        if self.use_validation_set:
+            train_x, val_x, train_y, val_y = train_test_split(x_data, y_data, stratify=y_data,
+                        test_size=self.validation_set_rate, random_state=self.random_seed)
+        else:
+            # val_x, val_y is invalid.
+            train_x, val_x, train_y, val_y = x_data, x_data, y_data, y_data
+        return train_x, val_x, train_y, val_y
     
-    def save_model_describe(self, feature_num, feature_name, model):
+    def save_model_describe(self, feature_num, class_num, feature_name, label_name):
         '''save model description for prediction'''
-        cluster_centers = {k:v for k,v in enumerate(model.cluster_centers_.tolist())}
         model_desc = {
             "model_file_name": self.model_file_name,
             "feature_num": feature_num,
-            "n_clusters": self.n_clusters,
-            "tol": self.tol,
-            "feature_name": feature_name,
-            "cluster_centers": cluster_centers
+            "class_num": class_num,
+            "n_estimators": self.n_estimators,
+            "max_depth": self.max_depth,
+            "max_bin": self.max_bin,
+            "feature_name": feature_name, 
+            "label_name": label_name
         }
         log.info(f"model_desc: {model_desc}")
         with open(self.model_describe_file, 'w') as f:
@@ -331,27 +374,40 @@ class KmeansTrain(BaseAlgorithm):
 
     def compute(self, usecols_file):
         log.info("extract feature or label.")
-        train_x = self._read_data(usecols_file)
+        train_x, val_x, train_y, val_y = self._read_and_split_data(usecols_file)
         feature_num = train_x.shape[1]
         feature_name = list(train_x.columns)
-        train_x = train_x.values
+        label_name = train_y.name
+        train_x, val_x, train_y, val_y = train_x.values, val_x.values, train_y.values, val_y.values
+        class_num = np.unique(train_y).shape[0]
+        assert class_num >= 2, f"in train set, the class num of label must greater or equal to 2, not {class_num}"
+        self.save_model_describe(feature_num, class_num, feature_name, label_name)
 
         log.info("train start.")
         train_start_time = time.time()
-        model = KMeans(n_clusters=self.n_clusters, 
-                       init=self.init_method,
-                       n_init=self.n_init, 
-                       max_iter=self.max_iter, 
-                       tol=self.tol, 
-                       random_state=self.random_seed)
-        model.fit(train_x)
-        log.info(f"model save to: {self.output_file}")
-        joblib.dump(model, self.output_file)
-        log.info(f"save model describe")
-        self.save_model_describe(feature_num, feature_name, model)
+        classifier = XGBClassifier(objective='multi:softmax',
+                                   booster='gbtree',
+                                   n_estimators=self.n_estimators,
+                                   max_depth=self.max_depth,
+                                   max_bin=self.max_bin,
+                                   learning_rate=self.learning_rate,
+                                   subsample=self.subsample,
+                                   colsample_bytree=self.colsample_bytree,
+                                   reg_lambda=self.reg_lambda,
+                                   gamma=self.gamma,
+                                   random_state=self.random_seed,
+                                   num_class=class_num)
+        classifier.fit(train_x, train_y)
+        classifier.save_model(self.output_file)
         train_use_time = round(time.time()-train_start_time, 3)
         log.info(f"save model success. train_use_time={train_use_time}s")
-        evaluate_result = evaluate_score(train_x, model)
+        
+        if self.use_validation_set:
+            pred_y = classifier.predict(val_x)
+            evaluate = Evaluate(val_y, pred_y)
+            evaluate_result = evaluate.multiclass_classify()
+        else:
+            evaluate_result = ""
         log.info(f"evaluate_result = {evaluate_result}")
         return evaluate_result
     
@@ -360,28 +416,88 @@ class KmeansTrain(BaseAlgorithm):
         self.mkdir(output_dir)
         return output_dir
 
+class BaseEvaluate():
+    def __init__(self, y_true, y_pred):
+        self.y_true = y_true
+        self.y_pred = y_pred
     
-def evaluate_score(X, model):
-    '''
-    score = (distanceMeanOut - distanceMeanIn) / max(distanceMeanOut, distanceMeanIn)
-    so that -1 <= score <= 1. when score -> 1 is good, score -> -1 is bad.
-    '''
-    from sklearn.metrics import silhouette_score
-    score = silhouette_score(X, model.labels_, metric='euclidean')
-    evaluate_result = {
-        "silhouette_score": score
-    }
-    evaluate_result = json.dumps(evaluate_result)
-    log.info("evaluate success.")
-    return evaluate_result
+    def binary_classify(self, *args, **kwargs):
+        '''binary class classification'''
+        raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
     
+    def multiclass_classify(self, *args, **kwargs):
+        '''multi-class classification'''
+        raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
+    
+    def regression(self, *args, **kwargs):
+        '''regression evaluation'''
+        raise NotImplementedError(f'{sys._getframe().f_code.co_name} fuction is not implemented.')
+
+class Evaluate(BaseEvaluate):    
+    def binary_classify(self):
+        from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, precision_score, recall_score
+        log.info("start evaluate auc score.")
+        y_true = self.y_true.reshape(-1,)
+        y_pred_class = self.y_pred.reshape(-1,)
+        log.info("start evaluate accuracy score.")
+        accuracy = accuracy_score(y_true, y_pred_class)
+        log.info("start evaluate f1_score.")
+        f1_score = f1_score(y_true, y_pred_class)
+        log.info("start evaluate precision score.")
+        precision = precision_score(y_true, y_pred_class)
+        log.info("start evaluate recall score.")
+        recall = recall_score(y_true, y_pred_class)
+        accuracy = round(accuracy, 6)
+        f1_score = round(f1_score, 6)
+        precision = round(precision, 6)
+        recall = round(recall, 6)
+        evaluate_result = {
+            "accuracy": accuracy,
+            "f1_score": f1_score,
+            "precision": precision,
+            "recall": recall
+        }
+        evaluate_result = json.dumps(evaluate_result)
+        log.info("evaluate success.")
+        return evaluate_result
+    
+    def multiclass_classify(self):
+        from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+        y_true = self.y_true.reshape(-1,)
+        y_pred_class = self.y_pred.reshape(-1,)
+        accuracy = accuracy_score(y_true, y_pred_class)
+        f1_score_micro = f1_score(y_true, y_pred_class, average='micro')
+        precision_micro = precision_score(y_true, y_pred_class, average='micro')
+        recall_micro = recall_score(y_true, y_pred_class, average='micro')
+        f1_score_macro = f1_score(y_true, y_pred_class, average='macro')
+        precision_macro = precision_score(y_true, y_pred_class, average='macro')
+        recall_macro = recall_score(y_true, y_pred_class, average='macro')
+        accuracy = round(accuracy, 6)
+        f1_score_micro = round(f1_score_micro, 6)
+        precision_micro = round(precision_micro, 6)
+        recall_micro = round(recall_micro, 6)
+        f1_score_macro = round(f1_score_macro, 6)
+        precision_macro = round(precision_macro, 6)
+        recall_macro = round(recall_macro, 6)
+        evaluate_result = {
+            "accuracy": accuracy,
+            "f1_score_micro": f1_score_micro,
+            "precision_micro": precision_micro,
+            "recall_micro": recall_micro,
+            "f1_score_macro": f1_score_macro,
+            "precision_macro": precision_macro,
+            "recall_macro": recall_macro
+        }
+        evaluate_result = json.dumps(evaluate_result)
+        log.info("evaluate success.")
+        return evaluate_result
 
 
-@ErrorTraceback("non-privacy_kmeans_train")
+@ErrorTraceback("non-privacy_xgboost_train")
 def main(io_channel, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
-    kmeans = KmeansTrain(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
-    result_path, result_type, extra = kmeans.train()
+    xgboost = XGBoostTrain(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
+    result_path, result_type, extra = xgboost.train()
     return result_path, result_type, extra
