@@ -12,7 +12,6 @@ import pandas as pd
 import codecs
 import shutil
 import tensorflow as tf
-import channel_sdk.pyio as io
 from functools import wraps
 
 

@@ -13,7 +13,6 @@ import codecs
 import shutil
 import random
 import tensorflow as tf
-import channel_sdk.pyio as io
 from sklearn.model_selection import train_test_split
 from functools import wraps
 

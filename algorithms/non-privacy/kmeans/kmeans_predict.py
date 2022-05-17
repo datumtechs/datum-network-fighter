@@ -11,7 +11,6 @@ import numpy as np
 import pandas as pd
 import codecs
 import shutil
-import channel_sdk.pyio as io
 from functools import wraps
 import joblib
 
