@@ -405,7 +405,10 @@ class XGBoostTrain(BaseAlgorithm):
         if self.use_validation_set:
             pred_y = classifier.predict(val_x)
             evaluate = Evaluate(val_y, pred_y)
-            evaluate_result = evaluate.multiclass_classify()
+            if class_num == 2:
+                evaluate_result = evaluate.binary_classify()
+            else:
+                evaluate_result = evaluate.multiclass_classify()
         else:
             evaluate_result = ""
         log.info(f"evaluate_result = {evaluate_result}")
