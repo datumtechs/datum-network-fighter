@@ -119,9 +119,9 @@ class BaseAlgorithm(object):
             shutil.rmtree(directory)
     
 
-class KnnPredict(BaseAlgorithm):
+class XGBoostPredict(BaseAlgorithm):
     '''
-    Plaintext KNN predict. Implementing the k-nearest neighbors vote.
+    Plaintext XGBoost predict.
     '''
 
     def __init__(self, *args, **kwargs):
@@ -325,11 +325,11 @@ class KnnPredict(BaseAlgorithm):
         Y_result.to_csv(self.output_file, header=True, index=False, float_format = '%.6f')
 
 
-@ErrorTraceback("non-privacy_knn_predict")
+@ErrorTraceback("non-privacy_xgboost_predict")
 def main(io_channel, cfg_dict: dict, data_party: list, compute_party: list, result_party: list, results_dir: str, **kwargs):
     '''
     This is the entrance to this module
     '''
-    knn = KnnPredict(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
-    result_path, result_type = knn.predict()
+    xgb = XGBoostPredict(io_channel, cfg_dict, data_party, compute_party, result_party, results_dir)
+    result_path, result_type = xgb.predict()
     return result_path, result_type
