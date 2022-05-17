@@ -533,6 +533,7 @@ class DnnTrain(BaseAlgorithm):
                 evaluate_result = ""
         log.info(f"evaluate_result = {evaluate_result}")
         self.save_model_describe(feature_num, feature_name, label_name, evaluate_result)
+        log.info(f"save model describe success.")
         evaluate_result = json.dumps(evaluate_result)
         return evaluate_result
     
