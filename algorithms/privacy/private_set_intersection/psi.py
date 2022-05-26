@@ -214,7 +214,7 @@ class PrivateSetIntersection(BaseAlgorithm):
                 raise Exception(f"input_file is not exist. input_file={self.input_file}")
 
     def run(self):
-        log.info("start create and set channel.")
+        
         log.info("start extract data.")
         usecols_file = self._extract_data_column()
         log.info("start send_data_to_compute_party.")
@@ -253,11 +253,14 @@ class PrivateSetIntersection(BaseAlgorithm):
     
     def _send_data_to_result_party(self, data_path):
         if self.party_id in self.compute_party:
-            result_party = self.data_flow_restrict[self.party_id][0]
-            self.io_channel.send_data_to_other_party(result_party, data_path)
+            result_party = self.data_flow_restrict.get(self.party_id)
+            if result_party:
+                result_party = result_party[0]
+                self.io_channel.send_data_to_other_party(result_party, data_path)
         elif self.party_id in self.result_party:
             for party in self.compute_party:
-                if self.party_id == self.data_flow_restrict[party][0]:
+                result_party = self.data_flow_restrict.get(party)
+                if result_party and self.party_id == result_party[0]:
                     self.io_channel.recv_data_from_other_party(party, data_path)
         else:
             pass
