@@ -4,8 +4,8 @@ import logging
 from grpc import _common
 
 log = logging.getLogger(__name__)
-GateWayConsulServiceAddressKey = "metis/icegrid_ip_port"
-ViaNodeConsulServiceExternalAddressKey = "metis/via_ip_port"
+GateWayConsulServiceAddressKey = "fighter/icegrid_ip_port"
+ViaNodeConsulServiceExternalAddressKey = "fighter/via_ip_port"
 
 
 def load_cfg(file):

@@ -99,13 +99,13 @@ function gen_cert() {
 }
 
 # generate root certifcates [usage: root subj]
-gen_root CA "/C=CN/ST=GD/L=SZ/O=Metis/OU=PCS/CN=Root CA (SM2)"
+gen_root CA "/C=CN/ST=GD/L=SZ/O=Fighter/OU=PCS/CN=Root CA (SM2)"
 
 # generate middle certifcates [usage: sig|enc root middle subj]
-gen_cert sig CA SS "/C=CN/ST=GD/L=SZ/O=Metis/OU=PCS/CN=Server Sign (SM2)"
-gen_cert enc CA SE "/C=CN/ST=GD/L=SZ/O=Metis/OU=PCS/CN=Server Enc (SM2)"
-gen_cert sig CA CS "/C=CN/ST=GD/L=SZ/O=Metis/OU=PCS/CN=Client Sign (SM2)"
-gen_cert enc CA CE "/C=CN/ST=GD/L=SZ/O=Metis/OU=PCS/CN=Client Enc (SM2)"
+gen_cert sig CA SS "/C=CN/ST=GD/L=SZ/O=Fighter/OU=PCS/CN=Server Sign (SM2)"
+gen_cert enc CA SE "/C=CN/ST=GD/L=SZ/O=Fighter/OU=PCS/CN=Server Enc (SM2)"
+gen_cert sig CA CS "/C=CN/ST=GD/L=SZ/O=Fighter/OU=PCS/CN=Client Sign (SM2)"
+gen_cert enc CA CE "/C=CN/ST=GD/L=SZ/O=Fighter/OU=PCS/CN=Client Enc (SM2)"
 
 # remove pfx/pem at present, 11/20/2020
 # rm -rf $CERTS_DIR/*.pem $CERTS_DIR/*.pfx $CERTS_DIR/*.srl

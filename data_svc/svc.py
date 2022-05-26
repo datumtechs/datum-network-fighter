@@ -10,7 +10,7 @@ import psutil
 try:
     from config import cfg
 except:
-    from metis.data_svc.config import cfg
+    from fighter.data_svc.config import cfg
 from common.report_engine import report_task_result
 from common.consts import ERROR_CODE
 from lib import common_pb2

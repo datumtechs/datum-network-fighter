@@ -10,11 +10,11 @@ from grpc_reflection.v1alpha import reflection
 try:
     from config import cfg
 except ImportError:
-    from metis.data_svc.config import cfg
+    from fighter.data_svc.config import cfg
 try:
     from data_svc.svc import DataProvider
 except ImportError:
-    from metis.data_svc.svc import DataProvider
+    from fighter.data_svc.svc import DataProvider
 from common.consts import GRPC_OPTIONS
 from common.report_engine import report_task_event
 from common.task_manager import TaskManager
