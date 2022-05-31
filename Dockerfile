@@ -1,8 +1,13 @@
+FROM luodahui/channel-sdk:v2.0.3 as channel-sdk
+# 基础镜像
 FROM ubuntu:18.04
 
+#更新为国内的镜像仓库，因为从默认官源拉取实在太慢了
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
+COPY ./apt_src.ubuntu18.04 /etc/apt/sources.list
+
 ARG PKG_ROSETTA
-ARG PKG_CHANNEL_SDK
-ARG PKG_FIGHTER
+ARG PKG_PSI
 
 # debconf: unable to initialize frontend: Dialog
 ENV DEBIAN_FRONTEND noninteractive
@@ -21,22 +26,21 @@ RUN pip3 install setuptools wheel -i https://mirrors.aliyun.com/pypi/simple/
 RUN pip3 --no-cache-dir install numpy==1.16.0 pandas sklearn tensorflow==1.14.0 -i https://mirrors.aliyun.com/pypi/simple/
 
 RUN echo "$PKG_ROSETTA"
-RUN echo "$PKG_CHANNEL_SDK"
-RUN echo "$PKG_FIGHTER"
+RUN echo "$PKG_PSI"
 
-COPY $PKG_ROSETTA /home
-COPY $PKG_CHANNEL_SDK /home
-COPY $PKG_FIGHTER /home
+WORKDIR /Fighter
 
-RUN cd /home && pip3 install "$(basename $PKG_ROSETTA)"
-RUN cd /home && pip3 install "$(basename $PKG_CHANNEL_SDK)"
-RUN cd /home && pip3 install "$(basename $PKG_FIGHTER)"
+COPY $PKG_ROSETTA /Fighter/third_party/rosetta/
+COPY $PKG_PSI /Fighter/third_party/psi/
+COPY --from=channel-sdk /ChannelSDK/dist /Fighter/third_party/channel_sdk
+# COPY ./third_party/rosetta /Fighter/third_party/rosetta
+# COPY ./third_party/psi /Fighter/third_party/psi
 
-RUN cd /home && rm *.whl
+RUN pip3 install /Fighter/third_party/rosetta/*.whl
+RUN pip3 install /Fighter/third_party/channel_sdk/*.whl
+RUN pip3 install /Fighter/third_party/psi/*.whl
 
-COPY data_svc/start_data_svc.sh /home
-COPY compute_svc/start_compute_svc.sh /home
-COPY third_party/via_svc /home/via_svc
-COPY third_party/gmssl /home/gmssl
-
-WORKDIR /home
+COPY algorithms algorithms
+COPY common common
+COPY compute_svc compute_svc
+COPY data_svc data_svc
