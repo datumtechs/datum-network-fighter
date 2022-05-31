@@ -15,11 +15,11 @@ try:
     from data_svc.svc import DataProvider
 except ImportError:
     from fighter.data_svc.svc import DataProvider
-from common.consts import GRPC_OPTIONS
-from common.report_engine import report_task_event
-from common.task_manager import TaskManager
-from common.utils import load_cfg, get_schedule_svc
-from lib import data_svc_pb2, data_svc_pb2_grpc
+from common_module.consts import GRPC_OPTIONS
+from common_module.report_engine import report_task_event
+from common_module.task_manager import TaskManager
+from common_module.utils import load_cfg, get_schedule_svc
+from pb.fighter.api.data import data_svc_pb2, data_svc_pb2_grpc
 from consul_client.api import get_consul_client_obj
 from consul_client.health import health_grpc_check
 

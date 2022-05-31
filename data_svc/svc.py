@@ -11,12 +11,12 @@ try:
     from config import cfg
 except:
     from fighter.data_svc.config import cfg
-from common.report_engine import report_task_result
-from common.consts import ERROR_CODE
-from lib import common_pb2
-from lib import compute_svc_pb2, compute_svc_pb2_grpc
-from lib import data_svc_pb2, data_svc_pb2_grpc
-from lib.types import base_pb2
+from common_module.report_engine import report_task_result
+from common_module.consts import ERROR_CODE
+from pb.fighter.types import types_pb2
+from pb.fighter.api.compute import compute_svc_pb2, compute_svc_pb2_grpc
+from pb.fighter.api.data import data_svc_pb2, data_svc_pb2_grpc
+from pb.common.constant import carrier_enum_pb2
 
 log = logging.getLogger(__name__)
 
@@ -102,13 +102,13 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             origin_id = m.hexdigest()
 
             metadata_option = {"originId": origin_id, "dataPath": full_new_name}
-            if data_type == base_pb2.OrigindataType_CSV:
+            if data_type == carrier_enum_pb2.OrigindataType_CSV:
                 metadata_option["size"] = os.path.getsize(full_new_name)
                 metadata_option["rows"] = 0
                 metadata_option["columns"] = 0
                 metadata_option["hasTitle"] = True
                 metadata_option["metadataColumns"] = []
-            elif data_type == base_pb2.OrigindataType_DIR:
+            elif data_type == carrier_enum_pb2.OrigindataType_DIR:
                 raise NotImplementedError("TO DO UPLOAD DIR.")
             else:
                 metadata_option["size"] = os.path.getsize(full_new_name)
@@ -234,11 +234,11 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
     def HandleTaskReadyGo(self, request, context):
         log.info(f'{context.peer()} submit a task {request.task_id}, thread id: {threading.get_ident()}')
         status, msg = self.task_manager.start(request)
-        return common_pb2.TaskReadyGoReply(status=status, msg=msg)
+        return types_pb2.TaskReadyGoReply(status=status, msg=msg)
 
     def HandleCancelTask(self, request, context):
         task_name = f'{request.task_id[:15]}-{request.party_id}'
         log.info(f'{context.peer()} want to cancel task {task_name}')
         status, msg = self.task_manager.cancel_task(request.task_id, request.party_id)
         log.info(f'cancel task {status}, {msg}')
-        return common_pb2.TaskCancelReply(status=status, msg=msg)
+        return types_pb2.TaskCancelReply(status=status, msg=msg)

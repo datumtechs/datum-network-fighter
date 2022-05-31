@@ -12,13 +12,14 @@ from prompt_toolkit import prompt
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
-from common.utils import load_cfg
-from lib import common_pb2
-from lib import compute_svc_pb2, compute_svc_pb2_grpc
-from lib import data_svc_pb2, data_svc_pb2_grpc
-from lib import io_channel_pb2_grpc
-from lib import via_svc_pb2
-from lib.types import base_pb2
+pb_dir = os.path.join(BASE_DIR, 'pb')
+sys.path.append(pb_dir)
+from common_module.utils import load_cfg
+from pb.fighter.types import types_pb2
+from pb.fighter.api.compute import compute_svc_pb2, compute_svc_pb2_grpc
+from pb.fighter.api.data import data_svc_pb2, data_svc_pb2_grpc
+from pb.fighter.api import io_channel_pb2_grpc, via_svc_pb2
+from pb.common.constant import carrier_enum_pb2, fighter_enum_pb2
 
 cfg = {}
 task_id = None
@@ -88,21 +89,21 @@ def _upload_chunk(path):
     file_name = os.path.basename(path)
     data_type_str = os.path.splitext(path)[1][1:]
     if data_type_str.lower() == 'csv':
-        data_type_int = base_pb2.OrigindataType_CSV
+        data_type_int = carrier_enum_pb2.OrigindataType_CSV
     elif data_type_str.lower() in ['dir', 'directory']:
-        data_type_int = base_pb2.OrigindataType_DIR
+        data_type_int = carrier_enum_pb2.OrigindataType_DIR
     elif data_type_str.lower() in ['bin', 'binary']:
-        data_type_int = base_pb2.OrigindataType_BINARY
+        data_type_int = carrier_enum_pb2.OrigindataType_BINARY
     elif data_type_str.lower() == 'xls':
-        data_type_int = base_pb2.OrigindataType_XLS
+        data_type_int = carrier_enum_pb2.OrigindataType_XLS
     elif data_type_str.lower() == 'xlsx':
-        data_type_int = base_pb2.OrigindataType_XLSX
+        data_type_int = carrier_enum_pb2.OrigindataType_XLSX
     elif data_type_str.lower() == 'txt':
-        data_type_int = base_pb2.OrigindataType_TXT
+        data_type_int = carrier_enum_pb2.OrigindataType_TXT
     elif data_type_str.lower() == 'json':
-        data_type_int = base_pb2.OrigindataType_JSON
+        data_type_int = carrier_enum_pb2.OrigindataType_JSON
     else:
-        data_type_int = base_pb2.OrigindataType_Unknown
+        data_type_int = carrier_enum_pb2.OrigindataType_Unknown
     cols, dtypes = [], []
     for c, t in df.dtypes.items():
         cols.append(c)
@@ -217,7 +218,7 @@ def comp_run_task(args, stub):
     task_id = args[0]
     run_task_cfg_file = args[1]
 
-    req = common_pb2.TaskReadyGoReq()
+    req = types_pb2.TaskReadyGoReq()
     req.task_id = task_id
     with open(run_task_cfg_file) as load_f:
         run_task_cfg = json.load(load_f)
@@ -244,10 +245,10 @@ def comp_run_task(args, stub):
     connect_policy = run_task_cfg.get('connect_policy')
     if connect_policy is None:
         req.connect_policy = 'all'
-        req.connect_policy_format = common_pb2.ConnectPolicyFormat_Str
+        req.connect_policy_format = fighter_enum_pb2.ConnectPolicyFormat_Str
     else:
         req.connect_policy = json.dumps(connect_policy)
-        req.connect_policy_format = common_pb2.ConnectPolicyFormat_Json
+        req.connect_policy_format = fighter_enum_pb2.ConnectPolicyFormat_Json
 
     each_party = {d['party_id']: d for d in run_task_cfg['each_party']}
 
@@ -288,7 +289,7 @@ def comp_cancel_task(args, stub):
     task_id = args[0]
     run_task_cfg_file = args[1]
 
-    req = common_pb2.TaskCancelReq()
+    req = types_pb2.TaskCancelReq()
     req.task_id = task_id
     with open(run_task_cfg_file) as load_f:
         run_task_cfg = json.load(load_f)

@@ -4,11 +4,10 @@ import logging
 import multiprocessing as mp
 import threading
 from collections import namedtuple
-from common.task import Task
-from lib import common_pb2
-from common.consts import ERROR_CODE
-from common.utils import check_input_param_type
-
+from common_module.task import Task
+from common_module.consts import ERROR_CODE
+from common_module.utils import check_input_param_type
+from pb.common.constant import fighter_enum_pb2
 
 log = logging.getLogger(__name__)
 TParty = namedtuple('TParty', ['ip', 'port', 'party_id', 'name'])
@@ -96,9 +95,9 @@ class TaskManager:
         data_party_ids = list(data_party_ids)
         computation_party_ids = list(computation_party_ids)
         result_party_ids = list(result_party_ids)
-        if connect_policy_format == common_pb2.ConnectPolicyFormat_Json:
+        if connect_policy_format == fighter_enum_pb2.ConnectPolicyFormat_Json:
             connect_policy = json.loads(connect_policy)
-        elif connect_policy_format == common_pb2.ConnectPolicyFormat_Str:
+        elif connect_policy_format == fighter_enum_pb2.ConnectPolicyFormat_Str:
             pass
         else:
             return  ERROR_CODE["PARAMS_ERROR"], \

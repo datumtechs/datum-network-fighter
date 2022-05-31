@@ -9,10 +9,10 @@ import queue
 import logging
 import psutil
 import grpc
-from common.consts import EVENT_QUEUE, COMMON_EVENT
-from common.utils import process_recv_address
-from lib.api import sys_rpc_api_pb2 as pb2
-from lib.api import sys_rpc_api_pb2_grpc as pb2_grpc
+from common_module.consts import EVENT_QUEUE, COMMON_EVENT
+from common_module.utils import process_recv_address
+from pb.carrier.api import sys_rpc_api_pb2 as pb2
+from pb.carrier.api import sys_rpc_api_pb2_grpc as pb2_grpc
 
 log = logging.getLogger(__name__)
 CLIENT_OPTIONS = [('grpc.enable_retries', 0),

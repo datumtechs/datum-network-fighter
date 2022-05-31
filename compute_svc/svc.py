@@ -3,8 +3,9 @@ import math
 import threading
 import time
 import psutil
-from common.consts import ERROR_CODE
-from lib import common_pb2, compute_svc_pb2, compute_svc_pb2_grpc
+from common_module.consts import ERROR_CODE
+from pb.fighter.types import types_pb2
+from pb.fighter.api.compute import compute_svc_pb2, compute_svc_pb2_grpc
 
 log = logging.getLogger(__name__)
 
@@ -63,11 +64,11 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
     def HandleTaskReadyGo(self, request, context):
         log.info(f'{context.peer()} submit a task {request.task_id}, thread id: {threading.get_ident()}')
         status, msg = self.task_manager.start(request)
-        return common_pb2.TaskReadyGoReply(status=status, msg=msg)
+        return types_pb2.TaskReadyGoReply(status=status, msg=msg)
 
     def HandleCancelTask(self, request, context):
         task_name = f'{request.task_id[:15]}-{request.party_id}'
         log.info(f'{context.peer()} want to cancel task {task_name}')
         status, msg = self.task_manager.cancel_task(request.task_id, request.party_id)
         log.info(f'cancel task status:{status}, {msg}')
-        return common_pb2.TaskCancelReply(status=status, msg=msg)
+        return types_pb2.TaskCancelReply(status=status, msg=msg)

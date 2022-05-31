@@ -3,8 +3,8 @@ import json
 import logging
 import math
 import codecs
-from common.consts import COMMON_EVENT
-from common.socket_utils import find_free_port_in_range
+from common_module.consts import COMMON_EVENT
+from common_module.socket_utils import find_free_port_in_range
 import channel_sdk.pyio as io
 
 

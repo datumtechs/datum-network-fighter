@@ -1,7 +1,7 @@
 # coding:utf-8
 
 import time
-from common.consts import EVENT_QUEUE
+from common_module.consts import EVENT_QUEUE
 
 
 class Event(object):
