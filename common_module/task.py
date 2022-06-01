@@ -11,11 +11,11 @@ import warnings
 warnings.filterwarnings('ignore', message=r'Passing', category=FutureWarning)
 import functools
 import pandas as pd
-from common.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
-from common.event_engine import event_engine
-from common.report_engine import  report_task_result, monitor_resource_usage, report_task_event
-from common.io_channel_helper import get_channel_config, IOChannel
-from lib.types import base_pb2
+from common_module.consts import DATA_EVENT, COMPUTE_EVENT, COMMON_EVENT
+from common_module.event_engine import event_engine
+from common_module.report_engine import  report_task_result, monitor_resource_usage, report_task_event
+from common_module.io_channel_helper import get_channel_config, IOChannel
+from pb.common.constant import carrier_enum_pb2
 
 
 log = logging.getLogger(__name__)
@@ -220,26 +220,26 @@ class Task:
 
 def map_data_type_to_int(data_type_str):
     if data_type_str.lower() == 'csv':
-        data_type_int = base_pb2.OrigindataType_CSV
+        data_type_int = carrier_enum_pb2.OrigindataType_CSV
     elif data_type_str.lower() in ['dir', 'directory']:
-        data_type_int = base_pb2.OrigindataType_DIR
+        data_type_int = carrier_enum_pb2.OrigindataType_DIR
     elif data_type_str.lower() in ['bin', 'binary']:
-        data_type_int = base_pb2.OrigindataType_BINARY
+        data_type_int = carrier_enum_pb2.OrigindataType_BINARY
     elif data_type_str.lower() == 'xls':
-        data_type_int = base_pb2.OrigindataType_XLS
+        data_type_int = carrier_enum_pb2.OrigindataType_XLS
     elif data_type_str.lower() == 'xlsx':
-        data_type_int = base_pb2.OrigindataType_XLSX
+        data_type_int = carrier_enum_pb2.OrigindataType_XLSX
     elif data_type_str.lower() == 'txt':
-        data_type_int = base_pb2.OrigindataType_TXT
+        data_type_int = carrier_enum_pb2.OrigindataType_TXT
     elif data_type_str.lower() == 'json':
-        data_type_int = base_pb2.OrigindataType_JSON
+        data_type_int = carrier_enum_pb2.OrigindataType_JSON
     else:
-        data_type_int = base_pb2.OrigindataType_Unknown
+        data_type_int = carrier_enum_pb2.OrigindataType_Unknown
     return data_type_int
 
 
 def get_metadata(path, data_type):
-    if data_type == base_pb2.OrigindataType_DIR:
+    if data_type == carrier_enum_pb2.OrigindataType_DIR:
         assert os.path.isdir(path), f'{path} is not a directory.'
         origin_id, data_hash, metadata_option = get_directory_metadata(path)
     else:
@@ -261,7 +261,7 @@ def get_file_metadata(path, data_type):
     origin_id = m.hexdigest()
 
     metadata_option = {"originId": origin_id}
-    if data_type == base_pb2.OrigindataType_CSV:
+    if data_type == carrier_enum_pb2.OrigindataType_CSV:
         metadata_option["dataPath"] = path
         metadata_option["size"] = os.path.getsize(path)
         with open(path, 'r') as f:

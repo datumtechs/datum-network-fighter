@@ -61,3 +61,5 @@ certs/
 third_party/consul_server/*
 !third_party/consul_server/download_consul.sh
 !third_party/consul_server/run_consul.sh
+
+!pb/fighter/api/data
