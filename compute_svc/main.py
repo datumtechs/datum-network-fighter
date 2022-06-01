@@ -10,16 +10,16 @@ from grpc_reflection.v1alpha import reflection
 try:
     from config import cfg
 except ImportError:
-    from metis.data_svc.config import cfg
+    from fighter_project.data_svc.config import cfg
 try:
     from compute_svc.svc import ComputeProvider
 except ImportError:
-    from metis.data_svc.svc import ComputeProvider
-from common.consts import GRPC_OPTIONS
-from common.report_engine import report_task_event
-from common.task_manager import TaskManager
-from common.utils import load_cfg, get_schedule_svc
-from lib import compute_svc_pb2, compute_svc_pb2_grpc
+    from fighter_project.data_svc.svc import ComputeProvider
+from common_module.consts import GRPC_OPTIONS
+from common_module.report_engine import report_task_event
+from common_module.task_manager import TaskManager
+from common_module.utils import load_cfg, get_schedule_svc
+from pb.fighter.api.compute import compute_svc_pb2, compute_svc_pb2_grpc
 from consul_client.api import get_consul_client_obj
 from consul_client.health import health_grpc_check
 

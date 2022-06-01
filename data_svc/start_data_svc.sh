@@ -7,4 +7,4 @@ fi
 
 cfg=$1
 log=${cfg/yaml/log}
-python -u -m metis.data_svc.main $cfg >$log 2>&1
+python -u -m fighter.data_svc.main $cfg >$log 2>&1

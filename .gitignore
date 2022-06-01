@@ -32,8 +32,8 @@ output/
 private_data/
 *.so
 venv/
-armada-common/
-armada-common/Fighter/google/
+# armada-common/
+# armada-common/Fighter/google/
 */config_*.yaml
 compute_svc/C0DE_*.py
 compute_svc/start_compute_svc_group.sh
@@ -61,3 +61,5 @@ certs/
 third_party/consul_server/*
 !third_party/consul_server/download_consul.sh
 !third_party/consul_server/run_consul.sh
+
+!pb/fighter/api/data

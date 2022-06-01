@@ -2,7 +2,7 @@
 如果没有修改系统python的软链接的情况下，则需要你在执行以下操作中指定所需python3.7版本的绝对路径，例如：
 /usb/bin/python3.7 -m pip list
 ### 步骤
-0. ` git clone -b develop --recurse-submodules https://github.com/Metisnetwork/Metis-Fighter.git && cd Metis-Fighter`
+0. ` git clone -b develop --recurse https://github.com/datumtechs/datum-network-fighter.git && cd datum-network-fighter`
 1. 安装依赖：`pip install -r requirements.txt`
 2. 编译 gRPC 协议：`python tools/compile_proto_file.py`
 3. 测试：`cd tests && ./fast_check.sh`
@@ -88,9 +88,9 @@
   * build
 
     ```bash
-    docker build -t matelem/metis_dcv:v0.9 \
+    docker build -t matelem/fighter_dcv:v0.9 \
     --build-arg PKG_CHANNEL_SDK=./channel_sdk-1.0.0-cp37-cp37m-linux_x86_64.whl \
-    --build-arg PKG_FIGHTER=./dist/metis_dcv-0.9-py3-none-any.whl \
+    --build-arg PKG_FIGHTER=./dist/fighter_dcv-0.9-py3-none-any.whl \
     --build-arg PKG_ROSETTA=./latticex_rosetta-1.0.0-cp37-cp37m-linux_x86_64.whl \
     .
     ```
@@ -98,9 +98,9 @@
   * 分发
 
     ```bash
-    docker image save -o metis_dcv.tar.gz matelem/metis_dcv:v0.9
+    docker image save -o fighter_dcv.tar.gz matelem/fighter_dcv:v0.9
     
-    docker image load -i metis_dcv.tar.gz
+    docker image load -i fighter_dcv.tar.gz
     ```
 
     
@@ -109,7 +109,7 @@
 
   * 准备好挂载目录，如`xxoo`
 
-  * 准备好配置文件`*.yaml`（配置模板在安装目录下，如`site-packages/metis/data_svc/config.yaml`），其内容根据挂载目录而定，假如有如下配置
+  * 准备好配置文件`*.yaml`（配置模板在安装目录下，如`site-packages/fighter/data_svc/config.yaml`），其内容根据挂载目录而定，假如有如下配置
 
     ```bash
     $ ls cfg_dir/
@@ -120,15 +120,15 @@
 
     ```bash
     # via 服务
-    docker run -d --rm -v $PWD/xxoo:/xxoo -v $PWD/cfg_dir:/cfg_dir -p 20000:20000 matelem/metis_dcv:v0.9 \
+    docker run -d --rm -v $PWD/xxoo:/xxoo -v $PWD/cfg_dir:/cfg_dir -p 20000:20000 matelem/fighter_dcv:v0.9 \
     ./start_via_svc.sh /cfg_dir/via_config_20000.yaml
     
     # 数据服务
-    docker run -d --rm -v $PWD/xxoo:/xxoo -v $PWD/cfg_dir:/cfg_dir -p 50001:50001 --expose 1024-65535 -it matelem/metis_dcv:v0.9 \
+    docker run -d --rm -v $PWD/xxoo:/xxoo -v $PWD/cfg_dir:/cfg_dir -p 50001:50001 --expose 1024-65535 -it matelem/fighter_dcv:v0.9 \
     ./start_data_svc.sh /cfg_dir/data_config_50001.yaml
     
     # 计算服务
-    docker run -d --rm -v $PWD/xxoo:/xxoo -v $PWD/cfg_dir:/cfg_dir -p 30001:30001 --expose 1024-65535 -it matelem/metis_dcv:v0.9 \
+    docker run -d --rm -v $PWD/xxoo:/xxoo -v $PWD/cfg_dir:/cfg_dir -p 30001:30001 --expose 1024-65535 -it matelem/fighter_dcv:v0.9 \
     ./start_compute_svc.sh /cfg_dir/compute_config_30001.yaml
     
     ```

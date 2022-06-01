@@ -1,8 +1,6 @@
 import logging
-from lib.api import sys_rpc_api_pb2
-from lib.api import sys_rpc_api_pb2_grpc
-from lib.common import base_pb2
-from lib.common import base_pb2_grpc
+from pb.carrier.api import sys_rpc_api_pb2, sys_rpc_api_pb2_grpc
+from pb.carrier.types import common_pb2
 
 
 log = logging.getLogger(__name__)
@@ -22,7 +20,7 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         event["content"] = request.task_event.content
         event["create_at"] = request.task_event.create_at
         log.info(f'get event finish: {event}')
-        return base_pb2.SimpleResponse(status=0, msg="report event ok.")
+        return common_pb2.SimpleResponse(status=0, msg="report event ok.")
         
 
     def ReportTaskResourceUsage(self, request, context):
@@ -42,7 +40,7 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         resource_usage["total_disk"] = request.usage.total_disk
         resource_usage["used_disk"] = request.usage.used_disk
         log.info(f'get task resourece usage finish: {resource_usage}')
-        return base_pb2.SimpleResponse(status=0, msg="report resource ok.")
+        return common_pb2.SimpleResponse(status=0, msg="report resource ok.")
 
     def ReportUpFileSummary(self, request, context):
         log.info(f'get upload file summary start.')
@@ -54,7 +52,7 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         summary["data_type"] = request.data_type
         summary["metadata_option"] = request.metadata_option
         log.info(f'get up file summary finish: {summary}')
-        return base_pb2.SimpleResponse(status=0, msg="report file summary ok.")
+        return common_pb2.SimpleResponse(status=0, msg="report file summary ok.")
 
     def ReportTaskResultFileSummary(self, request, context):
         log.info(f'get task result file summary start.')
@@ -68,5 +66,5 @@ class YarnService(sys_rpc_api_pb2_grpc.YarnServiceServicer):
         summary["data_type"] = request.data_type
         summary["metadata_option"] = request.metadata_option
         log.info(f'get task result file summary finish: {summary}')
-        return base_pb2.SimpleResponse(status=0, msg="report task result file summary ok.")
+        return common_pb2.SimpleResponse(status=0, msg="report task result file summary ok.")
 

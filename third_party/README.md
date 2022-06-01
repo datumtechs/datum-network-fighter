@@ -1,9 +1,9 @@
 # 第三方库说明
 
 ## 1. channel-sdk
-+ 仓库：https://github.com/Metisnetwork/Metis-Channel-sdk
++ 仓库：https://github.com/datumtechs/datum-network-channel-sdk
 ```
-git clone https://github.com/Metisnetwork/Metis-Channel-sdk.git -b develop
+git clone https://github.com/datumtechs/datum-network-channel-sdk.git -b develop
 cd channel-sdk
 git checkout 0ec257328f7aa076c0f6f450774cff676db460b0
 ```

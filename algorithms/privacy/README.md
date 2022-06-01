@@ -353,12 +353,12 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
       "label_owner": "data1",       # 标签所在方的party_id
       "label_column": "Y",       # 因变量(标签)
       "hyperparams": {           # DNN的超参数
-          "epochs": 10,            # 训练轮次
+          "epochs": 5,            # 训练轮次
           "batch_size": 256,       # 批量大小
           "learning_rate": 0.1,    # 学习率
-          "layer_units": [32, 128, 32, 1],  # 隐藏层与输出层的每层单元数，例子中有3个隐藏层，
+          "layer_units": [32, 1],  # 隐藏层与输出层的每层单元数，例子中有3个隐藏层，
                                             # 每层的单元数分别是32，128，32。输出层单元数是1。 大于0的整数
-          "layer_activation": ["sigmoid", "sigmoid", "sigmoid", "sigmoid"],   # 隐藏层与输出层的每层的激活函数
+          "layer_activation": ["sigmoid", "sigmoid"],   # 隐藏层与输出层的每层的激活函数
                                                                         # 仅支持"sigmoid"/"relu"/""/null
           "init_method": "random_normal",  # 指定模型参数初始化方法, 
                                           # 仅支持random_normal/random_uniform/zeros/ones
@@ -396,8 +396,8 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
   "algorithm_dynamic_params": {
       "model_restore_party": "model1",   # 模型所在方
       "hyperparams": {           # DNN的超参数
-          "layer_units": [32, 128, 32, 1],   # 隐藏层与输出层的每层单元数，此参数配置必须与训练时的一样
-          "layer_activation": ["sigmoid", "sigmoid", "sigmoid", "sigmoid"],  # 隐藏层与输出层的每层的激活函数
+          "layer_units": [32, 1],   # 隐藏层与输出层的每层单元数，此参数配置必须与训练时的一样
+          "layer_activation": ["sigmoid", "sigmoid"],  # 隐藏层与输出层的每层的激活函数
                                                                             # 此参数配置必须与训练时的一样
           "use_intercept": true,    # 指定模型结构中是否使用bias, 此参数配置必须与训练时的一样
           "predict_threshold": 0.5  # 二分类的阈值，值域[0,1]
@@ -422,8 +422,8 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
   "algorithm_dynamic_params": {
       "model_restore_party": "model1",   # 模型所在方
       "hyperparams": {           # DNN的超参数
-          "layer_units": [32, 128, 32, 1],   # 隐藏层与输出层的每层单元数，此参数配置必须与训练时的一样
-          "layer_activation": ["sigmoid", "sigmoid", "sigmoid", "sigmoid"],  # 隐藏层与输出层的每层的激活函数
+          "layer_units": [32, 1],   # 隐藏层与输出层的每层单元数，此参数配置必须与训练时的一样
+          "layer_activation": ["sigmoid", "sigmoid"],  # 隐藏层与输出层的每层的激活函数
                                                                             # 此参数配置必须与训练时的一样
           "use_intercept": true,    # 指定模型结构中是否使用bias, 此参数配置必须与训练时的一样
           "predict_threshold": 0.5  # 二分类的阈值，值域[0,1]
