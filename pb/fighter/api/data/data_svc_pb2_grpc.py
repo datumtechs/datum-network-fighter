@@ -46,11 +46,6 @@ class DataProviderStub(object):
                 request_serializer=fighter_dot_api_dot_data_dot_data__svc__pb2.DownloadRequest.SerializeToString,
                 response_deserializer=fighter_dot_api_dot_data_dot_data__svc__pb2.UploadReply.FromString,
                 )
-        self.SendSharesData = channel.unary_unary(
-                '/fighter.api.data.DataProvider/SendSharesData',
-                request_serializer=fighter_dot_api_dot_data_dot_data__svc__pb2.SendSharesDataRequest.SerializeToString,
-                response_deserializer=fighter_dot_api_dot_data_dot_data__svc__pb2.SendSharesDataReply.FromString,
-                )
         self.HandleTaskReadyGo = channel.unary_unary(
                 '/fighter.api.data.DataProvider/HandleTaskReadyGo',
                 request_serializer=fighter_dot_types_dot_types__pb2.TaskReadyGoReq.SerializeToString,
@@ -102,12 +97,6 @@ class DataProviderServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def SendSharesData(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
     def HandleTaskReadyGo(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -152,11 +141,6 @@ def add_DataProviderServicer_to_server(servicer, server):
                     servicer.DeleteData,
                     request_deserializer=fighter_dot_api_dot_data_dot_data__svc__pb2.DownloadRequest.FromString,
                     response_serializer=fighter_dot_api_dot_data_dot_data__svc__pb2.UploadReply.SerializeToString,
-            ),
-            'SendSharesData': grpc.unary_unary_rpc_method_handler(
-                    servicer.SendSharesData,
-                    request_deserializer=fighter_dot_api_dot_data_dot_data__svc__pb2.SendSharesDataRequest.FromString,
-                    response_serializer=fighter_dot_api_dot_data_dot_data__svc__pb2.SendSharesDataReply.SerializeToString,
             ),
             'HandleTaskReadyGo': grpc.unary_unary_rpc_method_handler(
                     servicer.HandleTaskReadyGo,
@@ -277,23 +261,6 @@ class DataProvider(object):
         return grpc.experimental.unary_unary(request, target, '/fighter.api.data.DataProvider/DeleteData',
             fighter_dot_api_dot_data_dot_data__svc__pb2.DownloadRequest.SerializeToString,
             fighter_dot_api_dot_data_dot_data__svc__pb2.UploadReply.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def SendSharesData(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/fighter.api.data.DataProvider/SendSharesData',
-            fighter_dot_api_dot_data_dot_data__svc__pb2.SendSharesDataRequest.SerializeToString,
-            fighter_dot_api_dot_data_dot_data__svc__pb2.SendSharesDataReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

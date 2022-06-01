@@ -26,11 +26,6 @@ class ComputeProviderStub(object):
                 request_serializer=fighter_dot_api_dot_compute_dot_compute__svc__pb2.GetTaskDetailsReq.SerializeToString,
                 response_deserializer=fighter_dot_api_dot_compute_dot_compute__svc__pb2.GetTaskDetailsReply.FromString,
                 )
-        self.UploadShard = channel.stream_unary(
-                '/fighter.api.compute.ComputeProvider/UploadShard',
-                request_serializer=fighter_dot_api_dot_compute_dot_compute__svc__pb2.UploadShardReq.SerializeToString,
-                response_deserializer=fighter_dot_api_dot_compute_dot_compute__svc__pb2.UploadShardReply.FromString,
-                )
         self.HandleTaskReadyGo = channel.unary_unary(
                 '/fighter.api.compute.ComputeProvider/HandleTaskReadyGo',
                 request_serializer=fighter_dot_types_dot_types__pb2.TaskReadyGoReq.SerializeToString,
@@ -53,12 +48,6 @@ class ComputeProviderServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def GetTaskDetails(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def UploadShard(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -88,11 +77,6 @@ def add_ComputeProviderServicer_to_server(servicer, server):
                     servicer.GetTaskDetails,
                     request_deserializer=fighter_dot_api_dot_compute_dot_compute__svc__pb2.GetTaskDetailsReq.FromString,
                     response_serializer=fighter_dot_api_dot_compute_dot_compute__svc__pb2.GetTaskDetailsReply.SerializeToString,
-            ),
-            'UploadShard': grpc.stream_unary_rpc_method_handler(
-                    servicer.UploadShard,
-                    request_deserializer=fighter_dot_api_dot_compute_dot_compute__svc__pb2.UploadShardReq.FromString,
-                    response_serializer=fighter_dot_api_dot_compute_dot_compute__svc__pb2.UploadShardReply.SerializeToString,
             ),
             'HandleTaskReadyGo': grpc.unary_unary_rpc_method_handler(
                     servicer.HandleTaskReadyGo,
@@ -145,23 +129,6 @@ class ComputeProvider(object):
         return grpc.experimental.unary_unary(request, target, '/fighter.api.compute.ComputeProvider/GetTaskDetails',
             fighter_dot_api_dot_compute_dot_compute__svc__pb2.GetTaskDetailsReq.SerializeToString,
             fighter_dot_api_dot_compute_dot_compute__svc__pb2.GetTaskDetailsReply.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def UploadShard(request_iterator,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/fighter.api.compute.ComputeProvider/UploadShard',
-            fighter_dot_api_dot_compute_dot_compute__svc__pb2.UploadShardReq.SerializeToString,
-            fighter_dot_api_dot_compute_dot_compute__svc__pb2.UploadShardReply.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

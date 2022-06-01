@@ -24,7 +24,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z:github.com/datumtechs/datum-network-carrier/pb/fighter/api',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x1f\x66ighter/api/data/data_svc.proto\x12\x10\x66ighter.api.data\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\"common/constant/fighter_enum.proto\x1a\"common/constant/carrier_enum.proto\x1a\x19\x66ighter/types/types.proto\"\x95\x01\n\x0f\x44ownloadRequest\x12\x11\n\tdata_path\x18\x01 \x01(\t\x12?\n\x07options\x18\x02 \x03(\x0b\x32..fighter.api.data.DownloadRequest.OptionsEntry\x1a.\n\x0cOptionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"Y\n\rDownloadReply\x12-\n\x06status\x18\x01 \x01(\x0e\x32\x1b.common.constant.TaskStatusH\x00\x12\x11\n\x07\x63ontent\x18\x02 \x01(\x0cH\x00\x42\x06\n\x04\x64\x61ta\"\xb3\x01\n\rUploadRequest\x12\x11\n\tdata_name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\x0c\x12\x32\n\tdata_type\x18\x03 \x01(\x0e\x32\x1f.common.constant.OrigindataType\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x0f\n\x07\x63olumns\x18\x05 \x03(\t\x12\x12\n\ncol_dtypes\x18\x06 \x03(\t\x12\x10\n\x08keywords\x18\x07 \x03(\t\"a\n\x0bUploadReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x03 \x01(\t\x12\x11\n\tdata_path\x18\x04 \x01(\t\x12\x11\n\tdata_hash\x18\x05 \x01(\t\"\xa6\x01\n\rListDataReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x31\n\x04\x64\x61ta\x18\x03 \x03(\x0b\x32#.fighter.api.data.ListDataReply.Row\x1a\x45\n\x03Row\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x0c\n\x04info\x18\x02 \x01(\t\x12\x11\n\tdata_name\x18\x03 \x01(\t\x12\x0c\n\x04size\x18\x04 \x01(\x05\"\xa2\x01\n\x12GetDataDetailReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x0e\n\x06n_rows\x18\x03 \x01(\x05\x12\x38\n\x05items\x18\x04 \x03(\x0b\x32).fighter.api.data.GetDataDetailReply.Item\x1a%\n\x04Item\x12\x0e\n\x06\x63olumn\x18\x01 \x01(\t\x12\r\n\x05\x64type\x18\x02 \x01(\t\"\xa7\x02\n\x0eGetStatusReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x11\n\ttotal_cpu\x18\x03 \x01(\r\x12\x10\n\x08used_cpu\x18\x04 \x01(\r\x12\x10\n\x08idle_cpu\x18\x05 \x01(\r\x12\x14\n\x0ctotal_memory\x18\x06 \x01(\x04\x12\x13\n\x0bused_memory\x18\x07 \x01(\x04\x12\x13\n\x0bidle_memory\x18\x08 \x01(\x04\x12\x12\n\ntotal_disk\x18\t \x01(\x04\x12\x11\n\tused_disk\x18\n \x01(\x04\x12\x11\n\tidle_disk\x18\x0b \x01(\x04\x12\x17\n\x0ftotal_bandwidth\x18\x0c \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\r \x01(\x04\x12\x16\n\x0eidle_bandwidth\x18\x0e \x01(\x04\";\n\x15SendSharesDataRequest\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x11\n\treceivers\x18\x02 \x03(\t\"B\n\x13SendSharesDataReply\x12+\n\x06status\x18\x01 \x01(\x0e\x32\x1b.common.constant.TaskStatus2\xc2\x07\n\x0c\x44\x61taProvider\x12^\n\tGetStatus\x12\x16.google.protobuf.Empty\x1a .fighter.api.data.GetStatusReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/data/getStatus\x12[\n\x08ListData\x12\x16.google.protobuf.Empty\x1a\x1f.fighter.api.data.ListDataReply\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/data/listData\x12k\n\nUploadData\x12\x1f.fighter.api.data.UploadRequest\x1a\x1d.fighter.api.data.UploadReply\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x10/data/uploadData:\x01*(\x01\x12o\n\x0b\x42\x61tchUpload\x12\x1f.fighter.api.data.UploadRequest\x1a\x1d.fighter.api.data.UploadReply\"\x1c\x82\xd3\xe4\x93\x02\x16\"\x11/data/batchUpload:\x01*(\x01\x30\x01\x12s\n\x0c\x44ownloadData\x12!.fighter.api.data.DownloadRequest\x1a\x1f.fighter.api.data.DownloadReply\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x12/data/downLoadData:\x01*0\x01\x12P\n\nDeleteData\x12!.fighter.api.data.DownloadRequest\x1a\x1d.fighter.api.data.UploadReply\"\x00\x12\x62\n\x0eSendSharesData\x12\'.fighter.api.data.SendSharesDataRequest\x1a%.fighter.api.data.SendSharesDataReply\"\x00\x12w\n\x11HandleTaskReadyGo\x12\x1d.fighter.types.TaskReadyGoReq\x1a\x1f.fighter.types.TaskReadyGoReply\"\"\x82\xd3\xe4\x93\x02\x1c\"\x17/data/handleTaskReadyGo:\x01*\x12s\n\x10HandleCancelTask\x12\x1c.fighter.types.TaskCancelReq\x1a\x1e.fighter.types.TaskCancelReply\"!\x82\xd3\xe4\x93\x02\x1b\"\x16/data/handleCancelTask:\x01*B<Z:github.com/datumtechs/datum-network-carrier/pb/fighter/apib\x06proto3'
+  serialized_pb=b'\n\x1f\x66ighter/api/data/data_svc.proto\x12\x10\x66ighter.api.data\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\"common/constant/fighter_enum.proto\x1a\"common/constant/carrier_enum.proto\x1a\x19\x66ighter/types/types.proto\"\x95\x01\n\x0f\x44ownloadRequest\x12\x11\n\tdata_path\x18\x01 \x01(\t\x12?\n\x07options\x18\x02 \x03(\x0b\x32..fighter.api.data.DownloadRequest.OptionsEntry\x1a.\n\x0cOptionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"Y\n\rDownloadReply\x12-\n\x06status\x18\x01 \x01(\x0e\x32\x1b.common.constant.TaskStatusH\x00\x12\x11\n\x07\x63ontent\x18\x02 \x01(\x0cH\x00\x42\x06\n\x04\x64\x61ta\"\xb3\x01\n\rUploadRequest\x12\x11\n\tdata_name\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\x0c\x12\x32\n\tdata_type\x18\x03 \x01(\x0e\x32\x1f.common.constant.OrigindataType\x12\x13\n\x0b\x64\x65scription\x18\x04 \x01(\t\x12\x0f\n\x07\x63olumns\x18\x05 \x03(\t\x12\x12\n\ncol_dtypes\x18\x06 \x03(\t\x12\x10\n\x08keywords\x18\x07 \x03(\t\"a\n\x0bUploadReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x03 \x01(\t\x12\x11\n\tdata_path\x18\x04 \x01(\t\x12\x11\n\tdata_hash\x18\x05 \x01(\t\"\xa6\x01\n\rListDataReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x31\n\x04\x64\x61ta\x18\x03 \x03(\x0b\x32#.fighter.api.data.ListDataReply.Row\x1a\x45\n\x03Row\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x0c\n\x04info\x18\x02 \x01(\t\x12\x11\n\tdata_name\x18\x03 \x01(\t\x12\x0c\n\x04size\x18\x04 \x01(\x05\"\xa2\x01\n\x12GetDataDetailReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x0e\n\x06n_rows\x18\x03 \x01(\x05\x12\x38\n\x05items\x18\x04 \x03(\x0b\x32).fighter.api.data.GetDataDetailReply.Item\x1a%\n\x04Item\x12\x0e\n\x06\x63olumn\x18\x01 \x01(\t\x12\r\n\x05\x64type\x18\x02 \x01(\t\"\xa7\x02\n\x0eGetStatusReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x11\n\ttotal_cpu\x18\x03 \x01(\r\x12\x10\n\x08used_cpu\x18\x04 \x01(\r\x12\x10\n\x08idle_cpu\x18\x05 \x01(\r\x12\x14\n\x0ctotal_memory\x18\x06 \x01(\x04\x12\x13\n\x0bused_memory\x18\x07 \x01(\x04\x12\x13\n\x0bidle_memory\x18\x08 \x01(\x04\x12\x12\n\ntotal_disk\x18\t \x01(\x04\x12\x11\n\tused_disk\x18\n \x01(\x04\x12\x11\n\tidle_disk\x18\x0b \x01(\x04\x12\x17\n\x0ftotal_bandwidth\x18\x0c \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\r \x01(\x04\x12\x16\n\x0eidle_bandwidth\x18\x0e \x01(\x04\x32\xde\x06\n\x0c\x44\x61taProvider\x12^\n\tGetStatus\x12\x16.google.protobuf.Empty\x1a .fighter.api.data.GetStatusReply\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/data/getStatus\x12[\n\x08ListData\x12\x16.google.protobuf.Empty\x1a\x1f.fighter.api.data.ListDataReply\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/data/listData\x12k\n\nUploadData\x12\x1f.fighter.api.data.UploadRequest\x1a\x1d.fighter.api.data.UploadReply\"\x1b\x82\xd3\xe4\x93\x02\x15\"\x10/data/uploadData:\x01*(\x01\x12o\n\x0b\x42\x61tchUpload\x12\x1f.fighter.api.data.UploadRequest\x1a\x1d.fighter.api.data.UploadReply\"\x1c\x82\xd3\xe4\x93\x02\x16\"\x11/data/batchUpload:\x01*(\x01\x30\x01\x12s\n\x0c\x44ownloadData\x12!.fighter.api.data.DownloadRequest\x1a\x1f.fighter.api.data.DownloadReply\"\x1d\x82\xd3\xe4\x93\x02\x17\"\x12/data/downLoadData:\x01*0\x01\x12P\n\nDeleteData\x12!.fighter.api.data.DownloadRequest\x1a\x1d.fighter.api.data.UploadReply\"\x00\x12w\n\x11HandleTaskReadyGo\x12\x1d.fighter.types.TaskReadyGoReq\x1a\x1f.fighter.types.TaskReadyGoReply\"\"\x82\xd3\xe4\x93\x02\x1c\"\x17/data/handleTaskReadyGo:\x01*\x12s\n\x10HandleCancelTask\x12\x1c.fighter.types.TaskCancelReq\x1a\x1e.fighter.types.TaskCancelReply\"!\x82\xd3\xe4\x93\x02\x1b\"\x16/data/handleCancelTask:\x01*B<Z:github.com/datumtechs/datum-network-carrier/pb/fighter/apib\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,common_dot_constant_dot_fighter__enum__pb2.DESCRIPTOR,common_dot_constant_dot_carrier__enum__pb2.DESCRIPTOR,fighter_dot_types_dot_types__pb2.DESCRIPTOR,])
 
@@ -597,77 +597,6 @@ _GETSTATUSREPLY = _descriptor.Descriptor(
   serialized_end=1365,
 )
 
-
-_SENDSHARESDATAREQUEST = _descriptor.Descriptor(
-  name='SendSharesDataRequest',
-  full_name='fighter.api.data.SendSharesDataRequest',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='data_id', full_name='fighter.api.data.SendSharesDataRequest.data_id', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='receivers', full_name='fighter.api.data.SendSharesDataRequest.receivers', index=1,
-      number=2, type=9, cpp_type=9, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1367,
-  serialized_end=1426,
-)
-
-
-_SENDSHARESDATAREPLY = _descriptor.Descriptor(
-  name='SendSharesDataReply',
-  full_name='fighter.api.data.SendSharesDataReply',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='status', full_name='fighter.api.data.SendSharesDataReply.status', index=0,
-      number=1, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1428,
-  serialized_end=1494,
-)
-
 _DOWNLOADREQUEST_OPTIONSENTRY.containing_type = _DOWNLOADREQUEST
 _DOWNLOADREQUEST.fields_by_name['options'].message_type = _DOWNLOADREQUEST_OPTIONSENTRY
 _DOWNLOADREPLY.fields_by_name['status'].enum_type = common_dot_constant_dot_fighter__enum__pb2._TASKSTATUS
@@ -682,7 +611,6 @@ _LISTDATAREPLY_ROW.containing_type = _LISTDATAREPLY
 _LISTDATAREPLY.fields_by_name['data'].message_type = _LISTDATAREPLY_ROW
 _GETDATADETAILREPLY_ITEM.containing_type = _GETDATADETAILREPLY
 _GETDATADETAILREPLY.fields_by_name['items'].message_type = _GETDATADETAILREPLY_ITEM
-_SENDSHARESDATAREPLY.fields_by_name['status'].enum_type = common_dot_constant_dot_fighter__enum__pb2._TASKSTATUS
 DESCRIPTOR.message_types_by_name['DownloadRequest'] = _DOWNLOADREQUEST
 DESCRIPTOR.message_types_by_name['DownloadReply'] = _DOWNLOADREPLY
 DESCRIPTOR.message_types_by_name['UploadRequest'] = _UPLOADREQUEST
@@ -690,8 +618,6 @@ DESCRIPTOR.message_types_by_name['UploadReply'] = _UPLOADREPLY
 DESCRIPTOR.message_types_by_name['ListDataReply'] = _LISTDATAREPLY
 DESCRIPTOR.message_types_by_name['GetDataDetailReply'] = _GETDATADETAILREPLY
 DESCRIPTOR.message_types_by_name['GetStatusReply'] = _GETSTATUSREPLY
-DESCRIPTOR.message_types_by_name['SendSharesDataRequest'] = _SENDSHARESDATAREQUEST
-DESCRIPTOR.message_types_by_name['SendSharesDataReply'] = _SENDSHARESDATAREPLY
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 DownloadRequest = _reflection.GeneratedProtocolMessageType('DownloadRequest', (_message.Message,), {
@@ -767,20 +693,6 @@ GetStatusReply = _reflection.GeneratedProtocolMessageType('GetStatusReply', (_me
   })
 _sym_db.RegisterMessage(GetStatusReply)
 
-SendSharesDataRequest = _reflection.GeneratedProtocolMessageType('SendSharesDataRequest', (_message.Message,), {
-  'DESCRIPTOR' : _SENDSHARESDATAREQUEST,
-  '__module__' : 'fighter.api.data.data_svc_pb2'
-  # @@protoc_insertion_point(class_scope:fighter.api.data.SendSharesDataRequest)
-  })
-_sym_db.RegisterMessage(SendSharesDataRequest)
-
-SendSharesDataReply = _reflection.GeneratedProtocolMessageType('SendSharesDataReply', (_message.Message,), {
-  'DESCRIPTOR' : _SENDSHARESDATAREPLY,
-  '__module__' : 'fighter.api.data.data_svc_pb2'
-  # @@protoc_insertion_point(class_scope:fighter.api.data.SendSharesDataReply)
-  })
-_sym_db.RegisterMessage(SendSharesDataReply)
-
 
 DESCRIPTOR._options = None
 _DOWNLOADREQUEST_OPTIONSENTRY._options = None
@@ -792,8 +704,8 @@ _DATAPROVIDER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1497,
-  serialized_end=2459,
+  serialized_start=1368,
+  serialized_end=2230,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetStatus',
@@ -856,19 +768,9 @@ _DATAPROVIDER = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='SendSharesData',
-    full_name='fighter.api.data.DataProvider.SendSharesData',
-    index=6,
-    containing_service=None,
-    input_type=_SENDSHARESDATAREQUEST,
-    output_type=_SENDSHARESDATAREPLY,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
-  _descriptor.MethodDescriptor(
     name='HandleTaskReadyGo',
     full_name='fighter.api.data.DataProvider.HandleTaskReadyGo',
-    index=7,
+    index=6,
     containing_service=None,
     input_type=fighter_dot_types_dot_types__pb2._TASKREADYGOREQ,
     output_type=fighter_dot_types_dot_types__pb2._TASKREADYGOREPLY,
@@ -878,7 +780,7 @@ _DATAPROVIDER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='HandleCancelTask',
     full_name='fighter.api.data.DataProvider.HandleCancelTask',
-    index=8,
+    index=7,
     containing_service=None,
     input_type=fighter_dot_types_dot_types__pb2._TASKCANCELREQ,
     output_type=fighter_dot_types_dot_types__pb2._TASKCANCELREPLY,

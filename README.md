@@ -7,8 +7,6 @@
 2. 编译 gRPC 协议：`python tools/compile_proto_file.py`
 3. 测试：`cd tests && ./fast_check.sh`
 4. 进入到相应的服务目录
-
-     * via服务：`cd via_svc`
      * 数据服务：`cd data_svc`
      * 计算服务：`cd compute_svc`
 5. 编辑 `config.yaml`
@@ -119,10 +117,7 @@
   * 运行相应的服务
 
     ```bash
-    # via 服务
-    docker run -d --rm -v $PWD/xxoo:/xxoo -v $PWD/cfg_dir:/cfg_dir -p 20000:20000 matelem/fighter_dcv:v0.9 \
-    ./start_via_svc.sh /cfg_dir/via_config_20000.yaml
-    
+        
     # 数据服务
     docker run -d --rm -v $PWD/xxoo:/xxoo -v $PWD/cfg_dir:/cfg_dir -p 50001:50001 --expose 1024-65535 -it matelem/fighter_dcv:v0.9 \
     ./start_data_svc.sh /cfg_dir/data_config_50001.yaml

@@ -57,10 +57,6 @@ class ComputeProvider(compute_svc_pb2_grpc.ComputeProviderServicer):
         ret.msg = 'get task details success.'
         return ret
 
-    def UploadShard(self, request_it, context):
-        for req in request_it:
-            yield compute_svc_pb2.UploadShardReply(status=-1, msg='deprecated')
-
     def HandleTaskReadyGo(self, request, context):
         log.info(f'{context.peer()} submit a task {request.task_id}, thread id: {threading.get_ident()}')
         status, msg = self.task_manager.start(request)
