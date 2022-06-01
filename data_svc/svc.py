@@ -201,18 +201,6 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                 except:
                     pass
 
-    def SendSharesData(self, request, context):
-        ans = data_svc_pb2.SendSharesDataReply(status=data_svc_pb2.TaskStatus.Cancelled)
-        return ans
-
-    def _send_dat(self, dat, to):
-        log.info(f'async send data(size: {dat.size}) to {to}')
-        with grpc.insecure_channel(to) as channel:
-            stub = compute_svc_pb2_grpc.ComputeProviderStub(channel)
-            req = compute_svc_pb2.UploadShardReq(task_id='0xC0DE01', data_id='0xDA7A1234')
-            response = stub.UploadShard(req)
-            log.info(response.ok)
-
     def ListData(self, request, context):
         log.info(context.peer())
         ans = data_svc_pb2.ListDataReply()

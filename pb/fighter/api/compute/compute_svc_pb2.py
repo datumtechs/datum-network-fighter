@@ -22,132 +22,11 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z:github.com/datumtechs/datum-network-carrier/pb/fighter/api',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n%fighter/api/compute/compute_svc.proto\x12\x13\x66ighter.api.compute\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19\x66ighter/types/types.proto\"\x8f\x01\n\x0eUploadShardReq\x12\x38\n\x04meta\x18\x01 \x01(\x0b\x32(.fighter.api.compute.UploadShardReq.InfoH\x00\x12\x11\n\x07\x63ontent\x18\x02 \x01(\x0cH\x00\x1a(\n\x04Info\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x0f\n\x07\x64\x61ta_id\x18\x02 \x01(\tB\x06\n\x04\x64\x61ta\"/\n\x10UploadShardReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\"\xa7\x02\n\x0eGetStatusReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x11\n\ttotal_cpu\x18\x03 \x01(\r\x12\x10\n\x08used_cpu\x18\x04 \x01(\r\x12\x10\n\x08idle_cpu\x18\x05 \x01(\r\x12\x14\n\x0ctotal_memory\x18\x06 \x01(\x04\x12\x13\n\x0bused_memory\x18\x07 \x01(\x04\x12\x13\n\x0bidle_memory\x18\x08 \x01(\x04\x12\x12\n\ntotal_disk\x18\t \x01(\x04\x12\x11\n\tused_disk\x18\n \x01(\x04\x12\x11\n\tidle_disk\x18\x0b \x01(\x04\x12\x17\n\x0ftotal_bandwidth\x18\x0c \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\r \x01(\x04\x12\x16\n\x0eidle_bandwidth\x18\x0e \x01(\x04\"%\n\x11GetTaskDetailsReq\x12\x10\n\x08task_ids\x18\x01 \x03(\t\"\x89\x02\n\x13GetTaskDetailsReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x45\n\x0ctask_details\x18\x03 \x03(\x0b\x32/.fighter.api.compute.GetTaskDetailsReply.Detail\x1a\x8d\x01\n\x06\x44\x65tail\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\x13\n\x0b\x63ontract_id\x18\x03 \x01(\t\x12\x14\n\x0c\x65lapsed_time\x18\x04 \x01(\x03\x12\x13\n\x0bremain_time\x18\x05 \x01(\x03\x12\x10\n\x08progress\x18\x06 \x01(\t\x12\r\n\x05phase\x18\x07 \x01(\t2\xd3\x04\n\x0f\x43omputeProvider\x12\x64\n\tGetStatus\x12\x16.google.protobuf.Empty\x1a#.fighter.api.compute.GetStatusReply\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/compute/getStatus\x12\x86\x01\n\x0eGetTaskDetails\x12&.fighter.api.compute.GetTaskDetailsReq\x1a(.fighter.api.compute.GetTaskDetailsReply\"\"\x82\xd3\xe4\x93\x02\x1c\"\x17/compute/getTaskDetails:\x01*\x12]\n\x0bUploadShard\x12#.fighter.api.compute.UploadShardReq\x1a%.fighter.api.compute.UploadShardReply\"\x00(\x01\x12z\n\x11HandleTaskReadyGo\x12\x1d.fighter.types.TaskReadyGoReq\x1a\x1f.fighter.types.TaskReadyGoReply\"%\x82\xd3\xe4\x93\x02\x1f\"\x1a/compute/handleTaskReadyGo:\x01*\x12v\n\x10HandleCancelTask\x12\x1c.fighter.types.TaskCancelReq\x1a\x1e.fighter.types.TaskCancelReply\"$\x82\xd3\xe4\x93\x02\x1e\"\x19/compute/handleCancelTask:\x01*B<Z:github.com/datumtechs/datum-network-carrier/pb/fighter/apib\x06proto3'
+  serialized_pb=b'\n%fighter/api/compute/compute_svc.proto\x12\x13\x66ighter.api.compute\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19\x66ighter/types/types.proto\"\xa7\x02\n\x0eGetStatusReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x11\n\ttotal_cpu\x18\x03 \x01(\r\x12\x10\n\x08used_cpu\x18\x04 \x01(\r\x12\x10\n\x08idle_cpu\x18\x05 \x01(\r\x12\x14\n\x0ctotal_memory\x18\x06 \x01(\x04\x12\x13\n\x0bused_memory\x18\x07 \x01(\x04\x12\x13\n\x0bidle_memory\x18\x08 \x01(\x04\x12\x12\n\ntotal_disk\x18\t \x01(\x04\x12\x11\n\tused_disk\x18\n \x01(\x04\x12\x11\n\tidle_disk\x18\x0b \x01(\x04\x12\x17\n\x0ftotal_bandwidth\x18\x0c \x01(\x04\x12\x16\n\x0eused_bandwidth\x18\r \x01(\x04\x12\x16\n\x0eidle_bandwidth\x18\x0e \x01(\x04\"%\n\x11GetTaskDetailsReq\x12\x10\n\x08task_ids\x18\x01 \x03(\t\"\x89\x02\n\x13GetTaskDetailsReply\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x45\n\x0ctask_details\x18\x03 \x03(\x0b\x32/.fighter.api.compute.GetTaskDetailsReply.Detail\x1a\x8d\x01\n\x06\x44\x65tail\x12\x0f\n\x07task_id\x18\x01 \x01(\t\x12\x11\n\ttask_name\x18\x02 \x01(\t\x12\x13\n\x0b\x63ontract_id\x18\x03 \x01(\t\x12\x14\n\x0c\x65lapsed_time\x18\x04 \x01(\x03\x12\x13\n\x0bremain_time\x18\x05 \x01(\x03\x12\x10\n\x08progress\x18\x06 \x01(\t\x12\r\n\x05phase\x18\x07 \x01(\t2\xf4\x03\n\x0f\x43omputeProvider\x12\x64\n\tGetStatus\x12\x16.google.protobuf.Empty\x1a#.fighter.api.compute.GetStatusReply\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/compute/getStatus\x12\x86\x01\n\x0eGetTaskDetails\x12&.fighter.api.compute.GetTaskDetailsReq\x1a(.fighter.api.compute.GetTaskDetailsReply\"\"\x82\xd3\xe4\x93\x02\x1c\"\x17/compute/getTaskDetails:\x01*\x12z\n\x11HandleTaskReadyGo\x12\x1d.fighter.types.TaskReadyGoReq\x1a\x1f.fighter.types.TaskReadyGoReply\"%\x82\xd3\xe4\x93\x02\x1f\"\x1a/compute/handleTaskReadyGo:\x01*\x12v\n\x10HandleCancelTask\x12\x1c.fighter.types.TaskCancelReq\x1a\x1e.fighter.types.TaskCancelReply\"$\x82\xd3\xe4\x93\x02\x1e\"\x19/compute/handleCancelTask:\x01*B<Z:github.com/datumtechs/datum-network-carrier/pb/fighter/apib\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,google_dot_api_dot_annotations__pb2.DESCRIPTOR,fighter_dot_types_dot_types__pb2.DESCRIPTOR,])
 
 
-
-
-_UPLOADSHARDREQ_INFO = _descriptor.Descriptor(
-  name='Info',
-  full_name='fighter.api.compute.UploadShardReq.Info',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='task_id', full_name='fighter.api.compute.UploadShardReq.Info.task_id', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='data_id', full_name='fighter.api.compute.UploadShardReq.Info.data_id', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=244,
-  serialized_end=284,
-)
-
-_UPLOADSHARDREQ = _descriptor.Descriptor(
-  name='UploadShardReq',
-  full_name='fighter.api.compute.UploadShardReq',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='meta', full_name='fighter.api.compute.UploadShardReq.meta', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='content', full_name='fighter.api.compute.UploadShardReq.content', index=1,
-      number=2, type=12, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"",
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[_UPLOADSHARDREQ_INFO, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-    _descriptor.OneofDescriptor(
-      name='data', full_name='fighter.api.compute.UploadShardReq.data',
-      index=0, containing_type=None,
-      create_key=_descriptor._internal_create_key,
-    fields=[]),
-  ],
-  serialized_start=149,
-  serialized_end=292,
-)
-
-
-_UPLOADSHARDREPLY = _descriptor.Descriptor(
-  name='UploadShardReply',
-  full_name='fighter.api.compute.UploadShardReply',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  create_key=_descriptor._internal_create_key,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='status', full_name='fighter.api.compute.UploadShardReply.status', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='msg', full_name='fighter.api.compute.UploadShardReply.msg', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=294,
-  serialized_end=341,
-)
 
 
 _GETSTATUSREPLY = _descriptor.Descriptor(
@@ -268,8 +147,8 @@ _GETSTATUSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=344,
-  serialized_end=639,
+  serialized_start=149,
+  serialized_end=444,
 )
 
 
@@ -300,8 +179,8 @@ _GETTASKDETAILSREQ = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=641,
-  serialized_end=678,
+  serialized_start=446,
+  serialized_end=483,
 )
 
 
@@ -374,8 +253,8 @@ _GETTASKDETAILSREPLY_DETAIL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=805,
-  serialized_end=946,
+  serialized_start=610,
+  serialized_end=751,
 )
 
 _GETTASKDETAILSREPLY = _descriptor.Descriptor(
@@ -419,48 +298,16 @@ _GETTASKDETAILSREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=681,
-  serialized_end=946,
+  serialized_start=486,
+  serialized_end=751,
 )
 
-_UPLOADSHARDREQ_INFO.containing_type = _UPLOADSHARDREQ
-_UPLOADSHARDREQ.fields_by_name['meta'].message_type = _UPLOADSHARDREQ_INFO
-_UPLOADSHARDREQ.oneofs_by_name['data'].fields.append(
-  _UPLOADSHARDREQ.fields_by_name['meta'])
-_UPLOADSHARDREQ.fields_by_name['meta'].containing_oneof = _UPLOADSHARDREQ.oneofs_by_name['data']
-_UPLOADSHARDREQ.oneofs_by_name['data'].fields.append(
-  _UPLOADSHARDREQ.fields_by_name['content'])
-_UPLOADSHARDREQ.fields_by_name['content'].containing_oneof = _UPLOADSHARDREQ.oneofs_by_name['data']
 _GETTASKDETAILSREPLY_DETAIL.containing_type = _GETTASKDETAILSREPLY
 _GETTASKDETAILSREPLY.fields_by_name['task_details'].message_type = _GETTASKDETAILSREPLY_DETAIL
-DESCRIPTOR.message_types_by_name['UploadShardReq'] = _UPLOADSHARDREQ
-DESCRIPTOR.message_types_by_name['UploadShardReply'] = _UPLOADSHARDREPLY
 DESCRIPTOR.message_types_by_name['GetStatusReply'] = _GETSTATUSREPLY
 DESCRIPTOR.message_types_by_name['GetTaskDetailsReq'] = _GETTASKDETAILSREQ
 DESCRIPTOR.message_types_by_name['GetTaskDetailsReply'] = _GETTASKDETAILSREPLY
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
-
-UploadShardReq = _reflection.GeneratedProtocolMessageType('UploadShardReq', (_message.Message,), {
-
-  'Info' : _reflection.GeneratedProtocolMessageType('Info', (_message.Message,), {
-    'DESCRIPTOR' : _UPLOADSHARDREQ_INFO,
-    '__module__' : 'fighter.api.compute.compute_svc_pb2'
-    # @@protoc_insertion_point(class_scope:fighter.api.compute.UploadShardReq.Info)
-    })
-  ,
-  'DESCRIPTOR' : _UPLOADSHARDREQ,
-  '__module__' : 'fighter.api.compute.compute_svc_pb2'
-  # @@protoc_insertion_point(class_scope:fighter.api.compute.UploadShardReq)
-  })
-_sym_db.RegisterMessage(UploadShardReq)
-_sym_db.RegisterMessage(UploadShardReq.Info)
-
-UploadShardReply = _reflection.GeneratedProtocolMessageType('UploadShardReply', (_message.Message,), {
-  'DESCRIPTOR' : _UPLOADSHARDREPLY,
-  '__module__' : 'fighter.api.compute.compute_svc_pb2'
-  # @@protoc_insertion_point(class_scope:fighter.api.compute.UploadShardReply)
-  })
-_sym_db.RegisterMessage(UploadShardReply)
 
 GetStatusReply = _reflection.GeneratedProtocolMessageType('GetStatusReply', (_message.Message,), {
   'DESCRIPTOR' : _GETSTATUSREPLY,
@@ -501,8 +348,8 @@ _COMPUTEPROVIDER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=949,
-  serialized_end=1544,
+  serialized_start=754,
+  serialized_end=1254,
   methods=[
   _descriptor.MethodDescriptor(
     name='GetStatus',
@@ -525,19 +372,9 @@ _COMPUTEPROVIDER = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
-    name='UploadShard',
-    full_name='fighter.api.compute.ComputeProvider.UploadShard',
-    index=2,
-    containing_service=None,
-    input_type=_UPLOADSHARDREQ,
-    output_type=_UPLOADSHARDREPLY,
-    serialized_options=None,
-    create_key=_descriptor._internal_create_key,
-  ),
-  _descriptor.MethodDescriptor(
     name='HandleTaskReadyGo',
     full_name='fighter.api.compute.ComputeProvider.HandleTaskReadyGo',
-    index=3,
+    index=2,
     containing_service=None,
     input_type=fighter_dot_types_dot_types__pb2._TASKREADYGOREQ,
     output_type=fighter_dot_types_dot_types__pb2._TASKREADYGOREPLY,
@@ -547,7 +384,7 @@ _COMPUTEPROVIDER = _descriptor.ServiceDescriptor(
   _descriptor.MethodDescriptor(
     name='HandleCancelTask',
     full_name='fighter.api.compute.ComputeProvider.HandleCancelTask',
-    index=4,
+    index=3,
     containing_service=None,
     input_type=fighter_dot_types_dot_types__pb2._TASKCANCELREQ,
     output_type=fighter_dot_types_dot_types__pb2._TASKCANCELREPLY,

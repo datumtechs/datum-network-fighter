@@ -18,7 +18,6 @@ from common_module.utils import load_cfg
 from pb.fighter.types import types_pb2
 from pb.fighter.api.compute import compute_svc_pb2, compute_svc_pb2_grpc
 from pb.fighter.api.data import data_svc_pb2, data_svc_pb2_grpc
-from pb.fighter.api import io_channel_pb2_grpc, via_svc_pb2
 from pb.common.constant import carrier_enum_pb2, fighter_enum_pb2
 
 cfg = {}
@@ -187,17 +186,6 @@ def list_data(args, stub):
     for row in response.data:
         print(row)
 
-
-def shares(args, stub):
-    if not args or len(args) != 4:
-        print('Syntax: shares data_id p0 p1 p2')
-        return
-    data_id = args[0]
-    parts = args[1:]
-    ans = stub.SendSharesData(data_svc_pb2.SendSharesDataRequest(data_id=data_id, receivers=parts))
-    print(data_svc_pb2.TaskStatus.Name(ans.status))
-
-
 def comp_get_status(args, stub):
     resp = stub.GetStatus(empty_pb2.Empty())
     print(resp)
@@ -270,9 +258,9 @@ def _mock_schedule_dispatch_task(peers, req, data_parties, compute_parties, each
     print("peers:", peers)
     for party, addr in peers.items():
         ch = grpc.insecure_channel(addr)
-        svc_type = via_svc_pb2.COMPUTE_SVC if party in compute_parties else via_svc_pb2.DATA_SVC
+        svc_type = fighter_enum_pb2.COMPUTE_SVC if party in compute_parties else fighter_enum_pb2.DATA_SVC
         if party in data_parties:
-            svc_type = via_svc_pb2.DATA_SVC
+            svc_type = fighter_enum_pb2.DATA_SVC
         print("svc_type:", svc_type)
         stub = svc_stub[svc_type](ch)
         req.party_id = party
@@ -307,7 +295,7 @@ def _mock_cancel_task(peers, req, compute_parties):
     print(peers)
     for party, addr in peers.items():
         ch = grpc.insecure_channel(addr)
-        svc_type = via_svc_pb2.COMPUTE_SVC if party in compute_parties else via_svc_pb2.DATA_SVC
+        svc_type = fighter_enum_pb2.COMPUTE_SVC if party in compute_parties else fighter_enum_pb2.DATA_SVC
         stub = svc_stub[svc_type](ch)
         resp = stub.HandleCancelTask(req)
         print(addr, resp)
@@ -319,7 +307,6 @@ directions = {
     'upload': upload,
     'upload_dir': upload_dir,
     'download': download,
-    'shares': shares,
     'pub_data': publish_data,
 
     'comp_status': comp_get_status,
@@ -330,9 +317,8 @@ directions = {
 
 }
 
-svc_stub = {via_svc_pb2.DATA_SVC: data_svc_pb2_grpc.DataProviderStub,
-            via_svc_pb2.COMPUTE_SVC: compute_svc_pb2_grpc.ComputeProviderStub,
-            via_svc_pb2.NET_COMM_SVC: io_channel_pb2_grpc.IoChannelStub
+svc_stub = {fighter_enum_pb2.DATA_SVC: data_svc_pb2_grpc.DataProviderStub,
+            fighter_enum_pb2.COMPUTE_SVC: compute_svc_pb2_grpc.ComputeProviderStub
             }
 
 channels = {}
@@ -361,12 +347,12 @@ if __name__ == '__main__':
     task_id = args.task_id
     addr = '{}:{}'.format(cfg['data_svc_ip'], cfg['data_svc_port'])
     ch = grpc.insecure_channel(addr)
-    stubs[via_svc_pb2.DATA_SVC] = svc_stub[via_svc_pb2.DATA_SVC](ch)
-    channels[via_svc_pb2.DATA_SVC] = ch
+    stubs[fighter_enum_pb2.DATA_SVC] = svc_stub[fighter_enum_pb2.DATA_SVC](ch)
+    channels[fighter_enum_pb2.DATA_SVC] = ch
     addr = '{}:{}'.format(cfg['compute_svc_ip'], cfg['compute_svc_port'])
     ch = grpc.insecure_channel(addr)
-    stubs[via_svc_pb2.COMPUTE_SVC] = svc_stub[via_svc_pb2.COMPUTE_SVC](ch)
-    channels[via_svc_pb2.COMPUTE_SVC] = ch
+    stubs[fighter_enum_pb2.COMPUTE_SVC] = svc_stub[fighter_enum_pb2.COMPUTE_SVC](ch)
+    channels[fighter_enum_pb2.COMPUTE_SVC] = ch
 
     while True:
         print("***************************")
@@ -380,9 +366,9 @@ if __name__ == '__main__':
         if cmd not in directions:
             continue
         if cmd.startswith('comp_'):
-            svc_type = via_svc_pb2.COMPUTE_SVC
+            svc_type = fighter_enum_pb2.COMPUTE_SVC
         else:
-            svc_type = via_svc_pb2.DATA_SVC
+            svc_type = fighter_enum_pb2.DATA_SVC
         stub = stubs[svc_type]
         directions[cmd](user_input[1:], stub)
 
