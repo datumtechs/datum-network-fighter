@@ -10,7 +10,7 @@ import psutil
 try:
     from config import cfg
 except:
-    from fighter.data_svc.config import cfg
+    from fighter_project.data_svc.config import cfg
 from common_module.report_engine import report_task_result
 from common_module.consts import ERROR_CODE
 from pb.fighter.types import types_pb2

@@ -10,11 +10,11 @@ from grpc_reflection.v1alpha import reflection
 try:
     from config import cfg
 except ImportError:
-    from fighter.data_svc.config import cfg
+    from fighter_project.data_svc.config import cfg
 try:
     from data_svc.svc import DataProvider
 except ImportError:
-    from fighter.data_svc.svc import DataProvider
+    from fighter_project.data_svc.svc import DataProvider
 from common_module.consts import GRPC_OPTIONS
 from common_module.report_engine import report_task_event
 from common_module.task_manager import TaskManager
