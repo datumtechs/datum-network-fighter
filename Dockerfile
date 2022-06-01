@@ -40,7 +40,20 @@ RUN pip3 install /Fighter/third_party/rosetta/*.whl
 RUN pip3 install /Fighter/third_party/channel_sdk/*.whl
 RUN pip3 install /Fighter/third_party/psi/*.whl
 
-COPY algorithms algorithms
-COPY common common
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
+RUN apt-get install -y --no-install-recommends \ 
+    libssl1.0.0 \
+    && apt-get autoremove
+    
+COPY common_module common_module
 COPY compute_svc compute_svc
 COPY data_svc data_svc
+COPY pb pb
+
+# unit test
+COPY algorithms algorithms
+COPY console console
+COPY tests tests
+COPY consul_client consul_client
+
