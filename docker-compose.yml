@@ -1,0 +1,12 @@
+# yaml 配置
+version: '3.6'
+services:
+  build_fighter:
+    image: "luodahui/fighter:v0.5.0"
+    build:
+      network: "host"
+      context: .
+      args: 
+        "PKG_ROSETTA": ./third_party/rosetta/latticex_rosetta-1.0.0-cp37-cp37m-linux_x86_64.whl
+        "PKG_PSI": ./third_party/psi/latticex_psi-1.0.0-cp37-cp37m-linux_x86_64.whl
+      dockerfile: Dockerfile
