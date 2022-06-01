@@ -1,6 +1,6 @@
-bind_ip: 127.0.0.1
+bind_ip: 0.0.0.0
 port: 50021
-ice_grid: 127.0.0.1:55559 # Use this parameter when not using consul
+ice_grid: 192.168.2.128:10032 # Use this parameter when not using consul
 task_port_range: [41000, 41100]
 thread_pool_size: 12
 pass_ice: true
@@ -16,7 +16,7 @@ certs:
   client_cert: CC.key
   password: 123456
 consul:
-  service_ip: 127.0.0.1
+  service_ip: 0.0.0.0
   service_port: 8500
   name: jobService
   tag: job
