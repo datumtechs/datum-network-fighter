@@ -4,7 +4,7 @@ import logging
 from grpc import _common
 
 log = logging.getLogger(__name__)
-GateWayConsulServiceAddressKey = "datum/icegrid_ip_port"
+GateWayConsulServiceAddressKey = "datumnetwork/icegrid_ip_port"
 
 
 def load_cfg(file):
