@@ -280,9 +280,9 @@ def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, limit_
             memory_list.append(used_memory)
 
             avg_used_memory = sum(memory_list) / len(memory_list)
-            if limit_memory and (avg_used_memory > limit_memory):
-                log.error(f"memory_list: {memory_list}")
-                raise Exception(f"memory used({round(avg_used_memory, 2)}B) exceeds the limit({limit_memory}B).")
+            # if limit_memory and (avg_used_memory > limit_memory):
+            #     log.error(f"memory_list: {memory_list}")
+            #     raise Exception(f"memory used({round(avg_used_memory, 2)}B) exceeds the limit({limit_memory}B).")
 
             # cpu limit
             used_processor = round(total_cpu_num * p.cpu_percent() / 100)
