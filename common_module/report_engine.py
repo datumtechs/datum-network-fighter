@@ -57,7 +57,7 @@ class ReportEngine(object):
         req.task_event.task_id = event.dict_["task_id"]
         req.task_event.identity_id = event.dict_["identity_id"]
         req.task_event.party_id = event.dict_["party_id"]
-        req.task_event.content = "{}:{}".format(event.dict_["party_id"], event.dict_["content"])
+        req.task_event.content = event.dict_["content"]
         req.task_event.create_at = event.dict_["create_at"]
         response = self.__client.ReportTaskEvent(req)
         log.info(request_to_str(req))
