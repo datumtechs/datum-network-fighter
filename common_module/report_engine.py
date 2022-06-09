@@ -57,7 +57,7 @@ class ReportEngine(object):
         req.task_event.task_id = event.dict_["task_id"]
         req.task_event.identity_id = event.dict_["identity_id"]
         req.task_event.party_id = event.dict_["party_id"]
-        req.task_event.content = "{}:{}".format(event.dict_["party_id"], event.dict_["content"])
+        req.task_event.content = event.dict_["content"]
         req.task_event.create_at = event.dict_["create_at"]
         response = self.__client.ReportTaskEvent(req)
         log.info(request_to_str(req))
@@ -280,9 +280,9 @@ def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, limit_
             memory_list.append(used_memory)
 
             avg_used_memory = sum(memory_list) / len(memory_list)
-            if limit_memory and (avg_used_memory > limit_memory):
-                log.error(f"memory_list: {memory_list}")
-                raise Exception(f"memory used({round(avg_used_memory, 2)}B) exceeds the limit({limit_memory}B).")
+            # if limit_memory and (avg_used_memory > limit_memory):
+            #     log.error(f"memory_list: {memory_list}")
+            #     raise Exception(f"memory used({round(avg_used_memory, 2)}B) exceeds the limit({limit_memory}B).")
 
             # cpu limit
             used_processor = round(total_cpu_num * p.cpu_percent() / 100)
@@ -297,14 +297,14 @@ def monitor_resource_usage(task_pid, limit_time, limit_memory, limit_cpu, limit_
             net_1 = psutil.net_io_counters()
             time.sleep(1)
             net_2 = psutil.net_io_counters()
-            bandwidth_list.append((net_2.bytes_sent - net_1.bytes_sent) + (net_2.bytes_recv - net_1.bytes_recv))
+            bandwidth_list.append(net_2.bytes_sent - net_1.bytes_sent)
 
             # bandwidth limit
             avg_used_bandwidth = sum(bandwidth_list) / len(bandwidth_list)
-            if limit_bandwidth and (avg_used_bandwidth > limit_bandwidth):
-                log.error(f"bandwidth_list: {bandwidth_list}")
-                raise Exception(
-                    f"bandwidth used({round(avg_used_bandwidth, 2)}) bps,exceeds the limit({limit_bandwidth}) bps.")
+            # if limit_bandwidth and (avg_used_bandwidth > limit_bandwidth):
+            #     log.error(f"bandwidth_list: {bandwidth_list}")
+            #     raise Exception(
+            #         f"bandwidth used({round(avg_used_bandwidth, 2)}) bps,exceeds the limit({limit_bandwidth}) bps.")
             count += 1
             if first:
                 first = False

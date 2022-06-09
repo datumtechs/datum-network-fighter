@@ -39,7 +39,7 @@ def get_sys_stat(cfg):
     net_1 = psutil.net_io_counters()
     time.sleep(1)
     net_2 = psutil.net_io_counters()
-    stat.used_bandwidth = (net_2.bytes_sent - net_1.bytes_sent) + (net_2.bytes_recv - net_1.bytes_recv)
+    stat.used_bandwidth = net_2.bytes_sent - net_1.bytes_sent  # only send
     stat.idle_bandwidth = max(stat.total_bandwidth - stat.used_bandwidth, 0)
 
     stat.status = ERROR_CODE["OK"]
