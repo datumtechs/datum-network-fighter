@@ -82,10 +82,10 @@ class Task:
         try:
             log.info(f'start download_algo.')
             self.download_algo()
-            report_event(self.event_type["DOWNLOAD_CONTRACT_SUCCESS"], "download contract success.")
+            report_event(self.event_type["DOWNLOAD_ALGORITHM_SUCCESS"], "download algorithm success.")
         except Exception as e:
             log.exception(repr(e))
-            report_event(self.event_type["DOWNLOAD_CONTRACT_FAILED"], f"download contract fail.")
+            report_event(self.event_type["DOWNLOAD_ALGORITHM_FAILED"], f"download algorithm fail. {str(e)[:900]}")
             report_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
 
         log.info(f'start build_env.')
@@ -98,6 +98,13 @@ class Task:
                             self.cfg, self.connect_policy,self.limit_time)
             log.info(f'channel_config: {channel_config}.')
             io_channel = IOChannel(self.party_id, channel_config)
+            report_event(self.event_type["CREATE_CHANNEL_SUCCESS"], "create channel success.")
+        except Exception as e:
+            log.exception(repr(e))
+            report_event(self.event_type["CREATE_CHANNEL_FAILED"], f"create channel failed. {str(e)[:900]}")
+            report_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
+
+        try:
             log.info(f'start get_input_data.')
             new_input_data = self.get_input_data()
             log.info(f'start assemble_cfg.')
@@ -110,8 +117,8 @@ class Task:
             log.info(f'finish importlib.import_module.')
             result_dir = self._get_result_dir()
             self._ensure_dir(result_dir)
-            log.info(f'start execute contract.')
-            report_event(self.event_type["CONTRACT_EXECUTE_START"], "contract execute start.")
+            log.info(f'start execute algorithm.')
+            report_event(self.event_type["ALGORITHM_EXECUTE_START"], "algorithm execute start.")
             algo_return = algo_module.main(io_channel, user_cfg, self.data_party, self.computation_party, self.result_party, result_dir)
             algo_return_len = len(algo_return)
             assert algo_return_len in [2,3], f"algo return must 2 or 3 params, not {algo_return_len}"
@@ -124,7 +131,7 @@ class Task:
             assert isinstance(result_type, str), f"result_type must be type(string), not {type(result_type)}"
             assert isinstance(extra, str), f"extra must be type(string), not {type(extra)}"
 
-            log.info(f'finish execute contract.')
+            log.info(f'finish execute algorithm.')
             if self.party_id in self.result_party:
                 assert result_path, f"result_path can not Empty. result_path={result_path}"
                 result_path = os.path.abspath(result_path)
@@ -136,11 +143,11 @@ class Task:
                 log.info(f'start report task result file summary.')
                 report_task_result(self.cfg['schedule_svc'], 'result_file', file_summary)
                 log.info(f'finish report task result file summary. ')
-            report_event(self.event_type["CONTRACT_EXECUTE_SUCCESS"], "contract execute success.")
+            report_event(self.event_type["ALGORITHM_EXECUTE_SUCCESS"], "algorithm execute success.")
             report_event(COMMON_EVENT["END_FLAG_SUCCESS"], "task success.")
         except Exception as e:
             log.exception(repr(e))
-            report_event(self.event_type["CONTRACT_EXECUTE_FAILED"], f"contract execute failed. {str(e)[:900]}")
+            report_event(self.event_type["ALGORITHM_EXECUTE_FAILED"], f"algorithm execute failed. {str(e)[:900]}")
             report_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
         finally:
             log.info('task final clean.')
