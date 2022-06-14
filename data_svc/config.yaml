@@ -7,7 +7,7 @@ chunk_size: 1024
 pass_ice: true
 thread_pool_size: 12
 data_root: ../data
-code_root_dir: ../contract_work_dir
+code_root_dir: algorithm_work_dir
 results_root_dir: results_root
 total_bandwidth: 100000000
 certs:
