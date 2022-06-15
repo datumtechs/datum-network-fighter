@@ -87,7 +87,6 @@ class Task:
             log.exception(repr(e))
             report_event(self.event_type["DOWNLOAD_ALGORITHM_FAILED"], f"download algorithm fail. {str(e)[:900]}")
             report_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
-        finally:
             self.clean()
             return
 
@@ -106,9 +105,8 @@ class Task:
             log.exception(repr(e))
             report_event(self.event_type["CREATE_CHANNEL_FAILED"], f"create channel failed. {str(e)[:900]}")
             report_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
-        finally:
             self.clean()
-            return
+            return          
 
         try:
             log.info(f'start get_input_data.')
@@ -157,7 +155,6 @@ class Task:
             report_event(COMMON_EVENT["END_FLAG_FAILED"], "task fail.")
         finally:
             self.clean()
-            return
 
     def get_elapsed_time(self):
         now = time.time()
@@ -229,7 +226,8 @@ class Task:
         log.info('task final clean.')
         import shutil
         dir_ = self._get_code_dir()
-        shutil.rmtree(dir_, ignore_errors=True)
+        if os.path.exists(dir_):
+            shutil.rmtree(dir_, ignore_errors=True)
         log.info(f'#################### task finish run, task_id: {self.id}, party_id: {self.party_id}')
 
 def map_data_type_to_int(data_type_str):
