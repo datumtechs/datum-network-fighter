@@ -73,9 +73,9 @@ def upload_dir(args, stub):
 def _upload_chunk(path):
     '''
     message UploadRequest {
-        string file_name = 1;
+        string data_name = 1;
         bytes content = 2;
-        string file_type = 3;
+        string data_type = 3;
         string description = 4;
         repeated string columns = 5;
         repeated string col_dtypes = 6;
@@ -114,9 +114,9 @@ def _upload_chunk(path):
         chunk_size = 1024
         chunk = file.read(chunk_size)
         while chunk:
-            yield data_svc_pb2.UploadRequest(file_name=file_name,
+            yield data_svc_pb2.UploadRequest(data_name=file_name,
                                              content=chunk,
-                                             file_type=data_type_int,
+                                             data_type=data_type_int,
                                              description='',
                                              columns=cols,
                                              col_dtypes=[''],
@@ -145,13 +145,13 @@ def download(args, stub):
         options = {'file_root_dir': root_dir}
         if compress and compress != '-':
             options['compress'] = compress
-        response_it = stub.DownloadData(data_svc_pb2.DownloadRequest(file_path=data_id, options=options))
+        response_it = stub.DownloadData(data_svc_pb2.DownloadRequest(data_path=data_id, options=options))
         for ans in response_it:
             if ans.WhichOneof('data') == 'status':
-                print(data_svc_pb2.TaskStatus.Name(ans.status))
-                if ans.status != data_svc_pb2.TaskStatus.Finished:
+                print(fighter_enum_pb2.TaskStatus.Name(ans.status))
+                if ans.status != fighter_enum_pb2.TaskStatus.Finished:
                     os.remove(save_to)
-                if ans.status == data_svc_pb2.TaskStatus.Finished:
+                if ans.status == fighter_enum_pb2.TaskStatus.Finished:
                     ok = True
                 break
             f.write(ans.content)
