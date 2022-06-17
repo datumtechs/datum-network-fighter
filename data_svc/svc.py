@@ -16,7 +16,7 @@ from common_module.consts import ERROR_CODE
 from pb.fighter.types import types_pb2
 from pb.fighter.api.compute import compute_svc_pb2, compute_svc_pb2_grpc
 from pb.fighter.api.data import data_svc_pb2, data_svc_pb2_grpc
-from pb.common.constant import carrier_enum_pb2
+from pb.common.constant import carrier_enum_pb2, fighter_enum_pb2
 
 log = logging.getLogger(__name__)
 
@@ -169,19 +169,19 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     path = compress_file_name
                 else:
                     log.error(f'unsupported compress type: {compress}')
-                    yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
+                    yield data_svc_pb2.DownloadReply(status=fighter_enum_pb2.TaskStatus.Failed)
                     return
             else:
                 if os.path.isdir(path):
                     log.error(f'this is a directory, set compress type please')
-                    yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
+                    yield data_svc_pb2.DownloadReply(status=fighter_enum_pb2.TaskStatus.Failed)
                     return
                 else:
                     pass  # keep origin file
 
             log.info(f'to download: {path}')
             if not os.path.exists(path):
-                yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Failed)
+                yield data_svc_pb2.DownloadReply(status=fighter_enum_pb2.TaskStatus.Failed)
             else:
                 log.info('start sending content')
                 with open(path, 'rb') as content_file:
@@ -190,7 +190,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
                     while chunk:
                         yield data_svc_pb2.DownloadReply(content=chunk)
                         chunk = content_file.read(chunk_size)
-                yield data_svc_pb2.DownloadReply(status=data_svc_pb2.TaskStatus.Finished)
+                yield data_svc_pb2.DownloadReply(status=fighter_enum_pb2.TaskStatus.Finished)
                 log.info('sending content done')
         except Exception as e:
             log.error(repr(e))
