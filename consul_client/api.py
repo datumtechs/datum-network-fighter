@@ -58,7 +58,7 @@ class ConsulApi(object):
     def check_service_config(self):
         try:
             consul_config = self.cfg['consul']
-            ip, port = self.cfg['bind_ip'], int(self.cfg['port'])
+            ip, port = self.cfg['register_ip'], int(self.cfg['port'])
             name, tag = consul_config['name'], consul_config['tag']
             interval, deregister = consul_config['interval'], consul_config['deregister']
             str_re = '^(1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|[1-9])\.(1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|\d)\.(1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|\d)\.(1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|\d)$'
