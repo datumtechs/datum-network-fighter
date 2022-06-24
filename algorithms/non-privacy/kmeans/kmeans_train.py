@@ -163,7 +163,7 @@ class KmeansTrain(BaseAlgorithm):
                     "n_init": 10,
                     "max_iter": 300,
                     "tol": 0.0001,
-                    "random_seed": null
+                    "random_seed": -1
                 },
                 "data_flow_restrict": {
                     "data1": ["compute1"],
@@ -192,7 +192,7 @@ class KmeansTrain(BaseAlgorithm):
         self.n_init = hyperparams.get("n_init", 10)
         self.max_iter = hyperparams.get("max_iter", 300)
         self.tol = hyperparams.get("tol", 0.0001)
-        self.random_seed = hyperparams.get("random_seed", None)
+        self.random_seed = hyperparams.get("random_seed", -1)
         self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
 
     def check_parameters(self):
@@ -203,14 +203,17 @@ class KmeansTrain(BaseAlgorithm):
                                n_init=(self.n_init, int),
                                max_iter=(self.max_iter, int),
                                tol=(self.tol, float),
-                               random_seed=(self.random_seed, (int, type(None))),
+                               random_seed=(self.random_seed, int),
                                data_flow_restrict=(self.data_flow_restrict, dict))
         assert self.n_clusters > 1, f"n_clusters must be greater 1, not {self.n_clusters}"
         assert self.init_method in ["k-means++", "random"], f"init_method only support k-means++,random. not {self.init_method}"
         assert self.n_init > 0, f"n_init must be greater 0, not {self.n_init}"
         assert self.max_iter > 0, f"max_iter must be greater 0, not {self.max_iter}"
+        assert 0 < self.tol < 1, f"tol must be between (0, 1) , not {self.tol}"
         if self.random_seed:
-            assert 0 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [0,2^32-1], not {self.random_seed}"
+            assert -1 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [-1, 2^32-1], not {self.random_seed}"
+            if self.random_seed == -1:
+                self.random_seed = None
         log.info(f"check parameter finish.")
     
     def _check_input_data(self):

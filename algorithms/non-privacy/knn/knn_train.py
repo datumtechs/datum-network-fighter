@@ -165,7 +165,7 @@ class KnnTrain(BaseAlgorithm):
                     "metric_p": 2,
                     "use_validation_set": true,
                     "validation_set_rate": 0.2,
-                    "random_seed": null
+                    "random_seed": -1
                 },
                 "data_flow_restrict": {
                     "data1": ["compute1"],
@@ -200,7 +200,7 @@ class KnnTrain(BaseAlgorithm):
         self.metric_p = hyperparams.get("metric_p", 2)
         self.use_validation_set = hyperparams.get("use_validation_set", True)
         self.validation_set_rate = hyperparams.get("validation_set_rate", 0.2)
-        self.random_seed = hyperparams.get("random_seed", None)
+        self.random_seed = hyperparams.get("random_seed", -1)
         self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
 
     def check_parameters(self):
@@ -211,7 +211,7 @@ class KnnTrain(BaseAlgorithm):
                                metric_p=(self.metric_p, int),
                                use_validation_set=(self.use_validation_set, bool),
                                validation_set_rate=(self.validation_set_rate, float),
-                               random_seed=(self.random_seed, (int, type(None))),
+                               random_seed=(self.random_seed, int),
                                data_flow_restrict=(self.data_flow_restrict, dict))
         assert self.n_neighbors > 0, f"n_neighbors must be greater 0, not {self.n_neighbors}"
         assert self.distance_metric in ["minkowski"], f"distance_metric only support minkowski, not {self.distance_metric}"
@@ -219,7 +219,9 @@ class KnnTrain(BaseAlgorithm):
         if self.use_validation_set:
             assert 0 < self.validation_set_rate < 1, f"validattion_set_rate must be between (0,1), not {self.validation_set_rate}"
         if self.random_seed:
-            assert 0 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [0,2^32-1], not {self.random_seed}"
+            assert -1 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [-1, 2^32-1], not {self.random_seed}"
+            if self.random_seed == -1:
+                self.random_seed = None
         log.info(f"check parameter finish.")
     
     def _check_input_data(self):

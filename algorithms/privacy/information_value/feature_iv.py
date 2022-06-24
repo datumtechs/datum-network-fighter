@@ -150,8 +150,8 @@ class FeatureIV(BaseAlgorithm):
                 "hyperparams": {
                     "binning_type": 1,  # 1:frequency, 2:distance
                     "num_bin": 5,
-                    "good_value": 1.0,
-                    "bad_value": 0.0
+                    "postive_value": 1.0,
+                    "negative_value": 0.0
                 }
             }
         }
@@ -178,16 +178,16 @@ class FeatureIV(BaseAlgorithm):
             self.data_with_label = False
         self.binning_type = dynamic_parameter.get("binning_type", 1)
         self.num_bin = dynamic_parameter.get("num_bin", 2)
-        self.good_value = dynamic_parameter.get("good_value", 1.0)
-        self.bad_value = dynamic_parameter.get("bad_value", 0.0)
+        self.postive_value = dynamic_parameter.get("postive_value", 1.0)
+        self.negative_value = dynamic_parameter.get("negative_value", 0.0)
         self.calc_iv_columns = dynamic_parameter["calc_iv_columns"]  # must have iv值
 
     def check_parameters(self):
         self._check_input_data()
         self.check_params_type(binning_type=(self.binning_type, int),
                                num_bin=(self.num_bin, int),
-                               good_value=(self.good_value, (int, float)),
-                               bad_value=(self.bad_value, (int, float)),
+                               postive_value=(self.postive_value, (int, float)),
+                               negative_value=(self.negative_value, (int, float)),
                                calc_iv_columns=(self.calc_iv_columns, dict))
         assert self.binning_type in [1, 2], f"binning_type only support 1,2. not {self.binning_type}"
         assert self.num_bin > 1, f"num_bin must be greater 1, not {self.num_bin}"
@@ -254,8 +254,8 @@ class FeatureIV(BaseAlgorithm):
             iv_handler = rtt.SecureFeatureIV(binning_type_name, 
                                 num_of_bin=self.num_bin, 
                                 bin_type=self.binning_type, 
-                                good_value=self.good_value, 
-                                bad_value=self.bad_value,
+                                good_value=self.postive_value, 
+                                bad_value=self.negative_value,
                                 feature_index=feature_index)
             log.info("start iv fit.")
             siv = iv_handler.Fit(shard_x, shard_y)

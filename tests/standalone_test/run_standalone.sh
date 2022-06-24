@@ -11,7 +11,7 @@ scripts_path=$(cd $(dirname $0); pwd)
 log_path=${scripts_path}"/log"
 base_dir=${scripts_path}"/../.."
 cfg=config.yaml
-ip=0.0.0.0
+ip=127.0.0.1
 use_ssl=0      # 0: not use ssl,  1: use ssl
 use_consul=0   # 0: not use consul, 1: use consul
 # if modify, must absolute path to python37

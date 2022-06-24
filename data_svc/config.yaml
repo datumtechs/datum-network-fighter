@@ -1,7 +1,7 @@
 bind_ip: 0.0.0.0
 register_ip: 127.0.0.1
 port: 50021
-ice_grid: 192.168.2.128:10032 # Use this parameter when not using consul
+ice_grid: 127.0.0.1:55559 # Use this parameter when not using consul
 task_port_range: [31000, 31100]
 file_system: local
 chunk_size: 1024

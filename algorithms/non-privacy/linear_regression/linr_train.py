@@ -170,7 +170,8 @@ class LinRTrain(BaseAlgorithm):
                     "use_intercept": true,
                     "optimizer": "sgd",
                     "use_validation_set": true,
-                    "validation_set_rate": 0.2
+                    "validation_set_rate": 0.2,
+                    "random_seed": -1
                 },
                 "data_flow_restrict": {
                     "data1": ["compute1"],
@@ -208,7 +209,7 @@ class LinRTrain(BaseAlgorithm):
         self.optimizer = hyperparams.get("optimizer", "Adam")
         self.use_validation_set = hyperparams.get("use_validation_set", True)
         self.validation_set_rate = hyperparams.get("validation_set_rate", 0.2)
-        self.random_seed = hyperparams.get("random_seed", None)
+        self.random_seed = hyperparams.get("random_seed", -1)
         self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
 
     def check_parameters(self):
@@ -222,7 +223,7 @@ class LinRTrain(BaseAlgorithm):
                                optimizer=(self.optimizer, str),
                                use_validation_set=(self.use_validation_set, bool),
                                validation_set_rate=(self.validation_set_rate, float),
-                               random_seed=(self.random_seed, (int, type(None))),
+                               random_seed=(self.random_seed, int),
                                data_flow_restrict=(self.data_flow_restrict, dict))
         assert self.epochs > 0, f"epochs must be greater 0, not {self.epochs}"
         assert self.batch_size > 0, f"batch_size must be greater 0, not {self.batch_size}"
@@ -230,7 +231,9 @@ class LinRTrain(BaseAlgorithm):
         if self.use_validation_set:
             assert 0 < self.validation_set_rate < 1, f"validattion_set_rate must be between (0,1), not {self.validation_set_rate}"
         if self.random_seed:
-            assert 0 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [0,2^32-1], not {self.random_seed}"
+            assert -1 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [-1, 2^32-1], not {self.random_seed}"
+            if self.random_seed == -1:
+                self.random_seed = None
         if self.init_method == 'random_uniform':
             self.init_method = tf.random_uniform
         elif self.init_method == 'random_normal':

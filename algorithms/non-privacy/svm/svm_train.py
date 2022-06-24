@@ -168,7 +168,7 @@ class SVMTrain(BaseAlgorithm):
                     "tol": 0.001,
                     "use_validation_set": true,
                     "validation_set_rate": 0.2,
-                    "random_seed": null
+                    "random_seed": -1
                 },
                 "data_flow_restrict": {
                     "data1": ["compute1"],
@@ -206,7 +206,7 @@ class SVMTrain(BaseAlgorithm):
         self.tol = hyperparams.get("tol", 0.001)
         self.use_validation_set = hyperparams.get("use_validation_set", True)
         self.validation_set_rate = hyperparams.get("validation_set_rate", 0.2)
-        self.random_seed = hyperparams.get("random_seed", None)
+        self.random_seed = hyperparams.get("random_seed", -1)
         self.data_flow_restrict = dynamic_parameter["data_flow_restrict"]
 
     def check_parameters(self):
@@ -220,7 +220,7 @@ class SVMTrain(BaseAlgorithm):
                                tol=(self.tol, float),
                                use_validation_set=(self.use_validation_set, bool),
                                validation_set_rate=(self.validation_set_rate, float),
-                               random_seed=(self.random_seed, (int, type(None))),
+                               random_seed=(self.random_seed, int),
                                data_flow_restrict=(self.data_flow_restrict, dict))
         assert self.C >= 0, f"C must be greater_equal 0, not {self.C}"
         assert self.kernel in ["rbf", "linear", "poly", "sigmoid"], f"kernel supprot rbf,linear,poly,sigmoid. not {self.kernel}"
@@ -228,11 +228,13 @@ class SVMTrain(BaseAlgorithm):
             assert self.degree > 0, f"degree must be greater 0, not {self.degree}"
         assert self.max_iter > 0 or self.max_iter == -1, f"max_iter must be greater 0 or equal to -1, not {self.max_iter}"
         assert self.decision_function_shape in ["ovr", "ovo"], f"decision_function_shape support ovr,ovo. not {self.decision_function_shape}"
-        assert 0 < self.tol <= 1, f"tol must betweem (0,1], not {self.tol}"
+        assert 0 < self.tol < 1, f"tol must betweem (0,1), not {self.tol}"
         if self.use_validation_set:
             assert 0 < self.validation_set_rate < 1, f"validattion_set_rate must be between (0,1), not {self.validation_set_rate}"
         if self.random_seed:
-            assert 0 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [0,2^32-1], not {self.random_seed}"
+            assert -1 <= self.random_seed <= 2**32 - 1, f"random_seed must be between [-1, 2^32-1], not {self.random_seed}"
+            if self.random_seed == -1:
+                self.random_seed = None
         log.info(f"check parameter finish.")
     
     def _check_input_data(self):
