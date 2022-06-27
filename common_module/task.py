@@ -100,7 +100,7 @@ class Task:
                             self.cfg, self.connect_policy,self.limit_time)
             log.info(f'channel_config: {channel_config}.')
             io_channel = IOChannel(self.party_id, channel_config)
-            report_event(self.event_type["CREATE_CHANNEL_SUCCESS"], "create channel success.")
+            # report_event(self.event_type["CREATE_CHANNEL_SUCCESS"], "create channel success.")
         except Exception as e:
             log.exception(repr(e))
             report_event(self.event_type["CREATE_CHANNEL_FAILED"], f"create channel failed. {str(e)[:900]}")
