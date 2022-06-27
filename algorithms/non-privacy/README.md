@@ -359,6 +359,10 @@
           "random_seed": -1,     # 是否使用随机种子，可选[-1~2^32-1之间的所有整数]。-1表示不使用随机种子， 其他整数表示使用随机种子
           "use_validation_set": true,  # 是否使用验证集，true-用，false-不用
           "validation_set_rate": 0.2,  # 如果使用验证集，验证集占输入数据集的比例，浮点数，值域(0,1)
+      },
+      "data_flow_restrict": {       # 数据流向限制
+      	  "data1": ["compute1"],    # 数据提供方data1只流向计算方compute1
+          "compute1": ["result1"]   # 计算方compute1只流向结果接收方result1
       }
   }
 }
