@@ -37,7 +37,7 @@ pip3 install dist/channel_sdk-*
 ```
 git clone --recurse http://192.168.9.66/PlatON-Crypto/Rosetta.git -b develop
 cd Rosetta
-git checkout 49cdde3eb1d6cfe12c139d09756e240321aa5c6e
+git checkout 49e9cce5cc7d52f92bfb839723041d63eef543fe
 ```
 
 + 环境依赖确认
