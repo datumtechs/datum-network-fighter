@@ -40,7 +40,7 @@ compute_svc/start_compute_svc_group.sh
 logs
 console/algorithm*
 console/task_cfg*
-contract_work_dir
+algorithm_work_dir
 results_root
 log/
 *.log

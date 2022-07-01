@@ -16,33 +16,33 @@
     "peers": [
         {
             "NODE_ID": "data1",
-            "ADDRESS": "192.168.2.128:10031",
-            "INTERNAL": "0.0.0.0:50101"
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50101"
         },
         {
             "NODE_ID": "data2",
-            "ADDRESS": "192.168.2.128:10031",
-            "INTERNAL": "0.0.0.0:50102"
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50102"
         },
         {
             "NODE_ID": "result1",
-            "ADDRESS": "192.168.2.128:10031",
-            "INTERNAL": "0.0.0.0:50103"
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50103"
         },
         {
             "NODE_ID": "compute1",
-            "ADDRESS": "192.168.2.128:10031",
-            "INTERNAL": "0.0.0.0:50201"
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50201"
         },
         {
             "NODE_ID": "compute2",
-            "ADDRESS": "192.168.2.128:10031",
-            "INTERNAL": "0.0.0.0:50202"
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50202"
         },
         {
             "NODE_ID": "compute3",
-            "ADDRESS": "192.168.2.128:10031",
-            "INTERNAL": "0.0.0.0:50203"
+            "ADDRESS": "127.0.0.1:55558",
+            "INTERNAL": "127.0.0.1:50203"
         }
     ],
     "dynamic_parameter": {

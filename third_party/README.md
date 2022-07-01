@@ -83,7 +83,7 @@ pip3 install dist/latticex_rosetta-*
 ```
 git clone --recurse http://192.168.9.66/PlatON-Crypto/PSI.git -b develop
 cd PSI
-git checkout 8db892f9a39be02d2197350eec00c7c25296d004
+git checkout e2ebbbc29994b8f17a3149a3f32336d555e06473
 ```
 
 + 安装依赖
