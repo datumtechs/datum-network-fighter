@@ -19,7 +19,7 @@ class ComputeSvcTest(unittest.TestCase):
         cfg.update(load_cfg("config.yaml"))
         with get_free_loopback_tcp_port() as port:
             print(f'got a free port for compute_svc: {port}')
-        cfg['bind_ip'] = 'localhost'
+        cfg['register_ip'] = 'localhost'
         cfg['port'] = port
         cfg['pass_via'] = False
         self._port = port
@@ -45,7 +45,7 @@ class ComputeSvcRpcTest(unittest.TestCase):
         cfg.update(load_cfg("config.yaml"))
         with get_free_loopback_tcp_port() as port:
             print(f'got a free port: {port}')
-        cfg['bind_ip'] = 'localhost'
+        cfg['register_ip'] = 'localhost'
         cfg['port'] = port
         cfg['pass_via'] = False
         task_manager = TaskManager(cfg)
