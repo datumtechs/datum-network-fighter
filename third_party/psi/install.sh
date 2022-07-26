@@ -1,1 +1,1 @@
-pip3 install latticex_psi-* --user
+pip3 install dist/latticex_psi-*
