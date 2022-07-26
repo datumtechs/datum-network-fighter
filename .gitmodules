@@ -1,4 +1,4 @@
 [submodule "armada-common"]
 	path = armada-common
 	url = git@github.com:datumtechs/datum-network-armada-common.git
-	branch = v0.4.0-restructure
+	branch = v0.5.0
