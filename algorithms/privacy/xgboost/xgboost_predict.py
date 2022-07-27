@@ -275,7 +275,7 @@ class PrivacyXgbPredict(BaseAlgorithm):
                 
         # predict
         predict_start_time = time.time()
-        rv_pred = xgb.Reveal(xgb.Predict(shard_x), self.result_party)
+        rv_pred = xgb.Reveal(xgb.Predict(shard_x))
         predict_use_time = round(time.time() - predict_start_time, 3)
         log.info(f"predict finish. predict_use_time={predict_use_time}s")
         y_shape = rv_pred.shape

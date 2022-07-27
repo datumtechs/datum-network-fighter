@@ -72,7 +72,6 @@ class BaseAlgorithm(object):
         log.info(f"start get input parameter.")
         self.io_channel = io_channel
         self.data_party = list(data_party)
-        self.data_party = ["data1", "data2"]
         self.compute_party = list(compute_party)
         self.result_party = list(result_party)
         self.results_dir = results_dir
@@ -178,8 +177,8 @@ class FeatureIV(BaseAlgorithm):
             self.data_with_label = False
         self.binning_type = dynamic_parameter.get("binning_type", 1)
         self.num_bin = dynamic_parameter.get("num_bin", 2)
-        self.postive_value = dynamic_parameter.get("postive_value", 1.0)
-        self.negative_value = dynamic_parameter.get("negative_value", 0.0)
+        self.postive_value = dynamic_parameter.get("postive_value", 1)
+        self.negative_value = dynamic_parameter.get("negative_value", 0)
         self.calc_iv_columns = dynamic_parameter["calc_iv_columns"]  # must have iv值
 
     def check_parameters(self):
@@ -249,7 +248,6 @@ class FeatureIV(BaseAlgorithm):
             else:
                 binning_type_name = "Binning-distance"
             feature_index = list(range(feature_num))
-            # feature_index = [0]
             log.info("create iv handler")
             iv_handler = rtt.SecureFeatureIV(binning_type_name, 
                                 num_of_bin=self.num_bin, 
@@ -259,9 +257,8 @@ class FeatureIV(BaseAlgorithm):
                                 feature_index=feature_index)
             log.info("start iv fit.")
             siv = iv_handler.Fit(shard_x, shard_y)
-            log.info(f"***************: {siv}")
             log.info("iv fit success.")
-            iv = iv_handler.Reveal(siv, self.result_party)
+            iv = iv_handler.Reveal(siv)
             log.info(f"iv reveal success.")
         else:
             log.info("computing, please waiting for compute finish...")
@@ -299,6 +296,8 @@ class FeatureIV(BaseAlgorithm):
             
             if self.data_with_label:
                 y_data = input_data[self.label_column]
+                class_num = y_data.unique().shape[0]
+                assert class_num == 2, f"label column must be 2 class, not {class_num} class."
                 y_file = os.path.join(temp_dir, f"y_file_{self.party_id}.csv")
                 y_data.to_csv(y_file, header=True, index=False)            
             x_data = input_data[self.selected_columns]

@@ -15,9 +15,9 @@ RUN apt-get install -y --no-install-recommends vim wget unzip git tree dos2unix 
 
 # python/pip
 RUN apt-get install -y --no-install-recommends python3.7 python3.7-dev python3-distutils python3-pip && apt-get autoremove
-RUN cd /usr/bin && ln -sf python3.7 python && ln -sf python3.7 python3 && ln -sf pip3 pip && python -m pip install --upgrade pip
-RUN pip3 install setuptools==57.5.0 wheel==0.37.1 -i https://mirrors.aliyun.com/pypi/simple/
-RUN pip3 install numpy pandas -i https://mirrors.aliyun.com/pypi/simple/
+RUN cd /usr/bin && ln -sf python3.7 python && ln -sf python3.7 python3 && ln -sf pip3 pip && pip install --upgrade pip
+RUN pip3 install setuptools==57.5.0 wheel==0.37.1 -i https://pypi.douban.com/simple/
+RUN pip3 install numpy pandas -i https://pypi.douban.com/simple/
 RUN wget https://cmake.org/files/v3.15/cmake-3.15.2.tar.gz && tar -zxvf cmake-3.15.2.tar.gz && \
     cd cmake-3.15.2 && ./configure && make && make install && cd .. && rm -rf cmake-3.15.2
 
