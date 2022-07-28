@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import latticex.rosetta as rtt
 from functools import wraps
+from collections import OrderedDict
 
 
 np.set_printoptions(suppress=True)
@@ -268,10 +269,10 @@ class FeatureIV(BaseAlgorithm):
         if self.party_id in self.result_party:
             feature_iv = iv.astype('float').reshape(-1,)
             iv_columns_name = self._get_iv_columns_name()
-            feature_iv_with_columns = {k:v for k,v in zip(iv_columns_name, feature_iv)}
-            feature_iv_with_columns = json.dumps(feature_iv_with_columns)
-            df_feature_iv = {"feature_name": iv_columns_name, "information_value": feature_iv}
-            iv_result = pd.DataFrame(df_feature_iv)
+            iv_with_columns = {k:v for k,v in zip(iv_columns_name, feature_iv)}
+            sorted_iv = sorted(iv_with_columns.items(), key=lambda x: x[1], reverse=True)
+            feature_iv_with_columns = json.dumps(OrderedDict(sorted_iv))
+            iv_result = pd.DataFrame(sorted_iv, columns=["feature_name", "information_value"])
             iv_result.to_csv(self.output_file, header=True, index=False)
             result_path = self.output_file
             result_type = 'csv'
