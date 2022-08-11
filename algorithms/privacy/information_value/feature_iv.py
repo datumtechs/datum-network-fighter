@@ -150,8 +150,8 @@ class FeatureIV(BaseAlgorithm):
                 "hyperparams": {
                     "binning_type": 1,  # 1:frequency, 2:distance
                     "num_bin": 5,
-                    "postive_value": 1.0,
-                    "negative_value": 0.0
+                    "postive_value": 1,
+                    "negative_value": 0
                 }
             }
         }
@@ -177,7 +177,7 @@ class FeatureIV(BaseAlgorithm):
         else:
             self.data_with_label = False
         self.binning_type = dynamic_parameter.get("binning_type", 1)
-        self.num_bin = dynamic_parameter.get("num_bin", 2)
+        self.num_bin = dynamic_parameter.get("num_bin", 5)
         self.postive_value = dynamic_parameter.get("postive_value", 1)
         self.negative_value = dynamic_parameter.get("negative_value", 0)
         self.calc_iv_columns = dynamic_parameter["calc_iv_columns"]  # must have iv值

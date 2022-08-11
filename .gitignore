@@ -63,5 +63,6 @@ third_party/consul_server/*
 !third_party/consul_server/run_consul.sh
 third_party/rosetta/Rosetta
 third_party/psi/PSI
+third_party/channel_sdk/datum-network-channel-sdk
 
 !pb/fighter/api/data

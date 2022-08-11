@@ -6,7 +6,7 @@
   ```
   ①input_type：输入数据的类型. (算法用，标识数据使用方式).  0:unknown, 1:origin_data, 2:model等等。可以根据数据类型的增加而增加。暂时只有两种类型：源数据，模型结果
   ②access_type: 访问数据的方式, (fighter用，决定是否预先加载数据). 0:unknown, 1:local, 2:url等等。现阶段仅支持local
-  ③data_type：数据的格式, (算法用，标识数据格式). 0:unknown, 1:csv, 2:dir, 3:binary, 4:xls, 5:xlsx, 6:txt, 7:json等等。现阶段仅支持csv和folder。
+  ③data_type：数据的格式, (算法用，标识数据格式). 0:unknown, 1:csv, 2:dir, 3:binary, 4:xls, 5:xlsx, 6:txt, 7:json等等。现阶段仅支持csv和dir。
   ④data_path：如果数据在本地(access_type=local)，则这里是数据路径。如果数据在远程(access_type=url)，则这里是超链接
   ⑤key_column：id列，作为样本的唯一标识。如果数据的格式(data_type)是非二维表类型, 如folder/bin/图像/文本/音频/视频等格式，则无此字段
   ⑥selected_columns：选择的列，指的是自变量(特征列)。如果数据的格式(data_type)是非二维表类型, 如folder/bin/图像/文本/音频/视频等格式，则无此字段
