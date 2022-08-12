@@ -4,7 +4,7 @@
 
    暂时仅包含input_data字段，如果后面有新的需求变化，可以增加新的字段。input_data里面的字段含义如下：
   ```
-  ①input_type：输入数据的类型. (算法用，标识数据使用方式).  0:unknown, 1:origin_data, 2:model等等。可以根据数据类型的增加而增加。暂时只有两种类型：源数据，模型结果
+  ①input_type：输入数据的类型. (算法用，标识数据使用方式).  0:unknown, 1:origin_data, 2:model等等。可以根据数据类型的增加而增加。目前暂时只有两种类型：源数据origin_data，模型结果model
   ②access_type: 访问数据的方式, (fighter用，决定是否预先加载数据). 0:unknown, 1:local, 2:url等等。现阶段仅支持local
   ③data_type：数据的格式, (算法用，标识数据格式). 0:unknown, 1:csv, 2:dir, 3:binary, 4:xls, 5:xlsx, 6:txt, 7:json等等。现阶段仅支持csv和dir。
   ④data_path：如果数据在本地(access_type=local)，则这里是数据路径。如果数据在远程(access_type=url)，则这里是超链接
@@ -548,6 +548,16 @@ compute1 -------> compute2
    ↓                 ↓
  result1           result2
 ```
+连接策略配置
+```
+"connect_policy": {
+    "data1": ["compute1"],
+    "data2": ["compute2"],
+    "compute1": ["compute2", "result1"],
+    "compute2": ["compute1", "result2"]
+}
+```
+
 
 - data1数据提供方
 ```
@@ -557,7 +567,7 @@ compute1 -------> compute2
       "input_data": [
         {
             "input_type": 1,       # 输入数据的类型. 0: unknown, 1: origin_data, 2: model
-            "data_type": 1,      # 数据的格式.
+            "data_type": 1,        # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
             "key_column": "col1",  # ID列名
             "selected_columns": []  # 自变量(特征列名), 该字段一直为空列表[]
@@ -616,7 +626,10 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
 ```
 
 ## 5. information value
+### 5.1 IV值的用途
+在机器学习的二分类问题中，IV值(Information Value)主要用来对输入特征变量进行编码和预测能力评估。特征变量IV值的大小即表示该特征变量预测能力的强弱。
 
+### 5.2 配置
 存在如下角色：数据提供方、计算方、结果接收方。每种角色都可能存在多个组织。下面分别按参与方角色说明配置：
 - data1方(数据提供方)的配置
 ```
@@ -643,9 +656,9 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
           "negative_value": 0    # 负例类别值, 整数或浮点数
       },
       "calc_iv_columns": {   # 存储所有数据提供方的selected_columns，目的是给结果方使用
-            "data1": ["col2", "col3"], # 数据提供方data1的selected_columns
-            "data2": ["col4", "col5"]  # 数据提供方data2的selected_columns
-        }
+          "data1": ["col2", "col3"], # 数据提供方data1的selected_columns
+          "data2": ["col4", "col5"]  # 数据提供方data2的selected_columns
+      }
   }
 }
 ```

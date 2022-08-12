@@ -152,6 +152,10 @@ class FeatureIV(BaseAlgorithm):
                     "num_bin": 5,
                     "postive_value": 1,
                     "negative_value": 0
+                },
+                "calc_iv_columns": {
+                    "data1": ["col2", "col3"], # data1: selected_columns
+                    "data2": ["col4", "col5"]  # data2: selected_columns
                 }
             }
         }
