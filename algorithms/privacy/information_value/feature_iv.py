@@ -180,7 +180,7 @@ class FeatureIV(BaseAlgorithm):
         self.num_bin = dynamic_parameter.get("num_bin", 5)
         self.postive_value = dynamic_parameter.get("postive_value", 1)
         self.negative_value = dynamic_parameter.get("negative_value", 0)
-        self.calc_iv_columns = dynamic_parameter["calc_iv_columns"]  # must have iv值
+        self.calc_iv_columns = dynamic_parameter["calc_iv_columns"]
 
     def check_parameters(self):
         self._check_input_data()

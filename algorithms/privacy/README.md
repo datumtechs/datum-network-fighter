@@ -641,7 +641,11 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
           "num_bin": 5,          # 分箱的箱数, 大于1的整数
           "postive_value": 1,    # 正例类别值, 整数或浮点数
           "negative_value": 0    # 负例类别值, 整数或浮点数
-      }
+      },
+      "calc_iv_columns": {   # 存储所有数据提供方的selected_columns，目的是给结果方使用
+            "data1": ["col2", "col3"], # 数据提供方data1的selected_columns
+            "data2": ["col4", "col5"]  # 数据提供方data2的selected_columns
+        }
   }
 }
 ```
