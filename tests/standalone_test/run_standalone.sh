@@ -32,7 +32,7 @@ mkdir -p ${data_svc_log}
 for port in $(seq ${data_svc_base_port} $[${data_svc_base_port}+${data_svc_num}-1])
 do 
     echo "start data_svc that use port ${port}"
-    nohup $python_command -u main.py $cfg --bind_ip=${ip} --port=${port} --schedule_svc=${ip}:${schedule_port} --use_consul=${use_consul} > ${data_svc_log}/data_svc_${port}.log 2>&1 &
+    nohup $python_command -u main.py $cfg --register_ip=${ip} --port=${port} --schedule_svc=${ip}:${schedule_port} --use_consul=${use_consul} > ${data_svc_log}/data_svc_${port}.log 2>&1 &
     if [ $use_consul -eq 0 ]
     then
         schedule_port=$[${schedule_port}+1]
@@ -47,7 +47,7 @@ mkdir -p ${compute_svc_log}
 for port in $(seq ${compute_svc_base_port} $[${compute_svc_base_port}+${compute_svc_num}-1])
 do 
     echo "start compute_svc that use port ${port}"
-    nohup $python_command -u main.py $cfg --bind_ip=${ip} --port=${port} --schedule_svc=${ip}:${schedule_port} --use_consul=${use_consul} > ${compute_svc_log}/compute_svc_${port}.log 2>&1 &
+    nohup $python_command -u main.py $cfg --register_ip=${ip} --port=${port} --schedule_svc=${ip}:${schedule_port} --use_consul=${use_consul} > ${compute_svc_log}/compute_svc_${port}.log 2>&1 &
     if [ $use_consul -eq 0 ]
     then
         schedule_port=$[${schedule_port}+1]
@@ -64,10 +64,10 @@ then
     for port in $(seq ${schedule_svc_base_port} $[${schedule_svc_base_port}+${schedule_svc_num}-1])
     do
         echo "start schedule_svc that use port ${port}"
-        nohup $python_command -u main.py $cfg --bind_ip=${ip} --port=${port} --use_consul=${use_consul} > ${schedule_svc_log}/schedule_svc_${port}.log 2>&1 &
+        nohup $python_command -u main.py $cfg --register_ip=${ip} --port=${port} --use_consul=${use_consul} > ${schedule_svc_log}/schedule_svc_${port}.log 2>&1 &
     done
 else
-    nohup $python_command -u main.py $cfg --bind_ip=${ip} --port=${schedule_port} --use_consul=${use_consul} > ${schedule_svc_log}/schedule_svc_${schedule_port}.log 2>&1 &
+    nohup $python_command -u main.py $cfg --register_ip=${ip} --port=${schedule_port} --use_consul=${use_consul} > ${schedule_svc_log}/schedule_svc_${schedule_port}.log 2>&1 &
 fi
 
 

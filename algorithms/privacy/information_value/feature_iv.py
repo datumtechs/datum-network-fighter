@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import latticex.rosetta as rtt
 from functools import wraps
+from collections import OrderedDict
 
 
 np.set_printoptions(suppress=True)
@@ -72,7 +73,6 @@ class BaseAlgorithm(object):
         log.info(f"start get input parameter.")
         self.io_channel = io_channel
         self.data_party = list(data_party)
-        self.data_party = ["data1", "data2"]
         self.compute_party = list(compute_party)
         self.result_party = list(result_party)
         self.results_dir = results_dir
@@ -150,8 +150,12 @@ class FeatureIV(BaseAlgorithm):
                 "hyperparams": {
                     "binning_type": 1,  # 1:frequency, 2:distance
                     "num_bin": 5,
-                    "postive_value": 1.0,
-                    "negative_value": 0.0
+                    "postive_value": 1,
+                    "negative_value": 0
+                },
+                "calc_iv_columns": {
+                    "data1": ["col2", "col3"], # data1: selected_columns
+                    "data2": ["col4", "col5"]  # data2: selected_columns
                 }
             }
         }
@@ -177,10 +181,10 @@ class FeatureIV(BaseAlgorithm):
         else:
             self.data_with_label = False
         self.binning_type = dynamic_parameter.get("binning_type", 1)
-        self.num_bin = dynamic_parameter.get("num_bin", 2)
-        self.postive_value = dynamic_parameter.get("postive_value", 1.0)
-        self.negative_value = dynamic_parameter.get("negative_value", 0.0)
-        self.calc_iv_columns = dynamic_parameter["calc_iv_columns"]  # must have iv值
+        self.num_bin = dynamic_parameter.get("num_bin", 5)
+        self.postive_value = dynamic_parameter.get("postive_value", 1)
+        self.negative_value = dynamic_parameter.get("negative_value", 0)
+        self.calc_iv_columns = dynamic_parameter["calc_iv_columns"]
 
     def check_parameters(self):
         self._check_input_data()
@@ -249,7 +253,6 @@ class FeatureIV(BaseAlgorithm):
             else:
                 binning_type_name = "Binning-distance"
             feature_index = list(range(feature_num))
-            # feature_index = [0]
             log.info("create iv handler")
             iv_handler = rtt.SecureFeatureIV(binning_type_name, 
                                 num_of_bin=self.num_bin, 
@@ -259,9 +262,8 @@ class FeatureIV(BaseAlgorithm):
                                 feature_index=feature_index)
             log.info("start iv fit.")
             siv = iv_handler.Fit(shard_x, shard_y)
-            log.info(f"***************: {siv}")
             log.info("iv fit success.")
-            iv = iv_handler.Reveal(siv, self.result_party)
+            iv = iv_handler.Reveal(siv)
             log.info(f"iv reveal success.")
         else:
             log.info("computing, please waiting for compute finish...")
@@ -271,10 +273,10 @@ class FeatureIV(BaseAlgorithm):
         if self.party_id in self.result_party:
             feature_iv = iv.astype('float').reshape(-1,)
             iv_columns_name = self._get_iv_columns_name()
-            feature_iv_with_columns = {k:v for k,v in zip(iv_columns_name, feature_iv)}
-            feature_iv_with_columns = json.dumps(feature_iv_with_columns)
-            df_feature_iv = {"feature_name": iv_columns_name, "information_value": feature_iv}
-            iv_result = pd.DataFrame(df_feature_iv)
+            iv_with_columns = {k:v for k,v in zip(iv_columns_name, feature_iv)}
+            sorted_iv = sorted(iv_with_columns.items(), key=lambda x: x[1], reverse=True)
+            feature_iv_with_columns = json.dumps(OrderedDict(sorted_iv))
+            iv_result = pd.DataFrame(sorted_iv, columns=["feature_name", "information_value"])
             iv_result.to_csv(self.output_file, header=True, index=False)
             result_path = self.output_file
             result_type = 'csv'
@@ -299,6 +301,8 @@ class FeatureIV(BaseAlgorithm):
             
             if self.data_with_label:
                 y_data = input_data[self.label_column]
+                class_num = y_data.unique().shape[0]
+                assert class_num == 2, f"label column must be 2 class, not {class_num} class."
                 y_file = os.path.join(temp_dir, f"y_file_{self.party_id}.csv")
                 y_data.to_csv(y_file, header=True, index=False)            
             x_data = input_data[self.selected_columns]

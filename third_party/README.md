@@ -1,6 +1,18 @@
 # 第三方库说明
 
 ## 1. channel-sdk
+有两种方式，一种是docker编译，一种是本地编译：
+### 1.1 docker编译
+```
+cd channel_sdk
+# 获取channel源代码
+bash get_channel_code.sh
+# 由源代码生成whl文件
+bash create_whl.sh
+```
+最后直接使用生成的channel-sdk镜像即可。
+
+### 1.2 本地编译
 + 仓库：https://github.com/datumtechs/datum-network-channel-sdk
 ```
 git clone https://github.com/datumtechs/datum-network-channel-sdk.git -b develop
@@ -33,12 +45,26 @@ pip3 install dist/channel_sdk-*
 
 
 ## 2. rosetta
-+ 仓库：http://192.168.9.66/PlatON-Crypto/Rosetta
+有两种方式，一种是docker编译，一种是本地编译：
+### 2.1 docker编译
 ```
-git clone --recurse http://192.168.9.66/PlatON-Crypto/Rosetta.git -b develop
+cd rosetta
+# 获取rosetta源代码
+bash get_rosetta_code.sh
+# 由源代码生成whl文件
+bash create_whl.sh
+```
+最后在当前目录的dist文件夹中产生了whl文件，复制该文件到所需的环境安装即可。
+
+### 2.2 本地编译：
++ 仓库：https://gitlab.platon.network/platon-crypto/Rosetta/
+```
+cd rosetta
+git clone --recurse git@gitlab.platon.network:platon-crypto/Rosetta.git -b develop
 cd Rosetta
-git checkout 49cdde3eb1d6cfe12c139d09756e240321aa5c6e
+git checkout 49e9cce5cc7d52f92bfb839723041d63eef543fe
 ```
+注意：这里需要有访问gitlab的权限
 
 + 环境依赖确认
 ```
@@ -79,11 +105,23 @@ pip3 install dist/latticex_rosetta-*
 
 
 ## 3. psi
-仓库：http://192.168.9.66/PlatON-Crypto/PSI
+有两种方式，一种是docker编译，一种是本地编译：
+### 3.1 docker编译
 ```
-git clone --recurse http://192.168.9.66/PlatON-Crypto/PSI.git -b develop
+cd psi
+# 获取psi源代码
+bash get_psi_code.sh
+# 由源代码生成whl文件
+bash create_whl.sh
+```
+最后在当前目录的dist文件夹中产生了whl文件，复制该文件到所需的环境安装即可。
+
+### 3.2 本地编译：
+仓库：https://gitlab.platon.network/platon-crypto/PSI
+```
+git clone --recurse git@gitlab.platon.network:platon-crypto/PSI.git -b develop
 cd PSI
-git checkout 8db892f9a39be02d2197350eec00c7c25296d004
+git checkout e2ebbbc29994b8f17a3149a3f32336d555e06473
 ```
 
 + 安装依赖
@@ -96,8 +134,6 @@ sudo apt install libgmp-dev libtbb-dev libtbb2 libgmpxx4ldbl
 ./compile.sh
 # 可选，运行测试例  ./run_demo_local.sh
 ```
-执行`. rtt_completion`后，再`./rosetta.sh compile`加tab键可以查看该指令后面可加的参数
-
 
 + 安装
 ```
@@ -108,4 +144,3 @@ pip3 install dist/latticex_psi-*
 ```
 ./clean.sh
 ```
-

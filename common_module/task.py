@@ -75,7 +75,7 @@ class Task:
         log.info(f'start monitor_resource thread.')
         monitor_resource = threading.Thread(target=monitor_resource_usage, args=(current_task_pid, self.limit_time,
                     self.limit_memory, self.limit_cpu, self.limit_bandwidth,self.cfg['schedule_svc'], self.create_event, self.event_type,
-                    self.id, self.party_id, self.party_type, self.cfg['bind_ip'], self.cfg['port'], self.cfg['total_bandwidth']))
+                    self.id, self.party_id, self.party_type, self.cfg['register_ip'], self.cfg['port'], self.cfg['total_bandwidth']))
         monitor_resource.daemon = True
         monitor_resource.start()
         
@@ -100,7 +100,7 @@ class Task:
                             self.cfg, self.connect_policy,self.limit_time)
             log.info(f'channel_config: {channel_config}.')
             io_channel = IOChannel(self.party_id, channel_config)
-            report_event(self.event_type["CREATE_CHANNEL_SUCCESS"], "create channel success.")
+            # report_event(self.event_type["CREATE_CHANNEL_SUCCESS"], "create channel success.")
         except Exception as e:
             log.exception(repr(e))
             report_event(self.event_type["CREATE_CHANNEL_FAILED"], f"create channel failed. {str(e)[:900]}")
@@ -142,7 +142,7 @@ class Task:
                 assert os.path.exists(result_path), f"result_path is not exist. result_path={result_path}"
                 data_type = map_data_type_to_int(result_type)
                 origin_id, data_hash, metadata_option = get_metadata(result_path, data_type)
-                file_summary = {"task_id": self.id, "origin_id": origin_id, "ip": self.cfg["bind_ip"], "port": self.cfg["port"],
+                file_summary = {"task_id": self.id, "origin_id": origin_id, "ip": self.cfg["register_ip"], "port": self.cfg["port"],
                                 "extra": extra, "data_hash": data_hash, "data_type": data_type, "metadata_option": metadata_option}
                 log.info(f'start report task result file summary.')
                 report_task_result(self.cfg['schedule_svc'], 'result_file', file_summary)

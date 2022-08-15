@@ -3,8 +3,7 @@
     "env_id": "test_environment",
     "data_party": [
         "data1",
-        "data2",
-        "result1"
+        "data2"
     ],
     "computation_party": [
         "compute1",

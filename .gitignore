@@ -40,7 +40,7 @@ compute_svc/start_compute_svc_group.sh
 logs
 console/algorithm*
 console/task_cfg*
-contract_work_dir
+algorithm_work_dir
 results_root
 log/
 *.log
@@ -50,7 +50,7 @@ nodes_conf_example_*.json
 !*_min.csv
 build/
 dist/
-# *.whl
+*.whl
 *egg-info
 tests/cluster_test/nodes_conf/*.ini
 tests/cluster_test/nodes_conf/*.json
@@ -61,5 +61,8 @@ certs/
 third_party/consul_server/*
 !third_party/consul_server/download_consul.sh
 !third_party/consul_server/run_consul.sh
+third_party/rosetta/Rosetta
+third_party/psi/PSI
+third_party/channel_sdk/datum-network-channel-sdk
 
 !pb/fighter/api/data

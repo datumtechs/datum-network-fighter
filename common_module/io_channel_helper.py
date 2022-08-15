@@ -78,7 +78,7 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
 
 def get_channel_config(task_id, self_party_id, peers, data_party, compute_party, result_party,
                        cfg, connect_policy,send_timeout):
-    parent_proc_ip = cfg['bind_ip']
+    parent_proc_ip = cfg['register_ip']
     task_port_range = cfg['task_port_range']
     port = find_free_port_in_range(task_port_range)
     self_internal_addr = f'{parent_proc_ip}:{port}'

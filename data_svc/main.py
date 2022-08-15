@@ -52,15 +52,15 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('config', type=str, default='config.yaml')
-    parser.add_argument('--bind_ip', type=str)
+    parser.add_argument('--register_ip', type=str)
     parser.add_argument('--port', type=int)
     parser.add_argument('--schedule_svc', type=str)
     parser.add_argument('--use_consul', type=int, default=1) # 1: use consul, 0: not use consul
     args = parser.parse_args()
     cfg.update(load_cfg(args.config))
     cfg['schedule_svc'] = ''
-    if args.bind_ip:
-        cfg['bind_ip'] = args.bind_ip
+    if args.register_ip:
+        cfg['register_ip'] = args.register_ip
     if args.port:
         cfg['port'] = args.port
     if args.use_consul:

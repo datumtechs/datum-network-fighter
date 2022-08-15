@@ -1,0 +1,20 @@
+# git
+**/.git/
+**/.gitignore
+**/.gitmodules
+
+# doc
+**/*.md
+
+# other
+**/__pycache__/
+**/log
+**/*.log
+**/build/
+**/.eggs/
+**/dist/
+
+# IDE
+**/.vs/
+**/.vscode/
+**/.idea/

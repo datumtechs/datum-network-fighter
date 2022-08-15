@@ -7,6 +7,6 @@ services:
       network: "host"
       context: .
       args: 
-        "PKG_ROSETTA": ./third_party/rosetta/latticex_rosetta-1.0.0-cp37-cp37m-linux_x86_64.whl
-        "PKG_PSI": ./third_party/psi/latticex_psi-1.0.0-cp37-cp37m-linux_x86_64.whl
+        "PKG_ROSETTA": ./third_party/rosetta/dist/latticex_rosetta-1.0.0-cp37-cp37m-linux_x86_64.whl
+        "PKG_PSI": ./third_party/psi/dist/latticex_psi-1.0.0-cp37-cp37m-linux_x86_64.whl
       dockerfile: Dockerfile

@@ -113,7 +113,7 @@ class DataProvider(data_svc_pb2_grpc.DataProviderServicer):
             else:
                 metadata_option["size"] = os.path.getsize(full_new_name)
             metadata_option = json.dumps(metadata_option)
-            file_summary = {"origin_id": origin_id, "ip": cfg["bind_ip"], "port": cfg["port"], "data_hash": data_hash,
+            file_summary = {"origin_id": origin_id, "ip": cfg["register_ip"], "port": cfg["port"], "data_hash": data_hash,
                             "data_type": data_type, "metadata_option": metadata_option}
             status = ERROR_CODE["REPORT_SUMMARY_ERROR"]
             ret = report_task_result(cfg['schedule_svc'], 'upload_file', file_summary)

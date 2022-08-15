@@ -64,7 +64,7 @@ def _dump_yaml_to_remote(dict_, target):
 
 def update_svc_cfg(scp, remote_dir, cfg, svc_type):
     # json_key: cfg_file_key
-    key_align = {'internal_host': 'bind_ip', 'rpc_port': 'port',
+    key_align = {'internal_host': 'register_ip', 'rpc_port': 'port',
                  'task_port_range': 'task_port_range', 'pass_via': 'pass_via',
                  'data_dir': 'data_root', 'code_dir': 'code_root_dir',
                  'results_dir': 'results_root_dir'}

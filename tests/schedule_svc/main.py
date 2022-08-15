@@ -37,14 +37,14 @@ def serve():
     return server
 
 def client(cfg):
-    data_svc_address = '{}:{}'.format(cfg["bind_ip"], cfg["data_svc_port"])
+    data_svc_address = '{}:{}'.format(cfg["register_ip"], cfg["data_svc_port"])
     conn = grpc.insecure_channel(data_svc_address)
     client = data_svc_pb2_grpc.DataProviderStub(channel=conn)
     response = client.GetStatus(empty_pb2.Empty())
     str_res = '{' + str(response).replace('\n', ' ').replace('  ', ' ').replace('{', ':{') + '}'
     log.info(f"get data svc status: {str_res}")
     
-    compute_svc_address = '{}:{}'.format(cfg["bind_ip"], cfg["compute_svc_port"])
+    compute_svc_address = '{}:{}'.format(cfg["register_ip"], cfg["compute_svc_port"])
     conn = grpc.insecure_channel(compute_svc_address)
     client = compute_svc_pb2_grpc.ComputeProviderStub(channel=conn)
     response = client.GetStatus(empty_pb2.Empty())
@@ -57,13 +57,13 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('config', type=str, default='config.yaml')
-    parser.add_argument('--bind_ip', type=str)
+    parser.add_argument('--register_ip', type=str)
     parser.add_argument('--port', type=int)
     parser.add_argument('--use_consul', type=int, default=1) # 1: use consul, 0: not use consul
     args = parser.parse_args()
     cfg.update(load_cfg(args.config))
-    if args.bind_ip:
-        cfg['bind_ip'] = args.bind_ip
+    if args.register_ip:
+        cfg['register_ip'] = args.register_ip
     if args.port:
         cfg['port'] = args.port
     log.info(f"cfg: {cfg}")

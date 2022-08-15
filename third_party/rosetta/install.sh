@@ -1,1 +1,1 @@
-pip3 install latticex_rosetta-*
+pip3 install dist/latticex_rosetta-*
