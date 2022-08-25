@@ -42,7 +42,7 @@
             "use_validation_set": true,
             "validation_set_rate": 0.2,
             "predict_threshold": 0.5,
-            "random_seed": null,
+            "random_seed": -1,
             "dropout_prob": 0.5
         },
         "data_flow_restrict": {

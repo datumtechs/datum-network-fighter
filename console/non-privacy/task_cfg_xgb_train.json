@@ -41,7 +41,7 @@
             "gamma": 0.0,
             "use_validation_set": true,
             "validation_set_rate": 0.2,
-            "random_seed": null
+            "random_seed": -1
         },
         "data_flow_restrict": {
             "data1": ["compute1"],

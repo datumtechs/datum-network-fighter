@@ -434,7 +434,9 @@ class DnnTrain(BaseAlgorithm):
         del input_data[self.label_column]
         x_data = input_data
         if self.use_validation_set:
-            train_x, val_x, train_y, val_y = train_test_split(x_data, y_data, test_size=self.validation_set_rate, random_state=self.random_seed)
+            stratify = y_data if self.task_type in [0,1] else None
+            train_x, val_x, train_y, val_y = train_test_split(x_data, y_data, stratify=stratify,
+                        test_size=self.validation_set_rate, random_state=self.random_seed)
         else:
             # val_x, val_y is invalid.
             train_x, val_x, train_y, val_y = x_data, x_data, y_data, y_data
