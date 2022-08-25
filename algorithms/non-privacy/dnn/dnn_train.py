@@ -417,7 +417,7 @@ class DnnTrain(BaseAlgorithm):
             assert usecols_data.shape[0] > 0, 'no data after select columns.'
             if self.data_with_label:
                 y_data = usecols_data[self.label_column]
-                if self.layer_activation[-1] == 'sigmoid':
+                if self.task_type == 0:
                     class_num = y_data.unique().shape[0]
                     assert class_num == 2, f"label column has {class_num} class, but the last layer of the network is {self.layer_activation[-1]}."
             usecols_data = usecols_data[use_cols]
@@ -469,16 +469,20 @@ class DnnTrain(BaseAlgorithm):
         label_name = train_y.name
         train_x, val_x, train_y, val_y = train_x.values, val_x.values, train_y.values, val_y.values
         if self.task_type == 0:
-            class_num = np.unique(train_y).shape[0]
-            assert class_num <= 2, f"the number of class in train set, as {class_num}, is greater than 2, please let the last layer activation to softmax, not sigmoid."
-            assert class_num == 2, f"when the last layer activation is sigmoid, the number of class in train set must be 2, not {class_num}"
+            train_class_num = np.unique(train_y).shape[0]
+            assert train_class_num <= 2, f"the number of class in train set, as {train_class_num}, is greater than 2, please let the last layer activation to softmax, not sigmoid."
+            assert train_class_num == 2, f"when the last layer activation is sigmoid, the number of class in train set must be 2, not {train_class_num}"
+            val_class_num = np.unique(val_y).shape[0]
+            assert val_class_num == train_class_num, f"class num of validation set not equal to train set, {val_class_num} != {train_class_num}"
             train_y = train_y.reshape(-1, 1)
             val_y = val_y.reshape(-1, 1)
         elif self.task_type == 1:
-            class_num = np.unique(train_y).shape[0]
-            assert class_num == self.layer_units[-1], f"{class_num} != {self.layer_units[-1]}. when the last layer activation is softmax, the number of class in train set must be equal to the output layer units"
-            train_y = np.eye(class_num)[train_y]
-            val_y = np.eye(class_num)[val_y]
+            train_class_num = np.unique(train_y).shape[0]
+            assert train_class_num == self.layer_units[-1], f"{train_class_num} != {self.layer_units[-1]}. when the last layer activation is softmax, the number of class in train set must be equal to the output layer units"
+            val_class_num = np.unique(val_y).shape[0]
+            assert val_class_num == train_class_num, f"class num of validation set not equal to train set, {val_class_num} != {train_class_num}"
+            train_y = np.eye(train_class_num)[train_y]
+            val_y = np.eye(val_class_num)[val_y]
         else:
             train_y = train_y.reshape(-1, 1)
             val_y = val_y.reshape(-1, 1)
