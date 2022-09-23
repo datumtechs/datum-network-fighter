@@ -67,12 +67,24 @@ def build_io_channel_cfg(task_id, self_party_id, peers, data_party, compute_part
 
     config_dict['NODE_INFO'] = list_node_info
     config_dict['DATA_NODES'] = data_party
-    party = {p: f'P{i}' for i, p in enumerate(compute_party)}
-    config_dict['COMPUTATION_NODES'] = party
+    if len(compute_party) == 2:
+        dict_compute_party = {}
+        for i in compute_party:
+            if result_party[0] in connect_policy[i]:
+                dict_compute_party[i] = "P1"
+                break
+        assert dict_compute_party, f"no compute_party({compute_party}) connect to result_party({result_party})"
+        for i in compute_party:
+            if i not in dict_compute_party.keys():
+                dict_compute_party[i] = "P0"
+    else:
+        dict_compute_party = {p: f'P{i}' for i, p in enumerate(compute_party)}
+    config_dict['COMPUTATION_NODES'] = dict_compute_party
     config_dict['RESULT_NODES'] = result_party
     config_dict['GRICER2_INFO'] = grice2_dict
     config_dict['ICE_GRID_INFO'] = ice_grid_dict
     config_dict['POLICY'] = connect_policy
+    config_dict['CONNECT_SYNC'] = True
     return config_dict
 
 

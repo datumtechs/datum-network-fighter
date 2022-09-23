@@ -173,20 +173,38 @@ class PrivateSetIntersection(BaseAlgorithm):
         self.use_alignment = dynamic_parameter["use_alignment"]
         self.label_owner = dynamic_parameter.get("label_owner")
         self.label_column = dynamic_parameter.get("label_column")
-        if self.use_alignment and (self.party_id == self.label_owner):
-            self.data_with_label = True
+        self.psi_type = dynamic_parameter.get("psi_type")  # "T_V1_Basic_GLS254", "T_V2_Labeled_GLS254"
+        if self.psi_type in ["T_V1_Basic_GLS254", "T_V1_Basic_SECP"]:
+            self.psi_class = 0  # psi
+        elif self.psi_type in ["T_V2_Labeled_GLS254", "T_V2_Labeled_SECP"]:
+            self.psi_class = 1  # labeled psi
         else:
-            self.data_with_label = False
-        if not self.use_alignment:
-            self.selected_columns = []
-        self.psi_type = dynamic_parameter.get("psi_type", "T_V1_Basic_GLS254")  # default 'T_V1_Basic_GLS254'
+            raise Exception(f"psi type not support {self.psi_type}")
+
+        self.data_with_label = False
+        if self.psi_class == 0:
+            if self.use_alignment:
+                self.data_with_label = True if (self.party_id == self.label_owner) else False
+            else:
+                self.selected_columns = []
         self.data_flow_restrict = dynamic_parameter.get("data_flow_restrict")
+        self.result_columns = dynamic_parameter.get("result_columns")
 
     def check_parameters(self):
         assert len(self.data_party) == 2, f"length of data_party must be 2, not {len(self.data_party)}."
         assert len(self.result_party) in [1, 2], f"length of result_party must be 1 or 2, not {len(self.result_party)}."
         self._check_input_data()
         self.check_params_type(data_flow_restrict=(self.data_flow_restrict, dict))
+        assert self.data_flow_restrict, f"data_flow_restrict can not be {self.data_flow_restrict}."
+        if self.psi_class == 1:
+            assert self.result_columns, f"when psi_type={self.psi_type}, result_columns can not be {self.result_columns}."
+            self.check_params_type(result_columns=(self.result_columns, list))
+            assert len(self.result_party) == 1, f"when psi_type={self.psi_type}, result_party only can have one party, not {self.result_party}."
+            if self.party_id in self.data_party:
+                compute_party = self.data_flow_restrict[self.party_id][0]
+                party = self.data_flow_restrict.get(compute_party)
+                if party and self.result_party[0] not in party:
+                    assert self.selected_columns, f"selected_columns can not be {self.selected_columns}"
 
     def _check_input_data(self):
         if self.party_id in self.data_party:
@@ -196,7 +214,7 @@ class PrivateSetIntersection(BaseAlgorithm):
                 file_suffix = os.path.splitext(self.input_file)[-1][1:]
                 assert file_suffix == "csv", f"input_file must csv file, not {file_suffix}"
                 assert self.key_column, f"key_column can not empty. key_column={self.key_column}"
-                if self.use_alignment:
+                if self.psi_class == 0 and self.use_alignment:
                     assert self.selected_columns, f"selected_columns can not empty. selected_columns={self.selected_columns}"
                 input_columns = pd.read_csv(self.input_file, nrows=0)
                 input_columns = list(input_columns.columns)
@@ -206,37 +224,38 @@ class PrivateSetIntersection(BaseAlgorithm):
                     if col not in input_columns:
                         error_col.append(col)   
                 assert not error_col, f"selected_columns:{error_col} not in input_file"
-                assert self.key_column not in self.selected_columns, f"key_column:{self.key_column} can not in selected_columns"
-                if self.data_with_label:
+                if self.psi_class == 0:
+                    assert self.key_column not in self.selected_columns, f"key_column:{self.key_column} can not in selected_columns"
+                if self.psi_class == 0 and self.data_with_label:
                     assert self.label_column in input_columns, f"label_column:{self.label_column} not in input_file"
                     assert self.label_column not in self.selected_columns, f"label_column:{self.label_column} can not in selected_columns"
             else:
                 raise Exception(f"input_file is not exist. input_file={self.input_file}")
 
     def run(self):
-        
+
         log.info("start extract data.")
         usecols_file = self._extract_data_column()
         log.info("start send_data_to_compute_party.")
         self._send_data_to_compute_party(usecols_file)
-        psi_output_file = os.path.join(self.temp_dir, "psi_sdk_output.csv")
-        alignment_output_file = self.output_file
+        result_file = self.output_file
         if self.party_id in self.compute_party:
             log.info("start extract key column.")
             key_col_file, key_col_name, usecols_data = self._extract_key_column(usecols_file)
             log.info("start run psi sdk.")
+            psi_output_file = os.path.join(self.temp_dir, "psi_sdk_output.csv")
             self._run_psi_sdk(key_col_file, psi_output_file)
-            log.info("start alignment result.")
-            self._alignment_result(psi_output_file, usecols_data, alignment_output_file, key_col_name)
+            log.info("start post processing.")
+            self._post_processing(psi_output_file, usecols_data, result_file, key_col_name)
         log.info("start send data to result party.")
-        self._send_data_to_result_party(alignment_output_file)
+        self._send_data_to_result_party(result_file)
         log.info("finish send data to result party.")
         result_path, result_type = '', ''
         if self.party_id in self.result_party:
-            result_path = alignment_output_file
+            result_path = result_file
             result_type = 'csv'
-        log.info("start remove temp dir.")
-        self.remove_temp_dir()
+        # log.info("start remove temp dir.")
+        # self.remove_temp_dir()
         log.info("psi all success.")
         return result_path, result_type
     
@@ -276,7 +295,7 @@ class PrivateSetIntersection(BaseAlgorithm):
             use_cols = [self.key_column] + self.selected_columns
             if self.data_with_label:
                 use_cols += [self.label_column]
-            log.info("read input file and write to new file.")
+            log.info("read input psi_file and write to new file.")
             usecols_data = pd.read_csv(self.input_file, usecols=use_cols, dtype="str")
             usecols_data = usecols_data[use_cols]
             usecols_data.to_csv(usecols_file, header=True, index=False)
@@ -286,7 +305,7 @@ class PrivateSetIntersection(BaseAlgorithm):
         usecols_data = pd.read_csv(usecols_file, header=0, dtype="str")
         usecols = list(usecols_data.columns)
         key_col_name = usecols[0]
-        if self.use_alignment:
+        if self.psi_class == 0 and self.use_alignment:
             key_data = usecols_data[key_col_name]
             key_col_file = os.path.join(self.temp_dir, f"key_col_{self.party_id}.csv")
             key_data.to_csv(key_col_file, header=True, index=False)
@@ -304,13 +323,13 @@ class PrivateSetIntersection(BaseAlgorithm):
         psihandler.log_to_stdout(True)
         psihandler.set_loglevel(self.sdk_log_level)
         log.info("start set recv party.")
-        psihandler.set_recv_party(2, "")
+        psihandler.set_recv_party(len(self.result_party), "")
 
         log.info("start create iohandler.")
         iohandler = psi.IOHandler()
         log.info("start set channel.")
         iohandler.set_channel("", self.io_channel.channel)
-        log.info("start activate.")
+        log.info(f"start activate {self.psi_type}.")
         psihandler.activate(self.psi_type, "")
         log.info("finish activate.")
         log.info("start psihandler prepare data.")
@@ -325,24 +344,32 @@ class PrivateSetIntersection(BaseAlgorithm):
         psihandler.deactivate("")
         log.info("finish deactivate.")
     
-    def _alignment_result(self, psi_output_file, usecols_data, alignment_output_file, key_col_name):
+    def _post_processing(self, psi_output_file, usecols_data, result_file, key_col_name):
         '''
         for the compute_party, sort the key_col values and alignment the select_columns.
         '''
         if os.path.exists(psi_output_file):
             psi_result = pd.read_csv(psi_output_file, header=None, dtype="str")
-            psi_result = pd.DataFrame(psi_result.values, columns=[key_col_name])
-            psi_result.sort_values(by=[key_col_name], ascending=True, inplace=True)
-            if self.use_alignment:
-                alignment_result = pd.merge(psi_result, usecols_data, on=key_col_name)
+            if self.psi_class == 0:
+                psi_result = pd.DataFrame(psi_result.values, columns=[key_col_name])
+                psi_result.sort_values(by=[key_col_name], ascending=True, inplace=True)
+                if self.use_alignment:
+                    result = pd.merge(psi_result, usecols_data, on=key_col_name)
+                else:
+                    result = psi_result
             else:
-                alignment_result = psi_result
-            alignment_result.to_csv(alignment_output_file, index=False, header=True)
-            log.info(f"alignment_result shape: {alignment_result.shape}")
+                use_cols = [key_col_name] + self.result_columns
+                result = pd.DataFrame(psi_result.values, columns=use_cols)
+            
+            result.to_csv(result_file, index=False, header=True)
+            log.info(f"result shape: {result.shape}")
         else:
-            use_cols = list(usecols_data.columns)
+            if self.psi_class == 0:
+                use_cols = list(usecols_data.columns)
+            else:
+                use_cols = [key_col_name] + self.result_columns
             log.info(f"psi_result is Empty, only have Column name: {use_cols}")
-            with open(alignment_output_file, 'w') as output_f:
+            with open(result_file, 'w') as output_f:
                 output_f.write(','.join(use_cols)+"\n")
 
 

@@ -589,6 +589,33 @@ compute1 -------> compute2
 }
 ```
 
+- compute1方(计算方)的配置
+```
+{
+  "self_cfg_params": {
+      "party_id": "compute1",    # 本方party_id
+      "input_data": []
+  },
+  "algorithm_dynamic_params": {
+      # 与数据提供方的该字段的内容完全相同，复制一份过来即可
+  }
+}
+```
+
+- result1方(结果接收方)的配置
+```
+{
+  "self_cfg_params": {
+      "party_id": "result1",    # 本方party_id
+      "input_data": []
+  },
+  "algorithm_dynamic_params": {
+      # 与数据提供方的该字段的内容完全相同，复制一份过来即可
+  }
+}
+```
+
+
 ## 4. Alignment
 
 该模块专门用于训练和预测算法的对齐。与训练或者预测算法配套使用。与上一个算法不同的是use_alignment=true
@@ -606,7 +633,7 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
             "data_type": 1,      # 数据的格式.
             "data_path": "path/to/data",  # 数据所在的本地路径
             "key_column": "col1",  # ID列名
-            "selected_columns": ["col1", "col2"]  # 自变量(特征列名), 训练或者预测算法选择的字段。
+            "selected_columns": ["col2", "col3"]  # 自变量(特征列名), 训练或者预测算法选择的字段。
         }
       ]
   },
@@ -625,11 +652,157 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
 }
 ```
 
-## 5. information value
-### 5.1 IV值的用途
+- compute1方(计算方)的配置
+```
+{
+  "self_cfg_params": {
+      "party_id": "compute1",    # 本方party_id
+      "input_data": []
+  },
+  "algorithm_dynamic_params": {
+      # 与数据提供方的该字段的内容完全相同，复制一份过来即可
+  }
+}
+```
+
+- result1方(结果接收方)的配置
+```
+{
+  "self_cfg_params": {
+      "party_id": "result1",    # 本方party_id
+      "input_data": []
+  },
+  "algorithm_dynamic_params": {
+      # 与数据提供方的该字段的内容完全相同，复制一份过来即可
+  }
+}
+```
+
+
+## 5. Labeled Private Set Intersection (Labeled PSI)
+
+该模块用于单独使用，后面不接训练或者预测算法。常见应用场景是隐私标签查询业务。
+cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归训练相同，algorithm_dynamic_params是由本算法定制。
+数据提供方有两方[data1, data2],  计算方有两方[compute1, compute2], 结果方只有一方[result1]。
+数据提供方data1为查询方，data2为被查询方。
+- 参与方的连接策略示意图
+```
+ data1             data2
+   |                 |
+   |                 |
+   |                 |
+   ↓                 ↓
+compute1 -------> compute2
+         <------- 
+   | 
+   |
+   |
+   ↓
+ result1
+```
+连接策略配置
+```
+"connect_policy": {
+    "data1": ["compute1"],
+    "data2": ["compute2"],
+    "compute1": ["compute2", "result1"],
+    "compute2": ["compute1"]
+}
+```
+
+
+- data1数据提供方
+```
+{
+  "self_cfg_params": {
+      "party_id": "data1",    # 本方party_id
+      "input_data": [
+        {
+            "input_type": 1,       # 输入数据的类型. 0: unknown, 1: origin_data, 2: model
+            "data_type": 1,        # 数据的格式.
+            "data_path": "path/to/data",  # 数据所在的本地路径
+            "key_column": "col1",  # ID列名
+            "selected_columns": []  # 选择的特征列名
+        }
+      ]
+  },
+  "algorithm_dynamic_params": {
+      "use_alignment": false,
+      "label_owner": "",   # 可无此字段
+      "label_column": "",  # 可无此字段
+      "psi_type": "T_V2_Labeled_GLS254",  # 支持T_V2_Labeled_GLS254, T_V2_Labeled_SECP等
+      "data_flow_restrict": {
+        "data1": ["compute1"],
+        "data2": ["compute2"],
+        "compute1": ["result1"]
+      },
+      "result_columns": ["col2", "col3"]   # 来自被查询方data2的selected_columns
+  }
+}
+```
+
+- data2数据提供方
+```
+{
+  "self_cfg_params": {
+      "party_id": "data2",    # 本方party_id
+      "input_data": [
+        {
+            "input_type": 1,       # 输入数据的类型. 0: unknown, 1: origin_data, 2: model
+            "data_type": 1,        # 数据的格式.
+            "data_path": "path/to/data",  # 数据所在的本地路径
+            "key_column": "col1",  # ID列名
+            "selected_columns": ["col2", "col3"]  # 选择的特征列名
+        }
+      ]
+  },
+  "algorithm_dynamic_params": {
+      "use_alignment": false,
+      "label_owner": "",   # 可无此字段
+      "label_column": "",  # 可无此字段
+      "psi_type": "T_V2_Labeled_GLS254",  # 支持T_V2_Labeled_GLS254, T_V2_Labeled_SECP等
+      "data_flow_restrict": {
+        "data1": ["compute1"],
+        "data2": ["compute2"],
+        "compute1": ["result1"]
+      },
+      "result_columns": ["col2", "col3"]   # 来自被查询方data2的selected_columns
+  }
+}
+```
+
+- compute1方(计算方)的配置
+```
+{
+  "self_cfg_params": {
+      "party_id": "compute1",    # 本方party_id
+      "input_data": []
+  },
+  "algorithm_dynamic_params": {
+      # 与数据提供方的该字段的内容完全相同，复制一份过来即可
+  }
+}
+```
+
+- result1方(结果接收方)的配置
+```
+{
+  "self_cfg_params": {
+      "party_id": "result1",    # 本方party_id
+      "input_data": []
+  },
+  "algorithm_dynamic_params": {
+      # 与数据提供方的该字段的内容完全相同，复制一份过来即可
+  }
+}
+```
+
+
+## 6. information value
+### 6.1 IV值的用途
 在机器学习的二分类问题中，IV值(Information Value)主要用来对输入特征变量进行编码和预测能力评估。特征变量IV值的大小即表示该特征变量预测能力的强弱。
 
-### 5.2 配置
+### 6.2 配置
 存在如下角色：数据提供方、计算方、结果接收方。每种角色都可能存在多个组织。下面分别按参与方角色说明配置：
 - data1方(数据提供方)的配置
 ```
@@ -689,9 +862,9 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
 }
 ```
 
-## 6. 评估指标说明
+## 7. 评估指标说明
 
-### 6.1 模型评估指标
+### 7.1 模型评估指标
 现阶段模型评估有2种类型，一种是二分类模型评估，一种是回归类型模型评估。
 
 + **二分类模型评估**
@@ -721,7 +894,7 @@ cfg_dict参数由两部分组成，self_cfg_params参数的结构与逻辑回归
 ```
 R2-score的取值为[0,1]之间的小数，其他指标的取值范围为[0, +∞)
 
-### 6.2 信息价值(IV)评估指标
+### 7.2 信息价值(IV)评估指标
 返回的是对每个已选择的特征计算的信息价值(IV)，格式如下：
 ```
 {

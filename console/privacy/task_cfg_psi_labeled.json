@@ -40,7 +40,7 @@
         }
     ],
     "dynamic_parameter": {
-        "psi_type": "T_V1_Basic_GLS254",
+        "psi_type": "T_V2_Labeled_GLS254",
         "use_alignment": false,
         "label_owner": "",
         "label_column": "",
@@ -48,7 +48,14 @@
             "data1": ["compute1"],
             "data2": ["compute2"],
             "compute1": ["result1"]
-        }
+        },
+        "result_columns": [
+            "compactness_se",
+            "concavity_se",
+            "concave points_se",
+            "symmetry_se",
+            "fractal_dimension_se"
+        ]
     },
     "connect_policy": {
         "data1": ["compute1"],
@@ -79,7 +86,13 @@
                     "data_type": 1,
                     "data_path": "../tests/test_data/binary_class/breast_cancel_partyB_min.csv",
                     "key_column": "id",
-                    "selected_columns": []
+                    "selected_columns": [
+                        "compactness_se",
+                        "concavity_se",
+                        "concave points_se",
+                        "symmetry_se",
+                        "fractal_dimension_se"
+                    ]
                 }
             ]
         },

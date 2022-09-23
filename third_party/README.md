@@ -121,7 +121,7 @@ bash create_whl.sh
 ```
 git clone --recurse git@gitlab.platon.network:platon-crypto/PSI.git -b develop
 cd PSI
-git checkout e2ebbbc29994b8f17a3149a3f32336d555e06473
+git checkout d1b3cc82a0c4829499b34c6826ac796956829416
 ```
 
 + 安装依赖
