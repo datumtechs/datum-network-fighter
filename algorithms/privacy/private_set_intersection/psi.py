@@ -254,8 +254,8 @@ class PrivateSetIntersection(BaseAlgorithm):
         if self.party_id in self.result_party:
             result_path = result_file
             result_type = 'csv'
-        # log.info("start remove temp dir.")
-        # self.remove_temp_dir()
+        log.info("start remove temp dir.")
+        self.remove_temp_dir()
         log.info("psi all success.")
         return result_path, result_type
     
